@@ -1,0 +1,65 @@
+<h2>Group Post Threading Style</h2>
+<p class="subtitle">How should conversations thread in group posts? Select the style you prefer.</p>
+
+<div class="cards">
+  <div class="card" data-choice="reddit" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:16px;font-family:monospace;font-size:12px;color:#e0e0e0;min-height:200px">
+      <div style="border-left:3px solid #7b68ee;padding:8px 12px;margin-bottom:8px">
+        <span style="color:#7b68ee;font-weight:bold">@MapleDogMom</span> <span style="color:#888">· 2h</span><br>
+        <span>Anyone been to the new off-leash park on 5th? 🐕</span><br>
+        <span style="color:#aaa;font-size:11px;margin-top:4px;display:block">🐾 12  🦴 3  ❤️ 7  · Reply</span>
+      </div>
+      <div style="border-left:3px solid #52b788;padding:8px 12px;margin:0 0 6px 20px">
+        <span style="color:#52b788;font-weight:bold">@GoldenGarry</span> <span style="color:#888">· 1h</span><br>
+        <span>Yes! It's amazing. The small dog section is fenced. 🎉</span><br>
+        <span style="color:#aaa;font-size:11px;margin-top:4px;display:block">🐾 5  · Reply</span>
+      </div>
+      <div style="border-left:3px solid #f4a261;padding:8px 12px;margin:0 0 6px 40px">
+        <span style="color:#f4a261;font-weight:bold">@MapleDogMom</span> <span style="color:#888">· 45m</span><br>
+        <span>Oh perfect! My lab is not great with big dogs 😅</span><br>
+        <span style="color:#aaa;font-size:11px;margin-top:4px;display:block">🐾 2  · Reply</span>
+      </div>
+      <div style="border-left:3px solid #52b788;padding:8px 12px;margin:0 0 6px 20px">
+        <span style="color:#52b788;font-weight:bold">@GoldenGarry</span> <span style="color:#888">· 30m</span><br>
+        <span>There's a water station too! Bring towels 💦</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Reddit Style (Indented threads)</h3>
+      <p>Replies indent under the parent. Color-coded per conversation branch. Clear nesting. Capped at 2 levels deep to prevent runaway threads.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="facebook" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:16px;font-family:monospace;font-size:12px;color:#e0e0e0;min-height:200px">
+      <div style="background:#2a2a3e;border-radius:8px;padding:10px;margin-bottom:10px">
+        <span style="color:#7b68ee;font-weight:bold">@MapleDogMom</span> <span style="color:#888">· 2h</span><br>
+        <span>Anyone been to the new off-leash park on 5th? 🐕</span><br>
+        <span style="color:#aaa;font-size:11px;margin-top:6px;display:block">🐾 12  🦴 3  ❤️ 7  · <span style="color:#7b68ee">3 replies ▾</span></span>
+        <div style="border-top:1px solid #444;margin-top:8px;padding-top:8px">
+          <div style="display:flex;gap:8px;margin-bottom:6px">
+            <span style="color:#52b788;font-weight:bold">@GoldenGarry:</span>
+            <span>Yes! Amazing. Small dog section is fenced 🎉</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:6px;margin-left:16px">
+            <span style="color:#f4a261;font-weight:bold">@MapleDogMom:</span>
+            <span>Perfect! My lab is not great with big dogs 😅</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-left:16px">
+            <span style="color:#52b788;font-weight:bold">@GoldenGarry:</span>
+            <span>Water station too! Bring towels 💦</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#2a2a3e;border-radius:8px;padding:10px">
+        <span style="color:#e0b75e;font-weight:bold">@CatLadyKira</span> <span style="color:#888">· 1h</span><br>
+        <span>Off-topic but — does anyone know a good groomer nearby?</span><br>
+        <span style="color:#aaa;font-size:11px;margin-top:6px;display:block">🐾 4  · <span style="color:#7b68ee">1 reply ▾</span></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Facebook Style (Collapsed reply threads)</h3>
+      <p>Posts are cards. Replies collapse under a "3 replies ▾" toggle. Multiple conversations stay visually separate as distinct cards in the feed.</p>
+    </div>
+  </div>
+</div>

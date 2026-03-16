@@ -1,0 +1,60 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__jcodemunch__list_repos",
+      "mcp__jcodemunch__get_file_tree",
+      "mcp__jcodemunch__get_repo_outline",
+      "mcp__jcodemunch__get_file_outline",
+      "mcp__jcodemunch__search_symbols",
+      "mcp__jcodemunch__search_text",
+      "mcp__jcodemunch__get_symbol",
+      "mcp__jcodemunch__index_folder",
+      "mcp__ide__getDiagnostics",
+      "mcp__firebase__firebase_get_security_rules",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm show:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(firebase:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(firebase functions:secrets:set:*)",
+      "Bash(firebase functions:artifacts:setpolicy:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Admin\\\\Projects\\\\PetBase\\\\backups\" | Out-Null; Write-Host \"backups/ created\")",
+      "Bash(cd:*)",
+      "Bash(powershell -Command \"Compress-Archive -Path 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\app\\\\src', 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\functions\\\\src' -DestinationPath 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\backups\\\\phase-3-2026-03-14.zip' -Force; Write-Host 'Done:' \\(Get-Item 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\backups\\\\phase-3-2026-03-14.zip'\\).Length 'bytes'\")",
+      "Bash(powershell -Command \"Compress-Archive -Path 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\app\\\\src', 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\functions\\\\src' -DestinationPath 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\backups\\\\phase-4-2026-03-14.zip' -Force; Write-Host 'Done:' \\(Get-Item 'C:\\\\Admin\\\\Projects\\\\PetBase\\\\backups\\\\phase-4-2026-03-14.zip'\\).Length 'bytes'\")",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "mcp__jcodemunch__get_symbols",
+      "Bash(bash \"C:/Users/quake/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.2/skills/brainstorming/scripts/start-server.sh\" --project-dir \"C:/Admin/Projects/PetBase\")",
+      "Bash(/tmp/verification.txt:*)",
+      "Read(//tmp/**)",
+      "Read(//c/Admin/Projects/PetBase/**)",
+      "Bash(chmod +x /tmp/final_check.sh)",
+      "Bash(/tmp/final_check.sh)",
+      "Bash(python3:*)",
+      "Bash(printf:*)",
+      "Bash(rm:*)",
+      "Bash(git init:*)"
+    ]
+  },
+  "outputStyle": "default",
+  "mcpServers": {
+    "jcodemunch": {
+      "args": [
+        "-m",
+        "jcodemunch_mcp"
+      ],
+      "env": {
+        "PROJECT_ROOT": "C:\\Admin\\Projects\\PetBase"
+      },
+      "command": "C:\\Python314\\python.exe"
+    }
+  }
+}

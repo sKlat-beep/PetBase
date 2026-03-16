@@ -1,0 +1,5 @@
+{
+  "name": "PetBase",
+  "description": "A comprehensive platform for pet owners to track pet statistics, join communities, search for services, and share pet cards.",
+  "requestFramePermissions": ["geolocation"]
+}

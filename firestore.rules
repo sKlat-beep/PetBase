@@ -1,0 +1,232 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+
+    // Returns true if the signed-in user and ownerUid share the same household.
+    // Uses two get() calls (allowed by Firestore; max 3 per evaluation).
+    function inSameHousehold(ownerUid) {
+      let rDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)/profile/data);
+      let oDoc = get(/databases/$(database)/documents/users/$(ownerUid)/profile/data);
+      let rHH = rDoc.data.get('householdId', null);
+      let oHH = oDoc.data.get('householdId', null);
+      return rHH != null && rHH == oHH;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // ─── Users ────────────────────────────────────────────────────────────────
+
+    // General catch-all: full access to own subtree (profile, config, etc.)
+    match /users/{userId}/{document=**} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Pets: any authenticated user may read (public pet profiles on People page).
+    // isPrivate filtering is enforced app-side; notes are encrypted so raw reads are safe.
+    // Writes restricted to owner or household co-manager.
+    match /users/{userId}/pets/{petId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (
+        request.auth.uid == userId ||
+        inSameHousehold(userId)
+      );
+    }
+
+    // Public profile lookup — used by SocialContext directory & People page.
+    // Anyone authenticated can read another user's profile/data document.
+    // Write is restricted to the owner by the catch-all above.
+    match /users/{userId}/profile/data {
+      allow read: if isSignedIn();
+    }
+
+    // CollectionGroup rule required for collectionGroup('profile') queries in searchPublicProfiles.
+    // Firestore collectionGroup queries evaluate rules at the wildcard path, not the specific path above.
+    match /{path=**}/profile/{docId} {
+      allow read: if isSignedIn();
+    }
+
+    // ─── Public Pet Cards ─────────────────────────────────────────────────────
+    // publicCards documents are created by authenticated users and readable by anyone
+    // (including unauthenticated visitors following a shared link).
+    match /publicCards/{cardId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // ─── Community Groups ─────────────────────────────────────────────────────
+
+    match /groups/{groupId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() &&
+        get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role == 'Owner';
+
+      match /members/{userId} {
+        allow read: if isSignedIn();
+        // Users can write their own membership (join/leave), or Owner can manage any member
+        allow write: if isSignedIn() && (
+          request.auth.uid == userId ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role == 'Owner'
+        );
+      }
+
+      match /posts/{postId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() &&
+          exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+        // Author or Owner/Moderator can update any field; any member can update reactions only
+        allow update: if isSignedIn() && (
+          resource.data.authorId == request.auth.uid ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role in ['Owner', 'Moderator'] ||
+          (exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)) &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']))
+        );
+        allow delete: if isSignedIn() && (
+          resource.data.authorId == request.auth.uid ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role in ['Owner', 'Moderator']
+        );
+      }
+
+      match /events/{eventId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update, delete: if isSignedIn() &&
+          exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+      }
+
+      // Post comments subcollection
+      match /posts/{postId}/comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() &&
+          exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+        // Author or Owner/Moderator can update any field; any member can update reactions only
+        allow update: if isSignedIn() && (
+          resource.data.authorId == request.auth.uid ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role in ['Owner', 'Moderator'] ||
+          (exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)) &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']))
+        );
+        allow delete: if isSignedIn() && (
+          resource.data.authorId == request.auth.uid ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role in ['Owner', 'Moderator']
+        );
+      }
+
+      // Event discussion posts subcollection
+      match /events/{eventId}/posts/{postId} {
+        allow read: if isSignedIn() &&
+          exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+        allow create: if isSignedIn() &&
+          exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+        // Author or Owner/Moderator can update any field; any member can update reactions only
+        allow update: if isSignedIn() && (
+          resource.data.authorId == request.auth.uid ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role in ['Owner', 'Moderator'] ||
+          (exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)) &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']))
+        );
+        allow delete: if isSignedIn() && (
+          resource.data.authorId == request.auth.uid ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role in ['Owner', 'Moderator']
+        );
+      }
+    }
+
+    // Friend requests
+    match /friendRequests/{requestId} {
+      allow read: if isSignedIn() && (
+        resource.data.fromUid == request.auth.uid ||
+        resource.data.toUid == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.fromUid == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.toUid == request.auth.uid ||
+        resource.data.fromUid == request.auth.uid
+      );
+    }
+
+    // Notifications (per-user subcollection)
+    match /notifications/{uid}/items/{notifId} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Reports (write-only for submitters; admins use Admin SDK)
+    match /reports/{reportId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if false;
+    }
+
+    // DM typing indicators
+    match /dmTyping/{threadId}/users/{uid} {
+      allow read, write: if isSignedIn() && (
+        threadId.matches('^' + request.auth.uid + '_.*') ||
+        threadId.matches('.*_' + request.auth.uid + '$')
+      );
+    }
+
+    // ─── Direct Messages ──────────────────────────────────────────────────────
+    // participants array contains [fromUid, toUid] — used for array-contains queries.
+    // Soft-delete: only deletedBySender, deletedByRecipient, and read may be updated
+    // by participants after creation; hard deletes handled server-side by TTL function.
+
+    match /messages/{messageId} {
+      // Only participants can read
+      allow read: if isSignedIn() && request.auth.uid in resource.data.participants;
+      // Sender creates — must be in participants and be the fromUid
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.fromUid
+        && request.auth.uid in request.resource.data.participants;
+      // Participants may soft-delete, mark read, or toggle reactions — no other fields may change
+      allow update: if isSignedIn()
+        && request.auth.uid in resource.data.participants
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['deletedBySender', 'deletedByRecipient', 'read', 'reactions']);
+    }
+
+    // ─── Households (Family Sharing) ─────────────────────────────────────────
+
+    match /households/{householdId} {
+      // Any member (or the owner) can read household metadata
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid))
+      );
+      // Any authenticated user can create a household they own
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      // Only the owner can update metadata (e.g. regenerate invite code, rename)
+      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      // Only the owner can delete the household
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      match /members/{uid} {
+        // Members can read the full member list
+        allow read: if isSignedIn() &&
+          exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid));
+        // Any authenticated user can join (create their own member doc)
+        allow create: if isSignedIn() && request.auth.uid == uid;
+        // Owner can remove anyone; member can remove themselves (leave)
+        allow delete: if isSignedIn() && (
+          request.auth.uid == uid ||
+          get(/databases/$(database)/documents/households/$(householdId)).data.ownerId == request.auth.uid
+        );
+        // Only owner can update member roles
+        allow update: if isSignedIn() &&
+          get(/databases/$(database)/documents/households/$(householdId)).data.ownerId == request.auth.uid;
+      }
+
+      // Audit log: any household member can read; Family Leaders can write
+      match /auditLog/{entryId} {
+        allow read: if isSignedIn() &&
+          exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid));
+        allow create: if isSignedIn() &&
+          exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid));
+      }
+    }
+  }
+}

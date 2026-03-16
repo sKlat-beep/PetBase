@@ -1,0 +1,19 @@
+mappings:
+  - tag: intake
+    skills: [intake]
+  - tag: privacy
+    skills: [privacy-check]
+  - tag: firebase
+    skills: [privacy-check]
+  - tag: functions
+    skills: [privacy-check]
+  - tag: ui
+    skills: [ui-review]
+  - tag: ux
+    skills: [ui-review]
+  - tag: mobile
+    skills: [ui-review]
+  - tag: desktop
+    skills: [ui-review]
+  - tag: handoff
+    skills: [handoff]

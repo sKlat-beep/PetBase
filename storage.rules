@@ -1,0 +1,53 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─── User Avatars ─────────────────────────────────────────────────────────
+    // Path: avatars/{uid}/{filename}
+    match /avatars/{uid}/{allPaths=**} {
+      // Anyone (including unauthenticated) can read — avatars are public by design
+      allow read: if true;
+      // Only the owning user can write; enforce 5 MB limit and image MIME types
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ─── Pet Gallery Photos ───────────────────────────────────────────────────
+    // Path: pets/{uid}/{petId}/{filename}
+    match /pets/{uid}/{petId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ─── Group Cover Photos ───────────────────────────────────────────────────
+    // Path: groups/covers/{uid}/{filename}
+    // Readable by anyone, writable only by the owning authenticated user
+    match /groups/covers/{uid}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ─── DM / Message Photos ──────────────────────────────────────────────────
+    // Path: messages/{uid}/{filename}
+    match /messages/{uid}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ─── Default deny ─────────────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

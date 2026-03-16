@@ -1,0 +1,31 @@
+mappings:
+  - tag: privacy
+    contracts: [privacy-contract]
+  - tag: jcodemunch
+    contracts: [jcodemunch-contract]
+  - tag: dx
+    contracts: [jcodemunch-contract]
+  - tag: ui
+    contracts: [unified-ui-design]
+  - tag: ux
+    contracts: [unified-ui-design]
+  - tag: mobile
+    contracts: [unified-ui-design]
+  - tag: desktop
+    contracts: [unified-ui-design]
+  - tag: firebase
+    contracts: [firebase-governance]
+  - tag: rules
+    contracts: [firebase-governance]
+  - tag: functions
+    contracts: [firebase-governance]
+  - tag: release
+    contracts: [release-quality]
+  - tag: qa
+    contracts: [release-quality]
+  - tag: verification
+    contracts: [release-quality]
+  - tag: performance
+    contracts: [performance-ux-budget]
+  - tag: ux-budget
+    contracts: [performance-ux-budget]

@@ -512,6 +512,112 @@ export const resolveAvatarToken = onCall(
   },
 );
 
+// ─── Yelp Search + Cache Helper ──────────────────────────────────────────────
+// Shared by findServices (user-triggered) and warmYelpCache (scheduled).
+// Skips the call if a fresh cache entry already exists (30-day TTL).
+
+async function searchAndCacheYelp(
+  lat: number,
+  lng: number,
+  type: string,
+  yelpApiKey: string,
+  db: admin.firestore.Firestore,
+): Promise<void> {
+  const h3Index = latLngToCell(lat, lng, 7);
+  const cacheId = `${h3Index}_${type}`;
+  const cacheRef = db.doc(`serviceCache/${cacheId}`);
+  const cacheSnap = await cacheRef.get();
+
+  if (cacheSnap.exists) {
+    const ageMs = Date.now() - ((cacheSnap.data()!.cachedAt as number) ?? 0);
+    if (ageMs < 30 * 24 * 60 * 60 * 1000) {
+      console.log(`[searchAndCacheYelp] Cache hit for ${cacheId}, skipping Yelp call.`);
+      return;
+    }
+  }
+
+  console.log(`[searchAndCacheYelp] Fetching Yelp — lat=${lat} lng=${lng} type=${type}`);
+  const businesses = await findServicesYelp(lat, lng, type, yelpApiKey);
+
+  const serviceIds: string[] = [];
+  const batch = db.batch();
+  for (const biz of businesses) {
+    const serviceId = `yelp_${biz.id}`;
+    serviceIds.push(serviceId);
+    const serviceRef = db.doc(`services/${serviceId}`);
+    const serviceDoc: ServiceDoc = mapYelpToServiceDoc(biz, type, h3Index);
+    batch.set(serviceRef, serviceDoc, { merge: true });
+  }
+  batch.set(cacheRef, { serviceIds, cachedAt: Date.now(), source: 'yelp' });
+
+  const today = new Date().toISOString().slice(0, 10);
+  const globalUsageRef = db.doc(`apiUsage/yelp_${today}`);
+  batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
+
+  await batch.commit();
+  console.log(`[searchAndCacheYelp] Cached ${businesses.length} businesses for ${cacheId}.`);
+}
+
+// ─── Nightly Yelp Cache Warming ───────────────────────────────────────────────
+// Reads warming targets from serviceCache/warmingTargets (populated manually).
+// Runs at 02:00 UTC each night. Processes at most 10 targets per run to
+// control Yelp API costs. Each target that already has a fresh cache entry is
+// skipped automatically inside searchAndCacheYelp.
+//
+// Firestore document shape (serviceCache/warmingTargets):
+//   { targets: [{ lat: number, lng: number, type: string }, ...] }
+//
+// Set the YELP_API_KEY secret before deploying:
+//   firebase functions:secrets:set YELP_API_KEY
+
+export const warmYelpCache = onSchedule(
+  { schedule: '0 2 * * *', secrets: ['YELP_API_KEY'] },
+  async () => {
+    const db = admin.firestore();
+
+    const targetsSnap = await db.collection('serviceCache').doc('warmingTargets').get();
+    if (!targetsSnap.exists) {
+      console.log('[warmYelpCache] No warmingTargets document found — nothing to do.');
+      return;
+    }
+
+    const targets = (targetsSnap.data()?.targets ?? []) as Array<{ lat: number; lng: number; type: string }>;
+    const slice = targets.slice(0, 10); // cap at 10 to control API costs
+    console.log(`[warmYelpCache] Starting cache warming for ${slice.length} target(s).`);
+
+    const yelpApiKey = process.env.YELP_API_KEY;
+    if (!yelpApiKey) {
+      console.error('[warmYelpCache] YELP_API_KEY not configured — aborting.');
+      return;
+    }
+
+    // Check global daily limit before warming
+    const today = new Date().toISOString().slice(0, 10);
+    const globalUsageRef = db.doc(`apiUsage/yelp_${today}`);
+    const globalUsageSnap = await globalUsageRef.get();
+    const currentCount = (globalUsageSnap.data()?.count ?? 0) as number;
+    const HARD_LIMIT = 450;
+    if (currentCount >= HARD_LIMIT) {
+      console.warn(`[warmYelpCache] Daily Yelp limit already reached (${currentCount}/${HARD_LIMIT}). Aborting.`);
+      return;
+    }
+
+    let warmed = 0;
+    let skipped = 0;
+    for (const target of slice) {
+      try {
+        await searchAndCacheYelp(target.lat, target.lng, target.type, yelpApiKey, db);
+        warmed++;
+      } catch (err) {
+        console.error(`[warmYelpCache] Failed for target lat=${target.lat} lng=${target.lng} type=${target.type}:`, err);
+        skipped++;
+      }
+    }
+
+    console.log(`[warmYelpCache] Done. warmed=${warmed} skipped=${skipped}`);
+  },
+);
+
 // ─── Group Post Expiry Cleanup ────────────────────────────────────────────────
 // Deletes group posts older than each group's configured retentionDays (default 365).
 // Runs nightly; iterates all groups and processes up to 500 docs per group per run.

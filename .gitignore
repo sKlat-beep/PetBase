@@ -1,0 +1,10 @@
+# Git worktrees
+.worktrees/
+
+# Firebase
+firebase-debug.log
+.firebase/
+
+# OS
+.DS_Store
+Thumbs.db

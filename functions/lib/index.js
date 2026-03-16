@@ -172,18 +172,33 @@ function mapToServiceResult(docs) {
     });
 }
 exports.findServices = (0, https_1.onCall)({ secrets: ['GOOGLE_PLACES_KEY', 'YELP_API_KEY'] }, async (request) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    // ── Per-user daily rate limit ──────────────────────────────────────────────
+    const uid = (_a = request.auth) === null || _a === void 0 ? void 0 : _a.uid;
+    if (!uid) {
+        logSecurityEvent('findServices', 'unauthenticated');
+        throw new https_1.HttpsError('unauthenticated', 'Must be logged in');
+    }
+    const db = admin.firestore();
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const usageRef = db.doc(`apiUsage/yelp/perUser/${uid}/${today}`);
+    const usageSnap = await usageRef.get();
+    const count = (usageSnap.exists ? usageSnap.data().count : 0);
+    const DAILY_LIMIT = 5;
+    if (count >= DAILY_LIMIT) {
+        throw new https_1.HttpsError('resource-exhausted', 'Daily search limit reached. Try again tomorrow.');
+    }
+    await usageRef.set({ count: count + 1, updatedAt: new Date().toISOString() }, { merge: true });
+    // ──────────────────────────────────────────────────────────────────────────
     const { type, location, query } = request.data;
     let { lat, lng } = request.data;
-    console.log(`[findServices] invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query !== null && query !== void 0 ? query : ''}`);
-    const db = admin.firestore();
-    const today = new Date().toISOString().slice(0, 10);
+    console.log(`[findServices] invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query !== null && query !== void 0 ? query : ''} uid=${uid}`);
     const HARD_LIMIT = 450;
     const WARN_THRESHOLD = 400;
-    // Rate limit check — path is 2 segments: collection "apiUsage", document "yelp_YYYY-MM-DD"
-    const usageRef = db.doc(`apiUsage/yelp_${today}`);
-    const usageSnap = await usageRef.get();
-    const currentCount = ((_b = (_a = usageSnap.data()) === null || _a === void 0 ? void 0 : _a.count) !== null && _b !== void 0 ? _b : 0);
+    // Global daily rate limit check — path is 2 segments: collection "apiUsage", document "yelp_YYYY-MM-DD"
+    const globalUsageRef = db.doc(`apiUsage/yelp_${today}`);
+    const globalUsageSnap = await globalUsageRef.get();
+    const currentCount = ((_c = (_b = globalUsageSnap.data()) === null || _b === void 0 ? void 0 : _b.count) !== null && _c !== void 0 ? _c : 0);
     console.log(`[findServices] Yelp daily usage: ${currentCount}/${HARD_LIMIT}`);
     // Resolve coordinates if not provided (ZIP-based search)
     if (lat == null || lng == null) {
@@ -192,8 +207,8 @@ exports.findServices = (0, https_1.onCall)({ secrets: ['GOOGLE_PLACES_KEY', 'YEL
             throw new https_1.HttpsError('failed-precondition', 'Google key not configured.');
         console.log(`[findServices] Geocoding location: "${location}"`);
         const geoData = await fetchJson(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleKey}`);
-        console.log(`[findServices] Geocode status: ${geoData.status} — result count: ${(_d = (_c = geoData.results) === null || _c === void 0 ? void 0 : _c.length) !== null && _d !== void 0 ? _d : 0}`);
-        const loc = (_g = (_f = (_e = geoData.results) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.geometry) === null || _g === void 0 ? void 0 : _g.location;
+        console.log(`[findServices] Geocode status: ${geoData.status} — result count: ${(_e = (_d = geoData.results) === null || _d === void 0 ? void 0 : _d.length) !== null && _e !== void 0 ? _e : 0}`);
+        const loc = (_h = (_g = (_f = geoData.results) === null || _f === void 0 ? void 0 : _f[0]) === null || _g === void 0 ? void 0 : _g.geometry) === null || _h === void 0 ? void 0 : _h.location;
         if (!loc)
             throw new https_1.HttpsError('not-found', 'Could not geocode location.');
         lat = loc.lat;
@@ -209,9 +224,9 @@ exports.findServices = (0, https_1.onCall)({ secrets: ['GOOGLE_PLACES_KEY', 'YEL
     console.log(`[findServices] H3 cache key: ${cacheId} — exists: ${cacheSnap.exists}`);
     if (cacheSnap.exists) {
         const cacheData = cacheSnap.data();
-        const ageMs = Date.now() - ((_h = cacheData.cachedAt) !== null && _h !== void 0 ? _h : 0);
+        const ageMs = Date.now() - ((_j = cacheData.cachedAt) !== null && _j !== void 0 ? _j : 0);
         if (ageMs < 30 * 24 * 60 * 60 * 1000) {
-            const serviceIds = (_j = cacheData.serviceIds) !== null && _j !== void 0 ? _j : [];
+            const serviceIds = (_k = cacheData.serviceIds) !== null && _k !== void 0 ? _k : [];
             const serviceDocs = await Promise.all(serviceIds.map(id => db.doc(`services/${id}`).get()));
             const results = serviceDocs
                 .filter(d => d.exists)
@@ -242,7 +257,7 @@ exports.findServices = (0, https_1.onCall)({ secrets: ['GOOGLE_PLACES_KEY', 'YEL
         batch.set(serviceRef, serviceDoc, { merge: true });
     }
     batch.set(cacheRef, { serviceIds, cachedAt: Date.now(), source: 'yelp' });
-    batch.set(usageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
+    batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
     await batch.commit();
     if (currentCount + 1 > WARN_THRESHOLD) {
         console.warn(`Yelp API warning: ${currentCount + 1}/${HARD_LIMIT} calls today.`);

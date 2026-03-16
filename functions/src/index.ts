@@ -245,6 +245,26 @@ function mapToServiceResult(docs: (ServiceDoc & { id: string })[]) {
 export const findServices = onCall(
   { secrets: ['GOOGLE_PLACES_KEY', 'YELP_API_KEY'] },
   async (request) => {
+    // ── Per-user daily rate limit ──────────────────────────────────────────────
+    const uid = request.auth?.uid;
+    if (!uid) {
+      logSecurityEvent('findServices', 'unauthenticated');
+      throw new HttpsError('unauthenticated', 'Must be logged in');
+    }
+
+    const db = admin.firestore();
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const usageRef = db.doc(`apiUsage/yelp/perUser/${uid}/${today}`);
+    const usageSnap = await usageRef.get();
+    const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
+    const DAILY_LIMIT = 5;
+
+    if (count >= DAILY_LIMIT) {
+      throw new HttpsError('resource-exhausted', 'Daily search limit reached. Try again tomorrow.');
+    }
+    await usageRef.set({ count: count + 1, updatedAt: new Date().toISOString() }, { merge: true });
+    // ──────────────────────────────────────────────────────────────────────────
+
     const { type, location, query } = request.data as {
       type: string;
       location: string;
@@ -254,18 +274,15 @@ export const findServices = onCall(
     };
     let { lat, lng } = request.data as { lat?: number; lng?: number };
 
-    console.log(`[findServices] invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query ?? ''}`);
-
-    const db = admin.firestore();
-    const today = new Date().toISOString().slice(0, 10);
+    console.log(`[findServices] invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query ?? ''} uid=${uid}`);
 
     const HARD_LIMIT = 450;
     const WARN_THRESHOLD = 400;
 
-    // Rate limit check — path is 2 segments: collection "apiUsage", document "yelp_YYYY-MM-DD"
-    const usageRef = db.doc(`apiUsage/yelp_${today}`);
-    const usageSnap = await usageRef.get();
-    const currentCount = (usageSnap.data()?.count ?? 0) as number;
+    // Global daily rate limit check — path is 2 segments: collection "apiUsage", document "yelp_YYYY-MM-DD"
+    const globalUsageRef = db.doc(`apiUsage/yelp_${today}`);
+    const globalUsageSnap = await globalUsageRef.get();
+    const currentCount = (globalUsageSnap.data()?.count ?? 0) as number;
     console.log(`[findServices] Yelp daily usage: ${currentCount}/${HARD_LIMIT}`);
 
     // Resolve coordinates if not provided (ZIP-based search)
@@ -330,7 +347,7 @@ export const findServices = onCall(
     }
 
     batch.set(cacheRef, { serviceIds, cachedAt: Date.now(), source: 'yelp' });
-    batch.set(usageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
+    batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
     await batch.commit();
 
     if (currentCount + 1 > WARN_THRESHOLD) {

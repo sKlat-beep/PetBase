@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
 const v2_1 = require("firebase-functions/v2");
 (0, v2_1.setGlobalOptions)({ region: 'us-central1', maxInstances: 10 });
 const https_1 = require("firebase-functions/v2/https");
@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const https = require("https");
 const h3_js_1 = require("h3-js");
 const yelpService_1 = require("./yelpService");
+const exportService_1 = require("./exportService");
 const placesService_1 = require("./placesService");
 const placesUsage_1 = require("./placesUsage");
 const slackService_1 = require("./slackService");
@@ -440,5 +441,16 @@ exports.checkPlacesCostAlert = (0, scheduler_1.onSchedule)({ schedule: 'every 24
     await (0, placesUsage_1.checkAndAlertIfOverThreshold)(db, smtpUser, smtpPass, alertEmail);
     const { estimatedCost } = await (await Promise.resolve().then(() => require('./placesUsage'))).getPlacesUsageSummary(db);
     await (0, placesUsage_1.updateFeatureFlags)(db, estimatedCost);
+});
+// ─── GDPR-style Account Data Export ──────────────────────────────────────────
+// Collects profile, pets, and sign-in log; uploads JSON to Storage;
+// returns a signed download URL valid for 24 hours.
+exports.exportUserData = (0, https_1.onCall)(async (request) => {
+    var _a;
+    if (!((_a = request.auth) === null || _a === void 0 ? void 0 : _a.uid)) {
+        logSecurityEvent('exportUserData', 'unauthenticated');
+        throw new https_1.HttpsError('unauthenticated', 'Must be logged in');
+    }
+    return (0, exportService_1.exportUserData)(request.auth.uid);
 });
 //# sourceMappingURL=index.js.map

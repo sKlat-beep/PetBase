@@ -8,6 +8,7 @@ import * as nodemailer from 'nodemailer';
 import * as https from 'https';
 import { latLngToCell } from 'h3-js';
 import { findServicesYelp, type YelpBusiness } from './yelpService';
+import { exportUserData as _exportUserData } from './exportService';
 import { findPlaceId, getPlaceDetailsAndContact, getPlaceAtmosphere } from './placesService';
 import { incrementPlacesUsage, checkAndAlertIfOverThreshold, updateFeatureFlags } from './placesUsage';
 import { postSlackBlocks, buildAlertBlock } from './slackService';
@@ -568,3 +569,15 @@ export const checkPlacesCostAlert = onSchedule(
     await updateFeatureFlags(db, estimatedCost);
   },
 );
+
+// ─── GDPR-style Account Data Export ──────────────────────────────────────────
+// Collects profile, pets, and sign-in log; uploads JSON to Storage;
+// returns a signed download URL valid for 24 hours.
+
+export const exportUserData = onCall(async (request) => {
+  if (!request.auth?.uid) {
+    logSecurityEvent('exportUserData', 'unauthenticated');
+    throw new HttpsError('unauthenticated', 'Must be logged in');
+  }
+  return _exportUserData(request.auth.uid);
+});

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap (update with your production domain)
+# Sitemap: https://petbase-ddfd7.web.app/sitemap.xml

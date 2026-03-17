@@ -1,0 +1,35 @@
+{
+  "name": "PetBase — Your Pet's Digital Home",
+  "short_name": "PetBase",
+  "description": "Manage your pets' health records, share emergency pet cards, and connect with local pet owners.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#059669",
+  "background_color": "#fafaf9",
+  "lang": "en",
+  "categories": ["lifestyle", "health", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Pets",
+      "short_name": "Pets",
+      "description": "View and manage your pets",
+      "url": "/pets"
+    },
+    {
+      "name": "Pet Cards",
+      "short_name": "Cards",
+      "description": "Share emergency pet cards",
+      "url": "/cards"
+    }
+  ]
+}

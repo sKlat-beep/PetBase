@@ -1,0 +1,169 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* ─── Accent Color Palettes ──────────────────────────────────────────────────
+   CSS custom properties for the accent color theme picker. The active palette
+   is selected by setting data-accent on <html>. Default is emerald.
+────────────────────────────────────────────────────────────────────────────── */
+:root, [data-accent="emerald"] {
+  --accent-50: #ecfdf5;
+  --accent-100: #d1fae5;
+  --accent-400: #34d399;
+  --accent-500: #10b981;
+  --accent-600: #059669;
+  --accent-700: #047857;
+}
+[data-accent="sky"] {
+  --accent-50: #f0f9ff;
+  --accent-100: #e0f2fe;
+  --accent-400: #38bdf8;
+  --accent-500: #0ea5e9;
+  --accent-600: #0284c7;
+  --accent-700: #0369a1;
+}
+[data-accent="violet"] {
+  --accent-50: #f5f3ff;
+  --accent-100: #ede9fe;
+  --accent-400: #a78bfa;
+  --accent-500: #8b5cf6;
+  --accent-600: #7c3aed;
+  --accent-700: #6d28d9;
+}
+[data-accent="rose"] {
+  --accent-50: #fff1f2;
+  --accent-100: #ffe4e6;
+  --accent-400: #fb7185;
+  --accent-500: #f43f5e;
+  --accent-600: #e11d48;
+  --accent-700: #be123c;
+}
+[data-accent="amber"] {
+  --accent-50: #fffbeb;
+  --accent-100: #fef3c7;
+  --accent-400: #fbbf24;
+  --accent-500: #f59e0b;
+  --accent-600: #d97706;
+  --accent-700: #b45309;
+}
+[data-accent="indigo"] {
+  --accent-50: #eef2ff;
+  --accent-100: #e0e7ff;
+  --accent-400: #818cf8;
+  --accent-500: #6366f1;
+  --accent-600: #4f46e5;
+  --accent-700: #4338ca;
+}
+
+/* ─── oklch() Color Fallback (Android WebView < Chromium 111) ───────────────
+   Tailwind v4 generates colors in oklch() space. Chromium < 111 (Android 8/9
+   system WebViews) does not support oklch(). The @supports block below provides
+   explicit sRGB fallbacks for the critical page background and text surfaces so
+   the app remains readable on those platforms.
+   Primary surfaces only — interactive/brand colors degrade gracefully.
+────────────────────────────────────────────────────────────────────────────── */
+@supports not (color: oklch(0 0 0)) {
+  html {
+    background-color: #fafaf9; /* stone-50 equivalent */
+    color: #1c1917;            /* stone-900 equivalent */
+  }
+  html.dark {
+    background-color: #18181b; /* zinc-900 equivalent */
+    color: #fafaf9;
+  }
+  /* Ensure primary surfaces don't go transparent */
+  .bg-white { background-color: #ffffff !important; }
+  .bg-stone-50 { background-color: #fafaf9 !important; }
+  .bg-stone-800 { background-color: #292524 !important; }
+  .bg-stone-900 { background-color: #1c1917 !important; }
+  .text-stone-900 { color: #1c1917 !important; }
+  .text-stone-100 { color: #f5f5f4 !important; }
+  /* Accent: emerald-600 → safe sRGB green */
+  .bg-emerald-600 { background-color: #16a34a !important; }
+  .text-emerald-600 { color: #16a34a !important; }
+}
+
+/* ─── WCAG 2.1 Focus Visibility ─────────────────────────────────────────────
+   Ensure keyboard focus rings are always visible, regardless of browser
+   default styles. Applies to all interactive elements globally.
+────────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #10b981; /* emerald-500 */
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Print Scoping ──────────────────────────────────────────────────────────
+   When window.print() is triggered from a Pet Card, only the card preview
+   should be rendered. Everything else (sidebar, header, actions panel) is
+   hidden. The card preview element has id="card-preview-{cardId}".
+   Elements with Tailwind's print:hidden class are also suppressed.
+──────────────────────────────────────────────────────────────────────────── */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  [id^="card-preview-"],
+  [id^="card-preview-"] * {
+    visibility: visible;
+  }
+  [id^="card-preview-"] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  /* Suppress the embedded actions panel inside the card */
+  .print\:hidden {
+    display: none !important;
+  }
+}
+
+/* ─── Seamless UI: Hide Scrollbars ──────────────────────────────────────────
+   Eliminate visual scrollbars across the UI for an app-centric experience.
+   Functionality is preserved (scrolling still works via touch/wheel).
+──────────────────────────────────────────────────────────────────────────── */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── react-grid-layout ──────────────────────────────────────────────────────
+   Custom styling for the drag-and-drop grid on the Dashboard.
+────────────────────────────────────────────────────────────────────────────── */
+.react-resizable-handle {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.react-resizable-handle::after {
+  border-color: #10b981 !important; /* emerald-500 */
+  border-width: 0 2px 2px 0 !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+.react-grid-item:hover .react-resizable-handle,
+.react-grid-item:focus-within .react-resizable-handle {
+  opacity: 1;
+}
+.react-grid-item.react-grid-placeholder {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-radius: 16px !important;
+  border: 2px dashed rgba(16, 185, 129, 0.4) !important;
+}
+

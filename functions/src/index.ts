@@ -48,37 +48,13 @@ interface SendReportPayload {
 
 export const sendReport = onCall(
   {
-    secrets: ['SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK', 'SLACK_WEBHOOK_URL'],
+    secrets: ['SLACK_WEBHOOK_URL', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK'],
   },
   async (request) => {
     const data = request.data as SendReportPayload;
 
     if (!data.type || !['crash', 'bug', 'feedback'].includes(data.type)) {
       throw new HttpsError('invalid-argument', 'Invalid report type.');
-    }
-
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
-
-    if (!smtpUser || !smtpPass) {
-      throw new HttpsError('failed-precondition', 'Email transport not configured.');
-    }
-
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: smtpUser, pass: smtpPass },
-    });
-
-    const destination = (() => {
-      switch (data.type) {
-        case 'crash': return process.env.EMAIL_CRASH;
-        case 'bug': return process.env.EMAIL_BUG;
-        case 'feedback': return process.env.EMAIL_FEEDBACK;
-      }
-    })();
-
-    if (!destination) {
-      throw new HttpsError('failed-precondition', 'Destination email not configured.');
     }
 
     const subject = (() => {
@@ -89,38 +65,53 @@ export const sendReport = onCall(
       }
     })();
 
-    const body = [
-      `Type: ${data.type}`,
-      `From: ${data.userEmail ?? 'anonymous'}`,
-      data.errorId ? `Error ID: ${data.errorId}` : null,
-      '',
-      data.message ? `Message:\n${data.message}` : null,
-      '',
-      data.log ? `--- Diagnostic Log (last 7 days) ---\n${data.log}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n');
+    // ── Primary: Slack (all report types) ─────────────────────────────────────
+    const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+    if (!slackWebhookUrl) {
+      throw new HttpsError('failed-precondition', 'Slack webhook not configured.');
+    }
 
-    await transporter.sendMail({
-      from: smtpUser,
-      to: destination,
-      subject,
-      text: body,
-    });
+    const level = data.type === 'crash' ? 'error' as const
+      : data.type === 'bug' ? 'warn' as const
+      : 'info' as const;
 
-    // Post to Slack for crash and bug reports (not feedback)
-    if (data.type !== 'feedback') {
-      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
-      if (slackWebhookUrl) {
-        const level = data.type === 'crash' ? 'error' as const : 'warn' as const;
-        const slackBody = [
-          data.errorId ? `*Error ID:* ${data.errorId}` : null,
-          data.message ? `*Message:* ${data.message.slice(0, 500)}` : null,
-          data.log ? `*Log (truncated):*\n\`\`\`${data.log.slice(0, 1000)}\`\`\`` : null,
-        ].filter(Boolean).join('\n') || 'No additional details.';
-        postSlackBlocks(slackWebhookUrl, buildAlertBlock(subject, slackBody, level))
-          .catch(() => { /* non-critical */ });
+    const slackBody = [
+      `*From:* ${data.userEmail ?? 'anonymous'}`,
+      data.errorId ? `*Error ID:* ${data.errorId}` : null,
+      data.message ? `*Message:* ${data.message.slice(0, 500)}` : null,
+      data.log ? `*Diagnostic Log (truncated):*\n\`\`\`${data.log.slice(0, 1500)}\`\`\`` : null,
+    ].filter(Boolean).join('\n') || 'No additional details.';
+
+    await postSlackBlocks(slackWebhookUrl, buildAlertBlock(subject, slackBody, level));
+
+    // ── Optional fallback: email (if SMTP is configured) ──────────────────────
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    const destination = (() => {
+      switch (data.type) {
+        case 'crash': return process.env.EMAIL_CRASH;
+        case 'bug': return process.env.EMAIL_BUG;
+        case 'feedback': return process.env.EMAIL_FEEDBACK;
       }
+    })();
+
+    if (smtpUser && smtpPass && destination) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+      const body = [
+        `Type: ${data.type}`,
+        `From: ${data.userEmail ?? 'anonymous'}`,
+        data.errorId ? `Error ID: ${data.errorId}` : null,
+        '',
+        data.message ? `Message:\n${data.message}` : null,
+        '',
+        data.log ? `--- Diagnostic Log (last 7 days) ---\n${data.log}` : null,
+      ].filter(Boolean).join('\n');
+
+      transporter.sendMail({ from: smtpUser, to: destination, subject, text: body })
+        .catch(() => { /* email is optional fallback — Slack is authoritative */ });
     }
 
     return { success: true };

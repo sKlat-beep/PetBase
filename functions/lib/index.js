@@ -25,31 +25,12 @@ Object.defineProperty(exports, "onPostComment", { enumerable: true, get: functio
 Object.defineProperty(exports, "onPetLostStatusChange", { enumerable: true, get: function () { return notifications_1.onPetLostStatusChange; } });
 const notifications_2 = require("./notifications");
 exports.sendReport = (0, https_1.onCall)({
-    secrets: ['SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK', 'SLACK_WEBHOOK_URL'],
+    secrets: ['SLACK_WEBHOOK_URL', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK'],
 }, async (request) => {
-    var _a;
+    var _a, _b;
     const data = request.data;
     if (!data.type || !['crash', 'bug', 'feedback'].includes(data.type)) {
         throw new https_1.HttpsError('invalid-argument', 'Invalid report type.');
-    }
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
-    if (!smtpUser || !smtpPass) {
-        throw new https_1.HttpsError('failed-precondition', 'Email transport not configured.');
-    }
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: { user: smtpUser, pass: smtpPass },
-    });
-    const destination = (() => {
-        switch (data.type) {
-            case 'crash': return process.env.EMAIL_CRASH;
-            case 'bug': return process.env.EMAIL_BUG;
-            case 'feedback': return process.env.EMAIL_FEEDBACK;
-        }
-    })();
-    if (!destination) {
-        throw new https_1.HttpsError('failed-precondition', 'Destination email not configured.');
     }
     const subject = (() => {
         var _a, _b, _c;
@@ -59,36 +40,47 @@ exports.sendReport = (0, https_1.onCall)({
             case 'feedback': return `[PetBase] Feedback from ${(_c = data.userEmail) !== null && _c !== void 0 ? _c : 'anonymous'}`;
         }
     })();
-    const body = [
-        `Type: ${data.type}`,
-        `From: ${(_a = data.userEmail) !== null && _a !== void 0 ? _a : 'anonymous'}`,
-        data.errorId ? `Error ID: ${data.errorId}` : null,
-        '',
-        data.message ? `Message:\n${data.message}` : null,
-        '',
-        data.log ? `--- Diagnostic Log (last 7 days) ---\n${data.log}` : null,
-    ]
-        .filter(Boolean)
-        .join('\n');
-    await transporter.sendMail({
-        from: smtpUser,
-        to: destination,
-        subject,
-        text: body,
-    });
-    // Post to Slack for crash and bug reports (not feedback)
-    if (data.type !== 'feedback') {
-        const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
-        if (slackWebhookUrl) {
-            const level = data.type === 'crash' ? 'error' : 'warn';
-            const slackBody = [
-                data.errorId ? `*Error ID:* ${data.errorId}` : null,
-                data.message ? `*Message:* ${data.message.slice(0, 500)}` : null,
-                data.log ? `*Log (truncated):*\n\`\`\`${data.log.slice(0, 1000)}\`\`\`` : null,
-            ].filter(Boolean).join('\n') || 'No additional details.';
-            (0, slackService_1.postSlackBlocks)(slackWebhookUrl, (0, slackService_1.buildAlertBlock)(subject, slackBody, level))
-                .catch(() => { });
+    // ── Primary: Slack (all report types) ─────────────────────────────────────
+    const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+    if (!slackWebhookUrl) {
+        throw new https_1.HttpsError('failed-precondition', 'Slack webhook not configured.');
+    }
+    const level = data.type === 'crash' ? 'error'
+        : data.type === 'bug' ? 'warn'
+            : 'info';
+    const slackBody = [
+        `*From:* ${(_a = data.userEmail) !== null && _a !== void 0 ? _a : 'anonymous'}`,
+        data.errorId ? `*Error ID:* ${data.errorId}` : null,
+        data.message ? `*Message:* ${data.message.slice(0, 500)}` : null,
+        data.log ? `*Diagnostic Log (truncated):*\n\`\`\`${data.log.slice(0, 1500)}\`\`\`` : null,
+    ].filter(Boolean).join('\n') || 'No additional details.';
+    await (0, slackService_1.postSlackBlocks)(slackWebhookUrl, (0, slackService_1.buildAlertBlock)(subject, slackBody, level));
+    // ── Optional fallback: email (if SMTP is configured) ──────────────────────
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    const destination = (() => {
+        switch (data.type) {
+            case 'crash': return process.env.EMAIL_CRASH;
+            case 'bug': return process.env.EMAIL_BUG;
+            case 'feedback': return process.env.EMAIL_FEEDBACK;
         }
+    })();
+    if (smtpUser && smtpPass && destination) {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: { user: smtpUser, pass: smtpPass },
+        });
+        const body = [
+            `Type: ${data.type}`,
+            `From: ${(_b = data.userEmail) !== null && _b !== void 0 ? _b : 'anonymous'}`,
+            data.errorId ? `Error ID: ${data.errorId}` : null,
+            '',
+            data.message ? `Message:\n${data.message}` : null,
+            '',
+            data.log ? `--- Diagnostic Log (last 7 days) ---\n${data.log}` : null,
+        ].filter(Boolean).join('\n');
+        transporter.sendMail({ from: smtpUser, to: destination, subject, text: body })
+            .catch(() => { });
     }
     return { success: true };
 });

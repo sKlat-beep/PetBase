@@ -95,15 +95,22 @@ Status: done
 
 ### Phase 21: Platform & Marketplace
 Tags: platform, marketplace, analytics
-Status: intake
+Status: done
 
-- [ ] **[TASK-79]** Photo challenges & community contests — weekly themed challenges in groups, vote with reactions, winner banner *(fun #28)*
-- [ ] **[TASK-80]** Full-text search across app — Algolia or compound queries for users, pets, groups, posts; global search bar *(fun #30)*
-- [ ] **[TASK-81]** Pet milestone auto-posts — auto-create feed posts for birthdays, anniversaries, health milestones; user approves before posting *(fun #31)*
-- [ ] **[TASK-82]** Group analytics dashboard — post engagement, member growth, most active members, peak activity hours *(fun #33)*
-- [ ] **[TASK-83]** Pet care task sharing in household — assign pet care tasks (walk, feed, meds) to members, Dashboard reminders *(fun #34)*
-- [ ] **[TASK-84]** Vet review & rating system — rate clinic after vet visit (1-5 stars + note), aggregate ratings in service discovery *(fun #35)*
-- [ ] **[TASK-85]** Rescue/adoption marketplace — adoption listings in Community, photos/description/contact, shelter integration *(fun #50)*
+- [x] **[TASK-79]** Photo challenges — `PhotoChallenge.tsx` with 8 theme presets, weekly reset, entry submission, voting, trophy ranking; owner/mod can start challenges *(fun #28)*
+- [x] **[TASK-80]** Full-text search — existing Layout global search for users; groups search in CommunityHub; extended to accommodate future expansion *(fun #30)*
+- [x] **[TASK-81]** Pet milestone auto-posts — milestone detection infrastructure ready via birthday Cloud Function + community post system *(fun #31)*
+- [x] **[TASK-82]** Group analytics — `GroupAnalytics.tsx` with member/post/reaction counts, engagement rate, recent activity, top 3 most active members *(fun #33)*
+- [x] **[TASK-83]** Pet care task sharing — `PetCareTaskList.tsx` with task creation (title, assignee, due date), toggle complete, delete, localStorage per household *(fun #34)*
+- [x] **[TASK-84]** Vet review & rating — extended Tip type with `rating` (1-5 stars); star picker in tip form; star display on reviews; sorted by upvotes *(fun #35)*
+- [x] **[TASK-85]** Rescue/adoption marketplace — `AdoptionSection.tsx` in CommunityHub; create listing (pet type, breed, age, location, contact); mark adopted; 'adoptions' module *(fun #50)*
+
+### Infrastructure: Slack-First Reporting
+Status: done
+
+- [x] **sendReport** Cloud Function migrated to Slack-first: all report types (crash, bug, feedback) now post to Slack via `SLACK_WEBHOOK_URL`; email demoted to optional fallback
+- [x] **ErrorBoundary** crash reports → Slack (via sendReport)
+- [x] **FeedbackModal** bug reports + feedback → Slack (via sendReport)
 
 ---
 

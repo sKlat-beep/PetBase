@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkVaccineReminders = exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.warmYelpCache = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.checkVaccineReminders = exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.warmYelpCache = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendWeeklyDigest = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
 const v2_1 = require("firebase-functions/v2");
 (0, v2_1.setGlobalOptions)({ region: 'us-central1', maxInstances: 10 });
 const https_1 = require("firebase-functions/v2/https");
@@ -18,6 +18,7 @@ admin.initializeApp();
 var notifications_1 = require("./notifications");
 Object.defineProperty(exports, "onNotificationCreated", { enumerable: true, get: function () { return notifications_1.onNotificationCreated; } });
 Object.defineProperty(exports, "sendEmailDigest", { enumerable: true, get: function () { return notifications_1.sendEmailDigest; } });
+Object.defineProperty(exports, "sendWeeklyDigest", { enumerable: true, get: function () { return notifications_1.sendWeeklyDigest; } });
 Object.defineProperty(exports, "checkPetBirthdays", { enumerable: true, get: function () { return notifications_1.checkPetBirthdays; } });
 Object.defineProperty(exports, "onPostReaction", { enumerable: true, get: function () { return notifications_1.onPostReaction; } });
 Object.defineProperty(exports, "onPostComment", { enumerable: true, get: function () { return notifications_1.onPostComment; } });

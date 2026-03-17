@@ -1,8 +1,8 @@
 # Completed Tasks Archive
 
-> Completed tasks are moved here from TODO.md. Max ~500 lines per file.
-> When this file exceeds 500 lines, rotate to `dev-log-completed-YYYY-MM.md`.
-> Previous archive: `dev-log-completed-2026-03.md`
+> Entries come from `planning/dev-log.md` during next-day rotation ONLY.
+> **Never write directly here from TODO.md — always go through dev-log.md first.**
+> Max ~500 lines per file. When exceeded, rotate to `dev-log-completed-YYYY-MM.md`.
 
 ### [TASK-86] Archive `backups/` phase-snapshot ZIPs
 Status: done

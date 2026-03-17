@@ -17,6 +17,21 @@ Primary implementation agent. Executes approved plans with minimal token usage.
 - Daily rotation: at session start, if `dev-log.md` has entries from a previous date, append them to the archive and clear the file.
 - No `git push`.
 
+## Plugin Integration (Hybrid Workflow)
+
+**Workflow backbone:** superpowers drives the flow (brainstorm → plan → execute → verify).
+
+**Specialized review passes (CE agents):** kieran-typescript-reviewer, security-sentinel, performance-oracle, pattern-recognition-specialist.
+
+**Auto-triggers:**
+- **code-simplifier** — runs after implementation tasks
+- **feature-dev** — triggers for feature requests
+- **semgrep** — local scan (p/typescript rules) after every Edit/Write on .ts/.tsx/.js/.jsx files
+- **security-guidance** — PreToolUse hook checks for XSS, eval, command injection before edits
+- **typescript-lsp** — real-time type diagnostics for app/ and functions/
+- **context7** — live documentation lookup (React 19, Firebase, Tailwind) via CE plugin MCP
+- **interface-design** — PetBase glass design system (replaces frontend-design)
+
 ## Token Efficiency Rules
 - **Never re-read a file already read in this session.** Reference the earlier read from context instead.
 - **Use `offset`/`limit` for large files.** Grep for the target section first, then read only that range.

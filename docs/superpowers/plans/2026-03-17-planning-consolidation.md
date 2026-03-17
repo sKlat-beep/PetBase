@@ -1,6 +1,9 @@
 # Planning File Consolidation Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **STATUS: COMPLETE (2026-03-17)** — All steps executed in commits `2089f5b`, `cb940e5`, `5b8fffb`.
+> Planning files archived, TODO.md restructured, dev-log converted to today-only journal. This plan is archived for reference only.
+
+> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Consolidate PetBase's 3,100+ lines of stale planning files into a clean two-file system: TODO.md (open tasks with full context, organized by phase) + dev-log.md (today's work journal that auto-archives).
 
@@ -77,13 +80,13 @@ Before we start, here are additional improvements I recommend:
 - Move: `planning/dev-log-archive-tasks.md` → `planning/archive/dev-log-archive-tasks.md`
 - Create: `planning/archive/dev-log-completed.md`
 
-- [ ] **Step 1: Create the archive directory**
+- [x] **Step 1: Create the archive directory**
 
 ```bash
 mkdir -p planning/archive
 ```
 
-- [ ] **Step 2: Move the three stale planning files**
+- [x] **Step 2: Move the three stale planning files**
 
 ```bash
 git mv planning/PetBase-Roadmap.md planning/archive/PetBase-Roadmap.md
@@ -91,7 +94,7 @@ git mv planning/implementation_plan.md planning/archive/implementation_plan.md
 git mv planning/cleanup-and-build-plan.md planning/archive/cleanup-and-build-plan.md
 ```
 
-- [ ] **Step 3: Archive current dev-log and all existing archives**
+- [x] **Step 3: Archive current dev-log and all existing archives**
 
 ```bash
 git mv planning/dev-log.md planning/archive/dev-log-pre-consolidation.md
@@ -101,7 +104,7 @@ git mv planning/dev-log-archive-phase9-14.md planning/archive/dev-log-archive-ph
 git mv planning/dev-log-archive-tasks.md planning/archive/dev-log-archive-tasks.md
 ```
 
-- [ ] **Step 4: Create the completed-tasks archive with header**
+- [x] **Step 4: Create the completed-tasks archive with header**
 
 Create `planning/archive/dev-log-completed.md`:
 ```markdown
@@ -113,7 +116,7 @@ Create `planning/archive/dev-log-completed.md`:
 ---
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add planning/archive/
@@ -128,14 +131,14 @@ git commit -m "chore: create planning/archive/ and move stale planning files"
 - Modify: `planning/TODO.md`
 - Modify: `planning/archive/dev-log-completed.md`
 
-- [ ] **Step 1: Audit task statuses and fix Phase 15**
+- [x] **Step 1: Audit task statuses and fix Phase 15**
 
 Read TODO.md. Phase 15 has `Status: in-progress` but all 8 sub-tasks (TASK-42 through TASK-49) are `[x]`. Change Phase 15 status to `done` before proceeding.
 
 Open tasks remaining:
 - Security Audit Follow-ups (TASK-86 through TASK-89, status: intake)
 
-- [ ] **Step 2: Move all completed task blocks to archive**
+- [x] **Step 2: Move all completed task blocks to archive**
 
 For each done task and phase (Phase 15–21, TASK-22 through TASK-85, TASK-39/40/41, TASK-30 through TASK-38): copy the **full task body** (including acceptance criteria, verification logs, audit reports, and HTML comments) to `planning/archive/dev-log-completed.md`. These contain institutional knowledge (e.g., TASK-39 QR audit, privacy check results) worth preserving.
 
@@ -152,7 +155,7 @@ Group by phase with a phase header:
 
 Note: The initial archive file will exceed 500 lines. That's fine — apply the rotation policy (split to `dev-log-completed-YYYY-MM.md`) if it exceeds ~500 lines after this migration.
 
-- [ ] **Step 3: Rewrite TODO.md with open tasks (full bodies, organized by phase)**
+- [x] **Step 3: Rewrite TODO.md with open tasks (full bodies, organized by phase)**
 
 TODO.md keeps **full task bodies** for all open tasks — no slimming, no context loss. Tasks are organized under phase headers. When `/intake` adds a new task, it goes under the appropriate phase (create a new phase header if needed).
 
@@ -188,7 +191,7 @@ Status: intake
 ...etc
 ```
 
-- [ ] **Step 4: Verify TODO.md structure**
+- [x] **Step 4: Verify TODO.md structure**
 
 ```bash
 wc -l planning/TODO.md
@@ -199,7 +202,7 @@ grep -c "Status: done" planning/TODO.md
 # Expected: 0 (no completed tasks remain)
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add planning/TODO.md planning/archive/dev-log-completed.md
@@ -213,7 +216,7 @@ git commit -m "chore: restructure TODO.md — open tasks only, organized by phas
 **Files:**
 - Create: `planning/dev-log.md`
 
-- [ ] **Step 1: Write the new dev-log.md**
+- [x] **Step 1: Write the new dev-log.md**
 
 ```markdown
 # Dev Log — Today's Session
@@ -234,7 +237,7 @@ git commit -m "chore: restructure TODO.md — open tasks only, organized by phas
 ---
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add planning/dev-log.md
@@ -248,7 +251,7 @@ git commit -m "chore: create new dev-log.md as today-only session journal"
 **Files:**
 - Modify: `docs/SYSTEM_RULES.md` (lines 19-24)
 
-- [ ] **Step 1: Replace §3 Documentation Discipline**
+- [x] **Step 1: Replace §3 Documentation Discipline**
 
 Old:
 ```markdown
@@ -272,7 +275,7 @@ New:
 - Dev-log format: `## [YYYY-MM-DD] TASK-XX: Title — STATUS` + one-line summary.
 ```
 
-- [ ] **Step 2: Update §9 Conversation Compaction**
+- [x] **Step 2: Update §9 Conversation Compaction**
 
 Old:
 ```markdown
@@ -289,7 +292,7 @@ New:
 - Read only the active phase section of `planning/TODO.md` — not the entire file.
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/SYSTEM_RULES.md
@@ -303,7 +306,7 @@ git commit -m "docs: update SYSTEM_RULES.md §3 and §9 for new planning structu
 **Files:**
 - Modify: `agents/claude-code.md`
 
-- [ ] **Step 1: Update Required Reads and dev-log policy**
+- [x] **Step 1: Update Required Reads and dev-log policy**
 
 Old:
 ```markdown
@@ -337,7 +340,7 @@ New:
 - No `git push`.
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add agents/claude-code.md
@@ -354,7 +357,7 @@ git commit -m "docs: update claude-code.md for new planning file structure"
 - Modify: `.claude/commands/intake.md` (line 57)
 - Modify: `.claude/commands/handoff.md` (line 11)
 
-- [ ] **Step 1: Update /intake skill — replace dev-log step**
+- [x] **Step 1: Update /intake skill — replace dev-log step**
 
 Old step 9:
 ```markdown
@@ -375,7 +378,7 @@ New step 9:
 
 Apply to both `skills/local/intake/SKILL.md` and `.claude/commands/intake.md`.
 
-- [ ] **Step 2: Update /handoff skill — read TODO instead of dev-log for context**
+- [x] **Step 2: Update /handoff skill — read TODO instead of dev-log for context**
 
 Old step 1:
 ```markdown
@@ -389,7 +392,7 @@ New step 1:
 
 Apply to both `skills/local/handoff/SKILL.md` and `.claude/commands/handoff.md`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add skills/local/intake/SKILL.md skills/local/handoff/SKILL.md .claude/commands/intake.md .claude/commands/handoff.md
@@ -405,7 +408,7 @@ git commit -m "docs: update intake and handoff skills for new dev-log format"
 - Modify: `contracts/jcodemunch-contract.md` (line 37)
 - Modify: `docs/INDEX.md` (line 9)
 
-- [ ] **Step 1: Update privacy-contract.md deliverable path**
+- [x] **Step 1: Update privacy-contract.md deliverable path**
 
 Change line 25 from:
 ```yaml
@@ -416,11 +419,11 @@ To:
       path: planning/dev-log.md (today) or planning/archive/dev-log-completed.md (historical)
 ```
 
-- [ ] **Step 2: Update jcodemunch-contract.md deliverable path**
+- [x] **Step 2: Update jcodemunch-contract.md deliverable path**
 
 Same change at line 37.
 
-- [ ] **Step 3: Update docs/INDEX.md**
+- [x] **Step 3: Update docs/INDEX.md**
 
 Old line 9:
 ```markdown
@@ -432,7 +435,7 @@ New:
 - `planning/` - task board (TODO.md) + today's dev log; archive/ for completed work
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add contracts/privacy-contract.md contracts/jcodemunch-contract.md docs/INDEX.md
@@ -446,14 +449,14 @@ git commit -m "docs: update contracts and INDEX.md for consolidated planning str
 **Files:**
 - Modify: `C:\Users\quake\.claude\projects\C--Admin-Projects-PetBase\memory\MEMORY.md`
 
-- [ ] **Step 1: Update the Key Paths and Task Board sections**
+- [x] **Step 1: Update the Key Paths and Task Board sections**
 
 Update references:
 - Remove `planning/PetBase-Roadmap.md` and `planning/implementation_plan.md` from any key paths
 - Update Task Board section to reflect new structure
 - Update "Shell Commands" or other sections that reference dev-log
 
-- [ ] **Step 2: No commit needed** (memory files are outside the repo)
+- [x] **Step 2: No commit needed** (memory files are outside the repo)
 
 ---
 

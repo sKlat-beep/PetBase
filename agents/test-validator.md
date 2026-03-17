@@ -23,22 +23,19 @@ Run all steps in order. A failure at any step halts the sequence.
 cd app && npm run build
 ```
 - Must exit 0
-- Output must contain no TypeScript errors, Vite errors, or import resolution failures
-- If it fails: capture the first error message, return it with file:line, halt
+- No TypeScript errors, Vite errors, or import resolution failures
 
 ### Step 2 — Functions Build
 ```bash
 cd functions && npm run build
 ```
 - Must exit 0
-- If it fails: capture the first error message, return it with file:line, halt
 
 ### Step 3 — TypeScript Strict Check (Frontend)
 ```bash
 cd app && npx tsc --noEmit
 ```
-- Must exit 0
-- All type errors are blocking — no `@ts-ignore` workarounds accepted
+- Must exit 0; no `@ts-ignore` workarounds accepted
 
 ### Step 4 — TypeScript Strict Check (Functions)
 ```bash
@@ -72,28 +69,15 @@ Errors (if any):
 ---
 
 ## On PASS
-- Write dev-log entry:
-  ```
-  ## [YYYY-MM-DD] TASK-ID: <title> — Build Validated [VERIFIED]
-  All 4 checks passed. Ready for firebase-deployer or PM review.
-  ```
-- Task may transition to `review` in `planning/TODO.md`
+Write dev-log entry and transition task to `review` in `planning/TODO.md`.
 
 ## On FAIL
-- Write dev-log entry:
-  ```
-  ## [YYYY-MM-DD] TASK-ID: <title> — Build Failed [BLOCKED]
-  Failed step: <step name>
-  Error: <first error message>
-  ```
-- Set task status to `blocked` in `planning/TODO.md` with reason
-- Return detailed error to the calling agent for resolution
+Write dev-log entry, set task to `blocked` in `planning/TODO.md`, return error to user.
 
 ---
 
 ## Hard Rules
-- No code changes during test/diagnostic phase — report errors only, never auto-fix
-- Never skip a step because "it probably passes"
-- Never approve a task with TypeScript errors — `@ts-ignore` is not a fix
-- If builds are slow: run steps in parallel where possible (Step 1 and Step 2 are independent)
-- Once automated tests exist: add `npm run test` as Step 1.5 with ≥80% pass requirement
+- No code changes — report errors only, never auto-fix
+- Never skip a step
+- Never approve a task with TypeScript errors
+- Steps 1 and 2 are independent — run in parallel

@@ -145,10 +145,13 @@ export default function MultiPetCardModal({ pets, onClose, onCreate, editCard }:
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="bg-white dark:bg-stone-900 sm:rounded-2xl rounded-t-2xl rounded-b-none sm:rounded-b-2xl shadow-2xl border border-stone-200 dark:border-stone-700 w-full sm:max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="multi-pet-card-modal-title"
+        className="bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-2xl rounded-b-none sm:rounded-b-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full sm:max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
       >
         <div className="bg-gradient-to-r from-violet-700 to-indigo-700 p-5 shrink-0">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <h2 id="multi-pet-card-modal-title" className="text-xl font-bold text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-violet-200" /> {editCard ? 'Edit Multi-pet Card' : 'Multi-pet Card'}
           </h2>
           <p className="text-violet-200 text-sm mt-1">{editCard ? 'Update sharing options and validity.' : 'Select 2+ pets and configure what data each card shows.'}</p>
@@ -157,18 +160,18 @@ export default function MultiPetCardModal({ pets, onClose, onCreate, editCard }:
         <div className="overflow-y-auto flex-1 p-6 space-y-6">
           {/* Pet selection */}
           <div>
-            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2 block">
-              Select Pets <span className="font-normal text-stone-400">(minimum 2)</span>
+            <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2 block">
+              Select Pets <span className="font-normal text-neutral-400">(minimum 2)</span>
             </label>
             {publicPets.length < 2 ? (
-              <p className="text-sm text-stone-400 dark:text-stone-500">You need at least 2 public pets to create a Multi-pet Card.</p>
+              <p className="text-sm text-neutral-400 dark:text-neutral-500">You need at least 2 public pets to create a Multi-pet Card.</p>
             ) : (
               <div className="space-y-2">
                 {publicPets.map(pet => {
                   const isSelected = selectedIds.has(pet.id);
                   const isExpanded = expandedPetId === pet.id;
                   return (
-                    <div key={pet.id} className={`rounded-xl border-2 transition-all ${isSelected ? 'border-violet-400 dark:border-violet-600' : 'border-stone-200 dark:border-stone-700'}`}>
+                    <div key={pet.id} className={`rounded-xl border-2 transition-all ${isSelected ? 'border-violet-400 dark:border-violet-600' : 'border-neutral-200 dark:border-neutral-700'}`}>
                       <div className="flex items-center gap-3 p-3">
                         <input type="checkbox" checked={isSelected} disabled={!!editCard} onChange={() => togglePet(pet.id)} className="w-4 h-4 accent-violet-600 disabled:opacity-50" />
                         {pet.image ? (
@@ -177,8 +180,8 @@ export default function MultiPetCardModal({ pets, onClose, onCreate, editCard }:
                           <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white/80" style={{ backgroundColor: pet.backgroundColor || '#a8a29e' }}>{pet.name?.[0]?.toUpperCase()}</div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-stone-800 dark:text-stone-200 truncate">{pet.name}</p>
-                          <p className="text-xs text-stone-400 truncate">{pet.breed || pet.type || '—'}</p>
+                          <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 truncate">{pet.name}</p>
+                          <p className="text-xs text-neutral-400 truncate">{pet.breed || pet.type || '—'}</p>
                         </div>
                         {isSelected && (
                           <button type="button" onClick={() => setExpandedPetId(isExpanded ? null : pet.id)} className="text-xs text-violet-600 dark:text-violet-400 flex items-center gap-0.5 font-medium">
@@ -187,11 +190,11 @@ export default function MultiPetCardModal({ pets, onClose, onCreate, editCard }:
                         )}
                       </div>
                       {isSelected && isExpanded && (
-                        <div className="border-t border-stone-100 dark:border-stone-700 px-4 py-3 space-y-2 bg-stone-50/50 dark:bg-stone-700/30 rounded-b-xl">
-                          <p className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Included data for {pet.name}:</p>
+                        <div className="border-t border-neutral-100 dark:border-neutral-700 px-4 py-3 space-y-2 bg-neutral-50/50 dark:bg-neutral-700/30 rounded-b-xl">
+                          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Included data for {pet.name}:</p>
                           {SHARING_FIELDS.map(({ key, label, icon }) => (
                             <label key={key} className="flex items-center justify-between py-1 min-h-[44px]">
-                              <span className="flex items-center gap-2 text-xs text-stone-600 dark:text-stone-300">{icon} {label}</span>
+                              <span className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300">{icon} {label}</span>
                               <input type="checkbox" checked={perPetSharing[pet.id]?.[key] ?? true} onChange={e => updateSharing(pet.id, key, e.target.checked)} className="w-3.5 h-3.5 accent-violet-600" />
                             </label>
                           ))}
@@ -206,10 +209,10 @@ export default function MultiPetCardModal({ pets, onClose, onCreate, editCard }:
 
           {/* Template */}
           <div>
-            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2 block">Card Type</label>
+            <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2 block">Card Type</label>
             <div className="grid grid-cols-3 gap-2">
               {(['vet', 'sitter', 'custom'] as CardTemplate[]).map(t => (
-                <button key={t} onClick={() => setTemplate(t)} className={`py-2 rounded-xl text-sm font-semibold border-2 transition-all ${template === t ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300' : 'border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-400 hover:border-stone-300'}`}>
+                <button key={t} onClick={() => setTemplate(t)} className={`py-2 rounded-xl text-sm font-semibold border-2 transition-all ${template === t ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300' : 'border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300'}`}>
                   {TEMPLATE_LABELS[t]}
                 </button>
               ))}
@@ -218,24 +221,24 @@ export default function MultiPetCardModal({ pets, onClose, onCreate, editCard }:
 
           {/* Expiration */}
           <div>
-            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2 flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> Expiration <span className="font-normal text-stone-400">(min 8 hours)</span>
+            <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-1.5">
+              <Clock className="w-4 h-4" /> Expiration <span className="font-normal text-neutral-400">(min 8 hours)</span>
             </label>
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="text-xs text-stone-500 mb-1 block">Days</label>
-                <input type="number" min="0" value={customDays} onChange={e => setCustomDays(Math.max(0, parseInt(e.target.value) || 0))} className="w-full border border-stone-200 dark:border-stone-600 rounded-xl px-3 py-2 text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-700 focus:ring-2 focus:ring-violet-500 outline-none" />
+                <label className="text-xs text-neutral-500 mb-1 block">Days</label>
+                <input type="number" min="0" value={customDays} onChange={e => setCustomDays(Math.max(0, parseInt(e.target.value) || 0))} className="w-full border border-neutral-200 dark:border-neutral-600 rounded-xl px-3 py-2 text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 focus:ring-2 focus:ring-violet-500 outline-none" />
               </div>
               <div className="flex-1">
-                <label className="text-xs text-stone-500 mb-1 block">Hours</label>
-                <input type="number" min="0" max="23" value={customHours} onChange={e => setCustomHours(Math.max(0, parseInt(e.target.value) || 0))} className="w-full border border-stone-200 dark:border-stone-600 rounded-xl px-3 py-2 text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-700 focus:ring-2 focus:ring-violet-500 outline-none" />
+                <label className="text-xs text-neutral-500 mb-1 block">Hours</label>
+                <input type="number" min="0" max="23" value={customHours} onChange={e => setCustomHours(Math.max(0, parseInt(e.target.value) || 0))} className="w-full border border-neutral-200 dark:border-neutral-600 rounded-xl px-3 py-2 text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 focus:ring-2 focus:ring-violet-500 outline-none" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="p-5 border-t border-stone-100 dark:border-stone-700 flex gap-3 shrink-0">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-300 font-medium hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors">
+        <div className="p-5 border-t border-neutral-100 dark:border-neutral-700 flex gap-3 shrink-0">
+          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
             Cancel
           </button>
           <button onClick={handleCreate} disabled={!canCreate} className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">

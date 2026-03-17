@@ -114,11 +114,11 @@ export function CommunityHubPanel() {
         icon={<Users className="w-3 h-3" />}
       >
         {allGroupsJoined ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             You&apos;re in all available groups! 🎉
           </p>
         ) : suggestedGroups.length === 0 ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">No groups to suggest yet</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">No groups to suggest yet</p>
         ) : (
           <div className="space-y-2.5">
             {suggestedGroups.map(g => {
@@ -130,7 +130,7 @@ export function CommunityHubPanel() {
                     <img
                       src={g.image}
                       alt={g.name}
-                      className="w-8 h-8 rounded-lg object-cover shrink-0 bg-stone-100 dark:bg-zinc-700"
+                      className="w-8 h-8 rounded-lg object-cover shrink-0 bg-neutral-100 dark:bg-neutral-700"
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
@@ -140,8 +140,8 @@ export function CommunityHubPanel() {
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-stone-800 dark:text-zinc-200 truncate">{g.name}</p>
-                    <p className="text-[10px] text-stone-400 dark:text-zinc-500">
+                    <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">{g.name}</p>
+                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
                       {memberCount} member{memberCount !== 1 ? 's' : ''}
                       {firstTag && <> · <span className="text-emerald-600 dark:text-emerald-400">{firstTag}</span></>}
                     </p>
@@ -166,15 +166,15 @@ export function CommunityHubPanel() {
         icon={<Calendar className="w-3 h-3" />}
       >
         {upcomingEvents.length === 0 ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">No upcoming events in your groups</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">No upcoming events in your groups</p>
         ) : (
           <div className="space-y-2">
             {upcomingEvents.map(e => (
-              <div key={e.id} className="flex items-start gap-1.5 text-xs text-stone-600 dark:text-zinc-300">
+              <div key={e.id} className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
                 <span className="mt-0.5 shrink-0" aria-hidden="true">📅</span>
                 <div className="min-w-0">
                   <p className="font-medium truncate">{e.title}</p>
-                  <p className="text-[10px] text-stone-400 dark:text-zinc-500 truncate">
+                  <p className="text-[10px] text-neutral-400 dark:text-neutral-500 truncate">
                     {e.groupName} · {new Date(e.date).toLocaleDateString()}
                   </p>
                 </div>
@@ -191,21 +191,21 @@ export function CommunityHubPanel() {
         icon={<UserCheck className="w-3 h-3" />}
       >
         {peopleSuggestions.length === 0 ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">No suggestions right now</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">No suggestions right now</p>
         ) : (
           <div className="space-y-2.5">
             {peopleSuggestions.map(({ uid, count, profile: p }) => (
               <div key={uid} className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-zinc-700 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-stone-600 dark:text-zinc-300 uppercase">
+                <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0">
+                  <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
                     {(p?.displayName ?? uid).charAt(0)}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-stone-800 dark:text-zinc-200 truncate">
+                  <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">
                     {p?.displayName ?? 'Member'}
                   </p>
-                  <p className="text-[10px] text-stone-400 dark:text-zinc-500">
+                  <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
                     in {count} of your group{count !== 1 ? 's' : ''}
                   </p>
                 </div>

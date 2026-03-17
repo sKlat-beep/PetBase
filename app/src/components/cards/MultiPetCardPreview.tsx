@@ -19,9 +19,9 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
     .filter((x): x is { cfg: typeof config[0]; pet: Pet } => !!x.pet);
 
   return (
-    <div id={`card-preview-${card.id}`} className="bg-white rounded-[2rem] shadow-xl border border-stone-100 overflow-hidden max-w-md mx-auto w-full print:shadow-none">
+    <div id={`card-preview-${card.id}`} className="bg-white rounded-[2rem] shadow-xl border border-neutral-100 overflow-hidden max-w-md mx-auto w-full print:shadow-none">
       {status !== 'active' && (
-        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-stone-400'}`}>
+        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-neutral-400'}`}>
           {status === 'revoked' ? '⛔ REVOKED' : '⏱ EXPIRED'}
         </div>
       )}
@@ -40,13 +40,13 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
       {/* Scrollable pet sections */}
       <div className="max-h-[60vh] overflow-y-auto">
         {includedPets.length === 0 ? (
-          <p className="text-center text-stone-400 text-sm py-8">No pets selected.</p>
+          <p className="text-center text-neutral-400 text-sm py-8">No pets selected.</p>
         ) : (
           includedPets.map(({ cfg, pet }) => {
             // Single coercion per pet: snapshot if available, else petAsSnapshot(pet)
             const data = cfg.petSnapshot ?? petAsSnapshot(pet);
             return (
-              <div key={cfg.petId} className="border-b border-stone-100 last:border-b-0">
+              <div key={cfg.petId} className="border-b border-neutral-100 last:border-b-0">
                 {/* Per-pet avatar + name strip */}
                 <div className="flex items-center gap-3 px-5 pt-5 pb-3">
                   {pet.image ? (
@@ -57,7 +57,7 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
                     </div>
                   )}
                   <div>
-                    <p className="font-bold text-stone-900 text-lg leading-tight">{pet.name}</p>
+                    <p className="font-bold text-neutral-900 text-lg leading-tight">{pet.name}</p>
                   </div>
                 </div>
 
@@ -77,7 +77,7 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
       </div>
 
       {status === 'active' && (
-        <p className="text-xs text-stone-400 text-center py-3 border-t border-stone-100">Expires {formatExpiry(card.expiresAt)}</p>
+        <p className="text-xs text-neutral-400 text-center py-3 border-t border-neutral-100">Expires {formatExpiry(card.expiresAt)}</p>
       )}
     </div>
   );

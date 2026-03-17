@@ -84,11 +84,11 @@ export default function CommunityHub() {
         />
         <div className="relative flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
               <UsersRound className="w-6 h-6 text-emerald-600" aria-hidden="true" />
               Community Hub
             </h1>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
               Your groups, friends, and community — all in one place
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function CommunityHub() {
             className={`text-xs px-3 py-1.5 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px] ${
               isReordering
                 ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'
-                : 'bg-white/80 dark:bg-stone-800/80 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-white dark:hover:bg-stone-800'
+                : 'bg-white/80 dark:bg-neutral-800/80 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-white dark:hover:bg-neutral-800'
             }`}
             aria-pressed={isReordering}
           >
@@ -131,7 +131,7 @@ export default function CommunityHub() {
               <button
                 key={id}
                 onClick={() => scrollToSection(meta.anchor)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-200 dark:hover:border-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-400 transition-all whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-200 dark:hover:border-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-400 transition-all whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
               >
                 <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                 {meta.label}
@@ -141,7 +141,7 @@ export default function CommunityHub() {
         </div>
         {/* Group search input */}
         <div className={`relative flex items-center transition-all duration-200 flex-shrink-0 ${searchFocused ? 'w-48' : 'w-32'}`}>
-          <Search className="absolute left-2.5 w-3.5 h-3.5 text-stone-400 pointer-events-none" aria-hidden="true" />
+          <Search className="absolute left-2.5 w-3.5 h-3.5 text-neutral-400 pointer-events-none" aria-hidden="true" />
           <input
             type="search"
             value={groupSearch}
@@ -149,7 +149,7 @@ export default function CommunityHub() {
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             placeholder="Search groups…"
-            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
             aria-label="Search groups"
           />
         </div>
@@ -173,7 +173,7 @@ export default function CommunityHub() {
           >
             {isReordering && (
               <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10 pointer-events-none" aria-hidden="true">
-                <GripVertical className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+                <GripVertical className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
               </div>
             )}
             <div id={`community-section-${MODULE_META[id].anchor}`}>

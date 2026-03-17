@@ -16,7 +16,7 @@ export function NotificationBell({ side = 'right' }: Props) {
     <div className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(o => !o); }}
-        className="text-stone-400 hover:text-stone-700 dark:hover:text-zinc-200 transition-colors relative"
+        className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors relative"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <Bell className="w-5 h-5" />

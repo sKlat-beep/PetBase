@@ -34,7 +34,7 @@ interface PetFormModalProps {
 function getNotesCounterColor(count: number): string {
   if (count >= NOTES_MAX) return 'text-rose-600 dark:text-rose-400 font-semibold';
   if (count >= NOTES_MAX * 0.9) return 'text-amber-600 dark:text-amber-400';
-  return 'text-stone-400 dark:text-stone-500';
+  return 'text-neutral-400 dark:text-neutral-500';
 }
 
 type Tab = 'basic' | 'details' | 'health' | 'emergency';
@@ -74,7 +74,7 @@ function TagInput({
 
   return (
     <div
-      className="flex flex-wrap gap-1.5 w-full px-3 py-2 min-h-[42px] rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 focus-within:ring-2 focus-within:ring-emerald-500 transition-colors cursor-text"
+      className="flex flex-wrap gap-1.5 w-full px-3 py-2 min-h-[42px] rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 focus-within:ring-2 focus-within:ring-emerald-500 transition-colors cursor-text"
       onClick={() => inputRef.current?.focus()}
     >
       {tags.map((tag, i) => (
@@ -98,7 +98,7 @@ function TagInput({
           if (input.trim()) { onAdd(input.trim()); onInputChange(''); }
         }}
         placeholder={tags.length === 0 ? placeholder : ''}
-        className="flex-1 min-w-[100px] bg-transparent outline-none text-stone-900 dark:text-stone-100 placeholder:text-stone-400 text-sm"
+        className="flex-1 min-w-[100px] bg-transparent outline-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
       />
     </div>
   );
@@ -124,12 +124,12 @@ function UnitInput<U extends string>({
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder={placeholder ?? '0'}
-        className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+        className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
       />
       <select
         value={unit}
         onChange={(e) => onUnitChange(e.target.value as U)}
-        className="px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+        className="px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
       >
         {units.map(u => <option key={u} value={u}>{u}</option>)}
       </select>
@@ -404,27 +404,27 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
             role="dialog"
             aria-modal="true"
             aria-labelledby="pet-form-modal-title"
-            className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-100 dark:border-stone-700 w-full max-w-3xl z-10 flex flex-col max-h-[90vh]"
+            className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-3xl z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-100 dark:border-stone-700 shrink-0">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
               <div className="flex items-center gap-2">
                 <PawPrint className="w-5 h-5 text-emerald-600" />
-                <h2 id="pet-form-modal-title" className="text-xl font-bold text-stone-900 dark:text-stone-100">
+                <h2 id="pet-form-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
                   {isEditMode ? `Edit ${pet.name}` : 'Add a Pet'}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700"
+                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Tabs — Desktop */}
-            <div className="hidden sm:flex border-b border-stone-100 dark:border-stone-700 px-6 shrink-0">
+            <div className="hidden sm:flex border-b border-neutral-100 dark:border-neutral-700 px-6 shrink-0">
               {TAB_ORDER.map((tab) => {
                 const Icon = tab === 'basic' ? Info : tab === 'details' ? Heart : tab === 'health' ? Stethoscope : tab === 'emergency' ? Phone : Camera;
                 return (
@@ -434,7 +434,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     onClick={() => setActiveTab(tab)}
                     className={`flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab
                       ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                      : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
+                      : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                       }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -445,24 +445,24 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
             </div>
 
             {/* Tabs — Mobile: Left/Right arrow navigation */}
-            <div className="flex sm:hidden items-center border-b border-stone-100 dark:border-stone-700 px-4 py-3 shrink-0 gap-3">
+            <div className="flex sm:hidden items-center border-b border-neutral-100 dark:border-neutral-700 px-4 py-3 shrink-0 gap-3">
               <button
                 type="button"
                 onClick={goPrev}
                 disabled={isFirst}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <div className="flex-1 text-center">
-                <span className="text-sm font-semibold text-stone-900 dark:text-stone-100">{TAB_LABELS[activeTab]}</span>
-                <span className="text-xs text-stone-400 dark:text-stone-500 ml-2">({tabIdx + 1}/{TAB_ORDER.length})</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{TAB_LABELS[activeTab]}</span>
+                <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-2">({tabIdx + 1}/{TAB_ORDER.length})</span>
               </div>
               <button
                 type="button"
                 onClick={goNext}
                 disabled={isLast}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -483,7 +483,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="grid grid-cols-1 sm:grid-cols-2 gap-5"
                   >
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Name <span className="text-rose-500">*</span>
                       </label>
                       <input
@@ -492,17 +492,17 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         value={name}
                         onChange={(e) => { setName(e.target.value); mark(); }}
                         placeholder="e.g. Max"
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Pet Type
                       </label>
                       <select
                         value={petType}
                         onChange={(e) => { setPetType(e.target.value); if (e.target.value !== 'Other') setCustomPetType(''); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       >
                         <option value="">Select type...</option>
                         {PET_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -513,12 +513,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           value={customPetType}
                           onChange={(e) => { setCustomPetType(e.target.value); mark(); }}
                           placeholder="e.g. Bearded Dragon, Axolotl, Tarantula…"
-                          className="mt-2 w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                          className="mt-2 w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                         />
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Breed
                       </label>
                       <input
@@ -526,11 +526,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         value={breed}
                         onChange={(e) => { setBreed(e.target.value); mark(); }}
                         placeholder="e.g. Golden Retriever"
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Birthday
                       </label>
                       <input
@@ -538,14 +538,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         value={birthday}
                         max={new Date().toISOString().split('T')[0]}
                         onChange={(e) => { setBirthday(e.target.value); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       />
                       {birthday && (
-                        <p className="text-xs text-stone-400 mt-1">Age: {calcAgeFromBirthday(birthday)}</p>
+                        <p className="text-xs text-neutral-400 mt-1">Age: {calcAgeFromBirthday(birthday)}</p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Weight
                       </label>
                       <UnitInput
@@ -560,21 +560,21 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
 
                     {/* Profile Photo & Appearance */}
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         Profile Photo & Appearance
                       </label>
-                      <div className="flex flex-col sm:flex-row gap-6 bg-stone-50 dark:bg-stone-700/30 p-4 rounded-xl border border-stone-200 dark:border-stone-700">
+                      <div className="flex flex-col sm:flex-row gap-6 bg-neutral-50 dark:bg-neutral-700/30 p-4 rounded-xl border border-neutral-200 dark:border-neutral-700">
                         {/* Preview */}
                         <div
                           className="flex flex-col items-center justify-center p-4 rounded-xl shrink-0 w-36 h-36 relative overflow-hidden transition-all duration-300"
                           style={{ backgroundColor }}
                         >
                           <div className="relative group z-10 w-full h-full flex items-center justify-center">
-                            <div className={`w-24 h-24 bg-stone-200 dark:bg-stone-600 overflow-hidden shrink-0 ${avatarShape === 'circle' ? 'rounded-full' : avatarShape === 'square' ? 'rounded-xl' : avatarShape === 'squircle' ? 'rounded-[2rem]' : 'rounded-full'} shadow-xl transition-all duration-300 border-2 border-white/20`}>
+                            <div className={`w-24 h-24 bg-neutral-200 dark:bg-neutral-600 overflow-hidden shrink-0 ${avatarShape === 'circle' ? 'rounded-full' : avatarShape === 'square' ? 'rounded-xl' : avatarShape === 'squircle' ? 'rounded-[2rem]' : 'rounded-full'} shadow-xl transition-all duration-300 border-2 border-white/20`}>
                               {image ? (
                                 <img src={image} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-stone-400">
+                                <div className="w-full h-full flex items-center justify-center text-neutral-400">
                                   <ImageIcon className="w-8 h-8" />
                                 </div>
                               )}
@@ -597,14 +597,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
 
                         <div className="flex-1 space-y-4">
                           <div>
-                            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Avatar Shape</label>
+                            <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Avatar Shape</label>
                             <div className="flex flex-wrap gap-2">
                               {(['circle', 'square', 'squircle'] as const).map(shape => (
                                 <button
                                   key={shape}
                                   type="button"
                                   onClick={() => { setAvatarShape(shape); mark(); }}
-                                  className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors font-medium border ${avatarShape === shape ? 'bg-white dark:bg-stone-600 text-stone-900 dark:text-stone-100 shadow-sm border-stone-200 dark:border-stone-500' : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700/50'}`}
+                                  className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors font-medium border ${avatarShape === shape ? 'bg-white dark:bg-neutral-600 text-neutral-900 dark:text-neutral-100 shadow-sm border-neutral-200 dark:border-neutral-500' : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700/50'}`}
                                 >
                                   {shape}
                                 </button>
@@ -613,7 +613,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           </div>
 
                           <div>
-                            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Background Color</label>
+                            <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Background Color</label>
                             <div className="flex flex-wrap gap-2">
                               {['#f87171', '#fb923c', '#fbbf24', '#facc15', '#a3e635',
                                 '#4ade80', '#34d399', '#2dd4bf', '#22d3ee', '#38bdf8',
@@ -623,20 +623,20 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                                     key={color}
                                     type="button"
                                     onClick={() => { setBackgroundColor(color); mark(); }}
-                                    className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${backgroundColor === color ? 'border-white dark:border-stone-800 shadow-sm ring-2 ring-emerald-500 scale-110' : 'border-transparent shadow-sm'}`}
+                                    className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${backgroundColor === color ? 'border-white dark:border-neutral-800 shadow-sm ring-2 ring-emerald-500 scale-110' : 'border-transparent shadow-sm'}`}
                                     style={{ backgroundColor: color }}
                                   />
                                 ))}
                             </div>
                           </div>
 
-                          <div className="pt-2 border-t border-stone-200 dark:border-stone-700/50">
+                          <div className="pt-2 border-t border-neutral-200 dark:border-neutral-700/50">
                             <label className="flex items-center justify-between cursor-pointer">
                               <div>
-                                <span className="text-sm font-bold text-stone-700 dark:text-stone-300">Private Profile</span>
-                                <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">Hide this pet from the public community.</p>
+                                <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Private Profile</span>
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Hide this pet from the public community.</p>
                               </div>
-                              <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPrivate ? 'bg-emerald-600' : 'bg-stone-200 dark:bg-stone-700'}`}>
+                              <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPrivate ? 'bg-emerald-600' : 'bg-neutral-200 dark:bg-neutral-700'}`}>
                                 <input type="checkbox" className="sr-only" checked={isPrivate} onChange={(e) => { setIsPrivate(e.target.checked); mark(); }} />
                                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isPrivate ? 'translate-x-6' : 'translate-x-1'}`} />
                               </div>
@@ -645,7 +645,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-stone-400 dark:text-zinc-500 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1 flex items-center gap-1">
                       <Images className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                       Manage photos in the <button type="button" onClick={onClose} className="underline hover:text-emerald-600">Photo Library</button> on My Pets.
                     </p>
@@ -660,8 +660,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="grid grid-cols-1 gap-5"
                   >
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-                        Likes <span className="text-xs text-stone-400 font-normal">(type then press Enter or comma)</span>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        Likes <span className="text-xs text-neutral-400 font-normal">(type then press Enter or comma)</span>
                       </label>
                       <TagInput
                         tags={likeTags}
@@ -673,8 +673,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-                        Dislikes <span className="text-xs text-stone-400 font-normal">(type then press Enter or comma)</span>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        Dislikes <span className="text-xs text-neutral-400 font-normal">(type then press Enter or comma)</span>
                       </label>
                       <TagInput
                         tags={dislikeTags}
@@ -686,8 +686,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-                        Favorite Activities <span className="text-xs text-stone-400 font-normal">(type then press Enter or comma)</span>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        Favorite Activities <span className="text-xs text-neutral-400 font-normal">(type then press Enter or comma)</span>
                       </label>
                       <TagInput
                         tags={activityTags}
@@ -700,7 +700,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                           Type of Play
                         </label>
                         <input
@@ -708,17 +708,17 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           value={typeOfPlay}
                           onChange={(e) => { setTypeOfPlay(e.target.value); mark(); }}
                           placeholder="e.g. Rough, Gentle, Independent"
-                          className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                           Activity Level
                         </label>
                         <select
                           value={activity}
                           onChange={(e) => { setActivity(e.target.value); mark(); }}
-                          className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                         >
                           <option value="">Select level...</option>
                           <option value="Low">Low (Couch Potato)</option>
@@ -729,7 +729,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                         Status Tags
                       </label>
                       <div className="flex flex-wrap gap-2 mb-2">
@@ -746,14 +746,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                             className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
                               statusTags.includes(tag)
                                 ? 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400'
-                                : 'bg-stone-100 dark:bg-stone-700 border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-400 hover:border-emerald-400'
+                                : 'bg-neutral-100 dark:bg-neutral-700 border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-emerald-400'
                             }`}
                           >
                             {tag}
                           </button>
                         ))}
                       </div>
-                      <p className="text-xs text-stone-400">Click to toggle. Tags appear on your pet's profile.</p>
+                      <p className="text-xs text-neutral-400">Click to toggle. Tags appear on your pet's profile.</p>
                     </div>
                   </motion.div>
                 )}
@@ -766,7 +766,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="grid grid-cols-1 sm:grid-cols-2 gap-5"
                   >
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Height</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Height</label>
                       <UnitInput
                         value={heightNum}
                         unit={heightUnit}
@@ -777,7 +777,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Length</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Length</label>
                       <UnitInput
                         value={lengthNum}
                         unit={lengthUnit}
@@ -788,11 +788,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Body Condition</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Body Condition</label>
                       <select
                         value={bodyConditionScore}
                         onChange={(e) => { setBodyConditionScore(e.target.value); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       >
                         <option value="">Not set</option>
                         <option value="Underweight">Underweight</option>
@@ -801,11 +801,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Spayed / Neutered</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Spayed / Neutered</label>
                       <select
                         value={spayedNeutered}
                         onChange={(e) => { setSpayedNeutered(e.target.value as typeof spayedNeutered); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       >
                         <option value="">Not set</option>
                         <option value="Yes">Yes</option>
@@ -814,32 +814,32 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       </select>
                     </div>
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Microchip ID</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Microchip ID</label>
                       <input
                         type="text"
                         value={microchipId}
                         onChange={(e) => { setMicrochipId(e.target.value); mark(); }}
                         placeholder="e.g. 985112345678901"
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                       />
                     </div>
 
                     {/* Primary Diet */}
                     <div className="sm:col-span-2 space-y-3">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300">Primary Diet</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Primary Diet</label>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="sm:col-span-1">
-                          <label className="block text-xs text-stone-500 dark:text-stone-400 mb-1">Food Brand / Type</label>
+                          <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">Food Brand / Type</label>
                           <input
                             type="text"
                             value={foodBrand}
                             onChange={(e) => { setFoodBrand(e.target.value); mark(); }}
                             placeholder="e.g. Purina Pro Plan"
-                            className="w-full px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
+                            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-stone-500 dark:text-stone-400 mb-1">Amount</label>
+                          <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">Amount</label>
                           <input
                             type="number"
                             min="0"
@@ -847,15 +847,15 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                             value={foodAmount}
                             onChange={(e) => { setFoodAmount(e.target.value); mark(); }}
                             placeholder="0"
-                            className="w-full px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
+                            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-stone-500 dark:text-stone-400 mb-1">Unit</label>
+                          <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">Unit</label>
                           <select
                             value={foodUnit}
                             onChange={(e) => { setFoodUnit(e.target.value as typeof foodUnit); mark(); }}
-                            className="w-full px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
+                            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
                           >
                             <option value="cups">cups/day</option>
                             <option value="half cups">half cups/day</option>
@@ -870,7 +870,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     {/* Notes */}
                     <div className="sm:col-span-2 pt-2">
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300">
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                           Diet or Medical Notes{' '}
                           <span className="text-xs font-normal bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full ml-1">
                             Encrypted
@@ -885,12 +885,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         onChange={handleNotesChange}
                         rows={5}
                         placeholder="Health notes, allergies, medications, behavioral observations..."
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
                       />
                       {notes.length >= NOTES_MAX && (
                         <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">Character limit reached.</p>
                       )}
-                      <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
                         Health and medical context. Encrypted client-side before storage.
                       </p>
                     </div>
@@ -906,11 +906,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="space-y-5"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-stone-500 dark:text-stone-400">Vet info and emergency contacts for this pet.</p>
+                      <p className="text-sm text-neutral-500 dark:text-neutral-400">Vet info and emergency contacts for this pet.</p>
                       {allPets.length > 0 && allPets.some(p => p.id !== pet?.id && (p.emergencyContacts?.vetInfo?.clinic || p.emergencyContacts?.ownerPhone || p.emergencyContacts?.additionalContacts?.some(c => c.name))) && (
                         <div className="relative group/autofill">
                           <select
-                            className="appearance-none pl-8 pr-4 py-1.5 rounded-full border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-xs font-medium text-stone-600 dark:text-stone-300 cursor-pointer hover:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                            className="appearance-none pl-8 pr-4 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-xs font-medium text-neutral-600 dark:text-neutral-300 cursor-pointer hover:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                             value=""
                             onChange={(e) => {
                               const sourcePet = allPets.find(p => p.id === e.target.value);
@@ -925,48 +925,48 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                               <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
                           </select>
-                          <Copy className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 group-hover/autofill:text-emerald-500 pointer-events-none transition-colors" />
+                          <Copy className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 group-hover/autofill:text-emerald-500 pointer-events-none transition-colors" />
                         </div>
                       )}
                     </div>
 
-                    <div className="p-4 bg-stone-50 dark:bg-stone-700/50 rounded-xl space-y-4">
-                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-stone-800 dark:text-stone-200">
+                    <div className="p-4 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl space-y-4">
+                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200">
                         <HeartPulse className="w-4 h-4 text-emerald-500" /> Vet Info
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">Clinic Name</label>
-                          <input type="text" value={emergencyContacts?.vetInfo?.clinic || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, clinic: e.target.value, name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400" placeholder="Happy Paws Clinic" />
+                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Clinic Name</label>
+                          <input type="text" value={emergencyContacts?.vetInfo?.clinic || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, clinic: e.target.value, name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="Happy Paws Clinic" />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">Doctor Name</label>
-                          <input type="text" value={emergencyContacts?.vetInfo?.name || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, name: e.target.value, clinic: prev?.vetInfo?.clinic || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400" placeholder="Dr. Smith" />
+                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Doctor Name</label>
+                          <input type="text" value={emergencyContacts?.vetInfo?.name || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, name: e.target.value, clinic: prev?.vetInfo?.clinic || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="Dr. Smith" />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">Vet Phone</label>
-                          <input type="tel" value={emergencyContacts?.vetInfo?.phone || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, phone: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400" placeholder="(555) 000-0000" />
+                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Vet Phone</label>
+                          <input type="tel" value={emergencyContacts?.vetInfo?.phone || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, phone: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="(555) 000-0000" />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">Vet Address</label>
-                          <input type="text" value={emergencyContacts?.vetInfo?.address || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, address: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400" placeholder="123 Vet Clinic Way" />
+                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Vet Address</label>
+                          <input type="text" value={emergencyContacts?.vetInfo?.address || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, address: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="123 Vet Clinic Way" />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Owner / Primary Phone</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Owner / Primary Phone</label>
                       <input
                         type="tel"
                         value={emergencyContacts?.ownerPhone || ''}
                         onChange={e => { setEmergencyContacts(prev => ({ ...prev, ownerPhone: e.target.value })); setIsDirty(true); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400"
+                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400"
                         placeholder="(555) 123-4567"
                       />
                     </div>
 
-                    <div className="p-4 bg-stone-50 dark:bg-stone-700/50 rounded-xl space-y-4">
-                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-stone-800 dark:text-stone-200">
+                    <div className="p-4 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl space-y-4">
+                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200">
                         <Phone className="w-4 h-4 text-blue-500" /> Additional Contacts
                       </h4>
                       {[0, 1, 2].map(index => {
@@ -977,22 +977,22 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         return (
                           <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 first:pt-0">
                             <div>
-                              <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">Contact {index + 1} Name</label>
+                              <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Contact {index + 1} Name</label>
                               <input type="text" value={contact.name} onChange={e => {
                                 const newContacts = [...(emergencyContacts?.additionalContacts || [])];
                                 newContacts[index] = { ...contact, name: e.target.value };
                                 setEmergencyContacts(prev => ({ ...prev, additionalContacts: newContacts }));
                                 setIsDirty(true);
-                              }} className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400" placeholder="Jane Doe" />
+                              }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="Jane Doe" />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">Contact {index + 1} Phone</label>
+                              <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Contact {index + 1} Phone</label>
                               <input type="tel" value={contact.phone} onChange={e => {
                                 const newContacts = [...(emergencyContacts?.additionalContacts || [])];
                                 newContacts[index] = { ...contact, phone: e.target.value };
                                 setEmergencyContacts(prev => ({ ...prev, additionalContacts: newContacts }));
                                 setIsDirty(true);
-                              }} className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-stone-400" placeholder="(555) 999-9999" />
+                              }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="(555) 999-9999" />
                             </div>
                           </div>
                         );
@@ -1004,14 +1004,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
               </div>
 
               {/* ── Actions Footer ── */}
-              <div className="p-5 border-t border-stone-100 dark:border-stone-700 shrink-0 bg-stone-50/50 dark:bg-stone-800/50 space-y-3">
+              <div className="p-5 border-t border-neutral-100 dark:border-neutral-700 shrink-0 bg-neutral-50/50 dark:bg-neutral-800/50 space-y-3">
                 {/* Row 1: Navigation buttons */}
                 <div className="flex gap-3">
                   {isFirst ? (
                     <button
                       type="button"
                       onClick={onClose}
-                      className="flex-1 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-300 font-medium hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+                      className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                     >
                       Cancel
                     </button>
@@ -1019,7 +1019,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={goPrev}
-                      className="flex-1 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-300 font-medium hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2"
                     >
                       <ChevronLeft className="w-4 h-4" /> Back
                     </button>
@@ -1036,7 +1036,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={goNext}
-                      className="flex-1 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-white dark:text-stone-900 font-medium transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-xl bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-white text-white dark:text-neutral-900 font-medium transition-colors flex items-center justify-center gap-2"
                     >
                       Next <ChevronRight className="w-4 h-4" />
                     </button>

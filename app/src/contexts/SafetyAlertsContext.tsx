@@ -73,7 +73,7 @@ export const CATEGORY_COLORS: Record<AlertCategory, string> = {
   toxic:    'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300',
   missing:  'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
   weather:  'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300',
-  other:    'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300',
+  other:    'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300',
 };
 
 const ALERT_TTL_MS = 3 * 24 * 60 * 60 * 1000; // 3 days

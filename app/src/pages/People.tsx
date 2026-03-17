@@ -60,27 +60,27 @@ function MessageModal({
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
-        className="relative bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 w-full max-w-md flex flex-col max-h-[70vh] z-10"
+        className="relative bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full max-w-md flex flex-col max-h-[70vh] z-10"
       >
-        <div className="flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
           <div className="flex items-center gap-3">
-            <img src={toUser.avatarUrl} alt={toUser.displayName} className="w-9 h-9 rounded-full object-cover bg-stone-100" referrerPolicy="no-referrer" />
-            <span className="font-semibold text-stone-900 dark:text-stone-100">{toUser.displayName}</span>
+            <img src={toUser.avatarUrl} alt={toUser.displayName} className="w-9 h-9 rounded-full object-cover bg-neutral-100" referrerPolicy="no-referrer" />
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100">{toUser.displayName}</span>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1 rounded-lg transition-colors">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 p-1 rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {thread.length === 0 && (
-            <p className="text-center text-sm text-stone-400 dark:text-stone-500 py-6">No messages yet. Say hi!</p>
+            <p className="text-center text-sm text-neutral-400 dark:text-neutral-500 py-6">No messages yet. Say hi!</p>
           )}
           {thread.map(m => (
             <div key={m.id} className={`flex ${m.fromUid === currentUid ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm ${m.fromUid === currentUid
                 ? 'bg-emerald-500 text-white rounded-br-sm'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 rounded-bl-sm'}`}
+                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-bl-sm'}`}
               >
                 {m.content}
               </div>
@@ -88,13 +88,13 @@ function MessageModal({
           ))}
         </div>
 
-        <form onSubmit={handleSend} className="p-3 border-t border-stone-100 dark:border-stone-700 flex gap-2 shrink-0">
+        <form onSubmit={handleSend} className="p-3 border-t border-neutral-100 dark:border-neutral-700 flex gap-2 shrink-0">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           <button type="submit" disabled={!text.trim()} className="p-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40 text-white rounded-xl transition-colors">
             <Send className="w-4 h-4" />
@@ -134,19 +134,19 @@ function UserCard({
   const statusLabel = STATUS_LABELS[person.publicStatus] || '';
 
   return (
-    <div className="bg-white dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
       <div className="flex items-start gap-4">
         <img
           src={person.avatarUrl}
           alt={person.displayName}
-          className="w-14 h-14 rounded-2xl object-cover bg-stone-100 shrink-0"
+          className="w-14 h-14 rounded-2xl object-cover bg-neutral-100 shrink-0"
           referrerPolicy="no-referrer"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-bold text-stone-900 dark:text-stone-100 truncate">{person.displayName}</h3>
+            <h3 className="font-bold text-neutral-900 dark:text-neutral-100 truncate">{person.displayName}</h3>
             {person.username && (
-              <span className="text-xs text-stone-500 dark:text-stone-400 font-medium whitespace-nowrap">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium whitespace-nowrap">
                 @{person.username.split('#')[0]}<span className="opacity-60">#{person.username.split('#')[1]}</span>
               </span>
             )}
@@ -162,12 +162,12 @@ function UserCard({
             )}
           </div>
           {statusLabel && (
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{statusLabel}</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">{statusLabel}</p>
           )}
           {person.pets.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {person.pets.map((p, i) => (
-                <span key={i} className="text-xs bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 px-2 py-0.5 rounded-md">
+                <span key={i} className="text-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 px-2 py-0.5 rounded-md">
                   {p.count > 1 ? `${p.count}× ` : ''}{p.type}
                 </span>
               ))}
@@ -208,14 +208,14 @@ function UserCard({
             )}
           </>
         ) : hasPendingRequest ? (
-          <button disabled className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-stone-100 dark:bg-stone-700 text-stone-400 dark:text-stone-500 font-medium text-sm cursor-default">
+          <button disabled className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 font-medium text-sm cursor-default">
             <UserCheck className="w-4 h-4" />
             Request Sent
           </button>
         ) : (
           <button
             onClick={onAddFriend}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 font-medium text-sm transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 font-medium text-sm transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             Add Friend
@@ -223,7 +223,7 @@ function UserCard({
         )}
         <button
           onClick={onViewProfile}
-          className="p-2 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-400 hover:text-sky-500 hover:border-sky-200 hover:bg-sky-50 dark:hover:bg-sky-900/20 dark:hover:border-sky-800 transition-colors"
+          className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-400 hover:text-sky-500 hover:border-sky-200 hover:bg-sky-50 dark:hover:bg-sky-900/20 dark:hover:border-sky-800 transition-colors"
           title="View profile"
           aria-label={`View ${person.displayName}'s profile`}
         >
@@ -231,7 +231,7 @@ function UserCard({
         </button>
         <button
           onClick={onBlock}
-          className="p-2 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/20 dark:hover:border-rose-800 transition-colors"
+          className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/20 dark:hover:border-rose-800 transition-colors"
           title="Block user"
           aria-label={`Block ${person.displayName}`}
         >
@@ -361,8 +361,8 @@ export function People() {
       className="space-y-8"
     >
       <header>
-        <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">People</h1>
-        <p className="text-stone-500 dark:text-stone-400 mt-1">Find fellow pet parents, send friend requests, and chat.</p>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">People</h1>
+        <p className="text-neutral-500 dark:text-neutral-400 mt-1">Find fellow pet parents, send friend requests, and chat.</p>
       </header>
 
       {/* Pending Requests */}
@@ -400,7 +400,7 @@ export function People() {
                       </button>
                       <button
                         onClick={() => removeFriend(req.fromUid)}
-                        className="px-3 py-1.5 bg-stone-200 dark:bg-stone-700 hover:bg-stone-300 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-300 rounded-lg text-sm font-medium transition-colors"
+                        className="px-3 py-1.5 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg text-sm font-medium transition-colors"
                       >
                         Decline
                       </button>
@@ -415,20 +415,20 @@ export function People() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by display name..."
-          className="w-full pl-12 pr-4 py-3 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent shadow-sm"
+          className="w-full pl-12 pr-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent shadow-sm"
         />
       </div>
 
       {/* Suggested Friends (PYMK) — only shown when not searching */}
       {pymkSuggestions.length > 0 && !query.trim() && (
         <section>
-          <h2 className="flex items-center gap-2 font-semibold text-stone-800 dark:text-stone-200 mb-3">
+          <h2 className="flex items-center gap-2 font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
             <Sparkles className="w-4 h-4 text-emerald-500" aria-hidden="true" />
             Suggested Friends
           </h2>
@@ -437,25 +437,25 @@ export function People() {
               {pymkSuggestions.map(suggestion => (
                 <div
                   key={suggestion.uid}
-                  className="flex flex-col items-center gap-2 bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-2xl p-4 shadow-sm w-36 shrink-0"
+                  className="flex flex-col items-center gap-2 bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-2xl p-4 shadow-sm w-36 shrink-0"
                 >
                   <img
                     src={suggestion.avatarUrl || `https://api.dicebear.com/7.x/thumbs/svg?seed=${suggestion.uid}`}
                     alt={suggestion.displayName}
-                    className="w-14 h-14 rounded-full object-cover bg-stone-100"
+                    className="w-14 h-14 rounded-full object-cover bg-neutral-100"
                     referrerPolicy="no-referrer"
                   />
-                  <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 text-center truncate w-full">
+                  <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 text-center truncate w-full">
                     {suggestion.displayName}
                   </p>
                   {suggestion.mutualFriends > 0 && (
-                    <p className="text-[11px] text-stone-500 dark:text-stone-400 text-center -mt-1">
+                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400 text-center -mt-1">
                       {suggestion.mutualFriends} mutual {suggestion.mutualFriends === 1 ? 'friend' : 'friends'}
                     </p>
                   )}
                   <button
                     onClick={() => sendFriendRequest(suggestion.uid)}
-                    className="w-full flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200 font-medium text-xs transition-colors"
+                    className="w-full flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 font-medium text-xs transition-colors"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     Add Friend
@@ -576,7 +576,7 @@ export function People() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+              className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
             >
               <div className="bg-violet-600 p-5">
                 <div className="flex items-center justify-between">
@@ -590,12 +590,12 @@ export function People() {
                 <p className="text-violet-100 text-sm mt-1">{familyInvite.householdName}</p>
               </div>
               <div className="p-6 space-y-4">
-                <p className="text-sm text-stone-600 dark:text-stone-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Share this invite code with your friend. Once they join your household via <strong>Settings → Family Sharing</strong>, they'll have co-management access to your pets.
                 </p>
-                <div className="bg-stone-50 dark:bg-stone-700 rounded-xl p-4 text-center">
-                  <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 uppercase tracking-wide font-semibold">Invite Code</p>
-                  <p className="font-mono text-2xl font-bold tracking-widest text-stone-900 dark:text-stone-100">{familyInvite.code}</p>
+                <div className="bg-neutral-50 dark:bg-neutral-700 rounded-xl p-4 text-center">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-wide font-semibold">Invite Code</p>
+                  <p className="font-mono text-2xl font-bold tracking-widest text-neutral-900 dark:text-neutral-100">{familyInvite.code}</p>
                 </div>
                 <button
                   onClick={() => { navigator.clipboard.writeText(familyInvite.code).catch(() => { }); }}

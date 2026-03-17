@@ -87,7 +87,7 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-stone-50 dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700">
+    <div className="flex items-center gap-2 p-2 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
       {!audioBlob ? (
         <>
           <button
@@ -101,11 +101,11 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
           >
             {recording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
           </button>
-          <span className="text-sm text-stone-600 dark:text-stone-300 tabular-nums min-w-[3rem]">
+          <span className="text-sm text-neutral-600 dark:text-neutral-300 tabular-nums min-w-[3rem]">
             {recording ? formatTime(duration) : 'Tap to record'}
           </span>
           {!recording && (
-            <button onClick={onClose} className="ml-auto p-1 text-stone-400 hover:text-stone-600">
+            <button onClick={onClose} className="ml-auto p-1 text-neutral-400 hover:text-neutral-600">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -113,10 +113,10 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
       ) : (
         <>
           <audio src={audioUrl!} controls className="h-8 flex-1" />
-          <span className="text-xs text-stone-400">{formatTime(duration)}</span>
+          <span className="text-xs text-neutral-400">{formatTime(duration)}</span>
           <button
             onClick={handleDiscard}
-            className="p-1.5 text-stone-400 hover:text-rose-500 transition-colors"
+            className="p-1.5 text-neutral-400 hover:text-rose-500 transition-colors"
             aria-label="Discard recording"
           >
             <X className="w-4 h-4" />

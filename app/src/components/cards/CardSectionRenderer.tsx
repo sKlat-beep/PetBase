@@ -33,7 +33,7 @@ interface SectionConfig {
 const SECTION_CONFIGS: Record<string, SectionConfig> = {
   basicInfo: {
     title: 'Pet Description',
-    icon: <Info className="w-4 h-4 text-stone-400" />,
+    icon: <Info className="w-4 h-4 text-neutral-400" />,
     defaultOpen: true,
   },
   personalityPlay: {
@@ -43,7 +43,7 @@ const SECTION_CONFIGS: Record<string, SectionConfig> = {
   },
   diet: {
     title: 'Health & Diet',
-    icon: <Utensils className="w-4 h-4 text-stone-400" />,
+    icon: <Utensils className="w-4 h-4 text-neutral-400" />,
     defaultOpen: false,
   },
   medicalOverview: {
@@ -53,12 +53,12 @@ const SECTION_CONFIGS: Record<string, SectionConfig> = {
   },
   vaccineRecords: {
     title: 'Vaccine Records',
-    icon: <Syringe className="w-4 h-4 text-stone-400" />,
+    icon: <Syringe className="w-4 h-4 text-neutral-400" />,
     defaultOpen: false,
   },
   microchip: {
     title: 'Microchip ID',
-    icon: <Shield className="w-4 h-4 text-stone-400" />,
+    icon: <Shield className="w-4 h-4 text-neutral-400" />,
     defaultOpen: false,
   },
   emergencyContact: {
@@ -87,9 +87,9 @@ interface CardSectionRendererProps {
 
 function InfoChip({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-stone-50 dark:bg-stone-700/60 rounded-xl p-2 border border-stone-100 dark:border-stone-600">
-      <p className="text-xs text-stone-500 dark:text-stone-400 mb-0.5">{label}</p>
-      <p className="font-semibold text-stone-800 dark:text-stone-100 text-xs">{value}</p>
+    <div className="bg-neutral-50 dark:bg-neutral-700/60 rounded-xl p-2 border border-neutral-100 dark:border-neutral-600">
+      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">{label}</p>
+      <p className="font-semibold text-neutral-800 dark:text-neutral-100 text-xs">{value}</p>
     </div>
   );
 }
@@ -118,9 +118,9 @@ export function CardSectionRenderer({
       )}
       {data.weight && <InfoChip label="Weight" value={data.weight} />}
       {data.spayedNeutered && data.spayedNeutered !== 'Unknown' && (
-        <div className="bg-stone-50 dark:bg-stone-700/60 rounded-xl p-2 border border-stone-100 dark:border-stone-600 col-span-2">
-          <p className="text-xs text-stone-500 dark:text-stone-400 mb-0.5">Spayed/Neutered</p>
-          <p className="font-semibold text-stone-800 dark:text-stone-100 text-xs">{data.spayedNeutered}</p>
+        <div className="bg-neutral-50 dark:bg-neutral-700/60 rounded-xl p-2 border border-neutral-100 dark:border-neutral-600 col-span-2">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">Spayed/Neutered</p>
+          <p className="font-semibold text-neutral-800 dark:text-neutral-100 text-xs">{data.spayedNeutered}</p>
         </div>
       )}
     </div>
@@ -178,7 +178,7 @@ export function CardSectionRenderer({
   const dietContent: React.ReactNode =
     sharing.diet && (data.food || data.notes) ? (
       <div>
-        {data.food && <p className="text-stone-600 mb-1 text-sm">{data.food}</p>}
+        {data.food && <p className="text-neutral-600 mb-1 text-sm">{data.food}</p>}
         {data.notes && (
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-2.5 border border-blue-100 dark:border-blue-800 mt-1">
             {data.notes.startsWith('eyJ') ? (
@@ -254,11 +254,11 @@ export function CardSectionRenderer({
           return (
             <div
               key={i}
-              className={`flex items-center justify-between text-xs border border-stone-100 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50 ${
+              className={`flex items-center justify-between text-xs border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 ${
                 compact ? 'rounded-lg px-2.5 py-1.5' : 'rounded-xl px-3 py-2'
               }`}
             >
-              <span className="font-medium text-stone-800 dark:text-stone-200">{v.name}</span>
+              <span className="font-medium text-neutral-800 dark:text-neutral-200">{v.name}</span>
               <span
                 className={`font-semibold ${
                   st === 'overdue'
@@ -267,7 +267,7 @@ export function CardSectionRenderer({
                     ? 'text-amber-600'
                     : st === 'up-to-date'
                     ? 'text-emerald-600'
-                    : 'text-stone-400'
+                    : 'text-neutral-400'
                 }`}
               >
                 {st === 'overdue'
@@ -289,18 +289,18 @@ export function CardSectionRenderer({
     <div>
       {data.microchipId ? (
         data.microchipId.startsWith('eyJ') ? (
-          <p className="text-xs bg-stone-50 rounded-xl px-3 py-2 border border-stone-100 font-mono text-stone-400 italic flex items-center gap-1">
+          <p className="text-xs bg-neutral-50 rounded-xl px-3 py-2 border border-neutral-100 font-mono text-neutral-400 italic flex items-center gap-1">
             <span>🔒</span> Encrypted
           </p>
         ) : (
-          <p className="text-xs bg-stone-50 rounded-xl px-3 py-2 border border-stone-100 font-mono text-stone-700 break-all">
+          <p className="text-xs bg-neutral-50 rounded-xl px-3 py-2 border border-neutral-100 font-mono text-neutral-700 break-all">
             {data.microchipId}
           </p>
         )
       ) : (
-        <div className="flex items-center gap-2 text-sm bg-stone-50 rounded-xl p-3 border border-stone-100">
-          <ShieldOff className="w-4 h-4 text-stone-400 shrink-0" />
-          <span className="text-stone-500">Not Microchipped</span>
+        <div className="flex items-center gap-2 text-sm bg-neutral-50 rounded-xl p-3 border border-neutral-100">
+          <ShieldOff className="w-4 h-4 text-neutral-400 shrink-0" />
+          <span className="text-neutral-500">Not Microchipped</span>
         </div>
       )}
     </div>
@@ -315,17 +315,17 @@ export function CardSectionRenderer({
     <div
       className={
         compact
-          ? 'bg-stone-50 rounded-xl p-3 border border-stone-100'
-          : 'bg-stone-50 rounded-2xl p-4 border border-stone-100 space-y-3 text-left'
+          ? 'bg-neutral-50 rounded-xl p-3 border border-neutral-100'
+          : 'bg-neutral-50 rounded-2xl p-4 border border-neutral-100 space-y-3 text-left'
       }
     >
-      <h3 className="text-stone-900 font-bold flex items-center gap-1.5 mb-1 text-sm">
+      <h3 className="text-neutral-900 font-bold flex items-center gap-1.5 mb-1 text-sm">
         <Phone className="w-4 h-4 text-blue-500" /> Emergency Contacts
       </h3>
       {data.emergencyContacts?.ownerPhone && (
         <div className="mb-2">
-          <p className="text-xs text-stone-500">Owner</p>
-          <p className="font-medium text-stone-800 text-sm">
+          <p className="text-xs text-neutral-500">Owner</p>
+          <p className="font-medium text-neutral-800 text-sm">
             {data.emergencyContacts.ownerPhone}
           </p>
         </div>
@@ -334,12 +334,12 @@ export function CardSectionRenderer({
         ?.filter(c => c.name || c.phone)
         .map((c, i) => (
           <div key={i} className="mb-2 last:mb-0">
-            <p className="text-xs text-stone-500">{c.name}</p>
-            <p className="font-medium text-stone-800 text-sm">{c.phone}</p>
+            <p className="text-xs text-neutral-500">{c.name}</p>
+            <p className="font-medium text-neutral-800 text-sm">{c.phone}</p>
           </div>
         ))}
       {!hasEmergencyData && (
-        <p className="text-xs text-stone-500 italic">
+        <p className="text-xs text-neutral-500 italic">
           Secondary contact info is not on file.
         </p>
       )}
@@ -349,16 +349,16 @@ export function CardSectionRenderer({
   // ── Section: vetInfo ──
   const vetInfoContent: React.ReactNode =
     sharing.vetInfo && data.emergencyContacts?.vetInfo ? (
-      <div className="bg-stone-50 rounded-2xl p-4 border border-stone-100">
-        <h3 className="text-stone-900 font-bold flex items-center gap-1.5 mb-1 text-sm">
+      <div className="bg-neutral-50 rounded-2xl p-4 border border-neutral-100">
+        <h3 className="text-neutral-900 font-bold flex items-center gap-1.5 mb-1 text-sm">
           <HeartPulse className="w-4 h-4 text-emerald-500" /> Vet Info
         </h3>
-        <p className="font-medium text-stone-800 text-sm">
+        <p className="font-medium text-neutral-800 text-sm">
           {data.emergencyContacts!.vetInfo!.name}
         </p>
-        <p className="text-xs text-stone-500">{data.emergencyContacts!.vetInfo!.phone}</p>
+        <p className="text-xs text-neutral-500">{data.emergencyContacts!.vetInfo!.phone}</p>
         {data.emergencyContacts!.vetInfo!.address && (
-          <p className="text-xs text-stone-500">{data.emergencyContacts!.vetInfo!.address}</p>
+          <p className="text-xs text-neutral-500">{data.emergencyContacts!.vetInfo!.address}</p>
         )}
       </div>
     ) : null;
@@ -408,14 +408,14 @@ export function CardSectionRenderer({
     .filter(Boolean);
 
   return (
-    <div className={compact ? 'space-y-2' : 'divide-y divide-stone-100 dark:divide-stone-700'}>
+    <div className={compact ? 'space-y-2' : 'divide-y divide-neutral-100 dark:divide-neutral-700'}>
       {orderedSections}
       {includeGeneralInfo && data.householdInfo && (
         <div className={compact ? 'py-1' : 'px-6 py-4'}>
-          <h3 className="font-bold text-stone-900 mb-1.5 uppercase tracking-wider text-xs flex items-center gap-1.5">
+          <h3 className="font-bold text-neutral-900 mb-1.5 uppercase tracking-wider text-xs flex items-center gap-1.5">
             <Info className="w-3.5 h-3.5" /> Household Information
           </h3>
-          <p className="text-xs text-stone-600 bg-stone-50 rounded-xl px-3 py-2 border border-stone-100 whitespace-pre-wrap break-words">
+          <p className="text-xs text-neutral-600 bg-neutral-50 rounded-xl px-3 py-2 border border-neutral-100 whitespace-pre-wrap break-words">
             {data.householdInfo}
           </p>
         </div>

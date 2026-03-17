@@ -79,7 +79,7 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-200">Pet Care Tasks</h3>
+        <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">Pet Care Tasks</h3>
         <button onClick={() => setShowAdd(v => !v)}
           className="p-1 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
         >
@@ -90,16 +90,16 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
       <AnimatePresence>
         {showAdd && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="p-3 bg-stone-50 dark:bg-stone-700/30 rounded-xl space-y-2">
+            <div className="p-3 bg-neutral-50 dark:bg-neutral-700/30 rounded-xl space-y-2">
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Walk the dog, give meds..."
-                className="w-full px-3 py-1.5 text-sm rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100" />
+                className="w-full px-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100" />
               <div className="grid grid-cols-2 gap-2">
                 <select value={assignee} onChange={e => setAssignee(e.target.value)}
-                  className="px-2 py-1.5 text-xs rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100">
+                  className="px-2 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100">
                   {members.map(m => <option key={m.uid} value={m.uid}>{m.displayName}</option>)}
                 </select>
                 <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}
-                  className="px-2 py-1.5 text-xs rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100" />
+                  className="px-2 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100" />
               </div>
               <button onClick={addTask} disabled={!title.trim()}
                 className="w-full py-1.5 text-xs bg-emerald-600 text-white rounded-lg disabled:opacity-40">Add Task</button>
@@ -109,22 +109,22 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
       </AnimatePresence>
 
       {pendingTasks.length === 0 && !showAdd && (
-        <p className="text-xs text-stone-400 text-center py-2">No pending tasks</p>
+        <p className="text-xs text-neutral-400 text-center py-2">No pending tasks</p>
       )}
 
       <div className="space-y-1">
         {pendingTasks.map(t => (
-          <div key={t.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700/30 group">
-            <button onClick={() => toggleTask(t.id)} className="shrink-0 text-stone-300 hover:text-emerald-500">
+          <div key={t.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/30 group">
+            <button onClick={() => toggleTask(t.id)} className="shrink-0 text-neutral-300 hover:text-emerald-500">
               <Circle className="w-4 h-4" />
             </button>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-stone-800 dark:text-stone-200 truncate">{t.title}</p>
-              <p className="text-[10px] text-stone-400">
+              <p className="text-sm text-neutral-800 dark:text-neutral-200 truncate">{t.title}</p>
+              <p className="text-[10px] text-neutral-400">
                 {t.assignedName}{t.dueDate ? ` · Due ${new Date(t.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}
               </p>
             </div>
-            <button onClick={() => deleteTask(t.id)} className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-rose-500">
+            <button onClick={() => deleteTask(t.id)} className="opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-rose-500">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -132,14 +132,14 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
       </div>
 
       {completedTasks.length > 0 && (
-        <div className="space-y-1 pt-2 border-t border-stone-100 dark:border-stone-700">
-          <p className="text-[10px] text-stone-400 uppercase tracking-wide">Completed</p>
+        <div className="space-y-1 pt-2 border-t border-neutral-100 dark:border-neutral-700">
+          <p className="text-[10px] text-neutral-400 uppercase tracking-wide">Completed</p>
           {completedTasks.map(t => (
             <div key={t.id} className="flex items-center gap-2 p-1.5 opacity-60">
               <button onClick={() => toggleTask(t.id)} className="shrink-0 text-emerald-500">
                 <CheckCircle2 className="w-4 h-4" />
               </button>
-              <p className="text-xs text-stone-500 line-through truncate">{t.title}</p>
+              <p className="text-xs text-neutral-500 line-through truncate">{t.title}</p>
             </div>
           ))}
         </div>

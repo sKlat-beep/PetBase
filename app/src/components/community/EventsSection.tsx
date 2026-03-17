@@ -18,17 +18,17 @@ export default function EventsSection() {
   }, [groups, user]);
 
   return (
-    <section className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl border border-stone-100 dark:border-stone-700 p-5">
-      <h2 className="font-semibold text-stone-900 dark:text-stone-50 flex items-center gap-2 mb-4">
+    <section className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl border border-neutral-100 dark:border-neutral-700 p-5">
+      <h2 className="font-semibold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 mb-4">
         <Calendar className="w-4 h-4 text-emerald-600" aria-hidden="true" />
         Events & Playdates
         {upcomingEvents.length > 0 && (
-          <span className="text-xs font-normal text-stone-400 dark:text-stone-500">{upcomingEvents.length}</span>
+          <span className="text-xs font-normal text-neutral-400 dark:text-neutral-500">{upcomingEvents.length}</span>
         )}
       </h2>
 
       {upcomingEvents.length === 0 && (
-        <div className="text-center py-6 text-stone-400 dark:text-stone-500">
+        <div className="text-center py-6 text-neutral-400 dark:text-neutral-500">
           <Calendar className="w-10 h-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
           <p className="text-sm">No upcoming events from your groups.</p>
           <p className="text-xs mt-1">Join a group or create an event to get started.</p>
@@ -43,25 +43,25 @@ export default function EventsSection() {
             return (
               <div
                 key={event.id}
-                className="flex-shrink-0 w-64 rounded-xl border border-stone-100 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50 p-4"
+                className="flex-shrink-0 w-64 rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 p-4"
               >
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
                   {event.groupName}
                 </span>
-                <h3 className="font-medium text-stone-800 dark:text-stone-100 mt-2 text-sm leading-snug">{event.title}</h3>
-                <div className="flex items-center gap-1.5 mt-2 text-xs text-stone-500 dark:text-stone-400">
+                <h3 className="font-medium text-neutral-800 dark:text-neutral-100 mt-2 text-sm leading-snug">{event.title}</h3>
+                <div className="flex items-center gap-1.5 mt-2 text-xs text-neutral-500 dark:text-neutral-400">
                   <Calendar className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
                   <span>{eventDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                   <span>·</span>
                   <span>{eventDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span>
                 </div>
                 {event.location && (
-                  <div className="flex items-center gap-1.5 mt-1 text-xs text-stone-500 dark:text-stone-400">
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                     <MapPin className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
                     <span className="truncate">{event.location}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-stone-500 dark:text-stone-400">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                   <Users className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>{event.attendeeIds.length} going</span>
                 </div>

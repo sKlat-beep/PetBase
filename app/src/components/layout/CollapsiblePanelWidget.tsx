@@ -27,20 +27,20 @@ export function CollapsiblePanelWidget({ id, title, icon, badge, children, defau
   };
 
   return (
-    <div className="bg-white/75 dark:bg-zinc-800/75 backdrop-blur-xl rounded-2xl border border-stone-200/60 dark:border-zinc-700/60 shadow-sm overflow-hidden">
+    <div className="bg-white/75 dark:bg-neutral-800/75 backdrop-blur-xl rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-sm overflow-hidden">
       <button
         onClick={toggle}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-stone-50/60 dark:hover:bg-zinc-700/40 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-neutral-50/60 dark:hover:bg-neutral-700/40 transition-colors"
         aria-expanded={expanded}
       >
-        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-zinc-400">
+        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
           {icon}
           {title}
         </span>
         {badge}
         {expanded
-          ? <ChevronUp className="w-3.5 h-3.5 text-stone-400 dark:text-zinc-500 shrink-0" />
-          : <ChevronDown className="w-3.5 h-3.5 text-stone-400 dark:text-zinc-500 shrink-0" />
+          ? <ChevronUp className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 shrink-0" />
+          : <ChevronDown className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 shrink-0" />
         }
       </button>
       <AnimatePresence initial={false}>

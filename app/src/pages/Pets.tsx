@@ -60,7 +60,7 @@ function RecentAlbumsPreview({ pets, uid, onViewAll }: { pets: Pet[]; uid: strin
     return (
       <button
         onClick={onViewAll}
-        className="w-full text-center py-6 text-sm text-stone-400 dark:text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl"
+        className="w-full text-center py-6 text-sm text-neutral-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl"
       >
         No albums yet — click to create one
       </button>
@@ -76,14 +76,14 @@ function RecentAlbumsPreview({ pets, uid, onViewAll }: { pets: Pet[]; uid: strin
           className="group flex flex-col gap-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl"
           title={`${album.albumName} — ${album.petName}`}
         >
-          <div className="aspect-square rounded-xl overflow-hidden bg-stone-100 dark:bg-zinc-800">
+          <div className="aspect-square rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800">
             {album.coverUrl
               ? <img src={album.coverUrl} alt={album.albumName} className="w-full h-full object-cover group-hover:scale-105 motion-safe:transition-transform duration-200" />
-              : <div className="w-full h-full flex items-center justify-center text-stone-400"><Images className="w-6 h-6" /></div>
+              : <div className="w-full h-full flex items-center justify-center text-neutral-400"><Images className="w-6 h-6" /></div>
             }
           </div>
-          <p className="text-xs font-medium text-stone-700 dark:text-zinc-200 truncate">{album.albumName}</p>
-          <p className="text-xs text-stone-400 dark:text-zinc-500">{album.petName} · {album.photoCount} photo{album.photoCount !== 1 ? 's' : ''}</p>
+          <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{album.albumName}</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">{album.petName} · {album.photoCount} photo{album.photoCount !== 1 ? 's' : ''}</p>
         </button>
       ))}
     </div>
@@ -222,7 +222,7 @@ export function Pets() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[0, 1, 2].map(i => (
-          <div key={i} className="bg-white/80 dark:bg-stone-800/80 rounded-2xl h-48 animate-pulse" />
+          <div key={i} className="bg-white/80 dark:bg-neutral-800/80 rounded-2xl h-48 animate-pulse" />
         ))}
       </div>
     );
@@ -236,8 +236,8 @@ export function Pets() {
         className="space-y-8"
       >
         <header>
-          <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">My Pets</h1>
-          <p className="text-stone-500 dark:text-stone-400 mt-1">Detailed profiles and health tracking.</p>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">My Pets</h1>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1">Detailed profiles and health tracking.</p>
         </header>
 
         {/* Lost pet banners — one per currently-lost pet */}
@@ -294,11 +294,11 @@ export function Pets() {
 
         {/* Photo Library — shows most recently updated albums */}
         {user && pets.length > 0 && (
-          <div className="bg-white/80 dark:bg-stone-800/80 rounded-2xl border border-stone-100 dark:border-stone-700 p-4">
+          <div className="bg-white/80 dark:bg-neutral-800/80 rounded-2xl border border-neutral-100 dark:border-neutral-700 p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Images className="w-4 h-4 text-stone-400" aria-hidden="true" />
-                <h3 className="text-sm font-semibold text-stone-700 dark:text-stone-200">Photo Library</h3>
+                <Images className="w-4 h-4 text-neutral-400" aria-hidden="true" />
+                <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">Photo Library</h3>
               </div>
               <button
                 onClick={() => setShowPhotoManager(true)}
@@ -372,24 +372,24 @@ export function Pets() {
             aria-modal="true"
             aria-labelledby="delete-pet-modal-title"
             tabIndex={-1}
-            className="relative bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 w-full max-w-sm p-6 space-y-4 z-10 outline-none"
+            className="relative bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full max-w-sm p-6 space-y-4 z-10 outline-none"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center shrink-0">
                 <Trash2 className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               </div>
               <div>
-                <h2 id="delete-pet-modal-title" className="font-bold text-stone-900 dark:text-stone-100">Delete {petToDelete.name}?</h2>
-                <p className="text-sm text-stone-500 dark:text-stone-400">This cannot be undone.</p>
+                <h2 id="delete-pet-modal-title" className="font-bold text-neutral-900 dark:text-neutral-100">Delete {petToDelete.name}?</h2>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">This cannot be undone.</p>
               </div>
             </div>
-            <p className="text-sm text-stone-600 dark:text-stone-300">
+            <p className="text-sm text-neutral-600 dark:text-neutral-300">
               All data for <span className="font-semibold">{petToDelete.name}</span> will be permanently removed — including medical records, shared cards, and lost pet alerts.
             </p>
             <div className="flex gap-3 pt-1">
               <button
                 onClick={() => setPetToDelete(null)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 font-semibold text-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-200 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
               >
                 Cancel
               </button>

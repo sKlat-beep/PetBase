@@ -48,19 +48,19 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-stone-50 flex items-center justify-center p-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-stone-100 p-8 max-w-md w-full text-center space-y-4">
+        <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-neutral-100 p-8 max-w-md w-full text-center space-y-4">
             <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto">
               <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-stone-900">Something went wrong</h1>
-            <p className="text-stone-500 text-sm leading-relaxed">
+            <h1 className="text-xl font-bold text-neutral-900">Something went wrong</h1>
+            <p className="text-neutral-500 text-sm leading-relaxed">
               An error has occurred. Please refresh or re-open the app and try again — a bug report has been filed.
             </p>
             {this.state.errorId && (
-              <p className="text-xs text-stone-400 font-mono">Ref: {this.state.errorId}</p>
+              <p className="text-xs text-neutral-400 font-mono">Ref: {this.state.errorId}</p>
             )}
             <button
               onClick={() => window.location.reload()}

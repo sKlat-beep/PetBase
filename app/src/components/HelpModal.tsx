@@ -76,15 +76,18 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="help-modal-title"
+        className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-stone-100 dark:border-stone-700 shrink-0">
+        <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
           <div className="flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-emerald-500" />
-            <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Help & FAQ</h2>
+            <h2 id="help-modal-title" className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Help & FAQ</h2>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -92,15 +95,15 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
         {/* Content */}
         <div className="overflow-y-auto flex-1 p-4 space-y-2">
           {FAQ_SECTIONS.map(section => (
-            <div key={section.title} className="border border-stone-100 dark:border-stone-700 rounded-xl overflow-hidden">
+            <div key={section.title} className="border border-neutral-100 dark:border-neutral-700 rounded-xl overflow-hidden">
               <button
                 onClick={() => setOpenSection(openSection === section.title ? null : section.title)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-stone-50 dark:hover:bg-stone-700/30 transition-colors"
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors"
               >
-                <span className="font-semibold text-stone-800 dark:text-stone-200 text-sm">{section.title}</span>
+                <span className="font-semibold text-neutral-800 dark:text-neutral-200 text-sm">{section.title}</span>
                 {openSection === section.title
-                  ? <ChevronUp className="w-4 h-4 text-stone-400 shrink-0" />
-                  : <ChevronDown className="w-4 h-4 text-stone-400 shrink-0" />}
+                  ? <ChevronUp className="w-4 h-4 text-neutral-400 shrink-0" />
+                  : <ChevronDown className="w-4 h-4 text-neutral-400 shrink-0" />}
               </button>
 
               <AnimatePresence initial={false}>
@@ -111,17 +114,17 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
                     exit={{ height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="border-t border-stone-100 dark:border-stone-700 divide-y divide-stone-50 dark:divide-stone-700/50">
+                    <div className="border-t border-neutral-100 dark:border-neutral-700 divide-y divide-neutral-50 dark:divide-neutral-700/50">
                       {section.items.map(item => (
                         <div key={item.q}>
                           <button
                             onClick={() => setOpenQuestion(openQuestion === item.q ? null : item.q)}
-                            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-stone-50 dark:hover:bg-stone-700/20 transition-colors gap-3"
+                            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/20 transition-colors gap-3"
                           >
-                            <span className="text-sm text-stone-700 dark:text-stone-300">{item.q}</span>
+                            <span className="text-sm text-neutral-700 dark:text-neutral-300">{item.q}</span>
                             {openQuestion === item.q
-                              ? <ChevronUp className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                              : <ChevronDown className="w-3.5 h-3.5 text-stone-400 shrink-0" />}
+                              ? <ChevronUp className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                              : <ChevronDown className="w-3.5 h-3.5 text-neutral-400 shrink-0" />}
                           </button>
                           <AnimatePresence initial={false}>
                             {openQuestion === item.q && (
@@ -131,7 +134,7 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
                                 exit={{ height: 0 }}
                                 className="overflow-hidden"
                               >
-                                <p className="px-4 pb-3 text-sm text-stone-500 dark:text-stone-400">{item.a}</p>
+                                <p className="px-4 pb-3 text-sm text-neutral-500 dark:text-neutral-400">{item.a}</p>
                               </motion.div>
                             )}
                           </AnimatePresence>
@@ -146,7 +149,7 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-stone-100 dark:border-stone-700 shrink-0 text-center">
+        <div className="p-4 border-t border-neutral-100 dark:border-neutral-700 shrink-0 text-center">
           <button
             onClick={() => { onClose(); onFeedback(); }}
             className="inline-flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium transition-colors"

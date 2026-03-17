@@ -73,7 +73,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
         transition={{ duration: 0.15 }}
-        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
       >
         {/* Header */}
         <div className="bg-amber-500 p-5 flex items-center justify-between">
@@ -95,7 +95,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
             <>
               {/* Pet selector */}
               <div>
-                <label className="block text-xs font-semibold text-stone-500 dark:text-zinc-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2">
                   Which pet is lost?
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -107,12 +107,12 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
                       className={`flex items-center gap-3 p-3 rounded-xl border text-left motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                         selectedPetId === pet.id
                           ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200'
-                          : 'border-stone-200 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 text-stone-700 dark:text-zinc-200'
+                          : 'border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200'
                       }`}
                     >
                       {pet.image
                         ? <img src={pet.image} alt={pet.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
-                        : <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-zinc-700 flex items-center justify-center text-sm font-bold shrink-0">{pet.name[0]}</div>
+                        : <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-sm font-bold shrink-0">{pet.name[0]}</div>
                       }
                       <span className="font-medium text-sm truncate">{pet.name}</span>
                     </button>
@@ -122,7 +122,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
 
               {/* Description */}
               <div>
-                <label htmlFor="lost-description" className="block text-xs font-semibold text-stone-500 dark:text-zinc-400 uppercase tracking-widest mb-2">
+                <label htmlFor="lost-description" className="block text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2">
                   Description
                 </label>
                 <textarea
@@ -131,7 +131,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder={`Help others identify ${selectedPet?.name ?? 'your pet'}:\n• When was ${selectedPet?.name ?? 'they'} last seen? (date, time, location)\n• What were they wearing? (collar color, tags)\n• What were they doing when last seen?\n• Any distinctive markings or behaviors?\n• Your contact info (optional)`}
-                  className="w-full px-4 py-3 rounded-xl border border-stone-200 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100 placeholder:text-stone-400 dark:placeholder:text-zinc-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
             </>
@@ -147,7 +147,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-stone-500 dark:text-zinc-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2">
                   Additional Photos (up to 6)
                 </label>
                 <input ref={fileRef} type="file" accept="image/*" multiple className="sr-only" onChange={handlePhotoSelect} aria-label="Upload lost pet photos" />
@@ -155,7 +155,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-stone-300 dark:border-zinc-600 text-stone-500 dark:text-zinc-400 hover:border-amber-400 hover:text-amber-600 dark:hover:border-amber-700 dark:hover:text-amber-400 motion-safe:transition-colors min-h-[64px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-amber-400 hover:text-amber-600 dark:hover:border-amber-700 dark:hover:text-amber-400 motion-safe:transition-colors min-h-[64px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   >
                     <Upload className="w-4 h-4" aria-hidden="true" />
                     <span className="text-sm font-medium">Upload Photos</span>
@@ -192,12 +192,12 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium border border-stone-200 dark:border-zinc-700 text-stone-600 dark:text-zinc-300 hover:bg-stone-50 dark:hover:bg-zinc-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
             >
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
           ) : (
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-medium border border-stone-200 dark:border-zinc-700 text-stone-600 dark:text-zinc-300 hover:bg-stone-50 dark:hover:bg-zinc-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
               Cancel
             </button>
           )}

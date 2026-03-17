@@ -36,16 +36,19 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="relative bg-white dark:bg-stone-800 rounded-3xl overflow-hidden shadow-2xl w-full max-w-lg z-10 flex flex-col"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="image-cropper-modal-title"
+                    className="relative bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-2xl w-full max-w-lg z-10 flex flex-col"
                 >
-                    <div className="flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 bg-white/50 dark:bg-stone-800/50 backdrop-blur-md z-10">
-                        <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Adjust Photo</h3>
-                        <button onClick={onClose} className="p-2 text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-full transition-colors">
+                    <div className="flex items-center justify-between p-4 border-b border-neutral-100 dark:border-neutral-700 bg-white/50 dark:bg-neutral-800/50 backdrop-blur-md z-10">
+                        <h3 id="image-cropper-modal-title" className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Adjust Photo</h3>
+                        <button onClick={onClose} className="p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div className="relative w-full h-80 sm:h-96 bg-stone-950">
+                    <div className="relative w-full h-80 sm:h-96 bg-neutral-950">
                         <Cropper
                             image={imageSrc}
                             crop={crop}
@@ -67,9 +70,9 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                         )}
                     </div>
 
-                    <div className="p-6 bg-white dark:bg-stone-800 border-t border-stone-100 dark:border-stone-700">
+                    <div className="p-6 bg-white dark:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-700">
                         <div className="flex items-center gap-4 mb-6 px-2">
-                            <ZoomOut className="w-5 h-5 text-stone-400" />
+                            <ZoomOut className="w-5 h-5 text-neutral-400" />
                             <input
                                 type="range"
                                 value={zoom}
@@ -78,13 +81,13 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                                 step={0.1}
                                 aria-label="Zoom"
                                 onChange={(e) => setZoom(Number(e.target.value))}
-                                className="flex-1 h-2 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                                className="flex-1 h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                             />
-                            <ZoomIn className="w-5 h-5 text-stone-400" />
+                            <ZoomIn className="w-5 h-5 text-neutral-400" />
                         </div>
 
                         <div className="flex gap-3">
-                            <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 font-medium hover:bg-stone-50 dark:hover:bg-stone-700 transition">
+                            <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition">
                                 Cancel
                             </button>
                             <button onClick={handleSave} className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition flex items-center justify-center gap-2">

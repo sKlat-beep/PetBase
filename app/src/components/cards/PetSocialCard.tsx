@@ -99,7 +99,7 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
           <button
             onClick={exportAsImage}
             disabled={exporting}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-stone-800 rounded-xl font-medium text-sm hover:bg-stone-100 disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-800 rounded-xl font-medium text-sm hover:bg-neutral-100 disabled:opacity-50 transition-colors"
           >
             {canShare() ? <Share2 className="w-4 h-4" /> : <Download className="w-4 h-4" />}
             {exporting ? 'Exporting...' : canShare() ? 'Share' : 'Download'}

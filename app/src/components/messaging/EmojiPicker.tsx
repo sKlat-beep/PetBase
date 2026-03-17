@@ -37,7 +37,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
       <div className="fixed inset-0 z-20" onClick={onClose} aria-hidden="true" />
 
       {/* Picker card */}
-      <div className="absolute bottom-full mb-2 left-0 z-30 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl shadow-xl p-3 w-72">
+      <div className="absolute bottom-full mb-2 left-0 z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-xl p-3 w-72">
         {/* Category tabs */}
         <div className="flex gap-1 mb-2 overflow-x-auto">
           {CATEGORIES.map((cat, i) => (
@@ -47,7 +47,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
               className={`shrink-0 px-2 py-1 rounded-lg text-xs font-medium transition-colors
                 ${activeCategory === i
                   ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                  : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                  : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
             >
               {cat.label}
             </button>
@@ -60,7 +60,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
             <button
               key={emoji}
               onClick={() => { onSelect(emoji); onClose(); }}
-              className="text-lg p-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+              className="text-lg p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
               aria-label={emoji}
             >
               {emoji}

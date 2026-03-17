@@ -77,7 +77,7 @@ function ReactionButton({
         className={`flex items-center gap-1 text-sm px-2 py-1.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[32px]
           ${isActive
             ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-            : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-600 [&>span:first-child]:drop-shadow-sm'
+            : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600 [&>span:first-child]:drop-shadow-sm'
           }`}
         aria-label={`${label} reaction${count > 0 ? `, ${count}` : ''}`}
         aria-pressed={isActive}
@@ -153,7 +153,7 @@ const PostCard = React.memo(function PostCard({
 }: PostCardProps) {
   return (
     <motion.div
-      className="rounded-xl border border-stone-100 dark:border-stone-700 p-4 bg-stone-50/50 dark:bg-stone-800/40"
+      className="rounded-xl border border-neutral-100 dark:border-neutral-700 p-4 bg-neutral-50/50 dark:bg-neutral-800/40"
       layout
     >
       {/* Flagged banner — visible to Owners and Moderators only */}
@@ -177,7 +177,7 @@ const PostCard = React.memo(function PostCard({
             <div className="flex items-center gap-1.5 flex-wrap">
               <button
                 onClick={() => onViewProfile(post.authorId)}
-                className="text-xs font-semibold text-stone-700 dark:text-stone-200 truncate hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+                className="text-xs font-semibold text-neutral-700 dark:text-neutral-200 truncate hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
               >
                 {post.authorName}
               </button>
@@ -185,7 +185,7 @@ const PostCard = React.memo(function PostCard({
                 <Pin className="w-3 h-3 text-amber-500 dark:text-amber-400 flex-shrink-0" aria-label="Pinned post" />
               )}
             </div>
-            <span className="text-[10px] text-stone-400 dark:text-stone-500">
+            <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
               in{' '}
               <button
                 onClick={() => onNavigateGroup(post.groupId)}
@@ -203,7 +203,7 @@ const PostCard = React.memo(function PostCard({
           {uid && post.authorId !== uid && (
             <button
               onClick={() => onReport(post.id, post.groupId)}
-              className="text-stone-400 dark:text-stone-500 hover:text-orange-500 dark:hover:text-orange-400 p-1 min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded transition-colors"
+              className="text-neutral-400 dark:text-neutral-500 hover:text-orange-500 dark:hover:text-orange-400 p-1 min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded transition-colors"
               aria-label="Report post"
             >
               <Flag className="w-3.5 h-3.5" aria-hidden="true" />
@@ -211,7 +211,7 @@ const PostCard = React.memo(function PostCard({
           )}
           <button
             onClick={() => onNavigateGroup(post.groupId)}
-            className="text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 p-1 min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+            className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 p-1 min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
             aria-label={`View post in ${post.groupName}`}
           >
             <ChevronRight className="w-4 h-4" aria-hidden="true" />
@@ -220,7 +220,7 @@ const PostCard = React.memo(function PostCard({
       </div>
 
       {/* Post content */}
-      <p className="text-sm text-stone-700 dark:text-stone-300 mt-2.5 leading-relaxed line-clamp-3">
+      <p className="text-sm text-neutral-700 dark:text-neutral-300 mt-2.5 leading-relaxed line-clamp-3">
         {post.content}
       </p>
 
@@ -383,9 +383,9 @@ export default function FeedSection() {
   const profileMap = useReactorProfileCache(allReactorUids);
 
   return (
-    <section className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl border border-stone-100 dark:border-stone-700 p-5">
+    <section className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl border border-neutral-100 dark:border-neutral-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-stone-900 dark:text-stone-50 flex items-center gap-2">
+        <h2 className="font-semibold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-emerald-600" aria-hidden="true" />
           Community Feed
         </h2>
@@ -393,7 +393,7 @@ export default function FeedSection() {
           <select
             value={groupFilter}
             onChange={e => setGroupFilter(e.target.value)}
-            className="text-xs rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[36px]"
+            className="text-xs rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[36px]"
             aria-label="Filter feed by group"
           >
             <option value="all">All Groups</option>
@@ -476,11 +476,11 @@ export default function FeedSection() {
           <div ref={sentinelRef} className="py-3 text-center">
             {isPaginating ? (
               <div className="space-y-2 px-2">
-                <div className="h-3 bg-stone-200 dark:bg-stone-700 rounded animate-pulse w-3/4 mx-auto" />
-                <div className="h-3 bg-stone-200 dark:bg-stone-700 rounded animate-pulse w-1/2 mx-auto" />
+                <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse w-3/4 mx-auto" />
+                <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse w-1/2 mx-auto" />
               </div>
             ) : hasMorePosts[groupFilter] === false ? (
-              <p className="text-xs text-stone-400 dark:text-stone-500">No more posts</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500">No more posts</p>
             ) : null}
           </div>
         )}

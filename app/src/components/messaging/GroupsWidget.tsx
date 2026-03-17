@@ -29,13 +29,13 @@ export function GroupsWidget() {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1.5">Your Groups</p>
+      <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wide mb-1.5">Your Groups</p>
       <div className="space-y-0.5">
         {joinedGroups.map(g => (
           <button
             key={g.id}
             onClick={() => handleGroupClick(g.id)}
-            className="w-full flex items-center gap-2.5 px-1.5 py-2 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-1.5 py-2 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors text-left"
           >
             {g.image ? (
               <img src={g.image} alt={g.name} className="w-7 h-7 rounded-lg object-cover shrink-0" />
@@ -44,7 +44,7 @@ export function GroupsWidget() {
                 <Users className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               </div>
             )}
-            <span className="flex-1 text-xs font-medium text-stone-700 dark:text-stone-200 truncate">{g.name}</span>
+            <span className="flex-1 text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{g.name}</span>
             {hasUnread(g) && (
               <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
             )}

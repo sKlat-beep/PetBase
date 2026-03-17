@@ -82,8 +82,8 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
                    rounded-t-2xl sm:rounded-2xl overflow-hidden z-10"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-stone-200/60 dark:border-stone-700/60">
-          <h2 id="profile-panel-title" className="text-lg font-bold text-stone-900 dark:text-stone-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-200/60 dark:border-neutral-700/60">
+          <h2 id="profile-panel-title" className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
             Profile
           </h2>
           <button
@@ -91,8 +91,8 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
             onClick={onClose}
             aria-label="Close profile panel"
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg
-                       text-stone-400 hover:text-stone-600 dark:hover:text-stone-200
-                       hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors
+                       text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200
+                       hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors
                        focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
           >
             <X className="w-5 h-5" />
@@ -109,60 +109,60 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
                 alt={profile.displayName}
                 width={64}
                 height={64}
-                className="w-16 h-16 rounded-2xl object-cover bg-stone-100 dark:bg-stone-800 shrink-0"
+                className="w-16 h-16 rounded-2xl object-cover bg-neutral-100 dark:bg-neutral-800 shrink-0"
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shrink-0">
-                <User className="w-7 h-7 text-stone-400" />
+              <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                <User className="w-7 h-7 text-neutral-400" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="font-bold text-stone-900 dark:text-stone-100 truncate text-base">
+              <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-base">
                 {profile.displayName}
               </p>
               {profile.username && (
-                <p className="text-sm text-stone-500 dark:text-stone-400 truncate">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate">
                   @{profile.username.split('#')[0]}
                   <span className="opacity-60">#{profile.username.split('#')[1]}</span>
                 </p>
               )}
               {statusLabel && (
-                <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{statusLabel}</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">{statusLabel}</p>
               )}
             </div>
           </div>
 
           {/* Public pets */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-3 flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-3 flex items-center gap-1.5">
               <PawPrint className="w-3.5 h-3.5" />
               Pets
             </h3>
             {loadingPets ? (
               <div className="space-y-2">
                 {[...Array(2)].map((_, i) => (
-                  <div key={i} className="h-10 rounded-xl bg-stone-100 dark:bg-stone-800 animate-pulse" />
+                  <div key={i} className="h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
                 ))}
               </div>
             ) : pets.length === 0 ? (
-              <p className="text-sm text-stone-400 dark:text-stone-500 text-center py-3">No public pets.</p>
+              <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-3">No public pets.</p>
             ) : (
               <ul className="space-y-2">
                 {pets.map(pet => (
                   <li
                     key={pet.id}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl
-                               bg-stone-50 dark:bg-stone-800/60
-                               border border-stone-100 dark:border-stone-700/50"
+                               bg-neutral-50 dark:bg-neutral-800/60
+                               border border-neutral-100 dark:border-neutral-700/50"
                   >
-                    <PawPrint className="w-4 h-4 text-stone-400 shrink-0" />
+                    <PawPrint className="w-4 h-4 text-neutral-400 shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
+                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
                         {pet.name}
                       </p>
                       {(pet.breed || pet.type) && (
-                        <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
                           {[pet.type, pet.breed].filter(Boolean).join(' · ')}
                         </p>
                       )}

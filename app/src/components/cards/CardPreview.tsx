@@ -24,11 +24,11 @@ export function CardPreview({ pet, card }: CardPreviewProps) {
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="motion-safe:animate-none bg-white rounded-[2rem] shadow-xl border border-stone-100 overflow-hidden relative max-w-md mx-auto w-full print:shadow-none print:border-0"
+      className="motion-safe:animate-none bg-white rounded-[2rem] shadow-xl border border-neutral-100 overflow-hidden relative max-w-md mx-auto w-full print:shadow-none print:border-0"
     >
       {/* Status banner for expired/revoked */}
       {status !== 'active' && (
-        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-stone-400'}`}>
+        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-neutral-400'}`}>
           {status === 'revoked' ? '⛔ REVOKED' : '⏱ EXPIRED'}
         </div>
       )}
@@ -47,7 +47,7 @@ export function CardPreview({ pet, card }: CardPreviewProps) {
       {/* Avatar — overlaps header/body boundary */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2">
         <div
-          className={`w-28 h-28 border-4 border-white overflow-hidden shadow-lg bg-stone-500 ${
+          className={`w-28 h-28 border-4 border-white overflow-hidden shadow-lg bg-neutral-500 ${
             data.avatarShape === 'square' ? 'rounded-xl' : data.avatarShape === 'squircle' ? 'rounded-[2rem]' : 'rounded-full'
           }`}
           style={!data.image && data.backgroundColor ? { backgroundColor: data.backgroundColor } : undefined}
@@ -64,7 +64,7 @@ export function CardPreview({ pet, card }: CardPreviewProps) {
 
       <div className="pb-8 px-8 text-center" style={{ paddingTop: '5.5rem' }}>
         {/* Pet name — navigable to /pets */}
-        <Link to="/pets" className="text-3xl font-bold text-stone-900 hover:text-emerald-600 transition-colors no-underline">
+        <Link to="/pets" className="text-3xl font-bold text-neutral-900 hover:text-emerald-600 transition-colors no-underline">
           {data.name}
         </Link>
 
@@ -80,7 +80,7 @@ export function CardPreview({ pet, card }: CardPreviewProps) {
 
         {/* Expiry note */}
         {status === 'active' && (
-          <p className="mt-6 text-xs text-stone-400 text-center">Expires {formatExpiry(card.expiresAt)}</p>
+          <p className="mt-6 text-xs text-neutral-400 text-center">Expires {formatExpiry(card.expiresAt)}</p>
         )}
       </div>
     </motion.div>

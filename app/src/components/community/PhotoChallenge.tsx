@@ -119,16 +119,16 @@ export function PhotoChallenge({ group }: Props) {
 
   return (
     <div className="bg-violet-50/50 dark:bg-violet-950/20 rounded-xl border border-violet-200 dark:border-violet-800 p-4">
-      <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-2 mb-3">
+      <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-2 mb-3">
         <Camera className="w-4 h-4 text-violet-500" /> Photo Challenge
       </h3>
 
       {!challenge ? (
         <div className="text-center py-3">
-          <p className="text-xs text-stone-500 dark:text-stone-400 mb-2">No active challenge this week</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">No active challenge this week</p>
           {isOwnerOrMod && (
             <div className="space-y-2">
-              <p className="text-[10px] text-stone-400">Pick a theme:</p>
+              <p className="text-[10px] text-neutral-400">Pick a theme:</p>
               <div className="flex flex-wrap gap-1.5 justify-center">
                 {THEMES.map(t => (
                   <button key={t} onClick={() => startChallenge(t)}
@@ -148,12 +148,12 @@ export function PhotoChallenge({ group }: Props) {
           {sorted.length > 0 && (
             <div className="space-y-2 mb-3">
               {sorted.map((e, idx) => (
-                <div key={e.id} className="flex items-center gap-3 p-2 rounded-lg bg-white/60 dark:bg-stone-800/40">
+                <div key={e.id} className="flex items-center gap-3 p-2 rounded-lg bg-white/60 dark:bg-neutral-800/40">
                   {idx === 0 && <Trophy className="w-4 h-4 text-amber-500 shrink-0" />}
-                  {idx > 0 && <span className="w-4 text-center text-xs text-stone-400">{idx + 1}</span>}
+                  {idx > 0 && <span className="w-4 text-center text-xs text-neutral-400">{idx + 1}</span>}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">{e.petName}</p>
-                    <p className="text-[10px] text-stone-400 truncate">{e.caption} — {e.ownerName}</p>
+                    <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{e.petName}</p>
+                    <p className="text-[10px] text-neutral-400 truncate">{e.caption} — {e.ownerName}</p>
                   </div>
                   <button
                     onClick={() => vote(e.id)}
@@ -168,13 +168,13 @@ export function PhotoChallenge({ group }: Props) {
           )}
 
           {showCreate ? (
-            <div className="space-y-2 p-3 bg-white/60 dark:bg-stone-800/40 rounded-lg">
+            <div className="space-y-2 p-3 bg-white/60 dark:bg-neutral-800/40 rounded-lg">
               <input type="text" value={petName} onChange={e => setPetName(e.target.value)} placeholder="Pet name" maxLength={50}
-                className="w-full px-3 py-1.5 text-xs rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100" />
+                className="w-full px-3 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100" />
               <input type="text" value={caption} onChange={e => setCaption(e.target.value)} placeholder="Caption..." maxLength={100}
-                className="w-full px-3 py-1.5 text-xs rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100" />
+                className="w-full px-3 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100" />
               <div className="flex gap-2">
-                <button onClick={() => setShowCreate(false)} className="flex-1 py-1.5 text-xs text-stone-500 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700">Cancel</button>
+                <button onClick={() => setShowCreate(false)} className="flex-1 py-1.5 text-xs text-neutral-500 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">Cancel</button>
                 <button onClick={addEntry} disabled={!petName.trim() || !caption.trim()} className="flex-1 py-1.5 text-xs bg-violet-600 text-white rounded-lg disabled:opacity-40">Submit</button>
               </div>
             </div>

@@ -171,13 +171,13 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="bg-white dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-sm overflow-hidden"
+      className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden"
     >
       {/* Header */}
       <button
         type="button"
         onClick={toggleExpanded}
-        className="w-full flex items-center justify-between p-5 text-left hover:bg-stone-50 dark:hover:bg-stone-700/30 transition-colors"
+        className="w-full flex items-center justify-between p-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors"
       >
         <div className="flex items-center gap-3">
           {/* Circular progress ring */}
@@ -186,7 +186,7 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
               <circle
                 cx="20" cy="20" r="16"
                 fill="none" strokeWidth="3"
-                className="text-stone-100 dark:text-stone-700"
+                className="text-neutral-100 dark:text-neutral-700"
                 stroke="currentColor"
               />
               <circle
@@ -203,10 +203,10 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
             </span>
           </div>
           <div>
-            <p className="font-bold text-stone-900 dark:text-stone-100">
+            <p className="font-bold text-neutral-900 dark:text-neutral-100">
               {allComplete ? 'All done! Great work.' : 'Getting Started'}
             </p>
-            <p className="text-sm text-stone-500 dark:text-stone-400">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
               {allComplete
                 ? 'Your PetBase is set up.'
                 : `${STEPS.length - completedCount} step${STEPS.length - completedCount === 1 ? '' : 's'} remaining`}
@@ -214,9 +214,9 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
           </div>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-stone-400 shrink-0" />
+          <ChevronUp className="w-5 h-5 text-neutral-400 shrink-0" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-stone-400 shrink-0" />
+          <ChevronDown className="w-5 h-5 text-neutral-400 shrink-0" />
         )}
       </button>
 
@@ -230,13 +230,13 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-stone-100 dark:border-stone-700 px-5 pb-5 pt-4 space-y-2">
+            <div className="border-t border-neutral-100 dark:border-neutral-700 px-5 pb-5 pt-4 space-y-2">
               {STEPS.map((step) => {
                 const done = isComplete(step.id);
                 const skipped = skippedSteps.has(step.id);
                 const finished = done || skipped;
                 return (
-                  <div key={step.id} className={`flex items-start gap-3 px-3 py-3 rounded-xl transition-colors ${finished ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'hover:bg-stone-50 dark:hover:bg-stone-700/40'}`}>
+                  <div key={step.id} className={`flex items-start gap-3 px-3 py-3 rounded-xl transition-colors ${finished ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'hover:bg-neutral-50 dark:hover:bg-neutral-700/40'}`}>
                     <button
                       type="button"
                       onClick={() => !finished && handleStepClick(step)}
@@ -245,17 +245,17 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
                       {done ? (
                         <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                       ) : skipped ? (
-                        <CheckCircle2 className="w-5 h-5 text-stone-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
                       ) : (
-                        <Circle className="w-5 h-5 text-stone-300 dark:text-stone-600 shrink-0 mt-0.5" />
+                        <Circle className="w-5 h-5 text-neutral-300 dark:text-neutral-600 shrink-0 mt-0.5" />
                       )}
                       <div>
-                        <p className={`text-sm font-medium ${finished ? 'line-through text-stone-400 dark:text-stone-500' : 'text-stone-900 dark:text-stone-100'}`}>
+                        <p className={`text-sm font-medium ${finished ? 'line-through text-neutral-400 dark:text-neutral-500' : 'text-neutral-900 dark:text-neutral-100'}`}>
                           {step.label}
                           {skipped && <span className="ml-1.5 text-xs font-normal no-underline">(skipped)</span>}
                         </p>
                         {!finished && (
-                          <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                             {step.description}
                           </p>
                         )}
@@ -266,7 +266,7 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
                         type="button"
                         onClick={(e) => handleSkip(e, step.id)}
                         title="Skip this step"
-                        className="p-1 rounded-lg text-stone-300 dark:text-stone-600 hover:text-stone-500 dark:hover:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors shrink-0 mt-0.5"
+                        className="p-1 rounded-lg text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors shrink-0 mt-0.5"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>

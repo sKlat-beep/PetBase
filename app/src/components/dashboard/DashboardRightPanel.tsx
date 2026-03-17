@@ -149,20 +149,20 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
       >
         <div onClick={markAlertsSeen}>
           {safetyAlerts.length === 0 ? (
-            <p className="text-xs text-stone-400 dark:text-zinc-500">No safety alerts in your area.</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">No safety alerts in your area.</p>
           ) : (
             <div className="space-y-2">
               {safetyAlerts.slice(0, 5).map(alert => (
-                <div key={alert.id} className="flex items-start gap-2 p-2.5 rounded-xl bg-stone-50 dark:bg-zinc-700/50 border border-stone-100 dark:border-zinc-700">
+                <div key={alert.id} className="flex items-start gap-2 p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-700/50 border border-neutral-100 dark:border-neutral-700">
                   <TriangleAlert className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${alert.severity === 'high' ? 'text-rose-500' : alert.severity === 'medium' ? 'text-amber-500' : 'text-sky-500'}`} aria-hidden="true" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-semibold text-stone-900 dark:text-zinc-100 truncate">{alert.title}</span>
+                      <span className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 truncate">{alert.title}</span>
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${CATEGORY_COLORS[alert.category]}`}>
                         {CATEGORY_LABELS[alert.category]}
                       </span>
                     </div>
-                    <p className="text-xs text-stone-500 dark:text-zinc-400 mt-0.5 line-clamp-2">{alert.description}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2">{alert.description}</p>
                   </div>
                 </div>
               ))}
@@ -177,9 +177,9 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
           <div className="flex items-center gap-3">
             <span className="text-4xl leading-none" role="img" aria-label={weather.condition}>{weather.icon}</span>
             <div>
-              <p className="text-2xl font-bold text-stone-900 dark:text-zinc-100 leading-tight">{weather.temp}</p>
-              <p className="text-xs text-stone-500 dark:text-zinc-400">{weather.condition}</p>
-              <p className="text-xs text-stone-400 dark:text-zinc-500 truncate">{weather.location}</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">{weather.temp}</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{weather.condition}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{weather.location}</p>
             </div>
           </div>
         </CollapsiblePanelWidget>
@@ -188,14 +188,14 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
       {/* 4. Upcoming Events */}
       <CollapsiblePanelWidget id="dash-upcoming" title="Upcoming" icon={<Calendar className="w-3 h-3" />}>
         {upcomingEvents.length === 0 ? (
-          <p className="text-xs text-stone-400 dark:text-zinc-500">No upcoming events</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">No upcoming events</p>
         ) : (
           <div className="space-y-2 mb-3">
             {upcomingEvents.map(event => (
-              <div key={event.id} className="flex items-start gap-1.5 text-xs text-stone-600 dark:text-zinc-300">
+              <div key={event.id} className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
                 <Calendar className="w-3 h-3 mt-0.5 shrink-0 text-indigo-500" aria-hidden="true" />
                 <span className="font-medium truncate">{event.title}</span>
-                <span className="text-stone-400 dark:text-zinc-500 shrink-0">· {new Date(event.date).toLocaleDateString()}</span>
+                <span className="text-neutral-400 dark:text-neutral-500 shrink-0">· {new Date(event.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>
@@ -218,8 +218,8 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
               className="w-full h-24 object-cover rounded-xl mb-2 shadow-sm group-hover:opacity-90 motion-safe:transition-opacity"
               referrerPolicy="no-referrer"
             />
-            <p className="text-sm font-semibold text-stone-900 dark:text-zinc-100">{featuredPet.name}</p>
-            <p className="text-xs text-stone-500 dark:text-zinc-400">{featuredPet.breed}</p>
+            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{featuredPet.name}</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">{featuredPet.breed}</p>
           </Link>
         </CollapsiblePanelWidget>
       )}

@@ -90,14 +90,14 @@ export function ShortcutsHelpModal({ onClose }: { onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+        className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
       >
-        <div className="flex items-center justify-between p-5 border-b border-stone-100 dark:border-stone-700">
+        <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-700">
           <div className="flex items-center gap-2">
             <Keyboard className="w-5 h-5 text-emerald-500" />
-            <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Keyboard Shortcuts</h2>
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Keyboard Shortcuts</h2>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -105,12 +105,12 @@ export function ShortcutsHelpModal({ onClose }: { onClose: () => void }) {
         <div className="p-4 space-y-2">
           {SHORTCUTS.map(s => (
             <div key={s.key} className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-stone-600 dark:text-stone-300">{s.label}</span>
+              <span className="text-sm text-neutral-600 dark:text-neutral-300">{s.label}</span>
               <div className="flex items-center gap-1">
                 {s.key.split(' ').map(k => (
                   <kbd
                     key={k}
-                    className="px-2 py-0.5 text-xs font-mono bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 rounded border border-stone-200 dark:border-stone-600"
+                    className="px-2 py-0.5 text-xs font-mono bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 rounded border border-neutral-200 dark:border-neutral-600"
                   >
                     {k}
                   </kbd>

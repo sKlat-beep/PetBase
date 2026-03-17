@@ -611,7 +611,7 @@ export function Dashboard() {
 
   const prefersReduced = useReducedMotion();
 
-  const GLASS_CARD = 'h-full bg-white/75 dark:bg-zinc-800/75 backdrop-blur-xl rounded-2xl border border-stone-200/60 dark:border-zinc-700/60 shadow-sm shadow-black/5 dark:shadow-black/20 overflow-hidden';
+  const GLASS_CARD = 'h-full bg-white/75 dark:bg-neutral-800/75 backdrop-blur-xl rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-sm shadow-black/5 dark:shadow-black/20 overflow-hidden';
 
   // ─── Widget Renderer ──────────────────────────────────────────────────────
 
@@ -622,14 +622,14 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-5`} aria-label="Pet Health Summary">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Syringe className="w-5 h-5 text-emerald-500" aria-hidden="true" /> Pet Health
               </h2>
               <Link to="/pets" className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View all</Link>
             </div>
             {pets.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <p className="text-sm text-stone-400 dark:text-zinc-500 mb-3">No pets added yet.</p>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">No pets added yet.</p>
                 <button onClick={() => setIsModalOpen(true)} className="text-sm text-emerald-600 dark:text-emerald-400 font-medium hover:underline min-h-[44px] px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Add your first pet</button>
               </div>
             ) : (
@@ -640,12 +640,12 @@ export function Dashboard() {
                   const dueSoon = vaccines?.filter(v => getVaccineStatus(v.nextDueDate) === 'due-soon').length ?? 0;
                   const allGood = overdue === 0 && dueSoon === 0;
                   return (
-                    <Link key={pet.id} to="/pets" state={{ editPetId: pet.id }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50/80 dark:hover:bg-zinc-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+                    <Link key={pet.id} to="/pets" state={{ editPetId: pet.id }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
                       {/* pet.image is resolved via PetContext token pipeline */}
                       <img src={pet.image} alt={pet.name} width={80} height={80} className="w-20 h-20 rounded-xl object-cover shrink-0" referrerPolicy="no-referrer" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-stone-900 dark:text-zinc-100 truncate">{pet.name}</p>
-                        <p className="text-xs text-stone-400 dark:text-zinc-500 truncate">{pet.breed}</p>
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{pet.name}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{pet.breed}</p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {overdue > 0 && <span className="text-xs bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 px-2 py-0.5 rounded-full font-medium">{overdue} overdue</span>}
@@ -669,21 +669,21 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-5 flex flex-col`} aria-label="Pet of the Day">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <span aria-hidden="true">🌟</span> Pet of the Day
               </h2>
             </div>
             {!featuredPet ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center py-4">
-                <p className="text-sm text-stone-400 dark:text-zinc-500 mb-3">Add pets to see your daily feature.</p>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">Add pets to see your daily feature.</p>
                 <button onClick={() => setIsModalOpen(true)} className="text-sm text-emerald-600 dark:text-emerald-400 font-medium hover:underline min-h-[44px] px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Add a pet</button>
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center gap-3">
                 <img src={featuredPet.image} alt={featuredPet.name} width={96} height={96} className="w-24 h-24 rounded-2xl object-cover shadow-md shadow-black/10" referrerPolicy="no-referrer" />
                 <div className="text-center">
-                  <p className="text-xl font-bold text-stone-900 dark:text-zinc-100">{featuredPet.name}</p>
-                  <p className="text-sm text-stone-500 dark:text-zinc-400">{featuredPet.breed}</p>
+                  <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{featuredPet.name}</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{featuredPet.breed}</p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2 mt-1">
                   {featuredPet.age && <span className="text-xs bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full font-medium">{formatPetAge(featuredPet.birthday, featuredPet.age)}</span>}
@@ -701,14 +701,14 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-5 flex flex-col`} aria-label="Weather">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-emerald-500" aria-hidden="true" /> Weather
               </h2>
-              {weather && <p className="text-xs text-stone-400 dark:text-zinc-500 truncate max-w-[120px]">{weather.location}</p>}
+              {weather && <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate max-w-[120px]">{weather.location}</p>}
             </div>
             {!profile?.zipCode ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center">
-                <p className="text-sm text-stone-400 dark:text-zinc-500 mb-2">Set your location in Settings to see local weather.</p>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-2">Set your location in Settings to see local weather.</p>
                 <Link to="/settings" className="text-sm text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Go to Settings</Link>
               </div>
             ) : weatherLoading ? (
@@ -718,12 +718,12 @@ export function Dashboard() {
             ) : weather ? (
               <div className="flex-1 flex flex-col items-center justify-center gap-2">
                 <span className="text-5xl" role="img" aria-label={weather.condition}>{weather.icon}</span>
-                <p className="text-3xl font-bold text-stone-900 dark:text-zinc-100">{weather.temp}</p>
-                <p className="text-sm text-stone-500 dark:text-zinc-400">{weather.condition}</p>
+                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{weather.temp}</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">{weather.condition}</p>
               </div>
             ) : (
               <div className="flex-1 flex items-center justify-center">
-                <p className="text-sm text-stone-400 dark:text-zinc-500">Weather unavailable</p>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500">Weather unavailable</p>
               </div>
             )}
           </section>
@@ -735,25 +735,25 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-6`} aria-label="Your Pets">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-stone-900 dark:text-zinc-100">Your Pets</h2>
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Your Pets</h2>
               <Link to="/pets" className="text-emerald-600 dark:text-emerald-400 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View All</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {previewPets.map((pet: Pet) => (
-                <div key={pet.id} className="bg-white/60 dark:bg-zinc-700/60 rounded-xl p-4 border border-stone-200/50 dark:border-zinc-600/50 flex flex-col gap-4">
+                <div key={pet.id} className="bg-white/60 dark:bg-neutral-700/60 rounded-xl p-4 border border-neutral-200/50 dark:border-neutral-600/50 flex flex-col gap-4">
                   <Link to="/pets" state={{ editPetId: pet.id }} className="flex items-center gap-4 group cursor-pointer">
                     <img src={pet.image} alt={pet.name} width={128} height={128} className="w-32 h-32 rounded-xl object-cover" referrerPolicy="no-referrer" />
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg text-stone-900 dark:text-zinc-100 group-hover:text-emerald-600 motion-safe:transition-colors">{pet.name}</h3>
-                      <p className="text-sm text-stone-500 dark:text-zinc-400">{pet.breed}</p>
-                      <div className="flex items-center gap-2 mt-1.5 text-xs font-medium text-stone-600 dark:text-zinc-400">
-                        {pet.age && <span className="bg-stone-100 dark:bg-zinc-700 px-2 py-0.5 rounded select-none">{formatPetAge(pet.birthday, pet.age)}</span>}
-                        {pet.weight && <span className="bg-stone-100 dark:bg-zinc-700 px-2 py-0.5 rounded select-none">{pet.weight}</span>}
+                      <h3 className="font-bold text-lg text-neutral-900 dark:text-neutral-100 group-hover:text-emerald-600 motion-safe:transition-colors">{pet.name}</h3>
+                      <p className="text-sm text-neutral-500 dark:text-neutral-400">{pet.breed}</p>
+                      <div className="flex items-center gap-2 mt-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                        {pet.age && <span className="bg-neutral-100 dark:bg-neutral-700 px-2 py-0.5 rounded select-none">{formatPetAge(pet.birthday, pet.age)}</span>}
+                        {pet.weight && <span className="bg-neutral-100 dark:bg-neutral-700 px-2 py-0.5 rounded select-none">{pet.weight}</span>}
                       </div>
                     </div>
                   </Link>
-                  <div className="grid grid-cols-3 gap-2 pt-3 border-t border-stone-100 dark:border-zinc-700">
-                    <Link to="/pets" state={{ editPetId: pet.id }} aria-label={`Edit ${pet.name}`} className="flex flex-col items-center justify-center p-2 rounded-xl bg-stone-50 dark:bg-zinc-700/50 hover:bg-stone-100 dark:hover:bg-zinc-700 text-stone-600 dark:text-zinc-300 motion-safe:transition-colors min-h-[44px]">
+                  <div className="grid grid-cols-3 gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-700">
+                    <Link to="/pets" state={{ editPetId: pet.id }} aria-label={`Edit ${pet.name}`} className="flex flex-col items-center justify-center p-2 rounded-xl bg-neutral-50 dark:bg-neutral-700/50 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 motion-safe:transition-colors min-h-[44px]">
                       <Settings2 className="w-4 h-4 mb-1" aria-hidden="true" />
                       <span className="text-xs font-semibold uppercase tracking-wide">Edit</span>
                     </Link>
@@ -768,7 +768,7 @@ export function Dashboard() {
                   </div>
                 </div>
               ))}
-              <button onClick={() => setIsModalOpen(true)} className="bg-stone-50/80 dark:bg-zinc-700/50 border-2 border-dashed border-stone-200 dark:border-zinc-600 rounded-2xl p-4 flex flex-col items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-emerald-600 hover:border-emerald-200 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 motion-safe:transition-colors min-h-[112px]">
+              <button onClick={() => setIsModalOpen(true)} className="bg-neutral-50/80 dark:bg-neutral-700/50 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-2xl p-4 flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:text-emerald-600 hover:border-emerald-200 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 motion-safe:transition-colors min-h-[112px]">
                 <Plus className="w-6 h-6 mb-2" />
                 <span className="font-medium text-sm">Add Pet</span>
               </button>
@@ -780,7 +780,7 @@ export function Dashboard() {
       case 'quick_actions': {
         return (
           <section className={`${GLASS_CARD} p-4 flex flex-col gap-3`} aria-label="Quick Actions">
-            <h2 className="text-sm font-semibold text-stone-500 dark:text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest flex items-center gap-2">
               <Zap className="w-4 h-4" aria-hidden="true" /> Quick Actions
             </h2>
             <div className="flex flex-col gap-3 flex-1">
@@ -829,8 +829,8 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-6`} aria-label="Upcoming Events">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100">Upcoming</h2>
-              <Calendar className="w-5 h-5 text-stone-400 dark:text-zinc-500" />
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Upcoming</h2>
+              <Calendar className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
             </div>
             <div className="space-y-4">
               {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
@@ -839,19 +839,19 @@ export function Dashboard() {
                     <event.icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-stone-900 dark:text-zinc-100">{event.title}</h4>
-                    <p className="text-sm text-stone-500 dark:text-zinc-400">{event.pet} • {event.date}</p>
+                    <h4 className="font-medium text-neutral-900 dark:text-neutral-100">{event.title}</h4>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">{event.pet} • {event.date}</p>
                   </div>
                 </div>
               )) : (
-                <p className="text-sm text-stone-400 dark:text-zinc-500 text-center py-4">
+                <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-4">
                   No upcoming events. Join a community group to see RSVPs here.
                 </p>
               )}
             </div>
             <button
               onClick={() => setIsCalendarOpen(true)}
-              className="w-full mt-6 py-2 text-sm font-medium text-stone-600 dark:text-zinc-400 bg-stone-50/80 dark:bg-zinc-700/50 hover:bg-stone-100 dark:hover:bg-zinc-700 rounded-lg motion-safe:transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="w-full mt-6 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-50/80 dark:bg-neutral-700/50 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg motion-safe:transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
             >
               View Calendar
             </button>
@@ -879,7 +879,7 @@ export function Dashboard() {
                     placeholder="E.g., Vet bill, food"
                     value={newExpenseLabel}
                     onChange={(e) => setNewExpenseLabel(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
@@ -893,7 +893,7 @@ export function Dashboard() {
                     placeholder="0.00"
                     value={newExpenseAmount}
                     onChange={(e) => setNewExpenseAmount(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -903,7 +903,7 @@ export function Dashboard() {
                     aria-label="Recurring expense"
                     aria-checked={newExpenseRecurring}
                     onClick={() => setNewExpenseRecurring(v => !v)}
-                    className={`relative w-9 h-5 rounded-full motion-safe:transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${newExpenseRecurring ? 'bg-emerald-500' : 'bg-stone-300 dark:bg-zinc-600'}`}
+                    className={`relative w-9 h-5 rounded-full motion-safe:transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${newExpenseRecurring ? 'bg-emerald-500' : 'bg-neutral-300 dark:bg-neutral-600'}`}
                   >
                     <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow motion-safe:transition-transform ${newExpenseRecurring ? 'translate-x-4' : 'translate-x-0'}`} />
                   </button>
@@ -916,7 +916,7 @@ export function Dashboard() {
                       id="expense-frequency"
                       value={newExpenseFrequency}
                       onChange={(e) => setNewExpenseFrequency(e.target.value as typeof newExpenseFrequency)}
-                      className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-zinc-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option>Weekly</option>
                       <option>Bi-weekly</option>
@@ -960,17 +960,17 @@ export function Dashboard() {
                     {recurring.map(e => (
                       <div key={e.id} className="flex items-center justify-between text-xs">
                         <div>
-                          <span className="font-medium text-stone-800 dark:text-zinc-200">{e.label}</span>
+                          <span className="font-medium text-neutral-800 dark:text-neutral-200">{e.label}</span>
                           <span className="text-emerald-600 dark:text-emerald-400 ml-1">· {e.frequency}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-stone-700 dark:text-zinc-300">${e.amount.toFixed(2)}</span>
+                          <span className="font-medium text-neutral-700 dark:text-neutral-300">${e.amount.toFixed(2)}</span>
                           {confirmStopId === e.id ? (
                             <span className="flex items-center gap-1">
                               <button
                                 type="button"
                                 onClick={() => setConfirmStopId(null)}
-                                className="text-xs text-stone-500 dark:text-zinc-400 border border-stone-200 dark:border-zinc-600 px-1.5 py-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                                className="text-xs text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600 px-1.5 py-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                               >Cancel</button>
                               <button
                                 type="button"
@@ -998,10 +998,10 @@ export function Dashboard() {
               {expenses.filter(e => !e.recurring).slice(0, 5).map((expense) => (
                 <div key={expense.id} className="flex items-center justify-between text-sm py-1 border-b border-emerald-100/50 dark:border-emerald-800/50 last:border-0">
                   <div>
-                    <p className="font-medium text-stone-900 dark:text-zinc-100">{expense.label}</p>
-                    <p className="text-xs text-stone-500 dark:text-zinc-400">{new Date(expense.date).toLocaleDateString()}</p>
+                    <p className="font-medium text-neutral-900 dark:text-neutral-100">{expense.label}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{new Date(expense.date).toLocaleDateString()}</p>
                   </div>
-                  <span className="font-medium text-stone-900 dark:text-zinc-100">${expense.amount.toFixed(2)}</span>
+                  <span className="font-medium text-neutral-900 dark:text-neutral-100">${expense.amount.toFixed(2)}</span>
                 </div>
               ))}
               {expenses.filter(e => !e.recurring).length > 5 && (
@@ -1031,26 +1031,26 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-6`} aria-label="My Groups">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Users className="w-5 h-5 text-violet-500" aria-hidden="true" /> My Groups
               </h2>
               <Link to="/community" className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View All</Link>
             </div>
             {myGroups.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-sm text-stone-400 dark:text-zinc-500 mb-3">You haven't joined any groups yet.</p>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">You haven't joined any groups yet.</p>
                 <Link to="/community" className="text-sm text-violet-600 dark:text-violet-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Browse groups</Link>
               </div>
             ) : (
               <div className="space-y-2">
                 {myGroups.map(g => (
-                  <Link key={g.id} to={`/community/groups/${g.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50/80 dark:hover:bg-zinc-700/50 motion-safe:transition-colors">
+                  <Link key={g.id} to={`/community/groups/${g.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors">
                     <div className="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0 text-sm font-bold text-violet-700 dark:text-violet-300">
                       {g.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-800 dark:text-zinc-200 truncate">{g.name}</p>
-                      <p className="text-xs text-stone-400 dark:text-zinc-500">{Object.keys(g.members).length} member{Object.keys(g.members).length !== 1 ? 's' : ''}</p>
+                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{g.name}</p>
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500">{Object.keys(g.members).length} member{Object.keys(g.members).length !== 1 ? 's' : ''}</p>
                     </div>
                     {g.tags?.[0] && <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full shrink-0">{g.tags[0]}</span>}
                   </Link>
@@ -1065,20 +1065,20 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-6`} aria-label="Friends">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Users className="w-5 h-5 text-pink-500" aria-hidden="true" /> Friends
               </h2>
               <Link to="/community" className="text-xs text-pink-600 dark:text-pink-400 hover:underline font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View All</Link>
             </div>
             {myFriends.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-sm text-stone-400 dark:text-zinc-500 mb-3">No friends added yet.</p>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">No friends added yet.</p>
                 <Link to="/community" className="text-sm text-pink-600 dark:text-pink-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Find people</Link>
               </div>
             ) : (
               <div className="space-y-2">
                 {myFriends.map(f => (
-                  <Link key={f.uid} to="/community" className="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50/80 dark:hover:bg-zinc-700/50 motion-safe:transition-colors">
+                  <Link key={f.uid} to="/community" className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors">
                     {f.avatarUrl ? (
                       // avatarUrl resolved server-side before stored in SocialContext
                       <img src={f.avatarUrl} alt={f.displayName} width={36} height={36} className="w-9 h-9 rounded-full object-cover shrink-0" />
@@ -1088,8 +1088,8 @@ export function Dashboard() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-stone-800 dark:text-zinc-200 truncate">{f.displayName}</p>
-                      {f.pets.length > 0 && <p className="text-xs text-stone-400 dark:text-zinc-500">{f.pets.map(p => `${p.count} ${p.type}`).join(', ')}</p>}
+                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{f.displayName}</p>
+                      {f.pets.length > 0 && <p className="text-xs text-neutral-400 dark:text-neutral-500">{f.pets.map(p => `${p.count} ${p.type}`).join(', ')}</p>}
                     </div>
                   </Link>
                 ))}
@@ -1103,14 +1103,14 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-6`} aria-label="Local Services">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-stone-900 dark:text-zinc-100">Local Services for You</h2>
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Local Services for You</h2>
               <Link to="/search" className="text-emerald-600 dark:text-emerald-400 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Find more</Link>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <button
                 onClick={() => setServiceCatIdx(i => (i - 1 + SERVICE_CATS.length) % SERVICE_CATS.length)}
                 aria-label="Previous category"
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-stone-200 dark:border-zinc-700 text-stone-500 hover:text-stone-900 dark:hover:text-zinc-100 hover:bg-stone-100 dark:hover:bg-zinc-700 motion-safe:transition-colors shrink-0"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 motion-safe:transition-colors shrink-0"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -1121,7 +1121,7 @@ export function Dashboard() {
                     to={`/search?type=${cat}`}
                     className={`flex-none px-4 py-2 rounded-full text-sm font-medium motion-safe:transition-colors border ${i === serviceCatIdx
                       ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-white/60 dark:bg-zinc-700/60 border-stone-200 dark:border-zinc-600 text-stone-700 dark:text-zinc-300 hover:bg-stone-50 dark:hover:bg-zinc-700'
+                      : 'bg-white/60 dark:bg-neutral-700/60 border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
                       } ${Math.abs(i - serviceCatIdx) > 1 ? 'hidden sm:flex' : 'flex'}`}
                   >
                     {cat}
@@ -1131,21 +1131,21 @@ export function Dashboard() {
               <button
                 onClick={() => setServiceCatIdx(i => (i + 1) % SERVICE_CATS.length)}
                 aria-label="Next category"
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-stone-200 dark:border-zinc-700 text-stone-500 hover:text-stone-900 dark:hover:text-zinc-100 hover:bg-stone-100 dark:hover:bg-zinc-700 motion-safe:transition-colors shrink-0"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 motion-safe:transition-colors shrink-0"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
             {topService ? (
-              <div className="bg-white/60 dark:bg-zinc-700/60 rounded-2xl p-6 border border-stone-100/60 dark:border-zinc-600/60 relative overflow-hidden shadow-sm hover:shadow-md motion-safe:transition-shadow">
+              <div className="bg-white/60 dark:bg-neutral-700/60 rounded-2xl p-6 border border-neutral-100/60 dark:border-neutral-600/60 relative overflow-hidden shadow-sm hover:shadow-md motion-safe:transition-shadow">
                 <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
                   <img src={topService.image} alt={topService.name} width={96} height={96} className="w-24 h-24 rounded-xl object-cover shadow-sm" referrerPolicy="no-referrer" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-md uppercase tracking-wider">Top Rated Near You</span>
                     </div>
-                    <h3 className="font-bold text-lg text-stone-900 dark:text-zinc-100">{topService.name}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm font-medium text-stone-600 dark:text-zinc-400">
+                    <h3 className="font-bold text-lg text-neutral-900 dark:text-neutral-100">{topService.name}</h3>
+                    <div className="flex items-center gap-4 mt-2 text-sm font-medium text-neutral-600 dark:text-neutral-400">
                       <div className="flex items-center gap-1"><MapPin className="w-4 h-4 text-emerald-500" /><span>{topService.distance}</span></div>
                       <div className="flex items-center gap-1"><Activity className="w-4 h-4 text-rose-400" /><span>{topService.type}</span></div>
                     </div>
@@ -1154,8 +1154,8 @@ export function Dashboard() {
                 </div>
               </div>
             ) : (
-              <div className="bg-stone-50/80 dark:bg-zinc-700/50 rounded-2xl p-6 border border-dashed border-stone-200 dark:border-zinc-600 text-center text-stone-500 dark:text-zinc-400">
-                <MapPin className="w-8 h-8 mx-auto mb-3 text-stone-400" />
+              <div className="bg-neutral-50/80 dark:bg-neutral-700/50 rounded-2xl p-6 border border-dashed border-neutral-200 dark:border-neutral-600 text-center text-neutral-500 dark:text-neutral-400">
+                <MapPin className="w-8 h-8 mx-auto mb-3 text-neutral-400" />
                 <p>Set your Zip Code in the Search page to see top-rated services near you.</p>
               </div>
             )}
@@ -1168,7 +1168,7 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-5`} aria-label="Pets & Health">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <span aria-hidden="true">🐾</span> Pets &amp; Health
               </h2>
               <Link to="/pets" className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">
@@ -1182,15 +1182,15 @@ export function Dashboard() {
                 const dueSoon = vaccines?.filter(v => getVaccineStatus(v.nextDueDate) === 'due-soon').length ?? 0;
                 const allGood = overdue === 0 && dueSoon === 0;
                 return (
-                  <div key={pet.id} className="bg-white/60 dark:bg-zinc-700/60 rounded-xl p-3 border border-stone-200/50 dark:border-zinc-600/50 flex flex-col gap-2">
+                  <div key={pet.id} className="bg-white/60 dark:bg-neutral-700/60 rounded-xl p-3 border border-neutral-200/50 dark:border-neutral-600/50 flex flex-col gap-2">
                     <Link to="/pets" state={{ editPetId: pet.id }} className="flex flex-col items-center gap-2 group">
                       <img src={pet.image} alt={pet.name} width={112} height={112} className="w-28 h-28 rounded-xl object-cover shrink-0" referrerPolicy="no-referrer" />
                       <div className="text-center min-w-0 w-full">
-                        <p className="text-sm font-semibold text-stone-900 dark:text-zinc-100 truncate">{pet.name}</p>
-                        <p className="text-xs text-stone-400 dark:text-zinc-500 truncate">{pet.breed}</p>
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{pet.name}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{pet.breed}</p>
                         <div className="flex flex-wrap justify-center gap-1 mt-1">
-                          {pet.age && <span className="text-xs bg-stone-100 dark:bg-zinc-700 px-1.5 py-0.5 rounded font-medium text-stone-600 dark:text-zinc-300">{formatPetAge(pet.birthday, pet.age)}</span>}
-                          {pet.weight && <span className="text-xs bg-stone-100 dark:bg-zinc-700 px-1.5 py-0.5 rounded font-medium text-stone-600 dark:text-zinc-300">{pet.weight}</span>}
+                          {pet.age && <span className="text-xs bg-neutral-100 dark:bg-neutral-700 px-1.5 py-0.5 rounded font-medium text-neutral-600 dark:text-neutral-300">{formatPetAge(pet.birthday, pet.age)}</span>}
+                          {pet.weight && <span className="text-xs bg-neutral-100 dark:bg-neutral-700 px-1.5 py-0.5 rounded font-medium text-neutral-600 dark:text-neutral-300">{pet.weight}</span>}
                         </div>
                       </div>
                     </Link>
@@ -1199,8 +1199,8 @@ export function Dashboard() {
                       {overdue === 0 && dueSoon > 0 && <span className="text-xs bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">⚠ {dueSoon} due soon</span>}
                       {allGood && <span className="text-xs bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">✓ Up to date</span>}
                     </div>
-                    <div className="grid grid-cols-3 gap-1 pt-2 border-t border-stone-100 dark:border-zinc-700">
-                      <Link to="/pets" state={{ editPetId: pet.id }} aria-label={`Edit ${pet.name}`} title="Edit" className="flex items-center justify-center p-2 rounded-lg bg-stone-50 dark:bg-zinc-700/50 hover:bg-stone-100 dark:hover:bg-zinc-700 text-stone-600 dark:text-zinc-300 motion-safe:transition-colors min-h-[36px]">
+                    <div className="grid grid-cols-3 gap-1 pt-2 border-t border-neutral-100 dark:border-neutral-700">
+                      <Link to="/pets" state={{ editPetId: pet.id }} aria-label={`Edit ${pet.name}`} title="Edit" className="flex items-center justify-center p-2 rounded-lg bg-neutral-50 dark:bg-neutral-700/50 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 motion-safe:transition-colors min-h-[36px]">
                         <Settings2 className="w-3.5 h-3.5" aria-hidden="true" />
                       </Link>
                       <Link to="/pets" state={{ openMedical: true, tab: 'meds', petId: pet.id }} aria-label={`Medications for ${pet.name}`} title="Meds" className="flex items-center justify-center p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 motion-safe:transition-colors min-h-[36px]">
@@ -1215,7 +1215,7 @@ export function Dashboard() {
               })}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-stone-50/80 dark:bg-zinc-700/50 border-2 border-dashed border-stone-200 dark:border-zinc-600 rounded-xl p-3 flex flex-col items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-emerald-600 hover:border-emerald-200 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 motion-safe:transition-colors min-h-[120px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="bg-neutral-50/80 dark:bg-neutral-700/50 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-xl p-3 flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-emerald-600 hover:border-emerald-200 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 motion-safe:transition-colors min-h-[120px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
               >
                 <Plus className="w-5 h-5 mb-1" aria-hidden="true" />
                 <span className="text-xs font-medium">Add Pet</span>
@@ -1243,25 +1243,25 @@ export function Dashboard() {
           .slice(0, 2);
         return (
           <section className={`${GLASS_CARD} p-5`} aria-label="Groups & Activity">
-            <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
               <Users className="w-5 h-5 text-violet-500" aria-hidden="true" /> Groups &amp; Activity
             </h2>
             <div className="flex gap-4 h-full">
               {/* Left: My Groups */}
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-zinc-400 mb-2">My Groups</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">My Groups</p>
                 {myGroups.length === 0 ? (
-                  <p className="text-xs text-stone-400 dark:text-zinc-500">Join groups to see them here</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Join groups to see them here</p>
                 ) : (
                   <div className="space-y-2">
                     {myGroups.map(g => (
-                      <Link key={g.id} to={`/community/groups/${g.id}`} className="flex items-center gap-2 p-2 rounded-xl hover:bg-stone-50/80 dark:hover:bg-zinc-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+                      <Link key={g.id} to={`/community/groups/${g.id}`} className="flex items-center gap-2 p-2 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
                         <div className="w-8 h-8 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0 text-xs font-bold text-violet-700 dark:text-violet-300">
                           {g.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-stone-800 dark:text-zinc-200 truncate">{g.name}</p>
-                          <p className="text-xs text-stone-400 dark:text-zinc-500">{Object.keys(g.members).length} members</p>
+                          <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{g.name}</p>
+                          <p className="text-xs text-neutral-400 dark:text-neutral-500">{Object.keys(g.members).length} members</p>
                         </div>
                         {g.tags?.[0] && <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 px-1.5 py-0.5 rounded-full shrink-0 hidden sm:block">{g.tags[0]}</span>}
                       </Link>
@@ -1271,29 +1271,29 @@ export function Dashboard() {
               </div>
               {/* Right: Recent Activity */}
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-zinc-400 mb-2">Recent Activity</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">Recent Activity</p>
                 {recentPosts.length > 0 ? (
                   <div className="space-y-2 mb-3">
                     {recentPosts.map(post => (
-                      <Link key={post.id} to={`/community/groups/${post.groupId}`} className="block p-2 rounded-xl hover:bg-stone-50/80 dark:hover:bg-zinc-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
-                        <p className="text-xs font-medium text-stone-700 dark:text-zinc-300 truncate">{post.groupName}</p>
-                        <p className="text-xs text-stone-500 dark:text-zinc-400 truncate">{post.content.slice(0, 60)}{post.content.length > 60 ? '…' : ''}</p>
-                        <p className="text-xs text-stone-400 dark:text-zinc-500 mt-0.5">{new Date(post.createdAt).toLocaleDateString()}</p>
+                      <Link key={post.id} to={`/community/groups/${post.groupId}`} className="block p-2 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+                        <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300 truncate">{post.groupName}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{post.content.slice(0, 60)}{post.content.length > 60 ? '…' : ''}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{new Date(post.createdAt).toLocaleDateString()}</p>
                       </Link>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-stone-400 dark:text-zinc-500 mb-3">No recent posts</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">No recent posts</p>
                 )}
                 {upcomingGroupEvents.length > 0 && (
                   <div className="space-y-1.5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-zinc-400">Upcoming Events</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Upcoming Events</p>
                     {upcomingGroupEvents.map(event => (
-                      <div key={event.id} className="flex items-start gap-1.5 text-xs text-stone-600 dark:text-zinc-300">
+                      <div key={event.id} className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
                         <span aria-hidden="true">📅</span>
                         <div className="min-w-0">
                           <span className="font-medium truncate block">{event.title}</span>
-                          <span className="text-stone-400 dark:text-zinc-500">{event.groupName} · {new Date(event.date).toLocaleDateString()}</span>
+                          <span className="text-neutral-400 dark:text-neutral-500">{event.groupName} · {new Date(event.date).toLocaleDateString()}</span>
                         </div>
                       </div>
                     ))}
@@ -1319,19 +1319,19 @@ export function Dashboard() {
         ).length;
         return (
           <section className={`${GLASS_CARD} p-5`} aria-label="Friends & Activity">
-            <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
               <Users className="w-5 h-5 text-pink-500" aria-hidden="true" /> Friends &amp; Activity
             </h2>
             <div className="flex gap-4">
               {/* Left: My Friends */}
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-zinc-400 mb-2">My Friends</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">My Friends</p>
                 {myFriends.length === 0 ? (
-                  <p className="text-xs text-stone-400 dark:text-zinc-500">Add friends to see their activity here</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Add friends to see their activity here</p>
                 ) : (
                   <div className="space-y-2">
                     {myFriends.map(f => (
-                      <Link key={f.uid} to="/community" className="flex items-center gap-2 p-2 rounded-xl hover:bg-stone-50/80 dark:hover:bg-zinc-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+                      <Link key={f.uid} to="/community" className="flex items-center gap-2 p-2 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
                         {f.avatarUrl ? (
                           <img src={f.avatarUrl} alt={f.displayName} width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0" />
                         ) : (
@@ -1340,8 +1340,8 @@ export function Dashboard() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-stone-800 dark:text-zinc-200 truncate">{f.displayName}</p>
-                          {f.pets.length > 0 && <p className="text-xs text-stone-400 dark:text-zinc-500 truncate">{f.pets.map(p => `${p.count} ${p.type}`).join(', ')}</p>}
+                          <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{f.displayName}</p>
+                          {f.pets.length > 0 && <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{f.pets.map(p => `${p.count} ${p.type}`).join(', ')}</p>}
                         </div>
                       </Link>
                     ))}
@@ -1350,30 +1350,30 @@ export function Dashboard() {
               </div>
               {/* Right: Friend Activity */}
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-zinc-400 mb-2">Friend Activity</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">Friend Activity</p>
                 {friendEvents.length === 0 && myFriends.length === 0 ? (
-                  <p className="text-xs text-stone-400 dark:text-zinc-500">Add friends to see their activity here</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Add friends to see their activity here</p>
                 ) : friendEvents.length === 0 ? (
-                  <p className="text-xs text-stone-400 dark:text-zinc-500">No friend events yet</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">No friend events yet</p>
                 ) : (
                   <div className="space-y-2 mb-3">
                     {friendEvents.map(event => {
                       const attendingFriend = myFriends.find(f => event.attendeeIds.includes(f.uid));
                       return (
-                        <div key={event.id} className="text-xs text-stone-600 dark:text-zinc-300 p-2 rounded-xl bg-stone-50/80 dark:bg-zinc-700/40">
+                        <div key={event.id} className="text-xs text-neutral-600 dark:text-neutral-300 p-2 rounded-xl bg-neutral-50/80 dark:bg-neutral-700/40">
                           <span aria-hidden="true">🐾 </span>
                           <span className="font-medium">{attendingFriend?.displayName ?? 'A friend'}</span>
                           {' is going to '}
                           <span className="font-medium">{event.title}</span>
                           {' — '}
-                          <span className="text-stone-400">{new Date(event.date).toLocaleDateString()}</span>
+                          <span className="text-neutral-400">{new Date(event.date).toLocaleDateString()}</span>
                         </div>
                       );
                     })}
                   </div>
                 )}
                 {sharedGroupsCount > 0 && (
-                  <p className="text-xs text-stone-500 dark:text-zinc-400 mt-2">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
                     You share <span className="font-semibold text-violet-600 dark:text-violet-400">{sharedGroupsCount}</span> group{sharedGroupsCount !== 1 ? 's' : ''} with friends
                   </p>
                 )}
@@ -1438,13 +1438,13 @@ export function Dashboard() {
         return (
           <section className={`${GLASS_CARD} p-5`} aria-label="Today's Reminders">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-stone-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-sky-500" aria-hidden="true" /> Today's Reminders
               </h2>
             </div>
             {reminders.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <p className="text-sm text-stone-500 dark:text-zinc-400">All caught up! No reminders today 🎉</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">All caught up! No reminders today 🎉</p>
               </div>
             ) : (
               <div className="space-y-2 overflow-y-auto max-h-[220px]">
@@ -1453,7 +1453,7 @@ export function Dashboard() {
                     return (
                       <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40">
                         <span className="text-base shrink-0" aria-hidden="true">💉</span>
-                        <p className="text-sm text-stone-800 dark:text-zinc-200 leading-snug">
+                        <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
                           <span className="font-semibold">{r.petName}</span>
                           {' — '}
                           <span>{r.vaccineName}</span>
@@ -1467,11 +1467,11 @@ export function Dashboard() {
                     return (
                       <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200/60 dark:border-sky-800/40">
                         <span className="text-base shrink-0" aria-hidden="true">🏥</span>
-                        <p className="text-sm text-stone-800 dark:text-zinc-200 leading-snug">
+                        <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
                           <span className="font-semibold">{r.petName}</span>
                           {' — vet appointment '}
                           <span className="font-medium text-sky-700 dark:text-sky-400">{r.when}</span>
-                          {r.clinic && r.clinic !== 'Vet' && <span className="text-stone-500 dark:text-zinc-400"> at {r.clinic}</span>}
+                          {r.clinic && r.clinic !== 'Vet' && <span className="text-neutral-500 dark:text-neutral-400"> at {r.clinic}</span>}
                         </p>
                       </div>
                     );
@@ -1480,11 +1480,11 @@ export function Dashboard() {
                     return (
                       <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-violet-50/80 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40">
                         <span className="text-base shrink-0" aria-hidden="true">💊</span>
-                        <p className="text-sm text-stone-800 dark:text-zinc-200 leading-snug">
+                        <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
                           <span className="font-semibold">{r.petName}</span>
                           {' — '}
                           <span>{r.medName}</span>
-                          {r.frequency && <span className="text-stone-500 dark:text-zinc-400"> ({r.frequency})</span>}
+                          {r.frequency && <span className="text-neutral-500 dark:text-neutral-400"> ({r.frequency})</span>}
                         </p>
                       </div>
                     );
@@ -1501,11 +1501,11 @@ export function Dashboard() {
         return (
           <div className="flex flex-col items-center justify-center h-full gap-2">
             <div className="text-4xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{streakCount}</div>
-            <p className="text-sm font-medium text-stone-600 dark:text-stone-300">
+            <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
               {streakCount === 1 ? 'day streak' : 'day streak'}
             </p>
             {longestStreak > 0 && (
-              <p className="text-xs text-stone-400">Best: {longestStreak} days</p>
+              <p className="text-xs text-neutral-400">Best: {longestStreak} days</p>
             )}
           </div>
         );
@@ -1535,10 +1535,10 @@ export function Dashboard() {
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-stone-900 dark:text-zinc-100 tracking-tight">
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
               {greeting}, {user?.displayName?.split(' ')[0] || 'Pet Parent'}!
             </h1>
-            <p className="text-stone-500 dark:text-zinc-400 mt-1">
+            <p className="text-neutral-500 dark:text-neutral-400 mt-1">
               {pets.length > 0
                 ? `Here's what's happening with ${pets.length === 1 ? pets[0].name : 'your furry friends'} today.`
                 : "Here's what's happening with your furry friends today."}
@@ -1548,7 +1548,7 @@ export function Dashboard() {
             {!editMode && (
               <button
                 onClick={enterEditMode}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium motion-safe:transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 border border-stone-200 dark:border-zinc-700 text-stone-600 dark:text-zinc-400 hover:bg-stone-50 dark:hover:bg-zinc-800"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium motion-safe:transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
               >
                 <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
                 Edit Layout
@@ -1600,17 +1600,17 @@ export function Dashboard() {
               </div>
 
               {/* Banner content */}
-              <div className="relative rounded-[14px] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-6 py-4 flex items-center gap-3">
+              <div className="relative rounded-[14px] bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm px-6 py-4 flex items-center gap-3">
                 <span className="text-3xl" role="img" aria-label="birthday cake">🎂</span>
                 <div>
-                  <p className="text-lg font-bold text-stone-900 dark:text-zinc-100">
+                  <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
                     Happy Birthday,{' '}
                     {birthdayPets.length === 1
                       ? birthdayPets[0].name
                       : birthdayPets.slice(0, -1).map(p => p.name).join(', ') + ' & ' + birthdayPets[birthdayPets.length - 1].name}
                     !
                   </p>
-                  <p className="text-sm text-stone-500 dark:text-zinc-400">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {birthdayPets.length === 1 ? 'Your furry friend' : 'Your furry friends'} {birthdayPets.length === 1 ? 'has' : 'have'} a birthday today. 🎉
                   </p>
                 </div>
@@ -1623,14 +1623,14 @@ export function Dashboard() {
         <div ref={containerRef} className="w-full">
           {/* Hidden widgets tray — edit mode only, shown ABOVE the grid */}
           {editMode && hiddenWidgets.size > 0 && (
-            <div className="mb-6 p-4 bg-white/50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-stone-300 dark:border-zinc-600">
-              <p className="text-xs font-semibold text-stone-500 dark:text-zinc-400 uppercase tracking-widest mb-3">Hidden Widgets — click to restore</p>
+            <div className="mb-6 p-4 bg-white/50 dark:bg-neutral-800/50 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600">
+              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-3">Hidden Widgets — click to restore</p>
               <div className="flex flex-wrap gap-2">
                 {[...hiddenWidgets].map(key => (
                   <button
                     key={key}
                     onClick={() => showWidget(key)}
-                    className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-xl border border-stone-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 text-stone-600 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-300 dark:hover:border-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-400 motion-safe:transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 text-neutral-600 dark:text-neutral-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-300 dark:hover:border-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-400 motion-safe:transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     title={`Restore ${WIDGET_LABELS[key]}`}
                   >
                     <Eye className="w-3.5 h-3.5" aria-hidden="true" />
@@ -1644,7 +1644,7 @@ export function Dashboard() {
           {layoutLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-48 rounded-2xl bg-stone-100 dark:bg-zinc-800 animate-pulse" />
+                <div key={i} className="h-48 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
               ))}
             </div>
           ) : isMobile ? (
@@ -1671,8 +1671,8 @@ export function Dashboard() {
                   {renderWidget(l.i as WidgetKey)}
                   {editMode && (
                     <div className="absolute inset-0 z-10 rounded-2xl ring-2 ring-emerald-500/60 ring-offset-2 pointer-events-none motion-safe:animate-pulse">
-                      <div className="absolute top-0 inset-x-0 flex items-center gap-2 px-3 py-2 bg-zinc-900/90 dark:bg-zinc-950/90 backdrop-blur-sm rounded-t-2xl pointer-events-auto">
-                        <div className="widget-drag-handle cursor-grab active:cursor-grabbing min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" aria-label={`Drag ${WIDGET_LABELS[l.i as WidgetKey]}`} title="Drag to reorder">
+                      <div className="absolute top-0 inset-x-0 flex items-center gap-2 px-3 py-2 bg-neutral-900/90 dark:bg-neutral-950/90 backdrop-blur-sm rounded-t-2xl pointer-events-auto">
+                        <div className="widget-drag-handle cursor-grab active:cursor-grabbing min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" aria-label={`Drag ${WIDGET_LABELS[l.i as WidgetKey]}`} title="Drag to reorder">
                           <GripVertical className="w-4 h-4" />
                         </div>
                         {renamingWidget === (l.i as WidgetKey) ? (
@@ -1685,26 +1685,26 @@ export function Dashboard() {
                               if (e.key === 'Enter') commitRename(l.i as WidgetKey);
                               if (e.key === 'Escape') setRenamingWidget(null);
                             }}
-                            className="text-xs font-semibold bg-transparent border-b border-zinc-400 outline-none flex-1 text-zinc-100 uppercase tracking-widest"
+                            className="text-xs font-semibold bg-transparent border-b border-neutral-400 outline-none flex-1 text-neutral-100 uppercase tracking-widest"
                             autoFocus
                             maxLength={40}
                           />
                         ) : (
                           <div className="flex items-center gap-1 flex-1 group/label min-w-0">
-                            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest truncate select-none">{widgetLabels[l.i as WidgetKey] ?? WIDGET_LABELS[l.i as WidgetKey]}</span>
+                            <span className="text-xs font-semibold text-neutral-300 uppercase tracking-widest truncate select-none">{widgetLabels[l.i as WidgetKey] ?? WIDGET_LABELS[l.i as WidgetKey]}</span>
                             <button
                               onClick={() => startRename(l.i as WidgetKey)}
-                              className="opacity-0 group-hover/label:opacity-100 transition-opacity p-0.5 rounded hover:bg-zinc-700 shrink-0"
+                              className="opacity-0 group-hover/label:opacity-100 transition-opacity p-0.5 rounded hover:bg-neutral-700 shrink-0"
                               aria-label={`Rename ${WIDGET_LABELS[l.i as WidgetKey]} widget`}
                               title="Rename widget"
                             >
-                              <Pencil className="w-3 h-3 text-zinc-400" />
+                              <Pencil className="w-3 h-3 text-neutral-400" />
                             </button>
                           </div>
                         )}
                         <button
                           onClick={() => hideWidget(l.i as WidgetKey)}
-                          className="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-400 hover:text-rose-400 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-rose-400 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                           aria-label={`Hide ${WIDGET_LABELS[l.i as WidgetKey]}`}
                           title="Hide widget"
                         >
@@ -1732,12 +1732,12 @@ export function Dashboard() {
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40"
           >
-            <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-stone-200 dark:border-zinc-700 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
+            <div className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
               <LayoutDashboard className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />
-              <span className="text-sm font-medium text-stone-700 dark:text-zinc-300 whitespace-nowrap">Editing layout</span>
+              <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300 whitespace-nowrap">Editing layout</span>
               <button
                 onClick={resetLayout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-stone-200 dark:border-zinc-700 text-stone-500 dark:text-zinc-400 hover:bg-stone-100 dark:hover:bg-zinc-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                 title="Reset to default layout"
               >
                 <RotateCcw className="w-3 h-3" aria-hidden="true" />
@@ -1745,7 +1745,7 @@ export function Dashboard() {
               </button>
               <button
                 onClick={cancelEdit}
-                className="px-3 py-1.5 rounded-xl text-sm font-medium border border-stone-200 dark:border-zinc-700 text-stone-600 dark:text-zinc-400 hover:bg-stone-100 dark:hover:bg-zinc-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="px-3 py-1.5 rounded-xl text-sm font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
               >
                 Cancel
               </button>

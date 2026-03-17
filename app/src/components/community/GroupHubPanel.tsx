@@ -59,7 +59,7 @@ export function GroupHubPanel() {
       >
         <div className="space-y-2.5">
           <div>
-            <p className={`text-xs text-stone-600 dark:text-zinc-300 ${!descExpanded && isLongDesc ? 'line-clamp-4' : ''}`}>
+            <p className={`text-xs text-neutral-600 dark:text-neutral-300 ${!descExpanded && isLongDesc ? 'line-clamp-4' : ''}`}>
               {group.description}
             </p>
             {isLongDesc && (
@@ -77,7 +77,7 @@ export function GroupHubPanel() {
               {group.tags.map(tag => (
                 <span
                   key={tag}
-                  className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-100 dark:bg-zinc-700 text-stone-600 dark:text-zinc-300"
+                  className="text-[10px] px-1.5 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300"
                 >
                   {tag}
                 </span>
@@ -85,7 +85,7 @@ export function GroupHubPanel() {
             </div>
           )}
 
-          <div className="text-[10px] text-stone-400 dark:text-zinc-500 space-y-0.5">
+          <div className="text-[10px] text-neutral-400 dark:text-neutral-500 space-y-0.5">
             <p>Created {new Date(group.createdAt).toLocaleDateString()}</p>
             <p>{memberCount} member{memberCount !== 1 ? 's' : ''} · {postCount} post{postCount !== 1 ? 's' : ''}</p>
           </div>
@@ -99,15 +99,15 @@ export function GroupHubPanel() {
         icon={<Calendar className="w-3 h-3" />}
       >
         {upcomingEvents.length === 0 ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">No upcoming events</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">No upcoming events</p>
         ) : (
           <div className="space-y-2.5">
             {upcomingEvents.map(e => {
               const isAttending = user ? e.attendeeIds.includes(user.uid) : false;
               return (
                 <div key={e.id} className="space-y-1.5">
-                  <p className="text-xs font-semibold text-stone-800 dark:text-zinc-200 leading-tight">{e.title}</p>
-                  <p className="text-[10px] text-stone-400 dark:text-zinc-500">
+                  <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 leading-tight">{e.title}</p>
+                  <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
                     {new Date(e.date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                     {' · '}{e.attendeeIds.length} going
                   </p>
@@ -117,7 +117,7 @@ export function GroupHubPanel() {
                       className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                         isAttending
                           ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/60'
-                          : 'border border-stone-200 dark:border-zinc-600 text-stone-600 dark:text-zinc-300 hover:bg-stone-50 dark:hover:bg-zinc-700'
+                          : 'border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
                       }`}
                     >
                       {isAttending ? 'Going ✓' : 'RSVP'}
@@ -138,7 +138,7 @@ export function GroupHubPanel() {
       >
         <div className="space-y-2.5">
           {roleBreakdown && (
-            <p className="text-[10px] text-stone-500 dark:text-zinc-400">{roleBreakdown}</p>
+            <p className="text-[10px] text-neutral-500 dark:text-neutral-400">{roleBreakdown}</p>
           )}
           <button
             onClick={() => setShowMemberModal(true)}

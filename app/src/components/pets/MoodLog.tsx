@@ -47,17 +47,17 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
         <div className="flex items-center gap-3 p-3 bg-violet-50 dark:bg-violet-900/20 rounded-xl border border-violet-200 dark:border-violet-700">
           <span className="text-2xl">{moodEmoji(todayEntry.mood)}</span>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-stone-800 dark:text-stone-200 capitalize">{todayEntry.mood}</p>
-            <p className="text-xs text-stone-500 dark:text-stone-400">
+            <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 capitalize">{todayEntry.mood}</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Energy: {'●'.repeat(todayEntry.energy)}{'○'.repeat(5 - todayEntry.energy)}
             </p>
           </div>
-          <span className="text-[10px] text-stone-400">Today</span>
+          <span className="text-[10px] text-neutral-400">Today</span>
         </div>
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-stone-300 dark:border-stone-600 text-stone-500 dark:text-stone-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors text-sm"
+          className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors text-sm"
         >
           <Plus className="w-4 h-4" /> Daily check-in for {pet.name}
         </button>
@@ -72,10 +72,10 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 space-y-3">
+            <div className="p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-stone-700 dark:text-stone-300">How is {pet.name} feeling?</p>
-                <button onClick={() => setShowForm(false)} className="text-stone-400 hover:text-stone-600">
+                <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">How is {pet.name} feeling?</p>
+                <button onClick={() => setShowForm(false)} className="text-neutral-400 hover:text-neutral-600">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -89,18 +89,18 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
                     className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors flex-1 ${
                       mood === o.value
                         ? 'bg-violet-100 dark:bg-violet-900/30 ring-2 ring-violet-400'
-                        : 'hover:bg-stone-50 dark:hover:bg-stone-700/50'
+                        : 'hover:bg-neutral-50 dark:hover:bg-neutral-700/50'
                     }`}
                   >
                     <span className="text-xl">{o.emoji}</span>
-                    <span className="text-[10px] text-stone-500">{o.label}</span>
+                    <span className="text-[10px] text-neutral-500">{o.label}</span>
                   </button>
                 ))}
               </div>
 
               {/* Energy level */}
               <div>
-                <p className="text-xs text-stone-500 dark:text-stone-400 mb-1">Energy Level</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Energy Level</p>
                 <div className="flex gap-1">
                   {ENERGY_LEVELS.map(level => (
                     <button
@@ -109,7 +109,7 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
                       className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                         energy >= level
                           ? 'bg-emerald-500 text-white'
-                          : 'bg-stone-100 dark:bg-stone-700 text-stone-500'
+                          : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'
                       }`}
                     >
                       {level}
@@ -125,7 +125,7 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
                 onChange={e => setNotes(e.target.value)}
                 placeholder="Quick note (optional)"
                 maxLength={100}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
               />
 
               <button
@@ -142,12 +142,12 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
       {/* Recent history */}
       {moodLog.length > 1 && (
         <div className="space-y-1">
-          <p className="text-xs font-medium text-stone-500 dark:text-stone-400">Recent</p>
+          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Recent</p>
           {moodLog.slice(0, 7).filter(e => e.date !== today).map(entry => (
-            <div key={entry.date} className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
+            <div key={entry.date} className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
               <span>{moodEmoji(entry.mood)}</span>
               <span className="capitalize">{entry.mood}</span>
-              <span className="text-stone-300 dark:text-stone-600">·</span>
+              <span className="text-neutral-300 dark:text-neutral-600">·</span>
               <span>Energy {entry.energy}/5</span>
               <span className="ml-auto text-[10px]">
                 {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

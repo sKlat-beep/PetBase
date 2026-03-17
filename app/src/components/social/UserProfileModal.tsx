@@ -221,13 +221,13 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 40, scale: 0.97 }}
         transition={{ duration: 0.15, ease: 'easeOut' }}
-        className="relative w-full sm:max-w-sm bg-white dark:bg-stone-900
-                   border border-stone-200 dark:border-stone-700 shadow-2xl
+        className="relative w-full sm:max-w-sm bg-white dark:bg-neutral-900
+                   border border-neutral-200 dark:border-neutral-700 shadow-2xl
                    rounded-t-2xl sm:rounded-2xl overflow-hidden z-10 flex flex-col"
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-stone-100 dark:border-stone-800 shrink-0">
-          <h2 id="user-profile-modal-title" className="text-lg font-bold text-stone-900 dark:text-stone-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
+          <h2 id="user-profile-modal-title" className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
             Profile
           </h2>
           <button
@@ -235,8 +235,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
             onClick={onClose}
             aria-label="Close profile"
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg
-                       text-stone-400 hover:text-stone-600 dark:hover:text-stone-200
-                       hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors
+                       text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200
+                       hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors
                        focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
           >
             <X className="w-5 h-5" />
@@ -249,13 +249,13 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
           {/* Loading state */}
           {loading && !targetProfile && (
             <div className="flex items-center justify-center py-10">
-              <Loader2 className="w-6 h-6 animate-spin text-stone-400" />
+              <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
             </div>
           )}
 
           {/* Not found */}
           {!loading && !targetProfile && (
-            <p className="text-center text-sm text-stone-500 dark:text-stone-400 py-8">
+            <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 py-8">
               Profile not found.
             </p>
           )}
@@ -267,18 +267,18 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
               {isBlockedBy(uid) ? (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shrink-0">
-                      <User className="w-7 h-7 text-stone-400" />
+                    <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                      <User className="w-7 h-7 text-neutral-400" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-stone-900 dark:text-stone-100 truncate text-base">
+                      <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-base">
                         User
                       </p>
                     </div>
                   </div>
-                  <div className="rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-4 text-center">
-                    <Shield className="w-6 h-6 mx-auto mb-2 text-stone-400" />
-                    <p className="text-sm font-medium text-stone-600 dark:text-stone-300">This user is not available</p>
+                  <div className="rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-4 text-center">
+                    <Shield className="w-6 h-6 mx-auto mb-2 text-neutral-400" />
+                    <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">This user is not available</p>
                   </div>
                 </>
               ) : (
@@ -291,20 +291,20 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     alt={targetProfile.displayName}
                     width={64}
                     height={64}
-                    className="w-16 h-16 rounded-2xl object-cover bg-stone-100 dark:bg-stone-800 shrink-0"
+                    className="w-16 h-16 rounded-2xl object-cover bg-neutral-100 dark:bg-neutral-800 shrink-0"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shrink-0">
-                    <User className="w-7 h-7 text-stone-400" />
+                  <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                    <User className="w-7 h-7 text-neutral-400" />
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="font-bold text-stone-900 dark:text-stone-100 truncate text-base">
+                  <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-base">
                     {targetProfile.displayName}
                   </p>
                   {targetProfile.username && (
-                    <p className="text-sm text-stone-500 dark:text-stone-400 truncate">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate">
                       {targetProfile.username.includes('#') ? (
                         <>
                           @{targetProfile.username.split('#')[0]}
@@ -320,9 +320,9 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
 
               {/* Private profile placeholder */}
               {targetProfile.visibility === 'Private' && !isMeViewing && (
-                <div className="rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-4 text-center">
-                  <Shield className="w-6 h-6 mx-auto mb-2 text-stone-400" />
-                  <p className="text-sm font-medium text-stone-600 dark:text-stone-300">This profile is private</p>
+                <div className="rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-4 text-center">
+                  <Shield className="w-6 h-6 mx-auto mb-2 text-neutral-400" />
+                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">This profile is private</p>
                 </div>
               )}
 
@@ -376,8 +376,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     <button
                       onClick={() => sendFriendRequest(uid)}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900
-                                 hover:bg-stone-800 dark:hover:bg-stone-200
+                                 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900
+                                 hover:bg-neutral-800 dark:hover:bg-neutral-200
                                  transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                     >
                       <UserPlus className="w-4 h-4" />
@@ -389,8 +389,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     <button
                       onClick={() => cancelFriendRequest(sentByMe.id)}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                 bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400
-                                 hover:bg-stone-200 dark:hover:bg-stone-600
+                                 bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400
+                                 hover:bg-neutral-200 dark:hover:bg-neutral-600
                                  transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       title="Cancel friend request"
                     >
@@ -413,8 +413,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                       <button
                         onClick={() => rejectFriendRequest(sentByThem.id)}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                   bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300
-                                   hover:bg-stone-200 dark:hover:bg-stone-600
+                                   bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300
+                                   hover:bg-neutral-200 dark:hover:bg-neutral-600
                                    transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       >
                         Decline
@@ -437,8 +437,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                         <ChevronDown className="w-3 h-3" />
                       </button>
                       {removeFriendDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-stone-800
-                                        border border-stone-200 dark:border-stone-700 rounded-xl shadow-lg min-w-[150px]">
+                        <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-neutral-800
+                                        border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg min-w-[150px]">
                           <button
                             onClick={() => { removeFriend(uid); setRemoveFriendDropdownOpen(false); }}
                             className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-rose-600 dark:text-rose-400
@@ -458,8 +458,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                       <button
                         onClick={() => { setInviteGroupDropdownOpen(v => !v); setInviteError(''); setInviteSuccess(''); }}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                   bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300
-                                   hover:bg-stone-200 dark:hover:bg-stone-600
+                                   bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300
+                                   hover:bg-neutral-200 dark:hover:bg-neutral-600
                                    transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       >
                         <Users className="w-4 h-4" />
@@ -467,20 +467,20 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                         <ChevronDown className="w-3 h-3" />
                       </button>
                       {inviteGroupDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-stone-800
-                                        border border-stone-200 dark:border-stone-700 rounded-xl shadow-lg min-w-[180px]">
+                        <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-neutral-800
+                                        border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg min-w-[180px]">
                           {myAdminGroups.map(g => (
                             <button
                               key={g.id}
                               onClick={() => handleInviteToGroup(g.id)}
                               disabled={!!g.members[uid]}
-                              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-700 dark:text-stone-300
-                                         hover:bg-stone-100 dark:hover:bg-stone-700 rounded-xl transition-colors
+                              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-neutral-700 dark:text-neutral-300
+                                         hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xl transition-colors
                                          disabled:opacity-40 disabled:cursor-not-allowed first:rounded-t-xl last:rounded-b-xl"
                             >
                               {g.name}
                               {g.members[uid] && (
-                                <span className="ml-auto text-[10px] text-stone-400">Already member</span>
+                                <span className="ml-auto text-[10px] text-neutral-400">Already member</span>
                               )}
                             </button>
                           ))}
@@ -496,7 +496,7 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
                                ${isBlockedByMe
                                  ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40'
-                                 : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400'
+                                 : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400'
                                }`}
                   >
                     <ShieldOff className="w-4 h-4" />
@@ -507,7 +507,7 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                   <button
                     onClick={handleReport}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                               bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400
+                               bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400
                                hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >

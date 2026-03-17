@@ -59,7 +59,7 @@ export function CardTile({
           className={`flex-1 flex items-center gap-3 p-3 rounded-xl transition-all border-2 text-left ${
             selected
               ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20'
-              : 'border-transparent hover:border-stone-200 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-700/40'
+              : 'border-transparent hover:border-neutral-200 dark:hover:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'
           }`}
         >
           {pet.image ? (
@@ -70,17 +70,17 @@ export function CardTile({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">
+            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">
               {pet.name} — {isPermanentlyRevoked ? 'Access Log' : TEMPLATE_LABELS[card.template]}
             </p>
-            <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
               {status === 'active'
                 ? timeUntilExpiry(card.expiresAt)
                 : status === 'expired' ? 'Expired'
                 : isPermanentlyRevoked ? 'Permanently Logged' : '⛔ Revoked'}
             </p>
           </div>
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status === 'active' ? 'bg-emerald-500' : status === 'expired' ? 'bg-stone-300' : 'bg-rose-500'}`} />
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status === 'active' ? 'bg-emerald-500' : status === 'expired' ? 'bg-neutral-300' : 'bg-rose-500'}`} />
         </button>
 
         {isStale && onUpdate && (
@@ -101,7 +101,7 @@ export function CardTile({
               <button onClick={handleShare} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors text-xs font-medium">
                 <Share2 className="w-3.5 h-3.5" /> Share
               </button>
-              <button onClick={() => setShowQr(q => !q)} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors text-xs font-medium">
+              <button onClick={() => setShowQr(q => !q)} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium">
                 <QrCode className="w-3.5 h-3.5" /> QR
               </button>
               {onEdit && (
@@ -125,13 +125,13 @@ export function CardTile({
       )}
 
       {showQr && selected && status === 'active' && (
-        <div className="ml-3 p-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 shadow-lg backdrop-blur-sm inline-flex flex-col items-center gap-2">
+        <div className="ml-3 p-3 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-lg backdrop-blur-sm inline-flex flex-col items-center gap-2">
           <QRCode value={`${window.location.origin}/cards/view/${card.id}`} size={120} level="M" />
           <div className="flex items-center gap-2">
-            <p className="text-xs text-stone-400">Scan to view · Expires {formatExpiry(card.expiresAt)}</p>
+            <p className="text-xs text-neutral-400">Scan to view · Expires {formatExpiry(card.expiresAt)}</p>
             <button
               onClick={() => setShowQrOverlay(true)}
-              className="p-1 rounded text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+              className="p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
               aria-label="Show full-screen QR code"
             >
               <Maximize2 className="w-3.5 h-3.5" />

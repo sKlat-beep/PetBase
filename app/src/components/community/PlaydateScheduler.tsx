@@ -92,14 +92,14 @@ export function PlaydateScheduler({ targetUid, targetName, onClose, onSent }: Pr
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
       >
-        <div className="flex items-center justify-between p-5 border-b border-stone-100 dark:border-stone-700">
-          <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+        <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-700">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
             <PawPrint className="w-5 h-5 text-rose-500" />
             Schedule Playdate with {targetName}
           </h2>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-600">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -107,7 +107,7 @@ export function PlaydateScheduler({ targetUid, targetName, onClose, onSent }: Pr
         <div className="p-5 space-y-4">
           {/* Pet selection */}
           <div>
-            <label className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Which pets?</label>
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5 block">Which pets?</label>
             <div className="flex flex-wrap gap-2">
               {pets.filter(p => !p.isPrivate).map(pet => (
                 <button
@@ -116,7 +116,7 @@ export function PlaydateScheduler({ targetUid, targetName, onClose, onSent }: Pr
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     selectedPets.includes(pet.id)
                       ? 'bg-rose-500 text-white'
-                      : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+                      : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
                   }`}
                 >
                   {pet.name}
@@ -128,7 +128,7 @@ export function PlaydateScheduler({ targetUid, targetName, onClose, onSent }: Pr
           {/* Date & Time */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5 flex items-center gap-1">
+              <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5 flex items-center gap-1">
                 <Calendar className="w-3 h-3" /> Date
               </label>
               <input
@@ -136,25 +136,25 @@ export function PlaydateScheduler({ targetUid, targetName, onClose, onSent }: Pr
                 value={date}
                 min={new Date().toISOString().split('T')[0]}
                 onChange={e => setDate(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5 flex items-center gap-1">
+              <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5 flex items-center gap-1">
                 <Clock className="w-3 h-3" /> Time
               </label>
               <input
                 type="time"
                 value={time}
                 onChange={e => setTime(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
               />
             </div>
           </div>
 
           {/* Location */}
           <div>
-            <label className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5 flex items-center gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5 flex items-center gap-1">
               <MapPin className="w-3 h-3" /> Location
             </label>
             <input
@@ -162,20 +162,20 @@ export function PlaydateScheduler({ targetUid, targetName, onClose, onSent }: Pr
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder="Park, trail, or address..."
-              className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
             />
           </div>
 
           {/* Message */}
           <div>
-            <label className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Message (optional)</label>
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5 block">Message (optional)</label>
             <input
               type="text"
               value={message}
               onChange={e => setMessage(e.target.value)}
               placeholder="Looking forward to meeting!"
               maxLength={200}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
             />
           </div>
 

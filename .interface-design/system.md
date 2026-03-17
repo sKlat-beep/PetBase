@@ -27,7 +27,8 @@ Glass-inspired, modal-oriented, non-technical-user-first. Premium frosted-glass 
 | Primary | `sky-500` | `sky-400` |
 | Primary hover | `sky-600` | `sky-300` |
 | Surface | `white/60` | `neutral-900/60` |
-| Border | `white/20` | `white/10` |
+| Border (glass) | `white/20` | `white/10` |
+| Border (structural) | `neutral-200` | `neutral-700` |
 | Text primary | `neutral-900` | `neutral-50` |
 | Text secondary | `neutral-500` | `neutral-400` |
 | Text muted | `neutral-400` | `neutral-600` |
@@ -37,6 +38,9 @@ Glass-inspired, modal-oriented, non-technical-user-first. Premium frosted-glass 
 
 - No hardcoded hex colors — Tailwind scale or CSS vars only
 - No `style={{ color: '...' }}` inline styles
+
+### Accent Color System
+Six palettes available via `data-accent` attribute on `<html>`: `emerald` (default), `sky`, `violet`, `rose`, `amber`, `indigo`. CSS custom properties `--accent-50` through `--accent-700` are defined in `app/src/index.css` and switch automatically with the attribute. Use `var(--accent-*)` for accent-colored surfaces and text — never hardcode a single palette color.
 
 ## Typography
 - Body: `text-sm` (14px) mobile, `text-base` (16px) desktop

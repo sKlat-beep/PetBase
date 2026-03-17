@@ -67,7 +67,7 @@ export function PetLostConfirmModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="relative bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 w-full max-w-sm p-6 space-y-4 z-10"
+            className="relative bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full max-w-sm p-6 space-y-4 z-10"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
@@ -93,7 +93,7 @@ export function PetLostConfirmModal({
             {/* Title */}
             <h2
               id={titleId}
-              className="text-lg font-bold text-stone-900 dark:text-stone-100 text-center"
+              className="text-lg font-bold text-neutral-900 dark:text-neutral-100 text-center"
             >
               {isMarkLost
                 ? `Report ${pet.name} as Lost?`
@@ -101,7 +101,7 @@ export function PetLostConfirmModal({
             </h2>
 
             {/* Body */}
-            <p className="text-sm text-stone-600 dark:text-stone-400 text-center leading-relaxed">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center leading-relaxed">
               {isMarkLost
                 ? `A community alert will be sent to your area in 15 minutes. You can cancel the alert by marking ${pet.name} as found before then.`
                 : `This will remove the community lost pet alert for ${pet.name}.`}
@@ -112,7 +112,7 @@ export function PetLostConfirmModal({
               <button
                 type="button"
                 onClick={onCancel}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 font-semibold text-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-200 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
               >
                 Cancel
               </button>

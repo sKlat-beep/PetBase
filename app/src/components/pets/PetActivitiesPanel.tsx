@@ -18,13 +18,13 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
 
   if (isEmpty) {
     return (
-      <div className="text-center py-6 text-stone-500 dark:text-stone-400">
+      <div className="text-center py-6 text-neutral-500 dark:text-neutral-400">
         <p className="text-sm mb-3">No activities added yet.</p>
         {/* Fix 4: Guard onEdit call */}
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-sm text-stone-900 dark:text-stone-100 font-semibold underline underline-offset-2"
+            className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
           >
             Add activities →
           </button>
@@ -43,7 +43,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Heart className="w-4 h-4 text-rose-500 dark:text-rose-400" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
               Likes
             </p>
           </div>
@@ -65,8 +65,8 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
       {hasDislikes && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Heart className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+            <Heart className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
               Dislikes
             </p>
           </div>
@@ -75,7 +75,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
             {pet.dislikes!.map((dislike) => (
               <span
                 key={dislike}
-                className="text-xs px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300"
+                className="text-xs px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300"
               >
                 {dislike}
               </span>
@@ -89,7 +89,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Smile className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
               Activities
             </p>
           </div>
@@ -112,7 +112,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Zap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
               Play Style
             </p>
           </div>

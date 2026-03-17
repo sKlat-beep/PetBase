@@ -7,43 +7,7 @@ new or modified components. Run before any UI task transitions to `review`.
 
 ## Design System Reference
 
-PetBase UI follows a **glass-inspired, modal-oriented, non-technical-user-first** design
-philosophy. Every component must satisfy both the contract checklist and the design
-system principles below.
-
-### Glass Design System Principles
-
-**Surfaces:**
-- Primary surfaces: `backdrop-blur-md` (12px) with `bg-white/60 dark:bg-neutral-900/60`
-- Elevated surfaces (modals, cards): `backdrop-blur-xl` (24px) with `bg-white/75 dark:bg-neutral-900/75`
-- Overlays/sheets: `backdrop-blur-2xl` with `bg-white/90 dark:bg-neutral-900/90`
-- Never use pure white or pure black backgrounds — always semi-transparent with blur
-- Borders: `border border-white/20 dark:border-white/10` for glass edge definition
-- Shadows: `shadow-xl shadow-black/10 dark:shadow-black/30` for elevation depth
-
-**Performance rules for glass:**
-- Only apply `backdrop-filter` to elements that are actually elevated (modals, nav, cards)
-- Never stack more than 2 blurred layers in the same viewport region
-- Use `will-change: transform` only during animation, remove after
-- Prefer CSS `backdrop-filter` over JS-driven blur — never use a blurred screenshot hack
-
-**Color tokens (Tailwind + CSS vars):**
-- `--color-primary`: brand accent (map to Tailwind `sky-500` / `sky-400` dark)
-- `--color-surface`: glass surface base (white/60 light, neutral-900/60 dark)
-- `--color-border`: glass edge (white/20 light, white/10 dark)
-- `--color-text-primary`: `neutral-900` light / `neutral-50` dark
-- `--color-text-secondary`: `neutral-500` light / `neutral-400` dark
-- `--color-danger`: `red-500` / `red-400` dark
-- `--color-success`: `emerald-500` / `emerald-400` dark
-- All interactive states must use these tokens — never hardcode hex colors
-
-**Motion:**
-- Modal enter: `opacity-0 scale-95` → `opacity-100 scale-100`, duration 150ms, `ease-out`
-- Modal exit: `opacity-100 scale-100` → `opacity-0 scale-95`, duration 100ms, `ease-in`
-- Bottom-sheet enter (mobile): `translateY(100%)` → `translateY(0)`, duration 250ms, `ease-out`
-- Micro-interactions: hover `translate-y-[-1px]`, duration 100ms
-- Always wrap motion in `motion-safe:` Tailwind prefix to respect `prefers-reduced-motion`
-- Use `motion` (Framer Motion successor) library already in app/package.json for complex sequences
+The design system source of truth is `.interface-design/system.md`. All glass surface, color token, motion timing, and accessibility standards are defined there — do not re-read them; use what is already in context.
 
 ---
 

@@ -16,70 +16,46 @@ If any condition is not met: halt, report which gate is open, do not deploy.
 ---
 
 ## Pre-Deploy Checklist
-
-Before running any `firebase deploy` command:
-
-- [ ] Read the last `[VERIFIED]` dev-log entry to confirm test-validator signed off
-- [ ] Confirm task status is `review` in `planning/TODO.md`
-- [ ] Confirm `app/dist/` exists and is recent (built in the same session)
-- [ ] Confirm `functions/lib/` exists and is recent (built in the same session)
-- [ ] Confirm no uncommitted edits to `firestore.rules` or `storage.rules` that haven't been reviewed
+- [ ] Last `[VERIFIED]` dev-log entry confirms test-validator signed off
+- [ ] Task status is `review` in `planning/TODO.md`
+- [ ] `app/dist/` exists and is recent (built in the same session)
+- [ ] `functions/lib/` exists and is recent (built in the same session)
+- [ ] No uncommitted edits to `firestore.rules` or `storage.rules` that haven't been reviewed
 
 ---
 
-## Deploy Sequence
+## Deploy Commands
 
-### For Hosting + Functions deploy:
 ```bash
+# Hosting + Functions (most common):
 firebase deploy --only hosting,functions
-```
 
-### For Firestore rules only:
-```bash
+# Firestore rules only:
 firebase deploy --only firestore:rules
-```
 
-### For Storage rules only:
-```bash
+# Storage rules only:
 firebase deploy --only storage
 
-```
-
-### For full deploy (only when all targets changed):
-```bash
+# Full deploy (only when all targets changed):
 firebase deploy
 ```
 
-**Never use `firebase deploy` without `--only` unless all targets need updating.**
-Scoped deploys reduce blast radius on failure.
+Never use `firebase deploy` without `--only` unless all targets need updating.
 
 ---
 
-## Post-Deploy Verification (Smoke Test)
+## Post-Deploy Smoke Test
+1. Open hosting URL — confirm page loads without blank screen or console error
+2. Confirm Firebase Auth still works (sign-in → dashboard)
+3. Confirm most recently deployed feature is reachable
+4. If functions deployed: confirm Functions console shows no cold-start errors
 
-After every deploy:
-1. Open the hosting URL and confirm the page loads without a blank screen or console error
-2. Confirm Firebase Auth still works (sign-in flow reaches the dashboard)
-3. Confirm the most recently deployed feature is reachable in the live app
-4. If Cloud Functions were deployed: confirm the Functions console shows no cold-start errors
-
-If smoke test fails:
-- Do NOT attempt to auto-fix by deploying again
-- Document the failure in dev-log with exact error
-- Set task status back to `in-progress` in `planning/TODO.md`
-- Alert the user
+If smoke test fails: document in dev-log, set task back to `in-progress`, alert user. Do NOT redeploy to fix.
 
 ---
 
 ## On Success
-
-1. Update task status to `done` in `planning/TODO.md`
-2. Write dev-log entry:
-   ```
-   ## [YYYY-MM-DD] TASK-ID: <title> — Deployed [VERIFIED]
-   Target: hosting | functions | firestore:rules | storage
-   Smoke test: PASS
-   ```
+Update task to `done` in `planning/TODO.md` and write dev-log entry.
 
 ---
 

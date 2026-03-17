@@ -75,7 +75,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
 
   return (
     <motion.div
-      className={`bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-4 flex flex-col gap-3 shadow-sm${isBirthdayToday ? ' ring-2 ring-amber-400 ring-offset-2' : ''}`}
+      className={`bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-4 flex flex-col gap-3 shadow-sm${isBirthdayToday ? ' ring-2 ring-amber-400 ring-offset-2' : ''}`}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -91,7 +91,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
             />
           ) : (
             <div
-              className={`w-14 h-14 bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-2xl ${shapeClass} ${lostRing}`}
+              className={`w-14 h-14 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-2xl ${shapeClass} ${lostRing}`}
             >
               🐾
             </div>
@@ -99,7 +99,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
           {/* Vaccine status dot */}
           {showVaccineDot && (
             <span
-              className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white dark:border-stone-800 ${vaccineDotClass}`}
+              className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white dark:border-neutral-800 ${vaccineDotClass}`}
             />
           )}
         </StoryRing>
@@ -107,14 +107,14 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
         {/* Name + badges */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-stone-900 dark:text-stone-100 truncate">
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
               {pet.name}
             </span>
             {isBirthdayToday && (
               <span title="Happy Birthday!" className="flex-shrink-0" aria-label="birthday">🎂</span>
             )}
             {pet.isPrivate && (
-              <Lock className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 flex-shrink-0" />
+              <Lock className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
             )}
             {isBirthdayNear && !isBirthdayToday && (
               <span title="Birthday coming up!" className="flex-shrink-0">
@@ -122,11 +122,11 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
               </span>
             )}
           </div>
-          <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
             {pet.breed}{pet.type ? ` · ${pet.type}` : ''}
           </p>
           {liveAge && (
-            <p className="text-xs text-stone-400 dark:text-stone-500">{liveAge}</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">{liveAge}</p>
           )}
         </div>
       </div>
@@ -150,12 +150,12 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
       )}
 
       {/* Action buttons */}
-      <div className="flex justify-end gap-1 border-t border-stone-100 dark:border-stone-700 pt-2 relative">
+      <div className="flex justify-end gap-1 border-t border-neutral-100 dark:border-neutral-700 pt-2 relative">
         {onSetStatus && (
           <div className="relative">
             <button
               onClick={() => setStatusMenuOpen(v => !v)}
-              className="p-2 rounded-xl text-stone-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:text-violet-400 dark:hover:bg-violet-900/20 transition-colors"
+              className="p-2 rounded-xl text-neutral-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:text-violet-400 dark:hover:bg-violet-900/20 transition-colors"
               aria-label={`Set status for ${pet.name}`}
             >
               <Zap className="w-4 h-4" />
@@ -166,12 +166,12 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="absolute bottom-full right-0 mb-1 w-44 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 rounded-xl shadow-lg z-20 py-1 overflow-hidden"
+                  className="absolute bottom-full right-0 mb-1 w-44 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600 rounded-xl shadow-lg z-20 py-1 overflow-hidden"
                 >
                   {pet.ephemeralStatus && (
                     <button
                       onClick={() => { onSetStatus(pet, undefined); setStatusMenuOpen(false); }}
-                      className="w-full px-3 py-2 text-left text-xs text-rose-600 dark:text-rose-400 hover:bg-stone-50 dark:hover:bg-stone-700/50"
+                      className="w-full px-3 py-2 text-left text-xs text-rose-600 dark:text-rose-400 hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
                     >
                       Clear status
                     </button>
@@ -180,7 +180,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
                     <button
                       key={s}
                       onClick={() => { onSetStatus(pet, s); setStatusMenuOpen(false); }}
-                      className="w-full px-3 py-2 text-left text-xs text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700/50"
+                      className="w-full px-3 py-2 text-left text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
                     >
                       {s}
                     </button>
@@ -192,21 +192,21 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
         )}
         <button
           onClick={() => onViewDetail(pet)}
-          className="p-2 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 dark:hover:text-stone-100 dark:hover:bg-stone-700 transition-colors"
+          className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
           aria-label={`View ${pet.name}`}
         >
           <Eye className="w-4 h-4" />
         </button>
         <button
           onClick={() => onEdit(pet)}
-          className="p-2 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 dark:hover:text-stone-100 dark:hover:bg-stone-700 transition-colors"
+          className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
           aria-label={`Edit ${pet.name}`}
         >
           <Pencil className="w-4 h-4" />
         </button>
         <button
           onClick={() => onMedical(pet)}
-          className="p-2 rounded-xl text-stone-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-900/20 transition-colors"
+          className="p-2 rounded-xl text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-900/20 transition-colors"
           aria-label={`Medical records for ${pet.name}`}
         >
           <Syringe className="w-4 h-4" />

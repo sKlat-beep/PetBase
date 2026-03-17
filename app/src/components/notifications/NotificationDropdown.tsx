@@ -46,7 +46,7 @@ function typeIcon(type: AppNotification['type']) {
     case 'report_action':
       return <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />;
     default:
-      return <AlertTriangle className="w-4 h-4 text-stone-400" />;
+      return <AlertTriangle className="w-4 h-4 text-neutral-400" />;
   }
 }
 
@@ -74,7 +74,7 @@ function typeIconBg(type: AppNotification['type']) {
     case 'report_action':
       return 'bg-rose-100 dark:bg-rose-900/30';
     default:
-      return 'bg-stone-100 dark:bg-zinc-700';
+      return 'bg-neutral-100 dark:bg-neutral-700';
   }
 }
 
@@ -132,11 +132,11 @@ export function NotificationDropdown({ onClose, side = 'right' }: Props) {
   return (
     <div
       ref={ref}
-      className={`absolute ${side === 'left' ? 'left-0' : 'right-0'} top-8 w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-zinc-700 z-50 overflow-hidden`}
+      className={`absolute ${side === 'left' ? 'left-0' : 'right-0'} top-8 w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 z-50 overflow-hidden`}
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-stone-100 dark:border-zinc-700 flex items-center justify-between">
-        <h3 className="font-bold text-stone-900 dark:text-zinc-100 text-sm">Notifications</h3>
+      <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-700 flex items-center justify-between">
+        <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">Notifications</h3>
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
@@ -148,9 +148,9 @@ export function NotificationDropdown({ onClose, side = 'right' }: Props) {
       </div>
 
       {/* List */}
-      <div className="max-h-80 overflow-y-auto divide-y divide-stone-100 dark:divide-zinc-700">
+      <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-700">
         {notifications.length === 0 ? (
-          <div className="p-6 text-center text-stone-400 dark:text-zinc-500 text-sm">
+          <div className="p-6 text-center text-neutral-400 dark:text-neutral-500 text-sm">
             All caught up 🐾
           </div>
         ) : (
@@ -173,7 +173,7 @@ export function NotificationDropdown({ onClose, side = 'right' }: Props) {
 
               <button
                 onClick={() => handleNotifClick(notif)}
-                className="w-full flex items-start gap-3 p-3 hover:bg-stone-50 dark:hover:bg-zinc-700/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="w-full flex items-start gap-3 p-3 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
               >
                 {/* Type icon */}
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${typeIconBg(notif.type)}`}>
@@ -182,8 +182,8 @@ export function NotificationDropdown({ onClose, side = 'right' }: Props) {
 
                 {/* Content */}
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-stone-900 dark:text-zinc-100 leading-snug">{notif.message}</p>
-                  <p className="text-xs text-stone-400 dark:text-zinc-500 mt-0.5">{relativeTime(notif.createdAt)}</p>
+                  <p className="text-sm text-neutral-900 dark:text-neutral-100 leading-snug">{notif.message}</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{relativeTime(notif.createdAt)}</p>
                 </div>
 
                 {/* Unread dot */}

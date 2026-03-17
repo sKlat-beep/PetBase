@@ -92,13 +92,13 @@ export function RecommendationBanner() {
         transition={{ duration: 0.25 }}
         className={`bg-gradient-to-r ${current.accentClasses} rounded-2xl p-4 border flex items-center gap-3`}
       >
-        <Sparkles className="w-5 h-5 text-stone-400 dark:text-stone-500 shrink-0" />
+        <Sparkles className="w-5 h-5 text-neutral-400 dark:text-neutral-500 shrink-0" />
 
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-stone-900 dark:text-stone-100 text-sm">
+          <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">
             {current.title}
           </p>
-          <p className="text-stone-600 dark:text-stone-400 text-sm mt-0.5 hidden sm:block">
+          <p className="text-neutral-600 dark:text-neutral-400 text-sm mt-0.5 hidden sm:block">
             {current.description}
           </p>
         </div>
@@ -114,7 +114,7 @@ export function RecommendationBanner() {
         <button
           type="button"
           onClick={() => dismiss(current.id)}
-          className="shrink-0 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5"
+          className="shrink-0 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5"
           aria-label="Dismiss recommendation"
         >
           <X className="w-4 h-4" />

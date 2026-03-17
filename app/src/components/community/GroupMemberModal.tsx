@@ -55,14 +55,14 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
     if (role === 'Owner') return 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400';
     if (role === 'Moderator') return 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400';
     if (role === 'Event Coordinator') return 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400';
-    return 'bg-stone-100 dark:bg-zinc-700 text-stone-600 dark:text-zinc-300';
+    return 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300';
   };
 
   const roleCircleClass = (role: string) => {
     if (role === 'Owner') return 'bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200';
     if (role === 'Moderator') return 'bg-violet-200 dark:bg-violet-800 text-violet-800 dark:text-violet-200';
     if (role === 'Event Coordinator') return 'bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200';
-    return 'bg-stone-200 dark:bg-zinc-600 text-stone-700 dark:text-zinc-200';
+    return 'bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200';
   };
 
   const roleLabel = (role: string) => (role === 'User' ? 'Member' : role);
@@ -75,22 +75,22 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-zinc-900 rounded-2xl border border-stone-200/60 dark:border-zinc-700/60 shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]"
+        className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]"
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Group Members"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200/60 dark:border-zinc-700/60 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200/60 dark:border-neutral-700/60 shrink-0">
           <div>
-            <h2 className="text-sm font-semibold text-stone-800 dark:text-zinc-100">Members</h2>
-            <p className="text-[10px] text-stone-400 dark:text-zinc-500">{allMembers.length} member{allMembers.length !== 1 ? 's' : ''}</p>
+            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">Members</h2>
+            <p className="text-[10px] text-neutral-400 dark:text-neutral-500">{allMembers.length} member{allMembers.length !== 1 ? 's' : ''}</p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1.5 rounded-lg text-stone-400 dark:text-zinc-500 hover:bg-stone-100 dark:hover:bg-zinc-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="p-1.5 rounded-lg text-neutral-400 dark:text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
             <X className="w-4 h-4" />
           </button>
@@ -99,14 +99,14 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
         {/* Search */}
         <div className="px-4 pt-3 pb-2 shrink-0">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 dark:text-zinc-500 pointer-events-none" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
             <input
               ref={searchRef}
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search members…"
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-stone-100 dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-800 dark:text-zinc-100 placeholder-stone-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
         </div>
@@ -120,7 +120,7 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
               className={`text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                 roleFilter === f
                   ? 'bg-sky-500 text-white'
-                  : 'bg-stone-100 dark:bg-zinc-700 text-stone-600 dark:text-zinc-300 hover:bg-stone-200 dark:hover:bg-zinc-600'
+                  : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
               }`}
             >
               {f}
@@ -131,7 +131,7 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
         {/* Member list */}
         <div className="overflow-y-auto flex-1 px-4 pb-4 space-y-2">
           {filteredMembers.length === 0 ? (
-            <p className="text-xs text-stone-500 dark:text-zinc-400 py-4 text-center">No members match your search.</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 py-4 text-center">No members match your search.</p>
           ) : (
             filteredMembers.map(m => {
               const dirEntry = directory.find(p => p.uid === m.userId);
@@ -143,8 +143,8 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
                     {initial}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-stone-700 dark:text-zinc-200 truncate">{displayName}</p>
-                    <p className="text-[10px] text-stone-400 dark:text-zinc-500">
+                    <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{displayName}</p>
+                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
                       Joined {new Date(m.joinedAt).toLocaleDateString([], { month: 'short', year: 'numeric' })}
                     </p>
                   </div>

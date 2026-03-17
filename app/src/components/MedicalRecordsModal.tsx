@@ -158,7 +158,7 @@ function StatusBadge({ status }: { status: VaccineStatus }) {
     'unknown': {
       icon: null,
       label: 'Not Set',
-      cls: 'text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-700',
+      cls: 'text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-700',
     },
   }[status];
 
@@ -198,7 +198,7 @@ type VetVisit = {
 };
 
 const inputClass =
-  'w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors';
+  'w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors';
 
 export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, initialTab }: MedicalRecordsModalProps) {
   const { updatePet } = usePets();
@@ -243,9 +243,9 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
         const el = document.getElementById(id);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          el.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-stone-800', 'transition-all', 'duration-500');
+          el.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-neutral-800', 'transition-all', 'duration-500');
           setTimeout(() => {
-            el.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-stone-800');
+            el.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-neutral-800');
           }, 2000);
         }
       }, 100);
@@ -445,32 +445,35 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: 'spring', duration: 0.3 }}
-            className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-100 dark:border-stone-700 w-full max-w-2xl z-10 flex flex-col max-h-[90vh]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="medical-records-modal-title"
+            className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-2xl z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-100 dark:border-stone-700 shrink-0">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                   <Syringe className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">
+                  <h2 id="medical-records-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
                     Medical Records
                   </h2>
-                  <p className="text-sm text-stone-500 dark:text-stone-400">{pet.name} · {overallLabel}</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{pet.name} · {overallLabel}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700"
+                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-stone-100 dark:border-stone-700 px-6 shrink-0 overflow-x-auto">
+            <div className="flex border-b border-neutral-100 dark:border-neutral-700 px-6 shrink-0 overflow-x-auto">
               {([
                 { key: 'vaccines', icon: <Syringe className="w-4 h-4" />, label: 'Vaccines' },
                 { key: 'visits', icon: <ClipboardList className="w-4 h-4" />, label: `Vet Visits${visits.length ? ` (${visits.length})` : ''}` },
@@ -482,7 +485,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex items-center gap-2 py-3.5 px-2 mr-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab.key
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                     }`}
                 >
                   {tab.icon}
@@ -516,11 +519,11 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                       onDragStart={(e) => handleDragStart(e, vaccine.originalIndex)}
                       onDragOver={(e) => handleDragOver(e, vaccine.originalIndex)}
                       onDragEnd={handleDragEnd}
-                      className="bg-stone-50 dark:bg-stone-700/50 rounded-xl p-4 border border-stone-100 dark:border-stone-600 transition-all cursor-move"
+                      className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-neutral-100 dark:border-neutral-600 transition-all cursor-move"
                     >
                       {/* Name row */}
                       <div className="flex items-center gap-2 mb-3">
-                        <GripVertical className="w-4 h-4 text-stone-300 dark:text-stone-500 cursor-grab active:cursor-grabbing shrink-0" />
+                        <GripVertical className="w-4 h-4 text-neutral-300 dark:text-neutral-500 cursor-grab active:cursor-grabbing shrink-0" />
                         <div className="flex-1 relative flex items-center gap-2 group">
                           <input
                             type="text"
@@ -531,10 +534,10 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                           />
                           {VACCINE_INFO[vaccine.name] && (
                             <div className="relative flex items-center">
-                              <Info className="w-4 h-4 text-stone-400 cursor-help" />
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
+                              <Info className="w-4 h-4 text-neutral-400 cursor-help" />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
                                 {VACCINE_INFO[vaccine.name]}
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900 dark:border-t-stone-100" />
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-900 dark:border-t-neutral-100" />
                               </div>
                             </div>
                           )}
@@ -544,7 +547,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                           <button
                             type="button"
                             onClick={() => downloadICS(vaccine)}
-                            className="text-stone-400 hover:text-blue-500 transition-colors p-1 rounded"
+                            className="text-neutral-400 hover:text-blue-500 transition-colors p-1 rounded"
                             title="Add Reminder to Calendar"
                           >
                             <CalendarPlus className="w-4 h-4" />
@@ -553,7 +556,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                         <button
                           type="button"
                           onClick={() => removeVaccine(vaccine.originalIndex)}
-                          className="text-stone-400 hover:text-rose-500 transition-colors p-1 rounded"
+                          className="text-neutral-400 hover:text-rose-500 transition-colors p-1 rounded"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -566,14 +569,14 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                           <div className="grid grid-cols-2 gap-3 pl-6 mb-2">
                             <div>
                               <div className="flex items-center justify-between mb-1">
-                                <label className="text-xs font-medium text-stone-500 dark:text-stone-400">Last Administered</label>
+                                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Last Administered</label>
                                 <button type="button" onClick={() => updateVaccine(vaccine.originalIndex, 'lastDate', today)} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Today</button>
                               </div>
                               <input type="date" value={vaccine.lastDate} onChange={(e) => updateVaccine(vaccine.originalIndex, 'lastDate', e.target.value)} className={inputClass} />
                             </div>
                             <div>
                               <div className="flex items-center justify-between mb-1">
-                                <label className="text-xs font-medium text-stone-500 dark:text-stone-400">Next Due</label>
+                                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Next Due</label>
                                 <button type="button" onClick={() => updateVaccine(vaccine.originalIndex, 'nextDueDate', today)} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Today</button>
                               </div>
                               <input type="date" value={vaccine.nextDueDate} onChange={(e) => updateVaccine(vaccine.originalIndex, 'nextDueDate', e.target.value)} className={inputClass} />
@@ -585,7 +588,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                       {/* Interval + Administered Today */}
                       <div className="flex flex-col gap-1.5 pl-6 flex-1">
                         <div className="flex items-center gap-2">
-                        <RefreshCw className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                        <RefreshCw className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                         {(() => {
                           const days = vaccine.intervalDays ?? 0;
                           const isCustom = days > 0 && !PREDEFINED_INTERVAL_VALS.has(days);
@@ -602,7 +605,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                                     updateVaccine(vaccine.originalIndex, 'intervalDays', val || undefined);
                                   }
                                 }}
-                                className="flex-1 px-2 py-1.5 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="flex-1 px-2 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                               >
                                 {INTERVAL_OPTIONS.map(opt => (
                                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -623,7 +626,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                                       }
                                     }
                                   }}
-                                  className="w-32 px-2 py-1.5 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="w-32 px-2 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 />
                               )}
                             </>
@@ -644,7 +647,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                   <button
                     type="button"
                     onClick={addVaccine}
-                    className="w-full py-2.5 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-600 text-stone-500 dark:text-stone-400 hover:border-blue-400 hover:text-blue-500 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-blue-400 hover:text-blue-500 transition-colors text-sm font-medium flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" /> Add Vaccine
                   </button>
@@ -667,31 +670,31 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                   </button>
 
                   {visits.length === 0 ? (
-                    <div className="text-center py-10 border-2 border-dashed border-stone-200 dark:border-stone-600 rounded-xl">
-                      <Calendar className="w-9 h-9 text-stone-300 dark:text-stone-600 mx-auto mb-2" />
-                      <p className="text-stone-500 dark:text-stone-400 text-sm font-medium">No visits recorded yet.</p>
+                    <div className="text-center py-10 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-xl">
+                      <Calendar className="w-9 h-9 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
+                      <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium">No visits recorded yet.</p>
                     </div>
                   ) : (
                     visits.map((visit, i) => (
                       <div
                         key={i}
-                        className="bg-stone-50 dark:bg-stone-700/50 rounded-xl p-4 border border-stone-100 dark:border-stone-600 space-y-3"
+                        className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-neutral-100 dark:border-neutral-600 space-y-3"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs font-medium text-stone-500 dark:text-stone-400">Date</span>
+                              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Date</span>
                               <button type="button" onClick={() => updateVisit(i, 'date', new Date().toISOString().split('T')[0])} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Today</button>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-stone-400 shrink-0" />
+                              <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
                               <input type="date" value={visit.date} onChange={(e) => updateVisit(i, 'date', e.target.value)} className={`${inputClass} flex-1`} />
                             </div>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeVisit(i)}
-                            className="text-stone-400 hover:text-rose-500 transition-colors p-1 rounded shrink-0 mt-5"
+                            className="text-neutral-400 hover:text-rose-500 transition-colors p-1 rounded shrink-0 mt-5"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -720,7 +723,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                         })()}
                         <input type="text" value={visit.reason} onChange={(e) => updateVisit(i, 'reason', e.target.value)} placeholder="Reason for visit" className={inputClass} />
                         <div className="relative">
-                          <FileText className="w-4 h-4 text-stone-400 absolute left-3 top-2.5 pointer-events-none" />
+                          <FileText className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5 pointer-events-none" />
                           <textarea
                             value={visit.notes}
                             onChange={(e) => updateVisit(i, 'notes', e.target.value)}
@@ -751,16 +754,16 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                   </button>
 
                   {medications.length === 0 ? (
-                    <div className="text-center py-10 border-2 border-dashed border-stone-200 dark:border-stone-600 rounded-xl">
-                      <Pill className="w-9 h-9 text-stone-300 dark:text-stone-600 mx-auto mb-2" />
-                      <p className="text-stone-500 dark:text-stone-400 text-sm font-medium">No medications tracked yet.</p>
-                      <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">Add prescriptions, supplements, or ongoing treatments.</p>
+                    <div className="text-center py-10 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-xl">
+                      <Pill className="w-9 h-9 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
+                      <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium">No medications tracked yet.</p>
+                      <p className="text-neutral-400 dark:text-neutral-500 text-xs mt-1">Add prescriptions, supplements, or ongoing treatments.</p>
                     </div>
                   ) : (
                     medications.map((med) => (
                       <div
                         key={med.id}
-                        className="bg-stone-50 dark:bg-stone-700/50 rounded-xl p-4 border border-stone-100 dark:border-stone-600 space-y-3"
+                        className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-neutral-100 dark:border-neutral-600 space-y-3"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2 flex-1">
@@ -776,7 +779,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                           <button
                             type="button"
                             onClick={() => removeMedication(med.id)}
-                            className="text-stone-400 hover:text-rose-500 transition-colors p-1 rounded shrink-0"
+                            className="text-neutral-400 hover:text-rose-500 transition-colors p-1 rounded shrink-0"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -784,7 +787,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
 
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Dosage</label>
+                            <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Dosage</label>
                             <input
                               type="text"
                               value={med.dosage}
@@ -794,7 +797,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Frequency</label>
+                            <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Frequency</label>
                             {(() => {
                               const predefinedFreqs = ['Once daily','Twice daily','Every 8 hours','Every 12 hours','Weekly','Bi-weekly','Monthly','As needed'];
                               const isCustom = !predefinedFreqs.includes(med.frequency) && med.frequency !== '' && med.frequency !== 'Other';
@@ -828,14 +831,14 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <label className="block text-xs font-medium text-stone-500 dark:text-stone-400">Start Date</label>
+                              <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400">Start Date</label>
                               <button type="button" onClick={() => updateMedication(med.id, 'startDate', new Date().toISOString().split('T')[0])} className="text-xs text-teal-600 dark:text-teal-400 hover:underline">Today</button>
                             </div>
                             <input type="date" value={med.startDate} onChange={(e) => updateMedication(med.id, 'startDate', e.target.value)} className={inputClass} />
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <label className="block text-xs font-medium text-stone-500 dark:text-stone-400">End Date <span className="font-normal text-stone-400">(optional)</span></label>
+                              <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400">End Date <span className="font-normal text-neutral-400">(optional)</span></label>
                               <button type="button" onClick={() => updateMedication(med.id, 'endDate', new Date().toISOString().split('T')[0])} className="text-xs text-teal-600 dark:text-teal-400 hover:underline">Today</button>
                             </div>
                             <input type="date" value={med.endDate} onChange={(e) => updateMedication(med.id, 'endDate', e.target.value)} className={inputClass} />
@@ -843,7 +846,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                         </div>
 
                         <div>
-                          <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Notes</label>
+                          <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Notes</label>
                           <textarea
                             value={med.notes}
                             onChange={(e) => updateMedication(med.id, 'notes', e.target.value)}
@@ -860,11 +863,11 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-stone-100 dark:border-stone-700 shrink-0 bg-stone-50/50 dark:bg-stone-800/50 flex gap-3">
+            <div className="p-6 border-t border-neutral-100 dark:border-neutral-700 shrink-0 bg-neutral-50/50 dark:bg-neutral-800/50 flex gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-300 font-medium hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+                className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
               >
                 Cancel
               </button>
@@ -872,7 +875,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                 type="button"
                 onClick={handleSave}
                 disabled={!isDirty}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-stone-300 dark:disabled:bg-stone-600 disabled:cursor-not-allowed text-white font-medium transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-600 disabled:cursor-not-allowed text-white font-medium transition-colors"
               >
                 Save Records
               </button>

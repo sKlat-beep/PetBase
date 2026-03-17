@@ -94,7 +94,7 @@ export function PeoplePanel() {
                       {initial}
                     </span>
                   </div>
-                  <p className="text-xs font-medium text-stone-700 dark:text-zinc-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
                     {displayName}
                   </p>
                   <div className="flex gap-1 shrink-0">
@@ -108,7 +108,7 @@ export function PeoplePanel() {
                     <button
                       onClick={() => rejectFriendRequest(req.id)}
                       aria-label="Decline friend request"
-                      className="p-1 rounded-lg bg-stone-100 dark:bg-zinc-700 text-stone-500 dark:text-zinc-400 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                      className="p-1 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -127,7 +127,7 @@ export function PeoplePanel() {
         icon={<Users className="w-3 h-3" />}
       >
         {allFriends.length === 0 ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             No friends yet. Find people below!
           </p>
         ) : (
@@ -136,7 +136,7 @@ export function PeoplePanel() {
               const initial = friend.displayName.charAt(0).toUpperCase();
               return (
                 <div key={friend.uid} className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-zinc-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 overflow-hidden">
                     {friend.avatarUrl ? (
                       <img
                         src={friend.avatarUrl}
@@ -145,12 +145,12 @@ export function PeoplePanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-stone-600 dark:text-zinc-300 uppercase">
+                      <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
                         {initial}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-stone-700 dark:text-zinc-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
                     {friend.displayName}
                   </p>
                   <button
@@ -182,14 +182,14 @@ export function PeoplePanel() {
         icon={<UserPlus className="w-3 h-3" />}
       >
         {suggestedFriends.length === 0 ? (
-          <p className="text-xs text-stone-500 dark:text-zinc-400">No suggestions right now.</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">No suggestions right now.</p>
         ) : (
           <div className="space-y-2.5">
             {suggestedFriends.map(person => {
               const initial = person.displayName.charAt(0).toUpperCase();
               return (
                 <div key={person.uid} className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-zinc-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 overflow-hidden">
                     {person.avatarUrl ? (
                       <img
                         src={person.avatarUrl}
@@ -198,12 +198,12 @@ export function PeoplePanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-stone-600 dark:text-zinc-300 uppercase">
+                      <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
                         {initial}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-stone-700 dark:text-zinc-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
                     {person.displayName}
                   </p>
                   <button

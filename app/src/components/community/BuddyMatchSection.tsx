@@ -43,11 +43,11 @@ export default function BuddyMatchSection() {
 
   if (!profile?.publicStatus || profile.publicStatus === 'None') {
     return (
-      <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 p-6">
-        <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2 mb-3">
+      <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 p-6">
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-3">
           <Heart className="w-5 h-5 text-rose-500" /> Find a Buddy
         </h2>
-        <p className="text-sm text-stone-500 dark:text-stone-400">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Set your status to "Open to Playdates" or "Looking for Walking Buddies" in your profile to find matches nearby.
         </p>
       </div>
@@ -55,8 +55,8 @@ export default function BuddyMatchSection() {
   }
 
   return (
-    <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 p-6">
-      <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2 mb-4">
+    <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 p-6">
+      <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
         <Heart className="w-5 h-5 text-rose-500" /> Find a Buddy
       </h2>
 
@@ -69,7 +69,7 @@ export default function BuddyMatchSection() {
             className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
               filter === f
                 ? 'bg-rose-500 text-white'
-                : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
+                : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
             }`}
           >
             {f === 'all' ? 'All' : f === 'playdates' ? '🐾 Playdates' : '🚶 Walking'}
@@ -91,12 +91,12 @@ export default function BuddyMatchSection() {
               userPetTypes.has(p.type?.toLowerCase() ?? '')
             );
             return (
-              <div key={buddy.uid} className="flex items-center gap-3 p-3 rounded-xl bg-stone-50 dark:bg-stone-700/30">
-                <div className="w-10 h-10 rounded-full bg-stone-200 dark:bg-stone-600 flex items-center justify-center text-sm font-bold text-stone-600 dark:text-stone-300 shrink-0">
+              <div key={buddy.uid} className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-700/30">
+                <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center text-sm font-bold text-neutral-600 dark:text-neutral-300 shrink-0">
                   {(buddy.displayName || '?').charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">
+                  <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">
                     {buddy.displayName}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">

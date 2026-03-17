@@ -42,32 +42,32 @@ export function GroupRetentionModal({ currentDays, onSave, onClose }: GroupReten
       >
         {/* Handle (mobile) */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-9 h-1 bg-stone-300 dark:bg-stone-600 rounded-full" />
+          <div className="w-9 h-1 bg-neutral-300 dark:bg-neutral-600 rounded-full" />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
-          <h2 id="retention-modal-title" className="text-xl font-semibold text-stone-900 dark:text-stone-100">
+          <h2 id="retention-modal-title" className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Group Settings
           </h2>
           <button
             onClick={onClose}
             aria-label="Close settings"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
-            <X className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+            <X className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
           </button>
         </div>
 
-        <div className="h-px bg-stone-100 dark:bg-stone-800" />
+        <div className="h-px bg-neutral-100 dark:bg-neutral-800" />
 
         {/* Body */}
         <div className="px-6 py-5 space-y-4">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-stone-400 dark:text-stone-500 uppercase mb-1">
+            <p className="text-xs font-semibold tracking-widest text-neutral-400 dark:text-neutral-500 uppercase mb-1">
               Message Retention
             </p>
-            <p className="text-sm text-stone-500 dark:text-stone-400">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Posts older than the selected period are automatically deleted.
             </p>
           </div>
@@ -84,14 +84,14 @@ export function GroupRetentionModal({ currentDays, onSave, onClose }: GroupReten
                   className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                     isSelected
                       ? 'bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-500 dark:border-emerald-600'
-                      : 'bg-stone-50 dark:bg-stone-800/50 border border-transparent hover:bg-stone-100 dark:hover:bg-stone-800'
+                      : 'bg-neutral-50 dark:bg-neutral-800/50 border border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800'
                   }`}
                 >
-                  <span className={`text-sm font-medium ${isSelected ? 'text-emerald-700 dark:text-emerald-400' : 'text-stone-800 dark:text-stone-200'}`}>
+                  <span className={`text-sm font-medium ${isSelected ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-800 dark:text-neutral-200'}`}>
                     {label}
                   </span>
                   <span className="flex items-center gap-2">
-                    <span className={`text-xs ${isSelected ? 'text-emerald-600 dark:text-emerald-500' : 'text-stone-400 dark:text-stone-500'}`}>
+                    <span className={`text-xs ${isSelected ? 'text-emerald-600 dark:text-emerald-500' : 'text-neutral-400 dark:text-neutral-500'}`}>
                       {sublabel}
                     </span>
                     {isSelected && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />}

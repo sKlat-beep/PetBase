@@ -297,7 +297,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-stone-400">
+      <div className="flex items-center justify-center py-16 text-neutral-400">
         <Loader2 className="w-6 h-6 animate-spin mr-3" />
         <span className="text-sm">Loading moderation data…</span>
       </div>
@@ -311,7 +311,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
       <div className="flex justify-end">
         <button
           onClick={loadData}
-          className="flex items-center gap-1.5 text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors px-3 py-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Refresh
@@ -320,7 +320,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 1: Pending Reports ──────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
           <AlertTriangle className="w-4 h-4 text-amber-500" />
           Pending Reports
           {pendingReports.length > 0 && (
@@ -331,7 +331,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
         </h3>
 
         {pendingReports.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-stone-800 rounded-2xl border border-dashed border-stone-200 dark:border-stone-700 text-stone-400">
+          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
             <CheckCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No pending reports.</p>
           </div>
@@ -340,7 +340,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
             {pendingReports.map(report => (
               <div
                 key={report.id}
-                className="bg-white dark:bg-stone-800 rounded-2xl p-4 border border-stone-100 dark:border-stone-700 shadow-sm"
+                className="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-neutral-100 dark:border-neutral-700 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="space-y-1 min-w-0">
@@ -348,17 +348,17 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                       <span className="text-xs font-semibold px-2 py-0.5 bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 rounded-full uppercase tracking-wide">
                         {report.targetType}
                       </span>
-                      <span className="text-xs font-medium text-stone-700 dark:text-stone-300">
+                      <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
                         {report.reason}
                       </span>
                     </div>
                     {report.detail && (
-                      <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 italic">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 italic">
                         "{report.detail}"
                       </p>
                     )}
-                    <p className="text-xs text-stone-400 dark:text-stone-500">
-                      Reported by <span className="font-medium text-stone-600 dark:text-stone-300">{report.reporterName}</span>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                      Reported by <span className="font-medium text-neutral-600 dark:text-neutral-300">{report.reporterName}</span>
                       {' · '}
                       {new Date(report.createdAt).toLocaleDateString([], { dateStyle: 'medium' })}
                     </p>
@@ -369,7 +369,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                   <button
                     onClick={() => handleDismissReport(report.id)}
                     disabled={actionState[report.id] === 'loading'}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                   >
                     {actionState[report.id] === 'loading' ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -417,7 +417,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 2: Flagged Content ──────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
           <Flag className="w-4 h-4 text-rose-500" />
           Flagged Content
           {flaggedPosts.length > 0 && (
@@ -426,12 +426,12 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
             </span>
           )}
         </h3>
-        <p className="text-xs text-stone-400 dark:text-stone-500 mb-3">
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">
           Posts with active flags. Comment flagging review is a future enhancement.
         </p>
 
         {flaggedPosts.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-stone-800 rounded-2xl border border-dashed border-stone-200 dark:border-stone-700 text-stone-400">
+          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
             <CheckCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No flagged posts.</p>
           </div>
@@ -440,18 +440,18 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
             {flaggedPosts.map(post => (
               <div
                 key={post.id}
-                className="bg-white dark:bg-stone-800 rounded-2xl p-4 border border-rose-100 dark:border-rose-900/40 shadow-sm"
+                className="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-rose-100 dark:border-rose-900/40 shadow-sm"
               >
                 <div className="mb-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-stone-600 dark:text-stone-300">
+                    <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
                       {post.authorName}
                     </span>
                     <span className="text-xs text-rose-500 dark:text-rose-400 font-semibold">
                       {post.flagCount} flag{post.flagCount !== 1 ? 's' : ''}
                     </span>
                   </div>
-                  <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
                     {post.content}
                   </p>
                 </div>
@@ -491,24 +491,24 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 3: Reporter Activity ────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
           <BarChart2 className="w-4 h-4 text-sky-500" />
           Reporter Activity
-          <span className="text-xs font-normal normal-case text-stone-400">(last 90 days)</span>
+          <span className="text-xs font-normal normal-case text-neutral-400">(last 90 days)</span>
         </h3>
 
         {reporterActivity.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-stone-800 rounded-2xl border border-dashed border-stone-200 dark:border-stone-700 text-stone-400">
+          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
             <p className="text-sm">No report activity in the last 90 days.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-sm overflow-hidden">
-            <ul className="divide-y divide-stone-100 dark:divide-stone-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden">
+            <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
               {reporterActivity.map((entry, i) => (
                 <li key={entry.uid} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="w-5 text-xs font-bold text-stone-400 text-right">{i + 1}.</span>
-                    <span className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                    <span className="w-5 text-xs font-bold text-neutral-400 text-right">{i + 1}.</span>
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                       {entry.displayName}
                     </span>
                   </div>
@@ -524,7 +524,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 4: Banned Members ───────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
           <ShieldOff className="w-4 h-4 text-orange-500" />
           Banned Members
           {bannedMembers.length > 0 && (
@@ -535,19 +535,19 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
         </h3>
 
         {bannedMembers.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-stone-800 rounded-2xl border border-dashed border-stone-200 dark:border-stone-700 text-stone-400">
+          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
             <p className="text-sm">No banned members.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-sm overflow-hidden">
-            <ul className="divide-y divide-stone-100 dark:divide-stone-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden">
+            <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
               {bannedMembers.map(uid => (
                 <li key={uid} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold text-stone-500 dark:text-stone-300 shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-500 dark:text-neutral-300 shrink-0">
                       {uid.substring(0, 2).toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                       {resolveBannedName(uid)}
                     </span>
                   </div>

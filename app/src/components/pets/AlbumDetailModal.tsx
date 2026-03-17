@@ -32,7 +32,7 @@ const VISIBILITY_LABELS: Record<PetAlbum['visibility'], string> = {
 const VISIBILITY_COLORS: Record<PetAlbum['visibility'], string> = {
   public: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
   friends: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
-  private: 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-400',
+  private: 'bg-neutral-100 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-400',
 };
 
 export function AlbumDetailModal({
@@ -173,9 +173,9 @@ export function AlbumDetailModal({
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
-        <div className="relative bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col">
+        <div role="dialog" aria-modal="true" aria-labelledby="album-detail-modal-title" className="relative bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col">
           {/* Header */}
-          <div className="flex items-start justify-between p-4 border-b border-stone-100 dark:border-stone-800 shrink-0 gap-3">
+          <div className="flex items-start justify-between p-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0 gap-3">
             <div className="flex-1 min-w-0">
               {editingName ? (
                 <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export function AlbumDetailModal({
                       if (e.key === 'Escape') { setEditingName(false); setNameInput(album.name); }
                     }}
                     autoFocus
-                    className="flex-1 px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-sm font-semibold text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="flex-1 px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm font-semibold text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <button
                     type="button"
@@ -203,14 +203,14 @@ export function AlbumDetailModal({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100 truncate">
+                  <h2 id="album-detail-modal-title" className="text-base font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                     {album.name}
                   </h2>
                   {isOwner && (
                     <button
                       type="button"
                       onClick={() => setEditingName(true)}
-                      className="p-1 rounded-md text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors shrink-0"
+                      className="p-1 rounded-md text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shrink-0"
                       aria-label="Rename album"
                       title="Rename album"
                     >
@@ -223,7 +223,7 @@ export function AlbumDetailModal({
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${VISIBILITY_COLORS[album.visibility]}`}>
                   {VISIBILITY_LABELS[album.visibility]}
                 </span>
-                <span className="text-xs text-stone-400">
+                <span className="text-xs text-neutral-400">
                   {album.photos.length} photo{album.photos.length !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -231,7 +231,7 @@ export function AlbumDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors shrink-0"
+              className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shrink-0"
               aria-label="Close"
               title="Close"
             >
@@ -252,7 +252,7 @@ export function AlbumDetailModal({
                     className={`flex-1 py-1.5 rounded-full text-xs font-medium transition-colors border ${
                       album.visibility === v
                         ? 'bg-emerald-600 text-white border-emerald-600'
-                        : 'border-stone-200 dark:border-stone-600 text-stone-500 dark:text-stone-400 hover:border-emerald-400'
+                        : 'border-neutral-200 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-emerald-400'
                     }`}
                   >
                     {VISIBILITY_LABELS[v]}
@@ -263,7 +263,7 @@ export function AlbumDetailModal({
 
             {/* Photo grid */}
             {album.photos.length === 0 ? (
-              <div className="text-center py-8 text-stone-400 dark:text-stone-500 text-sm">
+              <div className="text-center py-8 text-neutral-400 dark:text-neutral-500 text-sm">
                 No photos yet. Add some below.
               </div>
             ) : (
@@ -299,9 +299,9 @@ export function AlbumDetailModal({
                           <FolderInput className="w-3 h-3" />
                         </button>
                         {movingPhotoIdx === i && (
-                          <div className="absolute bottom-8 right-1 z-10 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-stone-200 dark:border-zinc-700 overflow-hidden min-w-[160px]">
+                          <div className="absolute bottom-8 right-1 z-10 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden min-w-[160px]">
                             {siblingAlbums.filter(a => a.id !== album.id).length === 0 ? (
-                              <p className="px-3 py-2 text-xs text-stone-400 dark:text-zinc-500">No other albums</p>
+                              <p className="px-3 py-2 text-xs text-neutral-400 dark:text-neutral-500">No other albums</p>
                             ) : (
                               siblingAlbums
                                 .filter(a => a.id !== album.id)
@@ -310,7 +310,7 @@ export function AlbumDetailModal({
                                     key={a.id}
                                     type="button"
                                     onClick={() => handleMovePhoto(i, a.id!)}
-                                    className="w-full text-left px-3 py-2 text-xs hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-stone-700 dark:text-zinc-200 motion-safe:transition-colors"
+                                    className="w-full text-left px-3 py-2 text-xs hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-neutral-700 dark:text-neutral-200 motion-safe:transition-colors"
                                   >
                                     {a.name}
                                   </button>
@@ -333,7 +333,7 @@ export function AlbumDetailModal({
                 <button
                   type="button"
                   onClick={() => setShowPhotoPicker(true)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-600 hover:border-emerald-400 dark:hover:border-emerald-500 text-stone-500 dark:text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 text-neutral-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-sm font-medium"
                 >
                   <Upload className="w-4 h-4" />
                   Add Photos
@@ -343,16 +343,16 @@ export function AlbumDetailModal({
 
             {/* Delete album (owner only) */}
             {isOwner && (
-              <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
+              <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800">
                 {confirmDelete ? (
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-stone-600 dark:text-stone-300 flex-1">
+                    <span className="text-sm text-neutral-600 dark:text-neutral-300 flex-1">
                       Delete this album permanently?
                     </span>
                     <button
                       type="button"
                       onClick={() => setConfirmDelete(false)}
-                      className="px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-600 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                      className="px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                     >
                       Cancel
                     </button>

@@ -108,31 +108,31 @@ export function PeopleYouMayKnowWidget() {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1.5">People You May Know</p>
+      <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wide mb-1.5">People You May Know</p>
       <div className="space-y-1">
         {candidates.map(c => (
-          <div key={c.uid} className="flex items-center gap-2 px-1.5 py-1.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+          <div key={c.uid} className="flex items-center gap-2 px-1.5 py-1.5 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
             {c.avatarUrl ? (
               <img src={c.avatarUrl} alt={c.displayName} className="w-8 h-8 rounded-full object-cover shrink-0" referrerPolicy="no-referrer" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-600 flex items-center justify-center text-xs font-bold text-stone-600 dark:text-stone-300 shrink-0">{c.displayName[0]}</div>
+              <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center text-xs font-bold text-neutral-600 dark:text-neutral-300 shrink-0">{c.displayName[0]}</div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-stone-700 dark:text-stone-200 truncate">{c.displayName}</p>
-              {c.contextLabel && <p className="text-[10px] text-stone-400 dark:text-stone-500 truncate">{c.contextLabel}</p>}
+              <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{c.displayName}</p>
+              {c.contextLabel && <p className="text-[10px] text-neutral-400 dark:text-neutral-500 truncate">{c.contextLabel}</p>}
             </div>
             <div className="flex gap-1 shrink-0">
               {alreadySent.has(c.uid) ? (
-                <span className="text-[10px] text-stone-400 dark:text-stone-500 flex items-center gap-0.5"><Check className="w-3 h-3" /> Pending</span>
+                <span className="text-[10px] text-neutral-400 dark:text-neutral-500 flex items-center gap-0.5"><Check className="w-3 h-3" /> Pending</span>
               ) : (
                 <button onClick={() => handleAdd(c.uid)}
-                  className="p-1 rounded-lg text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+                  className="p-1 rounded-lg text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
                   aria-label="Add friend">
                   <UserPlus className="w-3.5 h-3.5" />
                 </button>
               )}
               <button onClick={() => handleDismiss(c.uid)}
-                className="p-1 rounded-lg text-stone-300 dark:text-stone-600 hover:text-stone-500 dark:hover:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+                className="p-1 rounded-lg text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                 aria-label="Dismiss">
                 <X className="w-3 h-3" />
               </button>

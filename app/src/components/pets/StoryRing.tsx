@@ -68,12 +68,12 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
           className={`rounded-full p-[3px] ${hasStories ? 'bg-gradient-to-br from-rose-500 via-violet-500 to-amber-500' : 'bg-transparent'}`}
           style={{ width: ringSize, height: ringSize }}
         >
-          <div className="rounded-full bg-white dark:bg-stone-800 p-[2px] w-full h-full">
+          <div className="rounded-full bg-white dark:bg-neutral-800 p-[2px] w-full h-full">
             {children}
           </div>
         </div>
         {!hasStories && (
-          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-stone-800 flex items-center justify-center">
+          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-800 flex items-center justify-center">
             <Plus className="w-3 h-3 text-white" />
           </div>
         )}
@@ -90,7 +90,7 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="max-w-sm w-full bg-stone-900 rounded-2xl p-6 text-center"
+              className="max-w-sm w-full bg-neutral-900 rounded-2xl p-6 text-center"
               onClick={e => e.stopPropagation()}
             >
               <button onClick={() => setViewing(false)} className="absolute top-4 right-4 text-white/60 hover:text-white">
@@ -127,10 +127,10 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="max-w-sm w-full bg-white dark:bg-stone-800 rounded-2xl p-5"
+              className="max-w-sm w-full bg-white dark:bg-neutral-800 rounded-2xl p-5"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="font-semibold text-stone-900 dark:text-stone-100 mb-3">
+              <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
                 What's {pet.name} up to?
               </h3>
               <input
@@ -140,10 +140,10 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
                 placeholder="Share a quick update..."
                 maxLength={140}
                 autoFocus
-                className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 mb-3"
+                className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 mb-3"
               />
               <div className="flex gap-2">
-                <button onClick={() => setCreating(false)} className="flex-1 py-2 text-sm text-stone-500 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700">
+                <button onClick={() => setCreating(false)} className="flex-1 py-2 text-sm text-neutral-500 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   Cancel
                 </button>
                 <button

@@ -110,52 +110,55 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-100 dark:border-stone-700 w-full max-w-md z-10 flex flex-col"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="create-group-modal-title"
+                    className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-md z-10 flex flex-col"
                 >
-                    <div className="flex items-center justify-between p-6 border-b border-stone-100 dark:border-stone-700">
+                    <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                                 <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">Create Group</h2>
-                                <p className="text-sm text-stone-500 dark:text-stone-400">{ownedGroups.length}/3 groups owned</p>
+                                <h2 id="create-group-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Create Group</h2>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">{ownedGroups.length}/3 groups owned</p>
                             </div>
                         </div>
-                        <button onClick={onClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700">
+                        <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Group Name</label>
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Group Name</label>
                             <input
                                 type="text"
                                 required
                                 value={name}
                                 onChange={(e) => { setName(e.target.value); setNameError(''); }}
                                 placeholder="e.g. Local Husky Walkers"
-                                className={`w-full px-4 py-2 rounded-xl border bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 transition-colors ${nameError ? 'border-rose-400 focus:ring-rose-400' : 'border-stone-200 dark:border-stone-600 focus:ring-emerald-500'}`}
+                                className={`w-full px-4 py-2 rounded-xl border bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 transition-colors ${nameError ? 'border-rose-400 focus:ring-rose-400' : 'border-neutral-200 dark:border-neutral-600 focus:ring-emerald-500'}`}
                             />
                             {nameError && <p className="text-xs text-rose-500 mt-1">{nameError}</p>}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Description</label>
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Description</label>
                             <textarea
                                 required
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="What is this group about?"
                                 rows={3}
-                                className="w-full px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
+                                className="w-full px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
                             />
                         </div>
 
                         {/* Cover Photo Upload */}
                         <div>
-                            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-                                Cover Photo <span className="text-stone-400 font-normal">(Optional)</span>
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                Cover Photo <span className="text-neutral-400 font-normal">(Optional)</span>
                             </label>
                             <input
                                 ref={fileInputRef}
@@ -165,7 +168,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 onChange={handleFileChange}
                             />
                             {imagePreview ? (
-                                <div className="relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-600">
+                                <div className="relative rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-600">
                                     <img
                                         src={imagePreview}
                                         alt="Cover preview"
@@ -191,10 +194,10 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700/50 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-colors group"
+                                    className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700/50 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-colors group"
                                 >
-                                    <ImagePlus className="w-6 h-6 text-stone-400 group-hover:text-emerald-500 transition-colors" />
-                                    <span className="text-sm text-stone-500 dark:text-stone-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                    <ImagePlus className="w-6 h-6 text-neutral-400 group-hover:text-emerald-500 transition-colors" />
+                                    <span className="text-sm text-neutral-500 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                         Upload cover photo
                                     </span>
                                 </button>
@@ -203,10 +206,10 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-                                Search Tags <span className="text-stone-400 font-normal">({tags.length}/10)</span>
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                Search Tags <span className="text-neutral-400 font-normal">({tags.length}/10)</span>
                             </label>
-                            <div className="flex flex-wrap gap-1.5 p-2 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 min-h-[2.75rem] focus-within:ring-2 focus-within:ring-emerald-500">
+                            <div className="flex flex-wrap gap-1.5 p-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 min-h-[2.75rem] focus-within:ring-2 focus-within:ring-emerald-500">
                                 {tags.map(tag => (
                                     <span key={tag} className="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-medium px-2 py-0.5 rounded-full">
                                         #{tag}
@@ -221,17 +224,17 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                         onKeyDown={handleTagKeyDown}
                                         onBlur={addTag}
                                         placeholder={tags.length === 0 ? 'e.g. dogs, local, hiking...' : ''}
-                                        className="flex-1 min-w-[120px] text-sm text-stone-900 dark:text-stone-100 bg-transparent outline-none placeholder:text-stone-400"
+                                        className="flex-1 min-w-[120px] text-sm text-neutral-900 dark:text-neutral-100 bg-transparent outline-none placeholder:text-neutral-400"
                                     />
                                 )}
                             </div>
-                            <p className="text-xs text-stone-400 mt-1">Press Enter or comma to add a tag</p>
+                            <p className="text-xs text-neutral-400 mt-1">Press Enter or comma to add a tag</p>
                         </div>
 
                         <button
                             type="submit"
                             disabled={ownedGroups.length >= 3 || !name || !description || submitting || uploading}
-                            className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 dark:disabled:bg-stone-600 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
+                            className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-600 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
                         >
                             {uploading ? 'Uploading photo...' : submitting ? 'Checking...' : 'Create Group'}
                         </button>

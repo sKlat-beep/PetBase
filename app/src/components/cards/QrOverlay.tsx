@@ -34,11 +34,11 @@ export function QrOverlay({ cardId, pet, expiresLabel, onClose }: QrOverlayProps
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white dark:bg-stone-800 rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 flex flex-col items-center gap-5 relative"
+        className="bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 flex flex-col items-center gap-5 relative"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="absolute top-4 right-4 p-2 rounded-full text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           aria-label="Close QR overlay"
         >
           <X className="w-5 h-5" />
@@ -46,9 +46,9 @@ export function QrOverlay({ cardId, pet, expiresLabel, onClose }: QrOverlayProps
 
         {/* Pet info */}
         <div className="text-center">
-          <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">{pet.name}</h2>
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{pet.name}</h2>
           {pet.breed && (
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{pet.breed}</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">{pet.breed}</p>
           )}
         </div>
 
@@ -59,10 +59,10 @@ export function QrOverlay({ cardId, pet, expiresLabel, onClose }: QrOverlayProps
 
         {/* Expiry + instructions */}
         <div className="text-center space-y-1">
-          <p className="text-xs text-stone-400 dark:text-stone-500">
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">
             Scan to view pet card
           </p>
-          <p className="text-xs text-stone-400 dark:text-stone-500">
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">
             Expires {expiresLabel}
           </p>
         </div>

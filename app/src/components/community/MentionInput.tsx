@@ -31,20 +31,20 @@ interface MemberSuggestion {
 function roleColor(role: CommunityRole): string {
   if (role === 'Owner') return 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400';
   if (role === 'Moderator') return 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400';
-  return 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400';
+  return 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400';
 }
 
 function avatarColor(role: CommunityRole): string {
   if (role === 'Owner') return 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400';
   if (role === 'Moderator') return 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400';
-  return 'bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300';
+  return 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300';
 }
 
 function counterColor(current: number, max: number): string {
   const remaining = max - current;
   if (remaining < 25) return 'text-red-500 dark:text-red-400 font-semibold';
   if (remaining < 100) return 'text-amber-500 dark:text-amber-400';
-  return 'text-stone-400 dark:text-stone-500';
+  return 'text-neutral-400 dark:text-neutral-500';
 }
 
 const MAX_POST = 500;
@@ -280,7 +280,7 @@ export default function MentionInput({
       {/* Suggestions dropdown — rendered with fixed positioning to escape overflow-hidden ancestors */}
       {showDropdown && suggestions.length > 0 && dropdownPos && (
         <div
-          className="z-50 w-64 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl shadow-lg overflow-hidden"
+          className="z-50 w-64 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg overflow-hidden"
           style={{ position: 'fixed', top: dropdownPos.top + 4, left: dropdownPos.left }}
         >
           {suggestions.map((member, idx) => (
@@ -290,13 +290,13 @@ export default function MentionInput({
               onMouseDown={e => { e.preventDefault(); insertMention(member); }}
               className={`w-full flex items-center gap-2 px-3 py-2 text-left transition-colors focus-visible:outline-none
                 ${idx === highlightIndex
-                  ? 'bg-stone-100 dark:bg-stone-700'
-                  : 'hover:bg-stone-50 dark:hover:bg-stone-700/60'}`}
+                  ? 'bg-neutral-100 dark:bg-neutral-700'
+                  : 'hover:bg-neutral-50 dark:hover:bg-neutral-700/60'}`}
             >
               <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${avatarColor(member.role)}`}>
                 {(member.displayName[0] ?? '?').toUpperCase()}
               </div>
-              <span className="flex-1 text-sm text-stone-800 dark:text-stone-200 truncate">
+              <span className="flex-1 text-sm text-neutral-800 dark:text-neutral-200 truncate">
                 {member.displayName}
               </span>
               <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${roleColor(member.role)}`}>
@@ -310,10 +310,10 @@ export default function MentionInput({
       {/* No results state */}
       {showNoResults && dropdownPos && (
         <div
-          className="z-50 w-64 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl shadow-lg overflow-hidden"
+          className="z-50 w-64 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg overflow-hidden"
           style={{ position: 'fixed', top: dropdownPos.top + 4, left: dropdownPos.left }}
         >
-          <p className="text-xs text-stone-400 dark:text-stone-500 px-3 py-2">No members found</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500 px-3 py-2">No members found</p>
         </div>
       )}
     </div>

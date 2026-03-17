@@ -65,8 +65,8 @@ export default function DiscoverSection() {
   if (!hasSomething) return null;
 
   return (
-    <section className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl border border-stone-100 dark:border-stone-700 p-5">
-      <h2 className="font-semibold text-stone-900 dark:text-stone-50 flex items-center gap-2 mb-4">
+    <section className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl border border-neutral-100 dark:border-neutral-700 p-5">
+      <h2 className="font-semibold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 mb-4">
         <Compass className="w-4 h-4 text-emerald-600" aria-hidden="true" />
         Discover
       </h2>
@@ -74,7 +74,7 @@ export default function DiscoverSection() {
       {/* Lost Pet Alerts */}
       {lostPets.length > 0 && (
         <div className="mb-5">
-          <h3 className="text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-2">
+          <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
             Lost Pet Alerts
           </h3>
           {lostPets.map(pet => (
@@ -91,7 +91,7 @@ export default function DiscoverSection() {
             <button
               onClick={() => setCategoryFilter(null)}
               className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
-                !categoryFilter ? 'bg-emerald-500 text-white' : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+                !categoryFilter ? 'bg-emerald-500 text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
               }`}
             >All</button>
             {CATEGORY_FILTERS.map(cat => (
@@ -99,24 +99,24 @@ export default function DiscoverSection() {
                 key={cat}
                 onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
                 className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
-                  categoryFilter === cat ? 'bg-emerald-500 text-white' : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+                  categoryFilter === cat ? 'bg-emerald-500 text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
                 }`}
               >{cat}</button>
             ))}
           </div>
 
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide flex-1">
+            <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide flex-1">
               {categoryFilter ? `${categoryFilter} Groups` : 'Groups to Join'}
             </h3>
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-neutral-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search groups…"
-                className="pl-7 pr-3 py-1.5 text-xs rounded-lg border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-800 dark:text-stone-200 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-36"
+                className="pl-7 pr-3 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-36"
               />
             </div>
           </div>
@@ -133,12 +133,12 @@ export default function DiscoverSection() {
                 return (
                   <div
                     key={group.id}
-                    className="rounded-xl border border-stone-100 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50 p-4 flex items-center justify-between gap-3"
+                    className="rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 p-4 flex items-center justify-between gap-3"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-stone-800 dark:text-stone-100 truncate">{group.name}</p>
+                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-100 truncate">{group.name}</p>
                       {group.description && (
-                        <p className="text-xs text-stone-400 dark:text-stone-500 truncate mt-0.5">{group.description}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{group.description}</p>
                       )}
                       <div className="flex gap-1 mt-1 flex-wrap">
                         {group.tags.slice(0, 3).map(tag => (
@@ -147,7 +147,7 @@ export default function DiscoverSection() {
                           </span>
                         ))}
                       </div>
-                      <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
                         {memberCount} member{memberCount !== 1 ? 's' : ''}
                       </p>
                     </div>
@@ -173,7 +173,7 @@ export default function DiscoverSection() {
       )}
 
       {discoverGroups.length === 0 && lostPets.length === 0 && (
-        <div className="text-center py-6 text-stone-400 dark:text-stone-500">
+        <div className="text-center py-6 text-neutral-400 dark:text-neutral-500">
           <PawPrint className="w-10 h-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
           <p className="text-sm">You've joined all available groups!</p>
         </div>

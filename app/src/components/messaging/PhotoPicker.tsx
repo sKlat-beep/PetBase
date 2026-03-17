@@ -58,21 +58,21 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
+      <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-stone-700 shrink-0">
-          <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Attach Photo</h2>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
+          <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Attach Photo</h2>
           <button
             onClick={onClose}
             aria-label="Close photo picker"
-            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+            className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-stone-200 dark:border-stone-700 shrink-0">
+        <div className="flex border-b border-neutral-200 dark:border-neutral-700 shrink-0">
           {(['library', 'upload'] as Tab[]).map(t => (
             <button
               key={t}
@@ -80,7 +80,7 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
               className={`flex-1 py-2.5 text-xs font-medium transition-colors focus-visible:outline-none
                 ${tab === t
                   ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500'
-                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'}`}
+                  : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'}`}
             >
               {t === 'library' ? 'Your Photos' : 'Upload New'}
             </button>
@@ -92,8 +92,8 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
           {tab === 'library' ? (
             allPhotos.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 gap-2 text-center">
-                <ImagePlus className="w-8 h-8 text-stone-300 dark:text-stone-600" />
-                <p className="text-xs text-stone-500 dark:text-stone-400">
+                <ImagePlus className="w-8 h-8 text-neutral-300 dark:text-neutral-600" />
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   No photos in your library yet.
                 </p>
                 <button
@@ -126,7 +126,7 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
           ) : (
             <div className="flex flex-col items-center justify-center py-6 gap-4">
               {uploading ? (
-                <div className="flex flex-col items-center gap-2 text-stone-500 dark:text-stone-400">
+                <div className="flex flex-col items-center gap-2 text-neutral-500 dark:text-neutral-400">
                   <Loader2 className="w-6 h-6 animate-spin" />
                   <p className="text-xs">Uploading…</p>
                 </div>
@@ -134,12 +134,12 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
                 <>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center gap-3 w-full py-8 rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-600 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors group"
+                    className="flex flex-col items-center gap-3 w-full py-8 rounded-2xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors group"
                   >
-                    <Upload className="w-7 h-7 text-stone-300 dark:text-stone-600 group-hover:text-emerald-500 transition-colors" />
+                    <Upload className="w-7 h-7 text-neutral-300 dark:text-neutral-600 group-hover:text-emerald-500 transition-colors" />
                     <div className="text-center">
-                      <p className="text-sm font-medium text-stone-600 dark:text-stone-300">Choose a photo</p>
-                      <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">JPG, PNG, GIF, WebP</p>
+                      <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">Choose a photo</p>
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">JPG, PNG, GIF, WebP</p>
                     </div>
                   </button>
                   {uploadError && (

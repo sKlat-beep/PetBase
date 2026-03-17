@@ -74,14 +74,14 @@ export function HealthInsights({ pet }: HealthInsightsProps) {
     <div className="space-y-2 mt-3">
       <div className="flex items-center gap-1.5">
         <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-        <p className="text-xs font-medium text-stone-500 dark:text-stone-400">Smart Insights</p>
+        <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Smart Insights</p>
       </div>
       {insights.map((insight, i) => (
         <div key={i} className="px-3 py-2 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
           <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">{insight}</p>
         </div>
       ))}
-      <p className="text-[10px] text-stone-400 italic">These are general suggestions — always consult your licensed veterinarian.</p>
+      <p className="text-[10px] text-neutral-400 italic">These are general suggestions — always consult your licensed veterinarian.</p>
     </div>
   );
 }

@@ -46,7 +46,7 @@ For each `RESTRICTED_PII` field:
 - [ ] Tokenized URLs are not stored in Firestore directly (only the token is)
 
 ### Step 5 — Verify Firestore rules alignment
-Use `mcp__firebase__firebase_get_security_rules` or read `firestore.rules` directly.
+Read `firestore.rules` directly.
 Confirm that new collections/fields accessed by the feature:
 - [ ] Are protected by auth check (`request.auth != null`)
 - [ ] Do not allow unauthenticated reads for RESTRICTED_PII fields

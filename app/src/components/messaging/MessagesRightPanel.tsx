@@ -92,7 +92,7 @@ export function MessagesRightPanel({
     <div className="space-y-4">
       {/* Search */}
       <div>
-        <p className="text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1.5">New Message</p>
+        <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wide mb-1.5">New Message</p>
         <NewConversationSearch />
       </div>
 
@@ -126,13 +126,13 @@ export function MessagesRightPanel({
     return (
       <div className="space-y-3">
         {/* Tab bar */}
-        <div className="flex gap-1 p-1 bg-stone-100 dark:bg-stone-800 rounded-xl">
+        <div className="flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800 rounded-xl">
           <button
             onClick={() => setActiveTab('contact')}
             className={`flex-1 text-xs font-medium py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5
               ${activeTab === 'contact'
-                ? 'bg-white dark:bg-stone-700 text-stone-800 dark:text-stone-100 shadow-sm'
-                : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'}`}
+                ? 'bg-white dark:bg-neutral-700 text-neutral-800 dark:text-neutral-100 shadow-sm'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
           >
             <User className="w-3.5 h-3.5" />
             Contact
@@ -141,8 +141,8 @@ export function MessagesRightPanel({
             onClick={() => setActiveTab('find')}
             className={`flex-1 text-xs font-medium py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5
               ${activeTab === 'find'
-                ? 'bg-white dark:bg-stone-700 text-stone-800 dark:text-stone-100 shadow-sm'
-                : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'}`}
+                ? 'bg-white dark:bg-neutral-700 text-neutral-800 dark:text-neutral-100 shadow-sm'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'}`}
           >
             <Users2 className="w-3.5 h-3.5" />
             Find People
@@ -160,17 +160,17 @@ export function MessagesRightPanel({
                     <img
                       src={otherAvatar}
                       alt={displayName}
-                      className="w-14 h-14 rounded-full object-cover bg-stone-100 dark:bg-stone-700"
+                      className="w-14 h-14 rounded-full object-cover bg-neutral-100 dark:bg-neutral-700"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-xl font-bold text-stone-600 dark:text-stone-300">
+                    <div className="w-14 h-14 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-xl font-bold text-neutral-600 dark:text-neutral-300">
                       {initials}
                     </div>
                   )}
-                  <p className="text-sm font-semibold text-stone-800 dark:text-zinc-200">{displayName}</p>
+                  <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">{displayName}</p>
                   {sharedGroups > 0 && (
-                    <p className="text-xs text-stone-500 dark:text-zinc-400">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       {sharedGroups} shared group{sharedGroups !== 1 ? 's' : ''}
                     </p>
                   )}
@@ -180,19 +180,19 @@ export function MessagesRightPanel({
                 <div className="flex flex-col gap-1.5">
                   <button
                     onClick={onViewProfile}
-                    className="w-full text-xs font-medium px-3 py-2 rounded-xl bg-stone-100 dark:bg-zinc-700 text-stone-700 dark:text-zinc-200 hover:bg-stone-200 dark:hover:bg-zinc-600 transition-colors"
+                    className="w-full text-xs font-medium px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
                   >
                     View Profile
                   </button>
                   <button
                     onClick={onBlock}
-                    className="w-full text-xs font-medium px-3 py-2 rounded-xl bg-stone-100 dark:bg-zinc-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                    className="w-full text-xs font-medium px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
                   >
                     Block User
                   </button>
                   <button
                     onClick={onReport}
-                    className="w-full text-xs font-medium px-3 py-2 rounded-xl bg-stone-100 dark:bg-zinc-700 text-stone-500 dark:text-zinc-400 hover:bg-stone-200 dark:hover:bg-zinc-600 transition-colors"
+                    className="w-full text-xs font-medium px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
                   >
                     Report
                   </button>
@@ -203,7 +203,7 @@ export function MessagesRightPanel({
             {/* Shared Media */}
             <CollapsiblePanelWidget id={`msg-media-${activeUid}`} title="Shared Media" icon={<ImageIcon className="w-3 h-3" />}>
               {sharedMedia.length === 0 ? (
-                <p className="text-xs text-stone-500 dark:text-zinc-400">No shared media yet.</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">No shared media yet.</p>
               ) : (
                 <div className="grid grid-cols-3 gap-1">
                   {sharedMedia.slice(0, 9).map(m => (
@@ -236,16 +236,16 @@ export function MessagesRightPanel({
             <img
               src={ownAvatar}
               alt={profile?.displayName ?? ''}
-              className="w-14 h-14 rounded-full object-cover bg-stone-100 dark:bg-stone-700"
+              className="w-14 h-14 rounded-full object-cover bg-neutral-100 dark:bg-neutral-700"
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="w-14 h-14 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-xl font-bold text-stone-600 dark:text-stone-300">
+            <div className="w-14 h-14 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-xl font-bold text-neutral-600 dark:text-neutral-300">
               {ownInitials}
             </div>
           )}
-          <p className="text-sm font-semibold text-stone-800 dark:text-zinc-200">{profile?.displayName}</p>
-          <p className="text-xs text-stone-500 dark:text-zinc-400">
+          <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">{profile?.displayName}</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             {conversations.length} conversation{conversations.length !== 1 ? 's' : ''}
           </p>
         </div>

@@ -24,11 +24,11 @@ export function PetHealthPanel({ pet, onMedical }: PetHealthPanelProps) {
   return (
     <div className="space-y-4">
       {isEmpty ? (
-        <div className="text-center py-6 text-stone-500 dark:text-stone-400">
+        <div className="text-center py-6 text-neutral-500 dark:text-neutral-400">
           <p className="text-sm mb-3">No medical records yet.</p>
           <button
             onClick={onMedical}
-            className="text-sm text-stone-900 dark:text-stone-100 font-semibold underline underline-offset-2"
+            className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
           >
             Add medical records →
           </button>
@@ -62,16 +62,16 @@ export function PetHealthPanel({ pet, onMedical }: PetHealthPanelProps) {
           {/* Active medications */}
           {activeMeds > 0 && (
             <div className="flex justify-between items-center text-sm">
-              <span className="text-stone-500 dark:text-stone-400">Active Medications</span>
-              <span className="font-semibold text-stone-800 dark:text-stone-200">{activeMeds}</span>
+              <span className="text-neutral-500 dark:text-neutral-400">Active Medications</span>
+              <span className="font-semibold text-neutral-800 dark:text-neutral-200">{activeMeds}</span>
             </div>
           )}
 
           {/* Last vet */}
           {pet.lastVet && (
             <div className="flex justify-between items-center text-sm">
-              <span className="text-stone-500 dark:text-stone-400">Last Vet Visit</span>
-              <span className="font-semibold text-stone-800 dark:text-stone-200">{pet.lastVet}</span>
+              <span className="text-neutral-500 dark:text-neutral-400">Last Vet Visit</span>
+              <span className="font-semibold text-neutral-800 dark:text-neutral-200">{pet.lastVet}</span>
             </div>
           )}
 
@@ -85,7 +85,7 @@ export function PetHealthPanel({ pet, onMedical }: PetHealthPanelProps) {
 
       <button
         onClick={onMedical}
-        className="w-full mt-4 bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 font-medium py-2 rounded-xl text-sm hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
+        className="w-full mt-4 bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium py-2 rounded-xl text-sm hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
       >
         Open Medical Records
       </button>

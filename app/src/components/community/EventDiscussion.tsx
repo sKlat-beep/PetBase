@@ -72,19 +72,19 @@ function PostRow({
 
       {/* Bubble */}
       <div className="flex-1 min-w-0">
-        <div className="bg-stone-100 dark:bg-stone-700/60 rounded-xl px-3 py-2">
+        <div className="bg-neutral-100 dark:bg-neutral-700/60 rounded-xl px-3 py-2">
           <div className="flex items-center gap-1.5 mb-0.5">
             <button
               onClick={() => onViewProfile(post.authorId)}
-              className="text-[11px] font-semibold text-stone-700 dark:text-stone-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+              className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
             >
               {post.authorName}
             </button>
-            <span className="text-[10px] text-stone-400 dark:text-stone-500">
+            <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
               {relativeTime(post.createdAt)}
             </span>
           </div>
-          <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed break-words">
+          <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed break-words">
             {post.content}
           </p>
         </div>
@@ -102,7 +102,7 @@ function PostRow({
                 className={`flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500
                   ${isActive
                     ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                    : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-600'
+                    : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600'
                   }`}
                 aria-pressed={isActive}
                 aria-label={`${key} reaction${count > 0 ? `, ${count}` : ''}`}
@@ -117,7 +117,7 @@ function PostRow({
           {canDelete && (
             <button
               onClick={() => onDelete(post.id, post.authorId)}
-              className="text-[10px] text-stone-400 dark:text-stone-500 hover:text-red-500 dark:hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
+              className="text-[10px] text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
               aria-label="Delete post"
             >
               <Trash2 className="w-3 h-3" aria-hidden="true" />
@@ -243,7 +243,7 @@ export default function EventDiscussion({
   // -------------------------------------------------------------------------
 
   return (
-    <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-700/60">
+    <div className="mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-700/60">
       {/* Loading spinner */}
       {loading && (
         <div className="flex items-center justify-center py-4">
@@ -255,13 +255,13 @@ export default function EventDiscussion({
       {!loading && (
         <div className="space-y-3">
           {posts.length === 0 && isAttendee && (
-            <p className="text-center text-xs text-stone-400 dark:text-stone-500 py-2">
+            <p className="text-center text-xs text-neutral-400 dark:text-neutral-500 py-2">
               No posts yet — be the first to share something about this event! 🐾
             </p>
           )}
 
           {posts.length === 0 && !isAttendee && (
-            <p className="text-center text-xs text-stone-400 dark:text-stone-500 py-2">
+            <p className="text-center text-xs text-neutral-400 dark:text-neutral-500 py-2">
               RSVP to join the discussion
             </p>
           )}
@@ -292,10 +292,10 @@ export default function EventDiscussion({
               onChange={e => setNewPostText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
               placeholder="Share something about this event…"
-              className="flex-1 text-xs rounded-full border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 placeholder-stone-400 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="flex-1 text-xs rounded-full border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               disabled={submitting}
             />
-            <span className="text-xs text-stone-400">{newPostText.length}/500</span>
+            <span className="text-xs text-neutral-400">{newPostText.length}/500</span>
             <button
               onClick={handleSubmit}
               disabled={!newPostText.trim() || submitting}

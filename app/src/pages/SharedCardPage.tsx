@@ -19,7 +19,7 @@ export function SharedCardPage() {
 
   if (card === 'loading') {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -27,10 +27,10 @@ export function SharedCardPage() {
 
   if (card === 'not-found' || card === null || card.status === 'revoked') {
     return (
-      <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center gap-4 p-6 text-center">
-        <ShieldOff className="w-12 h-12 text-stone-400" />
-        <h1 className="text-xl font-bold text-stone-700">Card Not Found</h1>
-        <p className="text-stone-500 max-w-xs">This card is no longer valid.</p>
+      <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <ShieldOff className="w-12 h-12 text-neutral-400" />
+        <h1 className="text-xl font-bold text-neutral-700">Card Not Found</h1>
+        <p className="text-neutral-500 max-w-xs">This card is no longer valid.</p>
       </div>
     );
   }
@@ -42,17 +42,17 @@ export function SharedCardPage() {
   const isMulti = card.petId === 'multi-pet' || card.petId === 'all-pets' || (card.multiPetConfig && card.multiPetConfig.length > 0);
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-start py-10 px-4">
+    <div className="min-h-screen bg-neutral-100 flex flex-col items-center justify-start py-10 px-4">
       {/* PetBase branding */}
-      <div className="mb-6 flex items-center gap-2 text-stone-500 text-sm">
+      <div className="mb-6 flex items-center gap-2 text-neutral-500 text-sm">
         <PawPrint className="w-4 h-4 text-emerald-500" />
-        <span>Shared via <span className="font-semibold text-stone-700">PetBase</span></span>
+        <span>Shared via <span className="font-semibold text-neutral-700">PetBase</span></span>
       </div>
 
-      <div className="bg-white rounded-[2rem] shadow-xl border border-stone-100 overflow-hidden w-full max-w-sm">
+      <div className="bg-white rounded-[2rem] shadow-xl border border-neutral-100 overflow-hidden w-full max-w-sm">
         {/* Status banner */}
         {(isRevoked || isExpired) && (
-          <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${isRevoked ? 'bg-rose-600' : 'bg-stone-400'}`}>
+          <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${isRevoked ? 'bg-rose-600' : 'bg-neutral-400'}`}>
             {isRevoked ? '⛔ REVOKED' : '⏱ EXPIRED'}
           </div>
         )}
@@ -88,7 +88,7 @@ export function SharedCardPage() {
 
         {/* Body */}
         {isMulti && card.multiPetConfig ? (
-          <div className="divide-y divide-stone-100">
+          <div className="divide-y divide-neutral-100">
             {card.multiPetConfig.map(cfg => (
               <div key={cfg.petId} className="flex flex-col">
                 <div className="flex items-center gap-3 px-5 pt-5 pb-3">
@@ -101,8 +101,8 @@ export function SharedCardPage() {
                     />
                   )}
                   <div>
-                    <h3 className="font-bold text-stone-900 text-lg leading-tight">{cfg.petSnapshot.name}</h3>
-                    <p className="text-sm text-stone-500">{cfg.petSnapshot.breed}</p>
+                    <h3 className="font-bold text-neutral-900 text-lg leading-tight">{cfg.petSnapshot.name}</h3>
+                    <p className="text-sm text-neutral-500">{cfg.petSnapshot.breed}</p>
                   </div>
                 </div>
                 <CardSectionRenderer
@@ -126,7 +126,7 @@ export function SharedCardPage() {
         )}
 
         {/* Expiry */}
-        <div className="px-5 py-4 bg-stone-50 flex items-center gap-2 text-xs text-stone-400 border-t border-stone-100">
+        <div className="px-5 py-4 bg-neutral-50 flex items-center gap-2 text-xs text-neutral-400 border-t border-neutral-100">
           <Clock className="w-3.5 h-3.5 shrink-0" />
           {isExpired || isRevoked
             ? <span className="text-rose-500 font-medium flex items-center gap-1"><ShieldOff className="w-3.5 h-3.5" /> This card is no longer valid.</span>
@@ -135,7 +135,7 @@ export function SharedCardPage() {
         </div>
       </div>
 
-      <p className="mt-6 text-xs text-stone-400 text-center">
+      <p className="mt-6 text-xs text-neutral-400 text-center">
         Powered by PetBase · This card was shared by its owner.
       </p>
     </div>

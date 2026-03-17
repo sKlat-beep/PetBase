@@ -28,12 +28,12 @@ export function PetOverviewPanel({ pet, onEdit }: PetOverviewPanelProps) {
 
   if (isEmpty) {
     return (
-      <div className="text-center py-6 text-stone-500 dark:text-stone-400">
+      <div className="text-center py-6 text-neutral-500 dark:text-neutral-400">
         <p className="text-sm mb-3">No profile info added yet.</p>
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-sm text-stone-900 dark:text-stone-100 font-semibold underline underline-offset-2"
+            className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
           >
             Complete pet profile →
           </button>
@@ -69,10 +69,10 @@ export function PetOverviewPanel({ pet, onEdit }: PetOverviewPanelProps) {
           {statTiles.map(({ label, value }) => (
             <div
               key={label}
-              className="bg-stone-50 dark:bg-stone-700/50 rounded-xl px-4 py-3"
+              className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl px-4 py-3"
             >
-              <p className="text-xs text-stone-500 dark:text-stone-400 mb-0.5">{label}</p>
-              <p className="text-sm font-semibold text-stone-800 dark:text-stone-200">{value}</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">{label}</p>
+              <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">{value}</p>
             </div>
           ))}
         </div>
@@ -81,30 +81,30 @@ export function PetOverviewPanel({ pet, onEdit }: PetOverviewPanelProps) {
       {/* Measurements */}
       {hasMeasurements && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500 mb-2">
             Measurements
           </p>
           <div className="space-y-1.5">
             {hasHeight && (
               <div className="flex justify-between text-sm">
-                <span className="text-stone-500 dark:text-stone-400">Height</span>
-                <span className="font-medium text-stone-800 dark:text-stone-200">
+                <span className="text-neutral-500 dark:text-neutral-400">Height</span>
+                <span className="font-medium text-neutral-800 dark:text-neutral-200">
                   {pet.height}{pet.heightUnit ? ` ${pet.heightUnit}` : ''}
                 </span>
               </div>
             )}
             {hasLength && (
               <div className="flex justify-between text-sm">
-                <span className="text-stone-500 dark:text-stone-400">Length</span>
-                <span className="font-medium text-stone-800 dark:text-stone-200">
+                <span className="text-neutral-500 dark:text-neutral-400">Length</span>
+                <span className="font-medium text-neutral-800 dark:text-neutral-200">
                   {pet.length}{pet.lengthUnit ? ` ${pet.lengthUnit}` : ''}
                 </span>
               </div>
             )}
             {hasBodyScore && (
               <div className="flex justify-between text-sm">
-                <span className="text-stone-500 dark:text-stone-400">Body Score</span>
-                <span className="font-medium text-stone-800 dark:text-stone-200">
+                <span className="text-neutral-500 dark:text-neutral-400">Body Score</span>
+                <span className="font-medium text-neutral-800 dark:text-neutral-200">
                   {pet.bodyConditionScore}
                 </span>
               </div>
@@ -117,14 +117,14 @@ export function PetOverviewPanel({ pet, onEdit }: PetOverviewPanelProps) {
       {hasNotes && (
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
               Notes
             </p>
             <span className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-medium">
               Encrypted
             </span>
           </div>
-          <p className="text-sm text-stone-700 dark:text-stone-300 whitespace-pre-wrap line-clamp-4">
+          <p className="text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap line-clamp-4">
             {pet.notes}
           </p>
         </div>

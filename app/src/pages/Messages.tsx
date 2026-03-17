@@ -52,7 +52,7 @@ function ConversationRow({
     <div className={`relative group flex items-center transition-colors
       ${isActive
         ? 'bg-emerald-50 dark:bg-emerald-950/30'
-        : 'hover:bg-stone-50 dark:hover:bg-stone-800/60'}`}
+        : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/60'}`}
     >
       <button
         onClick={onClick}
@@ -60,16 +60,16 @@ function ConversationRow({
       >
         {avatar ? (
           <img src={avatar} alt={displayName} width={40} height={40}
-            className="w-10 h-10 rounded-full object-cover shrink-0 bg-stone-100 dark:bg-stone-800"
+            className="w-10 h-10 rounded-full object-cover shrink-0 bg-neutral-100 dark:bg-neutral-800"
             referrerPolicy="no-referrer" />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center shrink-0 text-sm font-bold text-stone-600 dark:text-stone-300">
+          <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 text-sm font-bold text-neutral-600 dark:text-neutral-300">
             {initials}
           </div>
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <p className={`text-sm truncate ${isUnread ? 'font-bold text-stone-900 dark:text-stone-100' : 'font-medium text-stone-700 dark:text-stone-300'}`}>
+            <p className={`text-sm truncate ${isUnread ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'font-medium text-neutral-700 dark:text-neutral-300'}`}>
               {isPinned && <Pin className="w-3 h-3 inline-block mr-1 text-amber-500" />}
               {displayName}
             </p>
@@ -77,7 +77,7 @@ function ConversationRow({
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-label="Unread message" />
             )}
           </div>
-          <p className="text-xs text-stone-500 dark:text-stone-400 truncate mt-0.5">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">
             {isBlocked ? <span className="text-rose-500 dark:text-rose-400">User Blocked</span>
               : convo.lastMessage.mediaType
                 ? (convo.lastMessage.mediaType === 'gif' ? '🎞 GIF' : convo.lastMessage.mediaType === 'audio' ? '🎤 Voice' : '📷 Photo')
@@ -87,7 +87,7 @@ function ConversationRow({
       </button>
       <button
         onClick={(e) => { e.stopPropagation(); onTogglePin(); }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-stone-400 hover:text-amber-500 dark:hover:text-amber-400"
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400"
         aria-label={isPinned ? 'Unpin conversation' : 'Pin conversation'}
       >
         <Pin className={`w-3.5 h-3.5 ${isPinned ? 'text-amber-500 fill-amber-500' : ''}`} />
@@ -136,7 +136,7 @@ function counterColor(current: number, max: number): string {
   const remaining = max - current;
   if (remaining < 100) return 'text-red-500 dark:text-red-400 font-semibold';
   if (remaining < 400) return 'text-amber-500 dark:text-amber-400';
-  return 'text-stone-400 dark:text-stone-500';
+  return 'text-neutral-400 dark:text-neutral-500';
 }
 
 const MAX_DM = 2000;
@@ -215,7 +215,7 @@ function MessageBubble({
         <button
           onClick={onToggleSelect}
           aria-label={isSelected ? 'Deselect message' : 'Select message'}
-          className="p-1 text-stone-400 hover:text-emerald-500 transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none shrink-0"
+          className="p-1 text-neutral-400 hover:text-emerald-500 transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none shrink-0"
         >
           {isSelected ? <SquareCheck className="w-4 h-4 text-emerald-500" /> : <Square className="w-4 h-4" />}
         </button>
@@ -227,8 +227,8 @@ function MessageBubble({
             ${isMine
               ? 'bg-emerald-500 text-white rounded-br-sm'
               : isBlocked
-                ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 italic rounded-bl-sm'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 rounded-bl-sm'}`}>
+                ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 italic rounded-bl-sm'
+                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-bl-sm'}`}>
             {blockedText ? 'Message from blocked user' : (highlightRegex && message.content ? highlightText(message.content, highlightRegex) : message.content)}
           </div>
         )}
@@ -263,7 +263,7 @@ function MessageBubble({
                     className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border transition-colors
                       ${reacted
                         ? 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
-                        : 'bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:border-stone-300'}`}
+                        : 'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300'}`}
                     aria-label={`React with ${k}`}
                   >
                     {REACTION_EMOJIS[k]} {count}
@@ -275,7 +275,7 @@ function MessageBubble({
         )}
 
         <div className={`flex items-center gap-1 mt-0.5 ${isMine ? 'justify-end' : 'justify-start'}`}>
-          <span className="text-[10px] text-stone-400 dark:text-stone-500">{ts}</span>
+          <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{ts}</span>
           {/* Read receipt: show below last sent message */}
           {isMine && isLastMine && message.read && (
             <span className="text-[10px] text-emerald-500 dark:text-emerald-400 flex items-center gap-0.5">
@@ -288,7 +288,7 @@ function MessageBubble({
                 onClick={() => setMenuOpen(v => !v)}
                 aria-label="Message options"
                 aria-expanded={menuOpen}
-                className="opacity-0 group-hover:opacity-100 p-0.5 text-stone-300 hover:text-stone-500 dark:hover:text-stone-300 transition-all focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+                className="opacity-0 group-hover:opacity-100 p-0.5 text-neutral-300 hover:text-neutral-500 dark:hover:text-neutral-300 transition-all focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
               >
                 <MoreHorizontal className="w-3.5 h-3.5" />
               </button>
@@ -303,17 +303,17 @@ function MessageBubble({
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.1 }}
                       className={`absolute z-20 bottom-full mb-1 ${isMine ? 'right-0' : 'left-0'}
-                        bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700
+                        bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700
                         rounded-xl shadow-lg overflow-hidden min-w-[140px]`}
                     >
                       {/* Reaction picker */}
-                      <div className="flex gap-1 px-2 py-2 border-b border-stone-100 dark:border-stone-700">
+                      <div className="flex gap-1 px-2 py-2 border-b border-neutral-100 dark:border-neutral-700">
                         {reactionKeys.map(k => (
                           <button
                             key={k}
                             onClick={() => handleReact(k)}
                             aria-label={`React with ${k}`}
-                            className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 text-base transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-base transition-colors"
                           >
                             {REACTION_EMOJIS[k]}
                           </button>
@@ -330,7 +330,7 @@ function MessageBubble({
                       {!isMine && (
                         <button
                           onClick={() => { onReport(); setMenuOpen(false); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
                           <span className="text-orange-500">⚑</span> Report
                         </button>
@@ -533,11 +533,11 @@ function ThreadPane({
   return (
     <div className="relative flex flex-col h-full">
       {/* Thread header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shrink-0">
         <button
           onClick={onBack}
           aria-label="Back to conversations"
-          className="md:hidden p-2 -ml-1 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none rounded-lg"
+          className="md:hidden p-2 -ml-1 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none rounded-lg"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -548,10 +548,10 @@ function ThreadPane({
         >
           {avatar ? (
             <img src={avatar} alt={displayName} width={36} height={36}
-              className="w-9 h-9 rounded-full object-cover bg-stone-100 hover:ring-2 hover:ring-emerald-400 transition-shadow"
+              className="w-9 h-9 rounded-full object-cover bg-neutral-100 hover:ring-2 hover:ring-emerald-400 transition-shadow"
               referrerPolicy="no-referrer" />
           ) : (
-            <div className="w-9 h-9 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-sm font-bold text-stone-600 dark:text-stone-300 hover:ring-2 hover:ring-emerald-400 transition-shadow">
+            <div className="w-9 h-9 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:ring-2 hover:ring-emerald-400 transition-shadow">
               {initials}
             </div>
           )}
@@ -559,7 +559,7 @@ function ThreadPane({
         <div className="flex-1 min-w-0">
           <button
             onClick={onViewProfile}
-            className="font-semibold text-stone-900 dark:text-stone-100 truncate hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded block"
+            className="font-semibold text-neutral-900 dark:text-neutral-100 truncate hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded block"
           >
             {displayName}
           </button>
@@ -569,7 +569,7 @@ function ThreadPane({
             </p>
           )}
           {!isBlocked && otherUserProfile?.showLastActive !== false && otherUserProfile?.lastActive && (
-            <p className="text-xs text-stone-400 dark:text-stone-500">
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">
               {formatLastActive(otherUserProfile.lastActive)}
             </p>
           )}
@@ -580,7 +580,7 @@ function ThreadPane({
           className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
             ${selectMode
               ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-              : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}`}
+              : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
         >
           <SquareCheck className="w-5 h-5" />
         </button>
@@ -590,7 +590,7 @@ function ThreadPane({
           className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
             ${showSearch
               ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-              : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}`}
+              : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
         >
           <Search className="w-5 h-5" />
         </button>
@@ -605,9 +605,9 @@ function ThreadPane({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden shrink-0"
           >
-            <div className="px-4 py-2 border-b border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/60">
+            <div className="px-4 py-2 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/60">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -615,13 +615,13 @@ function ThreadPane({
                   onChange={e => setSearchQuery(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Escape') { setShowSearch(false); setSearchQuery(''); } }}
                   placeholder="Search messages…"
-                  className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-stone-200 dark:border-stone-600
-                    bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100
-                    placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600
+                    bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100
+                    placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               {searchQuery.trim() && (
-                <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-1">
+                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-1">
                   {matchCount} result{matchCount !== 1 ? 's' : ''}
                 </p>
               )}
@@ -637,9 +637,9 @@ function ThreadPane({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="flex items-center gap-2 px-4 py-2 bg-stone-50 dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700 overflow-hidden shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 overflow-hidden shrink-0"
           >
-            <span className="text-xs text-stone-500 dark:text-stone-400 flex-1">{selected.size} selected</span>
+            <span className="text-xs text-neutral-500 dark:text-neutral-400 flex-1">{selected.size} selected</span>
             <button
               onClick={handleBulkMarkRead}
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
@@ -737,7 +737,7 @@ function ThreadPane({
             exit={{ opacity: 0, height: 0 }}
             className="px-4 py-1 overflow-hidden shrink-0"
           >
-            <p className="text-xs text-stone-400 dark:text-stone-500 italic">
+            <p className="text-xs text-neutral-400 dark:text-neutral-500 italic">
               {displayName} is typing…
             </p>
           </motion.div>
@@ -747,7 +747,7 @@ function ThreadPane({
       {/* Compose */}
       <form
         onSubmit={handleSend}
-        className="flex items-center gap-1.5 p-3 border-t border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shrink-0"
+        className="flex items-center gap-1.5 p-3 border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shrink-0"
       >
         {/* Emoji button */}
         <div className="relative shrink-0">
@@ -756,8 +756,8 @@ function ThreadPane({
             disabled={isBlocked}
             onClick={() => { setShowEmoji(v => !v); setShowGif(false); setShowPhoto(false); }}
             aria-label="Emoji picker"
-            className="p-2 rounded-xl text-stone-400 hover:text-stone-600 dark:hover:text-stone-300
-              hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors
+            className="p-2 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
+              hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors
               focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
               disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -774,8 +774,8 @@ function ThreadPane({
           disabled={isBlocked}
           onClick={() => { setShowGif(true); setShowEmoji(false); setShowPhoto(false); }}
           aria-label="GIF picker"
-          className="p-2 rounded-xl text-stone-400 hover:text-stone-600 dark:hover:text-stone-300
-            hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors
+          className="p-2 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
+            hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors
             focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
             disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
@@ -788,8 +788,8 @@ function ThreadPane({
           disabled={isBlocked}
           onClick={() => { setShowPhoto(true); setShowEmoji(false); setShowGif(false); setShowVoice(false); }}
           aria-label="Attach photo"
-          className="p-2 rounded-xl text-stone-400 hover:text-stone-600 dark:hover:text-stone-300
-            hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors
+          className="p-2 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
+            hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors
             focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
             disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
@@ -805,7 +805,7 @@ function ThreadPane({
           className={`p-2 rounded-xl transition-colors
             focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
             disabled:opacity-40 disabled:cursor-not-allowed shrink-0
-            ${showVoice ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+            ${showVoice ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30' : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
         >
           <Mic className="w-5 h-5" />
         </button>
@@ -821,9 +821,9 @@ function ThreadPane({
             disabled={isBlocked}
             maxLength={MAX_DM}
             aria-label="Message text"
-            className="w-full px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-600
-              bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100
-              placeholder:text-stone-400 text-sm
+            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600
+              bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100
+              placeholder:text-neutral-400 text-sm
               focus:outline-none focus:ring-2 focus:ring-emerald-500
               disabled:opacity-50 disabled:cursor-not-allowed"
           />
@@ -1013,22 +1013,22 @@ export function Messages() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] flex rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-sm"
+      className="h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] flex rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-sm"
     >
       {/* ── Conversation list (left pane / full-width on mobile) ── */}
       <div className={`
-        flex-col border-r border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900
+        flex-col border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900
         w-full md:w-72 md:flex shrink-0
         ${mobileView === 'list' ? 'flex' : 'hidden md:flex'}
       `}>
-        <div className="px-4 py-4 border-b border-stone-200 dark:border-stone-700">
-          <h1 className="text-xl font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+        <div className="px-4 py-4 border-b border-neutral-200 dark:border-neutral-700">
+          <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             Messages
           </h1>
         </div>
 
-        <div ref={convoListRef} className="flex-1 overflow-y-auto divide-y divide-stone-100 dark:divide-stone-800">
+        <div ref={convoListRef} className="flex-1 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-800">
           {mainConvos.length === 0 && requestConvos.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-8 px-4 text-center">
               <EmptyState
@@ -1041,13 +1041,13 @@ export function Messages() {
                 if (!p) return null;
                 return (
                   <button key={uid} onClick={() => setActiveUid(uid)}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors">
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors">
                     {(p as any).avatarUrl ? (
                       <img src={(p as any).avatarUrl} alt={p.displayName} className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400">{p.displayName?.[0]}</div>
                     )}
-                    <span className="text-sm font-medium text-stone-700 dark:text-stone-200 flex-1 text-left truncate">{p.displayName}</span>
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex-1 text-left truncate">{p.displayName}</span>
                     <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Say hi 👋</span>
                   </button>
                 );
@@ -1056,8 +1056,8 @@ export function Messages() {
           )}
           {requestConvos.length > 0 && (
             <>
-              <div className="px-4 py-2 bg-stone-50 dark:bg-stone-800/40">
-                <p className="text-[10px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide">
+              <div className="px-4 py-2 bg-neutral-50 dark:bg-neutral-800/40">
+                <p className="text-[10px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
                   Message Requests ({requestConvos.length})
                 </p>
               </div>
@@ -1079,8 +1079,8 @@ export function Messages() {
                 );
               })}
               {mainConvos.length > 0 && (
-                <div className="px-4 py-2 bg-stone-50 dark:bg-stone-800/40">
-                  <p className="text-[10px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide">
+                <div className="px-4 py-2 bg-neutral-50 dark:bg-neutral-800/40">
+                  <p className="text-[10px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
                     Messages
                   </p>
                 </div>
@@ -1127,7 +1127,7 @@ export function Messages() {
                       if (activeUid) deleteConversation(user?.uid ?? '', activeUid, threadMessages).catch(() => {});
                       setActiveUid(null);
                     }}
-                    className="text-xs font-medium px-3 py-1 rounded-lg bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
+                    className="text-xs font-medium px-3 py-1 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"
                   >Decline</button>
                 </div>
               </div>
@@ -1142,7 +1142,7 @@ export function Messages() {
             />
           </>
         ) : (
-          <div className="hidden md:flex flex-col items-center justify-center h-full text-stone-400 dark:text-stone-500">
+          <div className="hidden md:flex flex-col items-center justify-center h-full text-neutral-400 dark:text-neutral-500">
             <MessageSquare className="w-12 h-12 mb-3 opacity-20" />
             <p className="text-sm font-medium">Select a conversation</p>
           </div>

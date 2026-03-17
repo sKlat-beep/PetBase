@@ -101,14 +101,14 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
+      <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-stone-700 shrink-0">
-          <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Search GIFs</h2>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
+          <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Search GIFs</h2>
           <button
             onClick={onClose}
             aria-label="Close GIF picker"
-            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+            className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -116,7 +116,7 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
 
         {/* No API key notice */}
         {!TENOR_KEY ? (
-          <div className="p-6 text-center text-xs text-stone-500 dark:text-stone-400">
+          <div className="p-6 text-center text-xs text-neutral-500 dark:text-neutral-400">
             GIF support requires a Tenor API key (<code>VITE_TENOR_KEY</code>).
           </div>
         ) : (
@@ -129,9 +129,9 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
                 value={query}
                 onChange={handleQueryChange}
                 placeholder="Search GIFs…"
-                className="w-full px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-600
-                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
-                  placeholder:text-stone-400 text-sm
+                className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600
+                  bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100
+                  placeholder:text-neutral-400 text-sm
                   focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -140,12 +140,12 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
             <div className="flex-1 overflow-y-auto px-4 pb-2 max-h-80">
               {loading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-stone-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
                 </div>
               ) : error ? (
                 <p className="text-center text-xs text-red-500 py-8">{error}</p>
               ) : results.length === 0 ? (
-                <p className="text-center text-xs text-stone-500 dark:text-stone-400 py-8">
+                <p className="text-center text-xs text-neutral-500 dark:text-neutral-400 py-8">
                   {query ? 'No GIFs found' : 'Start typing to search'}
                 </p>
               ) : (
@@ -177,7 +177,7 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
 
             {/* Tenor attribution — required by Tenor API terms */}
             <div className="px-4 py-2 shrink-0 flex justify-end">
-              <span className="text-[10px] text-stone-400 dark:text-stone-500 tracking-wide">
+              <span className="text-[10px] text-neutral-400 dark:text-neutral-500 tracking-wide">
                 Powered by Tenor
               </span>
             </div>

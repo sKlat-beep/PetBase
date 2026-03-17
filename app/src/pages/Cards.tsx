@@ -290,13 +290,13 @@ export function Cards() {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
         <header>
-          <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Pet Cards</h1>
-          <p className="text-stone-500 dark:text-stone-400 mt-1">Shareable profiles for sitters, walkers, and emergencies.</p>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">Pet Cards</h1>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1">Shareable profiles for sitters, walkers, and emergencies.</p>
         </header>
         <div className="text-center py-20">
-          <PawPrint className="w-14 h-14 text-stone-200 dark:text-stone-700 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-stone-700 dark:text-stone-300 mb-2">No pets yet</h2>
-          <p className="text-stone-400 dark:text-stone-500 mb-6">Add your first pet before creating a card.</p>
+          <PawPrint className="w-14 h-14 text-neutral-200 dark:text-neutral-700 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-neutral-700 dark:text-neutral-300 mb-2">No pets yet</h2>
+          <p className="text-neutral-400 dark:text-neutral-500 mb-6">Add your first pet before creating a card.</p>
           <Link to="/pets" className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors">
             Go to My Pets →
           </Link>
@@ -319,7 +319,7 @@ export function Cards() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             aria-hidden="true"
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-sm font-medium px-4 py-2 rounded-xl shadow-lg pointer-events-none"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium px-4 py-2 rounded-xl shadow-lg pointer-events-none"
           >
             Link copied to clipboard
           </motion.div>
@@ -329,8 +329,8 @@ export function Cards() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Pet Cards</h1>
-          <p className="text-stone-500 dark:text-stone-400 mt-1">Shareable profiles for sitters, walkers, and emergencies.</p>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">Pet Cards</h1>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1">Shareable profiles for sitters, walkers, and emergencies.</p>
         </div>
         <div className="flex gap-2">
           {pets.filter(p => !p.isPrivate).length >= 2 && (
@@ -344,7 +344,7 @@ export function Cards() {
           <button
             id="create-card-btn"
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-stone-200 text-white dark:text-stone-900 px-5 py-2.5 rounded-xl font-medium transition-colors"
+            className="flex items-center gap-2 bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 px-5 py-2.5 rounded-xl font-medium transition-colors"
           >
             <Plus className="w-4 h-4" /> Create New Card
           </button>
@@ -352,11 +352,11 @@ export function Cards() {
       </header>
 
       {/* Household Information Block */}
-      <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-5 border border-stone-100 dark:border-stone-700 shadow-sm">
+      <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-100 dark:border-neutral-700 shadow-sm">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-stone-400" />
-            <h2 className="font-semibold text-stone-800 dark:text-stone-200 text-sm">Household Information</h2>
+            <Info className="w-4 h-4 text-neutral-400" />
+            <h2 className="font-semibold text-neutral-800 dark:text-neutral-200 text-sm">Household Information</h2>
           </div>
           <button
             onClick={() => {
@@ -370,7 +370,7 @@ export function Cards() {
             {editingGeneralInfo ? 'Save' : 'Edit'}
           </button>
         </div>
-        <p className="text-xs text-stone-400 dark:text-stone-500 mb-3">Household-level notes included when you opt in at card creation (gate codes, bowl ownership, etc.)</p>
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">Household-level notes included when you opt in at card creation (gate codes, bowl ownership, etc.)</p>
         {editingGeneralInfo ? (
           <textarea
             value={generalInfo}
@@ -378,21 +378,21 @@ export function Cards() {
             rows={4}
             maxLength={1000}
             placeholder="e.g. Gate code: 1234. Max's bowl is blue, Bella's is pink."
-            className="w-full px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
           />
         ) : (
-          <p className="text-sm text-stone-600 dark:text-stone-300 whitespace-pre-wrap break-words">
-            {generalInfo || <span className="text-stone-400 italic">No household information set.</span>}
+          <p className="text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap break-words">
+            {generalInfo || <span className="text-neutral-400 italic">No household information set.</span>}
           </p>
         )}
       </div>
 
       {cards.length === 0 ? (
         /* Empty state — no cards created yet */
-        <div className="text-center py-16 border-2 border-dashed border-stone-200 dark:border-stone-700 rounded-2xl">
-          <QrCode className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-stone-700 dark:text-stone-300 mb-2">No cards yet</h2>
-          <p className="text-stone-400 dark:text-stone-500 mb-5 max-w-sm mx-auto">
+        <div className="text-center py-16 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-2xl">
+          <QrCode className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-4" />
+          <h2 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-2">No cards yet</h2>
+          <p className="text-neutral-400 dark:text-neutral-500 mb-5 max-w-sm mx-auto">
             Create a Sitter, Vet, or Custom card for any of your {pets.length} pet{pets.length > 1 ? 's' : ''}.
           </p>
           <button
@@ -427,8 +427,8 @@ export function Cards() {
                 )
               ) : null
             ) : (
-              <div className="flex w-full max-w-md items-center justify-center h-64 border-2 border-dashed border-stone-200 dark:border-stone-700 rounded-2xl">
-                <p className="text-stone-400 dark:text-stone-500 text-sm">Select a card to preview</p>
+              <div className="flex w-full max-w-md items-center justify-center h-64 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-2xl">
+                <p className="text-neutral-400 dark:text-neutral-500 text-sm">Select a card to preview</p>
               </div>
             )}
           </div>
@@ -441,9 +441,9 @@ export function Cards() {
               return (
                 <>
                   {/* Active cards panel */}
-                  <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-stone-100 dark:border-stone-700">
+                  <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-neutral-100 dark:border-neutral-700">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Active Cards</h3>
+                      <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100">Active Cards</h3>
                       <div className="flex items-center gap-2">
                         {staleCardIds.size > 0 && (
                           <button
@@ -453,12 +453,12 @@ export function Cards() {
                             <RefreshCw className="w-3 h-3" /> Update All
                           </button>
                         )}
-                        <span className="text-xs text-stone-400 dark:text-stone-500">{activeCards.length} card{activeCards.length !== 1 ? 's' : ''}</span>
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500">{activeCards.length} card{activeCards.length !== 1 ? 's' : ''}</span>
                       </div>
                     </div>
                     <div className="space-y-1">
                       {activeCards.length === 0 && (
-                        <p className="text-xs text-stone-400 dark:text-stone-500 text-center py-3">No active cards</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center py-3">No active cards</p>
                       )}
                       {activeCards.map(c => {
                         const pet = c.petId === 'all-pets'
@@ -490,7 +490,7 @@ export function Cards() {
                     </div>
                     <button
                       onClick={() => setShowCreateModal(true)}
-                      className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-700 text-stone-400 dark:text-stone-500 hover:text-emerald-600 hover:border-emerald-400 dark:hover:border-emerald-600 transition-colors text-sm font-medium"
+                      className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500 hover:text-emerald-600 hover:border-emerald-400 dark:hover:border-emerald-600 transition-colors text-sm font-medium"
                     >
                       <Plus className="w-4 h-4" /> Add Another Card
                     </button>
@@ -498,17 +498,17 @@ export function Cards() {
 
                   {/* Revoked & Expired section — collapsed by default */}
                   {inactiveCards.length > 0 && (
-                    <div className="bg-stone-50/80 dark:bg-stone-800/50 backdrop-blur-sm rounded-2xl border border-stone-200 dark:border-stone-700 overflow-hidden">
+                    <div className="bg-neutral-50/80 dark:bg-neutral-800/50 backdrop-blur-sm rounded-2xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                       <button
                         onClick={() => setRevokedSectionOpen(o => !o)}
-                        className="w-full flex items-center justify-between p-4 hover:bg-stone-100 dark:hover:bg-stone-700/50 transition-colors"
+                        className="w-full flex items-center justify-between p-4 hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors"
                       >
-                        <span className="text-sm font-semibold text-stone-600 dark:text-stone-400">
+                        <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-400">
                           Revoked &amp; Expired ({inactiveCards.length})
                         </span>
                         {revokedSectionOpen
-                          ? <ChevronUp className="w-4 h-4 text-stone-400" />
-                          : <ChevronDown className="w-4 h-4 text-stone-400" />
+                          ? <ChevronUp className="w-4 h-4 text-neutral-400" />
+                          : <ChevronDown className="w-4 h-4 text-neutral-400" />
                         }
                       </button>
                       {revokedSectionOpen && (

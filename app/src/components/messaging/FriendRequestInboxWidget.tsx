@@ -32,7 +32,7 @@ export function FriendRequestInboxWidget() {
               ) : (
                 <div className="w-8 h-8 rounded-full bg-amber-200 dark:bg-amber-800 flex items-center justify-center text-xs font-bold text-amber-700 dark:text-amber-300 shrink-0">{name[0]}</div>
               )}
-              <p className="flex-1 text-xs font-medium text-stone-700 dark:text-stone-200 truncate">{name}</p>
+              <p className="flex-1 text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{name}</p>
               <div className="flex gap-1 shrink-0">
                 <button
                   onClick={() => (acceptFriendRequestAndGreet as any)(req.id, navigate)}
@@ -42,7 +42,7 @@ export function FriendRequestInboxWidget() {
                 </button>
                 <button
                   onClick={() => rejectFriendRequest(req.id)}
-                  className="text-[10px] font-medium px-2 py-1 rounded-lg bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
+                  className="text-[10px] font-medium px-2 py-1 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"
                 >
                   Decline
                 </button>

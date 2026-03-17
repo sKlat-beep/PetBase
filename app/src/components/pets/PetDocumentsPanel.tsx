@@ -47,13 +47,13 @@ export function PetDocumentsPanel({ pet, onEdit }: PetDocumentsPanelProps) {
 
   if (isEmpty) {
     return (
-      <div className="text-center py-6 text-stone-500 dark:text-stone-400">
+      <div className="text-center py-6 text-neutral-500 dark:text-neutral-400">
         <p className="text-sm mb-3">No photos or documents yet.</p>
         {/* Fix 4: Guard onEdit call */}
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-sm text-stone-900 dark:text-stone-100 font-semibold underline underline-offset-2"
+            className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
           >
             Upload photos →
           </button>
@@ -68,7 +68,7 @@ export function PetDocumentsPanel({ pet, onEdit }: PetDocumentsPanelProps) {
         {/* Gallery */}
         {hasGallery && (
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500 mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500 mb-3">
               Gallery
             </p>
             <div className="columns-2 gap-3 space-y-3">
@@ -100,26 +100,26 @@ export function PetDocumentsPanel({ pet, onEdit }: PetDocumentsPanelProps) {
         {hasMicrochip && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
                 Microchip ID
               </p>
               <span className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-medium">
                 Encrypted
               </span>
             </div>
-            <div className="flex items-center gap-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl px-4 py-3">
-              <span className="flex-1 text-sm font-mono text-stone-700 dark:text-stone-300 break-all">
+            <div className="flex items-center gap-3 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl px-4 py-3">
+              <span className="flex-1 text-sm font-mono text-neutral-700 dark:text-neutral-300 break-all">
                 {pet.microchipId}
               </span>
               <button
                 onClick={handleCopyMicrochip}
-                className="shrink-0 p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
+                className="shrink-0 p-1.5 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
                 aria-label="Copy microchip ID"
               >
                 {copied ? (
                   <Check className="w-4 h-4 text-emerald-500" />
                 ) : (
-                  <Copy className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                  <Copy className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                 )}
               </button>
             </div>
@@ -129,48 +129,48 @@ export function PetDocumentsPanel({ pet, onEdit }: PetDocumentsPanelProps) {
         {/* Emergency contacts */}
         {hasEmergencyContacts && (
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-stone-500 mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500 mb-3">
               Emergency Contacts
             </p>
             <div className="space-y-3">
               {/* Owner phone */}
               {ec!.ownerPhone && (
-                <div className="flex items-center gap-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl px-4 py-3">
-                  <Phone className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" />
+                <div className="flex items-center gap-3 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl px-4 py-3">
+                  <Phone className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0" />
                   <div>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">Owner Phone</p>
-                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200">{ec!.ownerPhone}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">Owner Phone</p>
+                    <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{ec!.ownerPhone}</p>
                   </div>
                 </div>
               )}
 
               {/* Vet info */}
               {ec!.vetInfo && (
-                <div className="bg-stone-50 dark:bg-stone-700/50 rounded-xl px-4 py-3 space-y-1.5">
+                <div className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl px-4 py-3 space-y-1.5">
                   <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" />
-                    <p className="text-xs text-stone-500 dark:text-stone-400">Veterinarian</p>
+                    <MapPin className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0" />
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">Veterinarian</p>
                   </div>
-                  <p className="text-sm font-semibold text-stone-800 dark:text-stone-200">{ec!.vetInfo.clinic}</p>
+                  <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">{ec!.vetInfo.clinic}</p>
                   {ec!.vetInfo.name && (
-                    <p className="text-xs text-stone-500 dark:text-stone-400">Dr. {ec!.vetInfo.name}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">Dr. {ec!.vetInfo.name}</p>
                   )}
                   {ec!.vetInfo.phone && (
-                    <p className="text-xs text-stone-600 dark:text-stone-300">{ec!.vetInfo.phone}</p>
+                    <p className="text-xs text-neutral-600 dark:text-neutral-300">{ec!.vetInfo.phone}</p>
                   )}
                   {ec!.vetInfo.address && (
-                    <p className="text-xs text-stone-500 dark:text-stone-400">{ec!.vetInfo.address}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{ec!.vetInfo.address}</p>
                   )}
                 </div>
               )}
 
               {/* Additional contacts — Fix 5: stable key using name+phone */}
               {ec!.additionalContacts && ec!.additionalContacts.map((contact) => (
-                <div key={contact.name + contact.phone} className="flex items-center gap-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl px-4 py-3">
-                  <User className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" />
+                <div key={contact.name + contact.phone} className="flex items-center gap-3 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl px-4 py-3">
+                  <User className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200">{contact.name}</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">{contact.phone}</p>
+                    <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{contact.name}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{contact.phone}</p>
                   </div>
                 </div>
               ))}

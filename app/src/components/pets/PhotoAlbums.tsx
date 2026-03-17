@@ -76,7 +76,7 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-5 h-5 animate-spin text-stone-400" />
+        <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />
       </div>
     );
   }
@@ -91,10 +91,10 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
     <div className="space-y-4">
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-stone-700 dark:text-stone-300">
+        <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
           Albums
           {albums.length > 0 && (
-            <span className="ml-2 text-xs font-normal text-stone-400">({albums.length})</span>
+            <span className="ml-2 text-xs font-normal text-neutral-400">({albums.length})</span>
           )}
         </h3>
         {isOwner && !isCreating && (
@@ -122,7 +122,7 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
             }}
             placeholder="Album name..."
             autoFocus
-            className="flex-1 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           <button
             type="button"
@@ -135,7 +135,7 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
           <button
             type="button"
             onClick={() => { setIsCreating(false); setNewAlbumName(''); }}
-            className="px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-600 text-stone-500 text-xs font-medium hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-neutral-500 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
             Cancel
           </button>
@@ -145,8 +145,8 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
       {/* Empty state */}
       {albums.length === 0 && !isCreating && (
         <div className="text-center py-8 space-y-2">
-          <Images className="w-8 h-8 text-stone-300 dark:text-stone-600 mx-auto" />
-          <p className="text-sm text-stone-500 dark:text-stone-400">No albums yet.</p>
+          <Images className="w-8 h-8 text-neutral-300 dark:text-neutral-600 mx-auto" />
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">No albums yet.</p>
           {isOwner && (
             <button
               type="button"
@@ -196,7 +196,7 @@ function AlbumCard({ album, onClick }: { album: PetAlbum; onClick: () => void })
     <button
       type="button"
       onClick={onClick}
-      className="rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-700 aspect-square relative cursor-pointer hover:ring-2 hover:ring-emerald-400 transition-shadow"
+      className="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 aspect-square relative cursor-pointer hover:ring-2 hover:ring-emerald-400 transition-shadow"
     >
       {cover ? (
         <img
@@ -207,8 +207,8 @@ function AlbumCard({ album, onClick }: { album: PetAlbum; onClick: () => void })
           referrerPolicy="no-referrer"
         />
       ) : (
-        <div className="w-full h-full bg-stone-100 dark:bg-zinc-800 flex items-center justify-center">
-          <Images className="w-8 h-8 text-stone-300 dark:text-stone-600" />
+        <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+          <Images className="w-8 h-8 text-neutral-300 dark:text-neutral-600" />
         </div>
       )}
       {/* Bottom gradient overlay */}

@@ -15,9 +15,9 @@ export function AllPetsCardPreview({ pets, card }: AllPetsCardPreviewProps) {
   const visiblePets = pets.filter(p => !p.isPrivate);
 
   return (
-    <div id={`card-preview-${card.id}`} className="bg-white rounded-[2rem] shadow-xl border border-stone-100 overflow-hidden max-w-md mx-auto w-full print:shadow-none">
+    <div id={`card-preview-${card.id}`} className="bg-white rounded-[2rem] shadow-xl border border-neutral-100 overflow-hidden max-w-md mx-auto w-full print:shadow-none">
       {status !== 'active' && (
-        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-stone-400'}`}>
+        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-neutral-400'}`}>
           {status === 'revoked' ? '⛔ REVOKED' : '⏱ EXPIRED'}
         </div>
       )}
@@ -34,10 +34,10 @@ export function AllPetsCardPreview({ pets, card }: AllPetsCardPreviewProps) {
 
       <div className="p-6 space-y-3">
         {visiblePets.length === 0 ? (
-          <p className="text-center text-stone-400 text-sm py-4">No public pets to display.</p>
+          <p className="text-center text-neutral-400 text-sm py-4">No public pets to display.</p>
         ) : (
           visiblePets.map(pet => (
-            <div key={pet.id} className="flex items-center gap-3 bg-stone-50 rounded-xl p-3 border border-stone-100">
+            <div key={pet.id} className="flex items-center gap-3 bg-neutral-50 rounded-xl p-3 border border-neutral-100">
               {pet.image ? (
                 <img src={pet.image} alt={pet.name} className={`w-12 h-12 object-cover border-2 border-white shadow-sm ${pet.avatarShape === 'square' ? 'rounded-lg' : 'rounded-full'}`} referrerPolicy="no-referrer" />
               ) : (
@@ -46,8 +46,8 @@ export function AllPetsCardPreview({ pets, card }: AllPetsCardPreviewProps) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-stone-900 truncate">{pet.name}</p>
-                <p className="text-xs text-stone-500 truncate">
+                <p className="font-bold text-neutral-900 truncate">{pet.name}</p>
+                <p className="text-xs text-neutral-500 truncate">
                   {pet.breed}{pet.age ? ` · ${formatPetAge(pet.birthday, pet.age)}` : ''}{pet.weight ? ` · ${pet.weight}` : ''}
                 </p>
               </div>
@@ -56,7 +56,7 @@ export function AllPetsCardPreview({ pets, card }: AllPetsCardPreviewProps) {
         )}
 
         {status === 'active' && (
-          <p className="text-xs text-stone-400 text-center pt-2">Expires {formatExpiry(card.expiresAt)}</p>
+          <p className="text-xs text-neutral-400 text-center pt-2">Expires {formatExpiry(card.expiresAt)}</p>
         )}
       </div>
     </div>

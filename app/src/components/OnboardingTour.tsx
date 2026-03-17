@@ -101,14 +101,14 @@ export function OnboardingTour({ onClose }: OnboardingTourProps) {
           exit={{ opacity: 0, y: -10 }}
           className="absolute bottom-24 left-1/2 -translate-x-1/2 w-[90vw] max-w-sm pointer-events-auto"
         >
-          <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 p-5">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 p-5">
             <div className="flex items-start justify-between mb-2">
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">{current.title}</h3>
-              <button onClick={handleFinish} className="text-stone-400 hover:text-stone-600 -mt-1">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100">{current.title}</h3>
+              <button onClick={handleFinish} className="text-neutral-400 hover:text-neutral-600 -mt-1">
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed mb-4">
+            <p className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-4">
               {current.description}
             </p>
 
@@ -119,7 +119,7 @@ export function OnboardingTour({ onClose }: OnboardingTourProps) {
                   <div
                     key={i}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      i === step ? 'bg-emerald-500' : i < step ? 'bg-emerald-300' : 'bg-stone-200 dark:bg-stone-600'
+                      i === step ? 'bg-emerald-500' : i < step ? 'bg-emerald-300' : 'bg-neutral-200 dark:bg-neutral-600'
                     }`}
                   />
                 ))}
@@ -128,7 +128,7 @@ export function OnboardingTour({ onClose }: OnboardingTourProps) {
                 {step > 0 && (
                   <button
                     onClick={handlePrev}
-                    className="p-2 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+                    className="p-2 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>

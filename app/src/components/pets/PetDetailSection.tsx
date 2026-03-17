@@ -39,24 +39,24 @@ export function PetDetailSection({
   }
 
   return (
-    <div className="border-b border-stone-100 dark:border-stone-700 last:border-0">
+    <div className="border-b border-neutral-100 dark:border-neutral-700 last:border-0">
       <button
         type="button"
         id={`${storageKey}-trigger`}
         onClick={toggle}
         aria-expanded={isOpen}
         aria-controls={`${storageKey}-panel`}
-        className="w-full flex items-center gap-3 px-6 py-4 text-left hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors"
+        className="w-full flex items-center gap-3 px-6 py-4 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors"
       >
         {icon}
-        <span className="flex-1 font-semibold text-stone-900 dark:text-stone-100">
+        <span className="flex-1 font-semibold text-neutral-900 dark:text-neutral-100">
           {title}
         </span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={TRANSITION}
         >
-          <ChevronDown className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+          <ChevronDown className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
         </motion.span>
       </button>
 

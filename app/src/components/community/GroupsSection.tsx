@@ -48,14 +48,14 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
   const displayed = showAll ? filteredGroups : filteredGroups.slice(0, 6);
 
   return (
-    <section className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl border border-stone-100 dark:border-stone-700 p-5">
+    <section className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl border border-neutral-100 dark:border-neutral-700 p-5">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-stone-900 dark:text-stone-50 flex items-center gap-2">
+        <h2 className="font-semibold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
           <UsersRound className="w-4 h-4 text-emerald-600" aria-hidden="true" />
           Your Groups
           {userGroups.length > 0 && (
-            <span className="text-xs font-normal text-stone-400 dark:text-stone-500">
+            <span className="text-xs font-normal text-neutral-400 dark:text-neutral-500">
               {userGroups.length}
             </span>
           )}
@@ -63,7 +63,7 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
         <div className="flex gap-2">
           <button
             onClick={() => setShowManage(true)}
-            className="text-xs px-2.5 py-1.5 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors flex items-center gap-1 min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="text-xs px-2.5 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors flex items-center gap-1 min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
             aria-label="Manage groups"
           >
             <Settings className="w-3.5 h-3.5" aria-hidden="true" /> Manage
@@ -80,7 +80,7 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
 
       {/* Empty state */}
       {userGroups.length === 0 && (
-        <div className="text-center py-8 text-stone-400 dark:text-stone-500">
+        <div className="text-center py-8 text-neutral-400 dark:text-neutral-500">
           <PawPrint className="w-10 h-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
           <p className="text-sm">You haven't joined any groups yet.</p>
           <p className="text-xs mt-1">Check out Discover below to find your community.</p>
@@ -89,7 +89,7 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
 
       {/* Search no-results state */}
       {userGroups.length > 0 && filteredGroups.length === 0 && groupSearch !== '' && (
-        <p className="text-sm text-stone-400 dark:text-stone-500 text-center py-8">
+        <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-8">
           No groups match &ldquo;{groupSearch}&rdquo;
         </p>
       )}
@@ -105,7 +105,7 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
                 <motion.div
                   key={group.id}
                   whileHover={{ y: -2 }}
-                  className="relative rounded-xl overflow-hidden border border-stone-100 dark:border-stone-700 cursor-pointer"
+                  className="relative rounded-xl overflow-hidden border border-neutral-100 dark:border-neutral-700 cursor-pointer"
                   onClick={() => navigate(`/community/${group.id}`)}
                   role="button"
                   tabIndex={0}
@@ -133,9 +133,9 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
                       <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-amber-400 text-amber-400' : 'text-white'}`} aria-hidden="true" />
                     </button>
                   </div>
-                  <div className="p-2.5 bg-white dark:bg-stone-800">
-                    <p className="text-xs font-semibold text-stone-800 dark:text-stone-100 truncate">{group.name}</p>
-                    <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-0.5">
+                  <div className="p-2.5 bg-white dark:bg-neutral-800">
+                    <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-100 truncate">{group.name}</p>
+                    <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
                       {memberCount} member{memberCount !== 1 ? 's' : ''}
                     </p>
                     {group.tags.length > 0 && (

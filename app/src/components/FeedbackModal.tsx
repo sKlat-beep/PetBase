@@ -50,14 +50,17 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feedback-modal-title"
+        className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
       >
-        <div className="flex items-center justify-between p-5 border-b border-stone-100 dark:border-stone-700">
+        <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-700">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-emerald-500" />
-            <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Feedback / Report Issue</h2>
+            <h2 id="feedback-modal-title" className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Feedback / Report Issue</h2>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -65,8 +68,8 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
         {sent ? (
           <div className="p-8 flex flex-col items-center gap-3 text-center">
             <CheckCircle className="w-12 h-12 text-emerald-500" />
-            <p className="font-semibold text-stone-800 dark:text-stone-200">Thanks for your message!</p>
-            <p className="text-sm text-stone-500 dark:text-stone-400">Your {type === 'Report Issue/Bug' ? 'bug report' : 'feedback'} has been received.</p>
+            <p className="font-semibold text-neutral-800 dark:text-neutral-200">Thanks for your message!</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Your {type === 'Report Issue/Bug' ? 'bug report' : 'feedback'} has been received.</p>
             <button onClick={onClose} className="mt-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-colors">
               Close
             </button>
@@ -85,7 +88,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
                       ? t === 'Report Issue/Bug'
                         ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300'
                         : 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
-                      : 'border-stone-200 dark:border-stone-600 text-stone-500 dark:text-stone-400 hover:border-stone-300'
+                      : 'border-neutral-200 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-neutral-300'
                   }`}
                 >
                   {t === 'Report Issue/Bug' ? <Bug className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
@@ -96,7 +99,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
 
             {/* Message */}
             <div>
-              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                 {type === 'Report Issue/Bug' ? 'Describe the issue' : 'Share your thoughts'}
               </label>
               <textarea
@@ -109,7 +112,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
                     ? 'What happened? What did you expect to happen?'
                     : 'We\'d love to hear your thoughts, suggestions, or ideas...'
                 }
-                className="w-full px-3 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
               />
             </div>
 
@@ -117,14 +120,14 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
               <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p>
             )}
 
-            <p className="text-xs text-stone-400">
+            <p className="text-xs text-neutral-400">
               {type === 'Report Issue/Bug'
                 ? 'A diagnostic log will be included automatically to help us debug.'
                 : 'Diagnostic info will be included to give context to your feedback.'}
             </p>
 
             <div className="flex gap-3 pt-1">
-              <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-400 text-sm font-medium hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors">
+              <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
                 Cancel
               </button>
               <button

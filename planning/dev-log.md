@@ -20,3 +20,6 @@ Archiving stale planning files, restructuring TODO.md to open-tasks-only with ph
 
 ## [2026-03-17] Planning Consolidation — COMPLETE
 Archived 8 files to planning/archive/. TODO.md now 66 lines (4 open tasks). All 10+ reference files updated. MEMORY.md updated.
+
+## [2026-03-17] Worktree Cleanup — COMPLETE
+Pruned 2 stale worktrees (feature/ui-ux-polish, feature/phase1-2-improvements) — both 0 commits ahead of master. UI/UX polish plan (12 tasks) confirmed all complete on master via Phases 15-21. Branches deleted.

@@ -30,7 +30,7 @@ contract:
     - NO INTERNAL SCROLLBARS: Use carousels, pagination, or load-more for overflow.
     - THEME PARITY: Full support for light and dark modes via theme tokens.
     - DESKTOP AND MOBILE PARITY: All flows must be consistent across desktop and mobile.
-    - PENCIL MCP: Use Pencil MCP server for UI design/planning and for reading .pen files.
+    - INTERFACE-DESIGN: Use interface-design plugin for UI design, auditing, and pattern consistency.
 completedAt: "2026-03-10T05:35:26.115Z"
 ---
 

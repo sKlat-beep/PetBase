@@ -37,7 +37,7 @@ This file is the single source of truth for all agent and developer rules.
 
 ## 5. MCP Usage
 - Indexed search must use `jcodemunch`.
-- Pencil MCP server must be used for UI design/planning and for reading `.pen` files.
+- Use `interface-design` plugin for UI design, auditing, and pattern consistency.
 - Task tracking uses `planning/TODO.md` — no MCP dependency.
 
 ## 6. Source Control

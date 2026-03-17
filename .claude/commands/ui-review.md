@@ -107,9 +107,7 @@ Run this checklist against every modified `.tsx` file. Each item must be PASS.
 
 1. **Identify all modified `.tsx` files** from the task description.
 
-2. **If `.pen` design files are involved:**
-   - Use `mcp__pencil__batch_get` to read design specs
-   - Use `mcp__pencil__get_screenshot` to validate layout visually against the spec
+2. **Run `interface-design:audit`** to check modified files against `.interface-design/system.md` for spacing, depth, color, and pattern violations.
 
 3. **For each modified file:** use jcodemunch `get_file_outline` to locate components,
    then run through the checklist above.

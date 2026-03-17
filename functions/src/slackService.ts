@@ -11,53 +11,6 @@ const EMOJI: Record<'error' | 'warn' | 'info', string> = {
 // ─── Block Builders ───────────────────────────────────────────────────────────
 
 /**
- * Build a Slack Block Kit payload for an error event.
- * Includes header, fields (message, UID, timestamp, env), and stack trace.
- */
-export function buildErrorBlock(
-  fn: string,
-  err: unknown,
-  uid?: string,
-  extra?: Record<string, string>,
-): object[] {
-  const message = err instanceof Error ? err.message : String(err);
-  const stack = err instanceof Error && err.stack
-    ? err.stack.slice(0, 1500)
-    : '(no stack trace)';
-
-  const fields: object[] = [
-    { type: 'mrkdwn', text: `*Error:*\n${message}` },
-    { type: 'mrkdwn', text: `*Timestamp (UTC):*\n${new Date().toISOString()}` },
-    {
-      type: 'mrkdwn',
-      text: `*Environment:*\n${process.env.FUNCTIONS_EMULATOR === 'true' ? 'emulator' : 'production'}`,
-    },
-  ];
-
-  if (uid) {
-    fields.splice(1, 0, { type: 'mrkdwn', text: `*User UID:*\n${uid}` });
-  }
-
-  if (extra) {
-    for (const [key, value] of Object.entries(extra)) {
-      fields.push({ type: 'mrkdwn', text: `*${key}:*\n${value}` });
-    }
-  }
-
-  return [
-    {
-      type: 'header',
-      text: { type: 'plain_text', text: `${EMOJI.error} [ERROR] ${fn}`, emoji: true },
-    },
-    { type: 'section', fields },
-    {
-      type: 'section',
-      text: { type: 'mrkdwn', text: `\`\`\`${stack}\`\`\`` },
-    },
-  ];
-}
-
-/**
  * Build a Slack Block Kit payload for an alert or informational event.
  */
 export function buildAlertBlock(

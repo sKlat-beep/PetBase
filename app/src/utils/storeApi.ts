@@ -29,6 +29,11 @@ export interface WebsiteResult {
  * TODO: Wire to Google Places API (see Phase 5 in roadmap).
  */
 export async function getNearbyStores(_zipCode: string): Promise<StoreResult[]> {
+  if (import.meta.env.DEV) {
+    console.warn(
+      '[PetBase] getNearbyStores() is not implemented yet — returning empty array. See Phase 5 in roadmap.',
+    );
+  }
   return [];
 }
 

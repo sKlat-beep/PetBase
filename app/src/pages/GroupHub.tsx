@@ -695,7 +695,7 @@ export function GroupHub() {
                                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                                         <input
                                             type="text"
-                                            placeholder="Search by username..."
+                                            placeholder="Search members..."
                                             value={roleSearchQuery}
                                             onChange={(e) => setRoleSearchQuery(e.target.value)}
                                             className="w-full pl-9 pr-4 py-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 transition-shadow outline-none min-h-[44px]"

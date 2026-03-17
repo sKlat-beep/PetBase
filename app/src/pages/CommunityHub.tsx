@@ -140,7 +140,7 @@ export default function CommunityHub() {
           })}
         </div>
         {/* Group search input */}
-        <div className={`relative flex items-center transition-all duration-200 flex-shrink-0 ${searchFocused ? 'w-48' : 'w-32'}`}>
+        <div className={`relative flex items-center transition-all duration-200 flex-shrink-0 ${searchFocused ? 'w-48' : 'w-40'}`}>
           <Search className="absolute left-2.5 w-3.5 h-3.5 text-neutral-400 pointer-events-none" aria-hidden="true" />
           <input
             type="search"

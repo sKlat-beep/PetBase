@@ -358,7 +358,7 @@ export default function PeopleSection() {
               type="search"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Search by name or username…"
+              placeholder="Search people…"
               className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[44px]"
               autoFocus
             />

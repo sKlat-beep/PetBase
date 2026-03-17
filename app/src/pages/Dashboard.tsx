@@ -838,7 +838,7 @@ export function Dashboard() {
                 title="Open emergency vet finder"
               >
                 <ShieldAlert className="w-5 h-5" aria-hidden="true" />
-                <span className="text-sm font-semibold">Emergency Vet</span>
+                <span className="text-sm font-semibold">Emergency Help</span>
               </button>
               {/* Three actions side by side */}
               <div className="grid grid-cols-3 gap-2 flex-1">
@@ -848,7 +848,7 @@ export function Dashboard() {
                   title="Report a lost pet"
                 >
                   <SearchX className="w-5 h-5" aria-hidden="true" />
-                  <span className="text-xs font-semibold text-center leading-tight">Lost Pet</span>
+                  <span className="text-xs font-semibold text-center leading-tight">Report Lost</span>
                 </button>
                 <button
                   onClick={() => navigate('/messages')}
@@ -864,7 +864,7 @@ export function Dashboard() {
                   title="Find local pet services"
                 >
                   <MapPin className="w-5 h-5" aria-hidden="true" />
-                  <span className="text-xs font-semibold text-center leading-tight">Find Services</span>
+                  <span className="text-xs font-semibold text-center leading-tight">Nearby Vets</span>
                 </button>
               </div>
             </div>

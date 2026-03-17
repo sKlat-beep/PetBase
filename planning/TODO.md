@@ -44,14 +44,14 @@ Status: done
 
 ### Phase 17: API Cost & Infrastructure Hardening
 Tags: api, infrastructure, security, cost
-Status: intake
+Status: done
 
-- [ ] **[TASK-56]** Yelp cross-ZIP dedup via H3 — key serviceCache on H3 cell (res 7) instead of raw ZIP *(inline #21)*
-- [ ] **[TASK-57]** Google Places batch pre-fetch — pre-fetch contact details for top 3 results in background after search *(inline #22)*
-- [ ] **[TASK-58]** Per-user rate limiter on findServices — Firestore counter at `apiUsage/yelp/perUser/{uid}/{today}`, cap 5/day *(inline #23)*
-- [ ] **[TASK-59]** Scheduled Yelp cache warming — Cloud Function to pre-warm most-searched ZIP+category combos nightly *(inline #25)*
-- [ ] **[TASK-60]** Dashboard widget rename — let users rename dashboard widgets, store overrides in `users/{uid}/settings/dashboard` *(inline #27)*
-- [ ] **[TASK-61]** Apple Sign-In — add Apple OAuth provider to Auth flow (Google already done) *(fun #18)*
+- [x] **[TASK-56]** Yelp cross-ZIP dedup via H3 — client-side cache key now uses H3 cell (res 7) via `zipCodeToH3`/`latLngToH3` instead of raw filter JSON; nearby ZIPs share cache *(inline #21)*
+- [x] **[TASK-57]** Google Places batch pre-fetch — `prefetchTopPlaceDetails()` fires background requests for top 3 results after search; server-side caches for subsequent hits *(inline #22)*
+- [x] **[TASK-58]** Per-user rate limiter on findServices — already existed: `apiUsage/yelp/perUser/{uid}/{today}` counter, 5/day limit *(inline #23)*
+- [x] **[TASK-59]** Scheduled Yelp cache warming — already existed: `warmYelpCache` Cloud Function runs daily 02:00 UTC, processes up to 10 targets from `serviceCache/warmingTargets` *(inline #25)*
+- [x] **[TASK-60]** Dashboard widget rename — already existed: `widgetLabels` state + localStorage + rename UI in Edit Layout mode *(inline #27)*
+- [x] **[TASK-61]** Apple Sign-In — `OAuthProvider('apple.com')` added to firebase.ts; `handleAppleAuth()` + Apple button in Auth.tsx *(fun #18)*
 
 ---
 

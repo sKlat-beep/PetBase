@@ -223,21 +223,21 @@ function EmergencyModal({ onClose, onFindVet }: { onClose: () => void; onFindVet
             href="https://www.aspca.org/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-900/50 p-4 rounded-xl motion-safe:transition-colors text-left block"
+            className="w-full flex items-center gap-4 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100/80 dark:hover:bg-amber-900/40 border border-amber-200/60 dark:border-amber-900/50 p-4 rounded-2xl motion-safe:transition-colors text-left block"
           >
-            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/50 rounded-xl flex items-center justify-center shrink-0">
-              <ExternalLink className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center shrink-0">
+              <ExternalLink className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <p className="font-bold text-orange-900 dark:text-orange-100 text-sm">ASPCA Poison Control</p>
-              <p className="text-xs text-orange-700 dark:text-orange-300 mt-0.5">aspca.org · Available 24/7</p>
+              <p className="font-bold text-amber-900 dark:text-amber-100 text-sm">ASPCA Poison Control</p>
+              <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">aspca.org · Available 24/7</p>
             </div>
           </a>
           <a
             href="https://www.petpoisonhelpline.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-900/50 p-4 rounded-xl motion-safe:transition-colors text-left block"
+            className="w-full flex items-center gap-4 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100/80 dark:hover:bg-amber-900/40 border border-amber-200/60 dark:border-amber-900/50 p-4 rounded-2xl motion-safe:transition-colors text-left block"
           >
             <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center shrink-0">
               <ExternalLink className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -1444,51 +1444,58 @@ export function Dashboard() {
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">All caught up! No reminders today 🎉</p>
               </div>
             ) : (
-              <div className="space-y-2 overflow-y-auto max-h-[220px]">
-                {reminders.map((r, idx) => {
-                  if (r.type === 'vaccine') {
-                    return (
-                      <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40">
-                        <span className="text-base shrink-0" aria-hidden="true">💉</span>
-                        <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
-                          <span className="font-semibold">{r.petName}</span>
-                          {' — '}
-                          <span>{r.vaccineName}</span>
-                          {' due in '}
-                          <span className="font-medium text-amber-700 dark:text-amber-400">{r.daysUntilDue === 0 ? 'today' : `${r.daysUntilDue} day${r.daysUntilDue !== 1 ? 's' : ''}`}</span>
-                        </p>
-                      </div>
-                    );
-                  }
-                  if (r.type === 'vet') {
-                    return (
-                      <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200/60 dark:border-sky-800/40">
-                        <span className="text-base shrink-0" aria-hidden="true">🏥</span>
-                        <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
-                          <span className="font-semibold">{r.petName}</span>
-                          {' — vet appointment '}
-                          <span className="font-medium text-sky-700 dark:text-sky-400">{r.when}</span>
-                          {r.clinic && r.clinic !== 'Vet' && <span className="text-neutral-500 dark:text-neutral-400"> at {r.clinic}</span>}
-                        </p>
-                      </div>
-                    );
-                  }
-                  if (r.type === 'medication') {
-                    return (
-                      <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-violet-50/80 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40">
-                        <span className="text-base shrink-0" aria-hidden="true">💊</span>
-                        <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
-                          <span className="font-semibold">{r.petName}</span>
-                          {' — '}
-                          <span>{r.medName}</span>
-                          {r.frequency && <span className="text-neutral-500 dark:text-neutral-400"> ({r.frequency})</span>}
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
+              <>
+                <div className="space-y-2">
+                  {reminders.slice(0, 5).map((r, idx) => {
+                    if (r.type === 'vaccine') {
+                      return (
+                        <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40">
+                          <span className="text-base shrink-0" aria-hidden="true">💉</span>
+                          <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
+                            <span className="font-semibold">{r.petName}</span>
+                            {' — '}
+                            <span>{r.vaccineName}</span>
+                            {' due in '}
+                            <span className="font-medium text-amber-700 dark:text-amber-400">{r.daysUntilDue === 0 ? 'today' : `${r.daysUntilDue} day${r.daysUntilDue !== 1 ? 's' : ''}`}</span>
+                          </p>
+                        </div>
+                      );
+                    }
+                    if (r.type === 'vet') {
+                      return (
+                        <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200/60 dark:border-sky-800/40">
+                          <span className="text-base shrink-0" aria-hidden="true">🏥</span>
+                          <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
+                            <span className="font-semibold">{r.petName}</span>
+                            {' — vet appointment '}
+                            <span className="font-medium text-sky-700 dark:text-sky-400">{r.when}</span>
+                            {r.clinic && r.clinic !== 'Vet' && <span className="text-neutral-500 dark:text-neutral-400"> at {r.clinic}</span>}
+                          </p>
+                        </div>
+                      );
+                    }
+                    if (r.type === 'medication') {
+                      return (
+                        <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-violet-50/80 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40">
+                          <span className="text-base shrink-0" aria-hidden="true">💊</span>
+                          <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
+                            <span className="font-semibold">{r.petName}</span>
+                            {' — '}
+                            <span>{r.medName}</span>
+                            {r.frequency && <span className="text-neutral-500 dark:text-neutral-400"> ({r.frequency})</span>}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+                {reminders.length > 5 && (
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center mt-2">
+                    +{reminders.length - 5} more reminder{reminders.length - 5 !== 1 ? 's' : ''}
+                  </p>
+                )}
+              </>
             )}
           </section>
         );
@@ -1496,15 +1503,15 @@ export function Dashboard() {
 
       case 'streak_counter':
         return (
-          <div className="flex flex-col items-center justify-center h-full gap-2">
+          <section className={`${GLASS_CARD} flex flex-col items-center justify-center gap-2`} aria-label="Health Streak">
             <div className="text-4xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{streakCount}</div>
             <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
-              {streakCount === 1 ? 'day streak' : 'day streak'}
+              day streak
             </p>
             {longestStreak > 0 && (
-              <p className="text-xs text-neutral-400">Best: {longestStreak} days</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500">Best: {longestStreak} days</p>
             )}
-          </div>
+          </section>
         );
 
       default:
@@ -1532,7 +1539,7 @@ export function Dashboard() {
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
               {greeting}, {user?.displayName?.split(' ')[0] || 'Pet Parent'}!
             </h1>
             <p className="text-neutral-500 dark:text-neutral-400 mt-1">

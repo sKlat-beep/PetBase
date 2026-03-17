@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.warmYelpCache = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.checkVaccineReminders = exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.warmYelpCache = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
 const v2_1 = require("firebase-functions/v2");
 (0, v2_1.setGlobalOptions)({ region: 'us-central1', maxInstances: 10 });
 const https_1 = require("firebase-functions/v2/https");
@@ -18,6 +18,7 @@ admin.initializeApp();
 var notifications_1 = require("./notifications");
 Object.defineProperty(exports, "onNotificationCreated", { enumerable: true, get: function () { return notifications_1.onNotificationCreated; } });
 Object.defineProperty(exports, "sendEmailDigest", { enumerable: true, get: function () { return notifications_1.sendEmailDigest; } });
+const notifications_2 = require("./notifications");
 exports.sendReport = (0, https_1.onCall)({
     secrets: ['SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK', 'SLACK_WEBHOOK_URL'],
 }, async (request) => {
@@ -537,5 +538,62 @@ exports.exportUserData = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError('unauthenticated', 'Must be logged in');
     }
     return (0, exportService_1.exportUserData)(request.auth.uid);
+});
+// ─── Vaccine & Medication Reminders ──────────────────────────────────────────
+// Runs daily at 09:00 UTC. Scans all pets and checks their vaccines/medications
+// arrays for items with a nextDueDate exactly 7 days or 1 day from today.
+// For each match, a notification document is created for the pet's owner, which
+// the onNotificationCreated trigger will deliver via email and/or FCM push.
+//
+// Expected Firestore shape for each pet document in the `pets` collection:
+//   {
+//     ownerId: string,
+//     name: string,
+//     vaccines?: Array<{ name: string, nextDueDate: string }>,   // YYYY-MM-DD
+//     medications?: Array<{ name: string, nextDueDate: string }>, // YYYY-MM-DD
+//   }
+exports.checkVaccineReminders = (0, scheduler_1.onSchedule)('every day 09:00', async () => {
+    const db = admin.firestore();
+    // Compute target dates: today + 7 days and today + 1 day (UTC, YYYY-MM-DD)
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const toDateString = (ms) => new Date(ms).toISOString().slice(0, 10);
+    const in1Day = toDateString(now + 1 * msPerDay);
+    const in7Days = toDateString(now + 7 * msPerDay);
+    const targetDays = { [in1Day]: 1, [in7Days]: 7 };
+    console.log(`[checkVaccineReminders] Checking due dates for ${in1Day} (1 day) and ${in7Days} (7 days).`);
+    const petsSnap = await db.collection('pets').get();
+    if (petsSnap.empty) {
+        console.log('[checkVaccineReminders] No pets found — nothing to do.');
+        return;
+    }
+    let reminderCount = 0;
+    await Promise.all(petsSnap.docs.map(async (petDoc) => {
+        var _a;
+        const pet = petDoc.data();
+        const uid = pet.ownerId;
+        const petName = (_a = pet.name) !== null && _a !== void 0 ? _a : 'your pet';
+        if (!uid)
+            return;
+        // Check vaccines and medications in a unified loop
+        const items = [
+            ...(Array.isArray(pet.vaccines) ? pet.vaccines : []),
+            ...(Array.isArray(pet.medications) ? pet.medications : []),
+        ];
+        await Promise.all(items.map(async (item) => {
+            var _a;
+            if (!item.nextDueDate || !targetDays[item.nextDueDate])
+                return;
+            const daysUntilDue = targetDays[item.nextDueDate];
+            try {
+                await (0, notifications_2.sendVaccineReminder)(uid, petName, (_a = item.name) !== null && _a !== void 0 ? _a : 'health item', daysUntilDue);
+                reminderCount++;
+            }
+            catch (err) {
+                console.error(`[checkVaccineReminders] Failed to send reminder for pet=${petDoc.id} uid=${uid}:`, err);
+            }
+        }));
+    }));
+    console.log(`[checkVaccineReminders] Done. Sent ${reminderCount} reminder(s).`);
 });
 //# sourceMappingURL=index.js.map

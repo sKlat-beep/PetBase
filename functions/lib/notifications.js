@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.sendVaccineReminder = sendVaccineReminder;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
@@ -129,4 +130,24 @@ exports.sendEmailDigest = (0, scheduler_1.onSchedule)('every day 08:00', async (
     // TODO Phase 3c full: query notifications/{uid}/items where read=false grouped by user,
     // batch into daily/weekly digest emails based on emailDigestFrequency preference.
 });
+// ─── sendVaccineReminder ──────────────────────────────────────────────────────
+// Creates a notification document in users/{uid}/notifications for a vaccine
+// or medication due-date reminder. The onNotificationCreated trigger will then
+// deliver the notification via email and/or FCM push based on user preferences.
+async function sendVaccineReminder(uid, petName, vaccineName, daysUntilDue) {
+    const db = admin.firestore();
+    const message = daysUntilDue === 1
+        ? `Reminder: ${petName}'s ${vaccineName} is due tomorrow.`
+        : `Reminder: ${petName}'s ${vaccineName} is due in ${daysUntilDue} days.`;
+    await db.collection(`notifications/${uid}/items`).add({
+        type: 'vaccine_reminder',
+        petName,
+        vaccineName,
+        daysUntilDue,
+        message,
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    console.log(`sendVaccineReminder: created reminder for uid=${uid} pet=${petName} vaccine=${vaccineName} daysUntilDue=${daysUntilDue}`);
+}
 //# sourceMappingURL=notifications.js.map

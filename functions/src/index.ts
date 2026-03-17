@@ -16,6 +16,7 @@ import { postSlackBlocks, buildAlertBlock } from './slackService';
 admin.initializeApp();
 
 export { onNotificationCreated, sendEmailDigest } from './notifications';
+import { sendVaccineReminder } from './notifications';
 
 // ─── Email configuration ──────────────────────────────────────────────────────
 // Destination addresses are stored in Firebase Secret Manager / environment
@@ -686,4 +687,67 @@ export const exportUserData = onCall(async (request) => {
     throw new HttpsError('unauthenticated', 'Must be logged in');
   }
   return _exportUserData(request.auth.uid);
+});
+
+// ─── Vaccine & Medication Reminders ──────────────────────────────────────────
+// Runs daily at 09:00 UTC. Scans all pets and checks their vaccines/medications
+// arrays for items with a nextDueDate exactly 7 days or 1 day from today.
+// For each match, a notification document is created for the pet's owner, which
+// the onNotificationCreated trigger will deliver via email and/or FCM push.
+//
+// Expected Firestore shape for each pet document in the `pets` collection:
+//   {
+//     ownerId: string,
+//     name: string,
+//     vaccines?: Array<{ name: string, nextDueDate: string }>,   // YYYY-MM-DD
+//     medications?: Array<{ name: string, nextDueDate: string }>, // YYYY-MM-DD
+//   }
+
+export const checkVaccineReminders = onSchedule('every day 09:00', async () => {
+  const db = admin.firestore();
+
+  // Compute target dates: today + 7 days and today + 1 day (UTC, YYYY-MM-DD)
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const toDateString = (ms: number): string => new Date(ms).toISOString().slice(0, 10);
+  const in1Day = toDateString(now + 1 * msPerDay);
+  const in7Days = toDateString(now + 7 * msPerDay);
+  const targetDays: Record<string, number> = { [in1Day]: 1, [in7Days]: 7 };
+
+  console.log(`[checkVaccineReminders] Checking due dates for ${in1Day} (1 day) and ${in7Days} (7 days).`);
+
+  const petsSnap = await db.collection('pets').get();
+  if (petsSnap.empty) {
+    console.log('[checkVaccineReminders] No pets found — nothing to do.');
+    return;
+  }
+
+  let reminderCount = 0;
+
+  await Promise.all(petsSnap.docs.map(async (petDoc) => {
+    const pet = petDoc.data();
+    const uid: string = pet.ownerId;
+    const petName: string = pet.name ?? 'your pet';
+
+    if (!uid) return;
+
+    // Check vaccines and medications in a unified loop
+    const items: Array<{ name: string; nextDueDate?: string }> = [
+      ...(Array.isArray(pet.vaccines) ? pet.vaccines : []),
+      ...(Array.isArray(pet.medications) ? pet.medications : []),
+    ];
+
+    await Promise.all(items.map(async (item) => {
+      if (!item.nextDueDate || !targetDays[item.nextDueDate]) return;
+      const daysUntilDue = targetDays[item.nextDueDate];
+      try {
+        await sendVaccineReminder(uid, petName, item.name ?? 'health item', daysUntilDue);
+        reminderCount++;
+      } catch (err) {
+        console.error(`[checkVaccineReminders] Failed to send reminder for pet=${petDoc.id} uid=${uid}:`, err);
+      }
+    }));
+  }));
+
+  console.log(`[checkVaccineReminders] Done. Sent ${reminderCount} reminder(s).`);
 });

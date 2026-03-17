@@ -2,6 +2,9 @@ import { useMemo } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { Expense } from '../../contexts/ExpenseContext';
 
+/** Chart color constants (Tailwind palette references) */
+const CHART_EMERALD = '#10b981'; // emerald-500
+
 interface ExpenseChartProps {
   expenses: Expense[];
 }
@@ -48,7 +51,7 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
               contentStyle={{ fontSize: 12, borderRadius: 8, border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
               formatter={(value: number) => [`$${value.toFixed(2)}`, 'Spent']}
             />
-            <Bar dataKey="total" fill="#10b981" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="total" fill={CHART_EMERALD} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -223,7 +223,7 @@ function EmergencyModal({ onClose, onFindVet }: { onClose: () => void; onFindVet
             href="https://www.aspca.org/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-orange-200 dark:border-orange-900/50 p-4 rounded-xl motion-safe:transition-colors text-left block"
+            className="w-full flex items-center gap-4 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-900/50 p-4 rounded-xl motion-safe:transition-colors text-left block"
           >
             <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/50 rounded-xl flex items-center justify-center shrink-0">
               <ExternalLink className="w-5 h-5 text-orange-600 dark:text-orange-400" />

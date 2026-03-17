@@ -2,6 +2,9 @@ import { useMemo } from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { Pet } from '../../types/pet';
 
+/** Chart color constants (Tailwind palette references) */
+const CHART_EMERALD = '#10b981'; // emerald-500
+
 interface WeightTrendChartProps {
   pet: Pet;
 }
@@ -43,7 +46,7 @@ export function WeightTrendChart({ pet }: WeightTrendChartProps) {
               contentStyle={{ fontSize: 12, borderRadius: 8, border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
               formatter={(value: number) => [`${value} ${unit}`, 'Weight']}
             />
-            <Line type="monotone" dataKey="weight" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+            <Line type="monotone" dataKey="weight" stroke={CHART_EMERALD} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

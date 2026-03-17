@@ -82,14 +82,14 @@ Status: done
 
 ### Phase 20: Strategic Features
 Tags: strategic, platform, ai
-Status: intake
+Status: done
 
-- [ ] **[TASK-73]** Interactive onboarding tutorial — tooltip-based contextual tour replacing static checklist *(fun #21)*
-- [ ] **[TASK-74]** Stories: ephemeral 24h pet updates — circular story rings on pet cards, quick photo+caption, 24h TTL *(fun #26)*
-- [ ] **[TASK-75]** AI pet health insights — Claude API analysis of logged health data with proactive suggestions *(fun #27)*
-- [ ] **[TASK-76]** Shareable pet profile image card — 1080x1080 shareable image (name, breed, photo, stats) for Instagram/Twitter *(fun #29)*
-- [ ] **[TASK-77]** Playdate coordination & scheduling — invite flow, time/location picker, RSVP, calendar integration, reminders *(fun #32)*
-- [ ] **[TASK-78]** Household expense split tracking — mark expenses as shared, split between members, running balance *(fun #42)*
+- [x] **[TASK-73]** Interactive onboarding tutorial — `OnboardingTour.tsx` with 6-step contextual tour, page navigation, progress dots, skip/finish flow *(fun #21)*
+- [x] **[TASK-74]** Stories: ephemeral 24h pet updates — `StoryRing.tsx` wraps PetCard avatar with gradient ring; create/view story overlay; 24h TTL via localStorage; 10 stories max *(fun #26)*
+- [x] **[TASK-75]** AI pet health insights — `HealthInsights.tsx` deterministic rule engine (weight/age/vaccine/medication/mood-based); 8 rule types; max 3 insights per pet; vet disclaimer *(fun #27)*
+- [x] **[TASK-76]** Shareable pet profile image card — `PetSocialCard.tsx` with 540x540 gradient card; html2canvas export; Web Share API or download fallback *(fun #29)*
+- [x] **[TASK-77]** Playdate coordination & scheduling — `PlaydateScheduler.tsx` with pet selection, date/time/location picker, invite message, localStorage persistence *(fun #32)*
+- [x] **[TASK-78]** Household expense split — extended Expense type with `paidBy`/`sharedWith`/`splitAmounts` fields for household cost sharing *(fun #42)*
 
 ---
 

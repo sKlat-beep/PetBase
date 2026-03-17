@@ -140,6 +140,56 @@ export const sendEmailDigest = onSchedule('every day 08:00', async () => {
   // batch into daily/weekly digest emails based on emailDigestFrequency preference.
 });
 
+// ─── checkPetBirthdays ────────────────────────────────────────────────────────
+// Scheduled daily at 08:00 UTC — queries all pets and sends a birthday
+// notification to each owner whose pet's birth month+day matches today.
+
+export const checkPetBirthdays = onSchedule('every day 08:00', async () => {
+  const db = admin.firestore();
+  const today = new Date();
+  const todayMonth = today.getMonth() + 1;
+  const todayDay = today.getDate();
+
+  // Gather all users
+  const usersSnap = await db.collection('users').get();
+
+  const tasks: Promise<void>[] = [];
+
+  for (const userDoc of usersSnap.docs) {
+    const uid = userDoc.id;
+    const petsSnap = await db.collection(`users/${uid}/pets`).get();
+
+    for (const petDoc of petsSnap.docs) {
+      const pet = petDoc.data();
+      const birthday: string | undefined = pet.birthday;
+      if (!birthday) continue;
+
+      const parts = birthday.split('-').map(Number);
+      const petMonth = parts[1];
+      const petDay = parts[2];
+      if (petMonth !== todayMonth || petDay !== todayDay) continue;
+
+      const petName: string = pet.name ?? 'Your pet';
+      const message = `Happy Birthday to ${petName}! 🎂`;
+
+      tasks.push(
+        db.collection(`notifications/${uid}/items`).add({
+          type: 'birthday',
+          petName,
+          message,
+          read: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        }).then(() => {
+          console.log(`checkPetBirthdays: birthday notification created for uid=${uid} pet=${petName}`);
+        })
+      );
+    }
+  }
+
+  await Promise.all(tasks);
+  console.log(`checkPetBirthdays: processed ${usersSnap.size} user(s)`);
+});
+
 // ─── sendVaccineReminder ──────────────────────────────────────────────────────
 // Creates a notification document in users/{uid}/notifications for a vaccine
 // or medication due-date reminder. The onNotificationCreated trigger will then

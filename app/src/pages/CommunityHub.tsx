@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, Reorder } from 'motion/react';
 import { UsersRound, Calendar, MessageSquare, PawPrint, Compass, GripVertical, Search, Heart } from 'lucide-react';
 import CommunityFAB from '../components/community/CommunityFAB';
@@ -11,6 +11,8 @@ import BuddyMatchSection from '../components/community/BuddyMatchSection';
 import AdoptionSection from '../components/community/AdoptionSection';
 import { useRightPanel } from '../contexts/RightPanelContext';
 import { CommunityHubPanel } from '../components/community/CommunityHubPanel';
+import { useCommunity } from '../contexts/CommunityContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const MODULE_IDS = ['groups', 'events', 'feed', 'people', 'discover', 'buddies', 'adoptions'] as const;
 type ModuleId = typeof MODULE_IDS[number];
@@ -43,11 +45,27 @@ function loadOrder(): ModuleId[] {
 }
 
 export default function CommunityHub() {
+  const { groups } = useCommunity();
+  const { user } = useAuth();
+  const joinedGroupCount = useMemo(() => {
+    if (!user) return 0;
+    return groups.filter(g => !!g.members[user.uid]).length;
+  }, [groups, user]);
+
   const [moduleOrder, setModuleOrder] = useState<ModuleId[]>(loadOrder);
   const [isReordering, setIsReordering] = useState(false);
   const [groupSearch, setGroupSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const { setContent } = useRightPanel();
+
+  // 2A: For new users with 0 groups, show Discover first
+  const effectiveOrder = useMemo(() => {
+    if (joinedGroupCount === 0 && !isReordering) {
+      const reordered = moduleOrder.filter(id => id !== 'discover');
+      return ['discover' as ModuleId, ...reordered];
+    }
+    return moduleOrder;
+  }, [moduleOrder, joinedGroupCount, isReordering]);
 
   useEffect(() => {
     setContent(<CommunityHubPanel />);
@@ -124,7 +142,7 @@ export default function CommunityHub() {
       {/* Section Jump Bar */}
       <div className="flex items-center justify-between gap-2 pb-2 mb-6">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1" role="navigation" aria-label="Jump to section">
-          {moduleOrder.map(id => {
+          {effectiveOrder.map(id => {
             const meta = MODULE_META[id];
             const Icon = meta.icon;
             return (
@@ -158,11 +176,11 @@ export default function CommunityHub() {
       {/* Modules */}
       <Reorder.Group
         axis="y"
-        values={moduleOrder}
+        values={effectiveOrder}
         onReorder={handleReorder}
         className="space-y-6"
       >
-        {moduleOrder.map(id => (
+        {effectiveOrder.map(id => (
           <Reorder.Item
             key={id}
             value={id}
@@ -181,7 +199,7 @@ export default function CommunityHub() {
               {id === 'events'   && <EventsSection />}
               {id === 'feed'     && <FeedSection />}
               {id === 'people'   && <PeopleSection />}
-              {id === 'discover' && <DiscoverSection />}
+              {id === 'discover' && <DiscoverSection externalSearch={groupSearch} />}
               {id === 'buddies'   && <BuddyMatchSection />}
               {id === 'adoptions' && <AdoptionSection />}
             </div>

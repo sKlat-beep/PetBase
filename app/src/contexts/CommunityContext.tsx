@@ -252,23 +252,41 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       const ownedCount = groupsRef.current.filter(g => g.members[user.uid]?.role === 'Owner').length;
       if (ownedCount >= 3) return 'You can only own up to 3 groups.';
 
-      // Uniqueness check — query Firestore for existing group with same name (case-insensitive)
+      // Uniqueness check — case-insensitive via nameLower field
       const trimmedName = name.trim();
-      const existingSnap = await getDocs(query(collection(db, 'groups'), where('name', '==', trimmedName), limit(1)));
+      const nameLower = trimmedName.toLowerCase();
+      const existingSnap = await getDocs(query(collection(db, 'groups'), where('nameLower', '==', nameLower), limit(1)));
       if (!existingSnap.empty) return `A group named "${trimmedName}" already exists. Please choose a different name.`;
 
       const groupRef = doc(collection(db, 'groups'));
       const groupId = groupRef.id;
+      const now = Date.now();
 
       const batch = writeBatch(db);
-      batch.set(groupRef, { name, description, image, createdAt: Date.now(), updatedAt: Date.now(), ownerId: user.uid, tags: tags.slice(0, 10), retentionDays: 365 });
+      batch.set(groupRef, { name: trimmedName, nameLower, description, image, createdAt: now, updatedAt: now, ownerId: user.uid, tags: tags.slice(0, 10), retentionDays: 365 });
       batch.set(doc(db, 'groups', groupId, 'members', user.uid), {
-        userId: user.uid, role: 'Owner', joinedAt: Date.now(),
+        userId: user.uid, role: 'Owner', joinedAt: now,
       });
       await batch.commit();
 
-      setUserPreferences(prev => ({ ...prev, [groupId]: { isFavorite: false, lastVisitedAt: Date.now() } }));
-      // onSnapshot will update groups state once Firestore confirms the write
+      // Optimistic local update — immediately show the new group
+      const optimisticGroup: CommunityGroup = {
+        id: groupId,
+        name: trimmedName,
+        description,
+        image,
+        createdAt: now,
+        tags: tags.slice(0, 10),
+        retentionDays: 365,
+        bannedMembers: [],
+        members: { [user.uid]: { userId: user.uid, role: 'Owner', joinedAt: now } },
+        posts: [],
+        events: [],
+      };
+      setGroups(prev => [optimisticGroup, ...prev]);
+
+      setUserPreferences(prev => ({ ...prev, [groupId]: { isFavorite: false, lastVisitedAt: now } }));
+      // onSnapshot will replace the optimistic entry with real data
     } catch (err: any) {
       console.error('Failed to create community group:', err);
       return `Failed to create group: ${err.message || 'Unknown error'}`;

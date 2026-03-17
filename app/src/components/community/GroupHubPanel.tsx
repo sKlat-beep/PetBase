@@ -149,10 +149,12 @@ export function GroupHubPanel() {
         </div>
       </CollapsiblePanelWidget>
 
-      {showMemberModal && (
+      {showMemberModal && group && (
         <GroupMemberModal
           members={group.members}
           onClose={() => setShowMemberModal(false)}
+          userRole={user ? group.members[user.uid]?.role ?? null : null}
+          groupId={group.id}
         />
       )}
     </div>

@@ -9,14 +9,25 @@ import { getActiveLostPets, type LostPetAlert } from '../../utils/lostPetsApi';
 
 const CATEGORY_FILTERS = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Reptile', 'Fish', 'Horse', 'Small Animal'] as const;
 
-export default function DiscoverSection() {
+interface DiscoverSectionProps {
+  externalSearch?: string;
+}
+
+export default function DiscoverSection({ externalSearch = '' }: DiscoverSectionProps) {
   const { groups, joinGroup } = useCommunity();
   const { user, profile } = useAuth();
   const { pets } = usePets();
   const [lostPets, setLostPets] = useState<LostPetAlert[]>([]);
   const [joiningId, setJoiningId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [joinError, setJoinError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+
+  // Sync external search from CommunityHub top bar
+  useEffect(() => {
+    if (externalSearch) setSearchQuery(externalSearch);
+  }, [externalSearch]);
 
   useEffect(() => {
     if (!profile?.zipCode) return;
@@ -56,8 +67,19 @@ export default function DiscoverSection() {
 
   const handleJoin = async (groupId: string) => {
     setJoiningId(groupId);
-    try { await joinGroup(groupId); }
-    finally { setJoiningId(null); }
+    setJoinError(null);
+    try {
+      await joinGroup(groupId);
+      setExpandedId(null);
+    } catch (err: any) {
+      if (err?.message === 'BANNED') {
+        setJoinError("You've been banned from this group");
+      } else {
+        setJoinError("Couldn't join — try again");
+      }
+    } finally {
+      setJoiningId(null);
+    }
   };
 
   const hasGroups = discoverGroups.length > 0;
@@ -130,43 +152,75 @@ export default function DiscoverSection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filteredGroups.map(group => {
                 const memberCount = Object.keys(group.members).length;
+                const isExpanded = expandedId === group.id;
                 return (
                   <div
                     key={group.id}
-                    className="rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 p-4 flex items-center justify-between gap-3"
+                    className="rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 p-4"
                   >
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-100 truncate">{group.name}</p>
-                      {group.description && (
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{group.description}</p>
-                      )}
-                      <div className="flex gap-1 mt-1 flex-wrap">
-                        {group.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
-                            {tag}
-                          </span>
-                        ))}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-neutral-800 dark:text-neutral-100 truncate">{group.name}</p>
+                        {!isExpanded && group.description && (
+                          <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{group.description}</p>
+                        )}
+                        <div className="flex gap-1 mt-1 flex-wrap">
+                          {group.tags.slice(0, 3).map(tag => (
+                            <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                          {memberCount} member{memberCount !== 1 ? 's' : ''}
+                        </p>
                       </div>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
-                        {memberCount} member{memberCount !== 1 ? 's' : ''}
-                      </p>
+                      {!isExpanded && (
+                        <button
+                          onClick={() => { setExpandedId(group.id); setJoinError(null); }}
+                          className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          aria-label={`Preview ${group.name}`}
+                        >
+                          Join
+                        </button>
+                      )}
                     </div>
-                    <button
-                      onClick={() => handleJoin(group.id)}
-                      disabled={joiningId === group.id}
-                      className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                      aria-label={`Join ${group.name}`}
-                    >
-                      {joiningId === group.id ? '…' : 'Join'}
-                    </button>
+                    {isExpanded && (
+                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-600">
+                        {group.description && (
+                          <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-2">{group.description}</p>
+                        )}
+                        <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mb-3">
+                          {group.posts.length} post{group.posts.length !== 1 ? 's' : ''} · {group.events.length} event{group.events.length !== 1 ? 's' : ''}
+                        </p>
+                        {joinError && expandedId === group.id && (
+                          <p className="text-xs text-rose-500 mb-2">{joinError}</p>
+                        )}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleJoin(group.id)}
+                            disabled={joiningId === group.id}
+                            className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          >
+                            {joiningId === group.id ? 'Joining…' : 'Join'}
+                          </button>
+                          <button
+                            onClick={() => setExpandedId(null)}
+                            className="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors min-h-[36px]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           )}
-          {!searchQuery && discoverGroups.length > 6 && (
+          {!searchQuery && discoverGroups.length > 8 && (
             <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 text-center">
-              {discoverGroups.length - 6} more — search to find them
+              {discoverGroups.length - 8} more — search to find them
             </p>
           )}
         </>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Search } from 'lucide-react';
+import { X, Search, ShieldBan, ChevronDown } from 'lucide-react';
 import { useSocial } from '../../contexts/SocialContext';
+import { useCommunity, type CommunityRole } from '../../contexts/CommunityContext';
 import type { GroupMember } from '../../contexts/CommunityContext';
 
 type RoleFilter = 'All' | 'Owner' | 'Moderator' | 'Event Coordinator' | 'Member';
@@ -8,10 +9,14 @@ type RoleFilter = 'All' | 'Owner' | 'Moderator' | 'Event Coordinator' | 'Member'
 interface GroupMemberModalProps {
   members: Record<string, GroupMember>;
   onClose: () => void;
+  userRole?: CommunityRole | null;
+  groupId: string;
 }
 
-export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
+export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupMemberModalProps) {
   const { directory } = useSocial();
+  const { updateMemberRole, banMember } = useCommunity();
+  const [roleChangeTarget, setRoleChangeTarget] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('All');
   const searchRef = useRef<HTMLInputElement>(null);
@@ -148,9 +153,58 @@ export function GroupMemberModal({ members, onClose }: GroupMemberModalProps) {
                       Joined {new Date(m.joinedAt).toLocaleDateString([], { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
-                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${roleBgClass(m.role)}`}>
-                    {roleLabel(m.role)}
-                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${roleBgClass(m.role)}`}>
+                      {roleLabel(m.role)}
+                    </span>
+                    {/* Owner can change roles of non-owners */}
+                    {userRole === 'Owner' && m.role !== 'Owner' && (
+                      <div className="relative">
+                        <button
+                          onClick={() => setRoleChangeTarget(roleChangeTarget === m.userId ? null : m.userId)}
+                          className="p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                          title="Change role"
+                        >
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                        {roleChangeTarget === m.userId && (
+                          <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-[130px]">
+                            {(['User', 'Event Coordinator', 'Moderator', 'Owner'] as CommunityRole[])
+                              .filter(r => r !== m.role)
+                              .map(r => (
+                                <button
+                                  key={r}
+                                  onClick={() => {
+                                    if (confirm(`Change ${displayName} from ${m.role} to ${r}?`)) {
+                                      updateMemberRole(groupId, m.userId, r);
+                                    }
+                                    setRoleChangeTarget(null);
+                                  }}
+                                  className="w-full text-left px-3 py-1.5 text-[10px] font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                                >
+                                  {r === 'User' ? 'Member' : r}
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {/* Owner/Mod can ban non-owners (Mod can only ban Users) */}
+                    {((userRole === 'Owner' && m.role !== 'Owner') ||
+                      (userRole === 'Moderator' && m.role === 'User')) && (
+                      <button
+                        onClick={() => {
+                          if (confirm(`Ban ${displayName} from this group? They will be removed.`)) {
+                            banMember(groupId, m.userId);
+                          }
+                        }}
+                        className="p-1 rounded text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                        title="Ban member"
+                      >
+                        <ShieldBan className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, Send, Trash2, CheckCheck, ArrowLeft, ShieldOff, SquareCheck, Square, MoreHorizontal, Smile, Image, Search, ChevronDown, Mail, Pin, Mic } from 'lucide-react';
 import EmptyState from '../components/ui/EmptyState';
@@ -939,6 +939,7 @@ export function Messages() {
 
   usePullToRefresh({ onRefresh: handleConvoRefresh, containerRef: convoListRef });
 
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
     const uid = searchParams.get('uid');
@@ -947,6 +948,17 @@ export function Messages() {
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams, setActiveUid]);
+
+  // Handle recipientId from navigation state (e.g. from GroupHub Contact button)
+  useEffect(() => {
+    const recipientId = (location.state as any)?.recipientId;
+    if (recipientId) {
+      setActiveUid(recipientId);
+      setMobileView('thread');
+      // Clear the state so it doesn't re-trigger on re-renders
+      window.history.replaceState({}, '');
+    }
+  }, [location.state, setActiveUid]);
 
   const otherUids = useMemo(
     () => [...new Set([

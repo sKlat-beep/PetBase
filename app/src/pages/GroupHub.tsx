@@ -3,9 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCommunity, type GroupPost, type GroupMember, type GroupEvent } from '../contexts/CommunityContext';
-import { useSocial, type PublicProfile } from '../contexts/SocialContext';
+import { useSocial } from '../contexts/SocialContext';
 import type { CommunityRole } from '../contexts/CommunityContext';
-import { MessageSquare, Users, Calendar, MapPin, Settings2, Trash2, Pin, ArrowLeft, Mail, Search, ChevronDown, ChevronUp, Plus, CalendarDays, UserCheck, Repeat2, ShieldAlert, Camera, Image as ImageIcon, X } from 'lucide-react';
+import { MessageSquare, Users, Calendar, MapPin, Settings2, Trash2, Pin, ArrowLeft, Mail, Search, ChevronDown, ChevronUp, Plus, CalendarDays, UserCheck, Repeat2, ShieldAlert, Camera, Image as ImageIcon, X, LogIn } from 'lucide-react';
 import EmptyState from '../components/ui/EmptyState';
 import EventDiscussion from '../components/community/EventDiscussion';
 import { useRightPanel } from '../contexts/RightPanelContext';
@@ -31,13 +31,13 @@ export function GroupHub() {
         setContent(<GroupHubPanel />);
         return () => setContent(null);
     }, [setContent]);
-    const { groups, loading: communityLoading, createPost, pinPost, deletePost, leaveGroup, updateMemberRole, updateGroupRetention, createEvent, rsvpEvent, deleteEvent, hasMorePosts, loadMorePosts } = useCommunity();
-    const { searchUsers } = useSocial();
+    const { groups, loading: communityLoading, createPost, pinPost, deletePost, leaveGroup, joinGroup, updateMemberRole, updateGroupRetention, createEvent, rsvpEvent, deleteEvent, hasMorePosts, loadMorePosts } = useCommunity();
+    const { directory } = useSocial();
 
     const [newPostContent, setNewPostContent] = useState('');
     const [isPosting, setIsPosting] = useState(false);
     const [roleSearchQuery, setRoleSearchQuery] = useState('');
-    const [roleSearchResults, setRoleSearchResults] = useState<PublicProfile[]>([]);
+    // roleSearchQuery used for local member filtering in Assign Roles panel
     const [showCreateEvent, setShowCreateEvent] = useState(false);
     const [eventForm, setEventForm] = useState({ title: '', date: '', location: '', description: '', recurring: false });
     const [eventSubmitting, setEventSubmitting] = useState(false);
@@ -83,10 +83,11 @@ export function GroupHub() {
     // State for post image lightbox
     const [lightboxImageUrl, setLightboxImageUrl] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!roleSearchQuery) { setRoleSearchResults([]); return; }
-        searchUsers(roleSearchQuery).then(setRoleSearchResults);
-    }, [roleSearchQuery, searchUsers]);
+    // Join banner state for non-members
+    const [isJoining, setIsJoining] = useState(false);
+    const [joinError, setJoinError] = useState<string | null>(null);
+
+    // Role search now filters locally from group.members via directory
 
     const group = useMemo(() => groups.find(g => g.id === groupId), [groups, groupId]);
 
@@ -337,6 +338,59 @@ export function GroupHub() {
             {activeTab === 'feed' && <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Feed Column */}
                 <div className="lg:col-span-2 space-y-6">
+
+                    {/* Join banner for non-members */}
+                    {!userRole && (
+                        <div className="relative bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-700">
+                            <div className="h-24 w-full">
+                                {group.image ? (
+                                    <img src={group.image} alt="" className="w-full h-full object-cover opacity-60" />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-600 opacity-60" />
+                                )}
+                            </div>
+                            <div className="p-5 -mt-6 relative">
+                                <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{group.name}</h3>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-2">{group.description}</p>
+                                <div className="flex items-center gap-3 mt-2">
+                                    <span className="text-xs text-neutral-400 dark:text-neutral-500">{Object.keys(group.members).length} members</span>
+                                    {group.tags.length > 0 && (
+                                        <div className="flex gap-1 flex-wrap">
+                                            {group.tags.slice(0, 4).map(tag => (
+                                                <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={async () => {
+                                        setIsJoining(true);
+                                        setJoinError(null);
+                                        try {
+                                            await joinGroup(group.id);
+                                        } catch (err: any) {
+                                            if (err?.message === 'BANNED') {
+                                                setJoinError('You cannot join this group');
+                                            } else {
+                                                setJoinError('Could not join — please try again');
+                                            }
+                                        } finally {
+                                            setIsJoining(false);
+                                        }
+                                    }}
+                                    disabled={isJoining}
+                                    className="mt-3 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
+                                >
+                                    <LogIn className="w-4 h-4" />
+                                    {isJoining ? 'Joining…' : 'Join Group'}
+                                </button>
+                                {joinError && <p className="text-xs text-rose-500 mt-2 text-center">{joinError}</p>}
+                                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2 text-center">You can browse posts below</p>
+                            </div>
+                        </div>
+                    )}
 
                     {userRole && (
                         <div className="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm border border-neutral-100 dark:border-neutral-700">
@@ -671,19 +725,36 @@ export function GroupHub() {
                                 <Settings2 className="w-4 h-4 text-neutral-400" /> Leadership Team
                             </h4>
                             <div className="space-y-3">
-                                {ownersAndMods.map(m => (
-                                    <div key={m.userId} className="flex items-center justify-between text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300">
-                                                {m.userId.substring(0, 2).toUpperCase()}
+                                {ownersAndMods.map(m => {
+                                    const dirEntry = directory.find(p => p.uid === m.userId);
+                                    const displayName = dirEntry?.displayName ?? m.role;
+                                    const avatarUrl = dirEntry?.avatarUrl;
+                                    const initial = displayName.charAt(0).toUpperCase();
+                                    return (
+                                        <div key={m.userId} className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center gap-2">
+                                                {avatarUrl ? (
+                                                    <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
+                                                ) : (
+                                                    <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300">
+                                                        {initial}
+                                                    </div>
+                                                )}
+                                                <div className="flex flex-col">
+                                                    <span className="text-neutral-700 dark:text-neutral-300 font-medium text-xs">{displayName}</span>
+                                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{m.role}</span>
+                                                </div>
                                             </div>
-                                            <span className="text-neutral-700 dark:text-neutral-300 font-medium">{m.role}</span>
+                                            <button
+                                                onClick={() => navigate('/messages', { state: { recipientId: m.userId } })}
+                                                className="text-emerald-600 hover:text-emerald-700 transition-colors p-1"
+                                                title={`Message ${displayName}`}
+                                            >
+                                                <Mail className="w-4 h-4" />
+                                            </button>
                                         </div>
-                                        <button className="text-emerald-600 hover:text-emerald-700 transition-colors p-1" title="Contact">
-                                            <Mail className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                             {userRole === 'Owner' && (
@@ -703,27 +774,57 @@ export function GroupHub() {
                                     </div>
                                     {roleSearchQuery.length > 0 && (
                                         <div className="space-y-2">
-                                            {roleSearchResults.filter(u => group.members[u.uid]).map(foundUser => (
-                                                <div key={foundUser.uid} className="flex items-center justify-between text-sm py-2 px-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
-                                                    <div className="flex items-center gap-2">
-                                                        <img src={foundUser.avatarUrl} alt={foundUser.displayName} className="w-6 h-6 rounded-full" />
-                                                        <span className="font-medium text-neutral-700 dark:text-neutral-300 truncate w-24">
-                                                            {foundUser.displayName}
-                                                        </span>
-                                                    </div>
-                                                    <select
-                                                        value={group.members[foundUser.uid]?.role || 'User'}
-                                                        onChange={(e) => updateMemberRole(group.id, foundUser.uid, e.target.value as CommunityRole)}
-                                                        className="py-1 px-2 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-xs font-semibold focus:ring-emerald-500 cursor-pointer text-neutral-700 dark:text-neutral-300"
-                                                    >
-                                                        <option value="User">User</option>
-                                                        <option value="Event Coordinator">Coordinator</option>
-                                                        <option value="Moderator">Moderator</option>
-                                                        <option value="Owner">Owner</option>
-                                                    </select>
-                                                </div>
-                                            ))}
-                                            {roleSearchResults.filter(u => group.members[u.uid]).length === 0 && (
+                                            {(Object.values(group.members) as GroupMember[])
+                                                .filter(m => {
+                                                    const entry = directory.find(p => p.uid === m.userId);
+                                                    const name = entry?.displayName ?? '';
+                                                    return name.toLowerCase().includes(roleSearchQuery.toLowerCase());
+                                                })
+                                                .map(m => {
+                                                    const entry = directory.find(p => p.uid === m.userId);
+                                                    const displayName = entry?.displayName ?? 'Member';
+                                                    const avatarUrl = entry?.avatarUrl;
+                                                    return (
+                                                        <div key={m.userId} className="flex items-center justify-between text-sm py-2 px-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
+                                                            <div className="flex items-center gap-2">
+                                                                {avatarUrl ? (
+                                                                    <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
+                                                                ) : (
+                                                                    <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300">
+                                                                        {displayName.charAt(0).toUpperCase()}
+                                                                    </div>
+                                                                )}
+                                                                <span className="font-medium text-neutral-700 dark:text-neutral-300 truncate w-24">
+                                                                    {displayName}
+                                                                </span>
+                                                            </div>
+                                                            <select
+                                                                value={m.role}
+                                                                onChange={(e) => {
+                                                                    const newRole = e.target.value as CommunityRole;
+                                                                    if (confirm(`Change ${displayName} from ${m.role} to ${newRole}?`)) {
+                                                                        updateMemberRole(group.id, m.userId, newRole);
+                                                                    } else {
+                                                                        // Reset the select to current value
+                                                                        e.target.value = m.role;
+                                                                    }
+                                                                }}
+                                                                className="py-1 px-2 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-xs font-semibold focus:ring-emerald-500 cursor-pointer text-neutral-700 dark:text-neutral-300"
+                                                            >
+                                                                <option value="User">User</option>
+                                                                <option value="Event Coordinator">Coordinator</option>
+                                                                <option value="Moderator">Moderator</option>
+                                                                <option value="Owner">Owner</option>
+                                                            </select>
+                                                        </div>
+                                                    );
+                                                })}
+                                            {(Object.values(group.members) as GroupMember[])
+                                                .filter(m => {
+                                                    const entry = directory.find(p => p.uid === m.userId);
+                                                    const name = entry?.displayName ?? '';
+                                                    return name.toLowerCase().includes(roleSearchQuery.toLowerCase());
+                                                }).length === 0 && (
                                                 <p className="text-xs text-neutral-500 text-center py-2">No matching group members found.</p>
                                             )}
                                         </div>

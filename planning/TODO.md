@@ -14,6 +14,253 @@ Use /intake skill to add new tasks.
 
 ## Open Tasks
 
+### Phase 15: Quick Wins & Polish
+Tags: ui, ux, polish, animations
+Status: in-progress
+
+- [x] **[TASK-42]** Pet Birthday confetti/party UI — Dashboard confetti banner + PetCard birthday badges already existed; added `'birthday'`/`'vaccine'`/`'medication'` to AppNotification type union + NotificationDropdown icon/bg/nav handlers *(fun #2)*
+- [x] **[TASK-43]** Personality-driven empty states — upgraded EmptyState.tsx with circular icon container, motion entrance animation, improved CTA button styling, accessibility (focus ring, min-h touch target) *(fun #10)*
+- [x] **[TASK-44]** Remove dark/light mode toggle from ProfileSettings and GettingStartedGuide — already absent; toggle only in Layout sidebar (correct) *(inline #36)*
+- [x] **[TASK-45]** Personalized welcome greeting — Dashboard shows pet name when user has 1 pet ("Here's what's happening with Buddy today") *(fun #41)*
+- [x] **[TASK-46]** Swipe-to-dismiss notifications — already implemented with Framer Motion drag="x", -120px dismiss threshold *(inline #7)*
+- [x] **[TASK-47]** Card full-screen QR overlay — QrOverlay.tsx with 240px QR, level="H", pet name/breed, expiry, Escape dismiss; wired via expand button in CardTile *(fun #48)*
+- [x] **[TASK-48]** Confetti & celebration animations — Confetti.tsx (30 particles, 6 colors, useReducedMotion); useCelebration hook with localStorage dedup; wired to Dashboard onboarding-complete + Cards first-card-created *(fun #36)*
+- [x] **[TASK-49]** Keyboard shortcuts — KeyboardShortcuts.tsx with `?` help modal, `g+h/p/c/m/k/s` navigation chords, input-aware suppression; ShortcutsHelpModal; wired in Layout.tsx *(fun #49)*
+
+---
+
+### Phase 16: Messaging & Social Enrichment
+Tags: messaging, social, ux
+Status: intake
+
+- [ ] **[TASK-50]** Pin conversations in DMs — long-press to pin, `pinnedConversations[]` on UserProfile *(fun #38)*
+- [ ] **[TASK-51]** Service tip upvoting — community tips on service listings can be upvoted, sorted by vote count *(fun #39)*
+- [ ] **[TASK-52]** Group welcome bot post — auto-post "username just joined with their [breed]!" on group join, toggleable by owner *(fun #43)*
+- [ ] **[TASK-53]** Swipe gestures on mobile — swipe between pets on Pets page, swipe notifications, long-press reactions *(fun #37)*
+- [ ] **[TASK-54]** Pet status quick updates — ephemeral 24h status on pet profiles ("Just had a grooming day"), visible to friends *(fun #40)*
+- [ ] **[TASK-55]** Voice messages in DMs — hold-to-record (≤60s), upload to Storage, inline playback with waveform *(fun #44)*
+
+---
+
+### Phase 17: API Cost & Infrastructure Hardening
+Tags: api, infrastructure, security, cost
+Status: intake
+
+- [ ] **[TASK-56]** Yelp cross-ZIP dedup via H3 — key serviceCache on H3 cell (res 7) instead of raw ZIP *(inline #21)*
+- [ ] **[TASK-57]** Google Places batch pre-fetch — pre-fetch contact details for top 3 results in background after search *(inline #22)*
+- [ ] **[TASK-58]** Per-user rate limiter on findServices — Firestore counter at `apiUsage/yelp/perUser/{uid}/{today}`, cap 5/day *(inline #23)*
+- [ ] **[TASK-59]** Scheduled Yelp cache warming — Cloud Function to pre-warm most-searched ZIP+category combos nightly *(inline #25)*
+- [ ] **[TASK-60]** Dashboard widget rename — let users rename dashboard widgets, store overrides in `users/{uid}/settings/dashboard` *(inline #27)*
+- [ ] **[TASK-61]** Apple Sign-In — add Apple OAuth provider to Auth flow (Google already done) *(fun #18)*
+
+---
+
+### Phase 18: Health & Data Visualization
+Tags: health, charts, data, visualization
+Status: intake
+
+- [ ] **[TASK-62]** Weight & health trend charts — sparkline/line charts in PetHealthPanel (weight over time, vaccine timeline, vet frequency) *(fun #15)*
+- [ ] **[TASK-63]** Expense analytics charts — monthly spending by category, year-over-year trends, per-pet cost breakdown *(fun #16)*
+- [ ] **[TASK-64]** Pet daily journal / mood log — daily check-in (mood, energy, note), timeline in PetActivitiesPanel *(fun #22)*
+- [ ] **[TASK-65]** Streak system for health logging — consecutive-day streak counter on Dashboard (Duolingo model) *(fun #23)*
+- [ ] **[TASK-66]** Lost pet neighborhood push broadcast — trigger push notifications to opted-in users in same H3 cell when pet marked lost *(fun #17)*
+
+---
+
+### Phase 19: Social & Discovery
+Tags: social, discovery, community
+Status: intake
+
+- [ ] **[TASK-67]** Playdate & walking buddy matching — "Find a Buddy" section using publicStatus + H3 proximity *(fun #13)*
+- [ ] **[TASK-68]** Achievement badge system — badges for milestones (First Post, 5 Friends, Vaccination Champion), display on profile *(fun #14)*
+- [ ] **[TASK-69]** Personalized activity feed — friend activity merged timeline on Community Hub (posts, pet updates, highlights) *(fun #19)*
+- [ ] **[TASK-70]** Pet-level follows — follow individual pets, updates in feed, follower count on shareable card *(fun #20)*
+- [ ] **[TASK-71]** Better group discovery — category tag browsing in DiscoverSection, "Recommended for You" by breed/species *(fun #24)*
+- [ ] **[TASK-72]** Pet of the week community vote — groups nominate pet photos, community votes with reactions, winner badge *(fun #45)*
+
+---
+
+### Phase 20: Strategic Features
+Tags: strategic, platform, ai
+Status: intake
+
+- [ ] **[TASK-73]** Interactive onboarding tutorial — tooltip-based contextual tour replacing static checklist *(fun #21)*
+- [ ] **[TASK-74]** Stories: ephemeral 24h pet updates — circular story rings on pet cards, quick photo+caption, 24h TTL *(fun #26)*
+- [ ] **[TASK-75]** AI pet health insights — Claude API analysis of logged health data with proactive suggestions *(fun #27)*
+- [ ] **[TASK-76]** Shareable pet profile image card — 1080x1080 shareable image (name, breed, photo, stats) for Instagram/Twitter *(fun #29)*
+- [ ] **[TASK-77]** Playdate coordination & scheduling — invite flow, time/location picker, RSVP, calendar integration, reminders *(fun #32)*
+- [ ] **[TASK-78]** Household expense split tracking — mark expenses as shared, split between members, running balance *(fun #42)*
+
+---
+
+### Phase 21: Platform & Marketplace
+Tags: platform, marketplace, analytics
+Status: intake
+
+- [ ] **[TASK-79]** Photo challenges & community contests — weekly themed challenges in groups, vote with reactions, winner banner *(fun #28)*
+- [ ] **[TASK-80]** Full-text search across app — Algolia or compound queries for users, pets, groups, posts; global search bar *(fun #30)*
+- [ ] **[TASK-81]** Pet milestone auto-posts — auto-create feed posts for birthdays, anniversaries, health milestones; user approves before posting *(fun #31)*
+- [ ] **[TASK-82]** Group analytics dashboard — post engagement, member growth, most active members, peak activity hours *(fun #33)*
+- [ ] **[TASK-83]** Pet care task sharing in household — assign pet care tasks (walk, feed, meds) to members, Dashboard reminders *(fun #34)*
+- [ ] **[TASK-84]** Vet review & rating system — rate clinic after vet visit (1-5 stars + note), aggregate ratings in service discovery *(fun #35)*
+- [ ] **[TASK-85]** Rescue/adoption marketplace — adoption listings in Community, photos/description/contact, shelter integration *(fun #50)*
+
+---
+
+## Done
+
+### [TASK-39] Cards & QR Deep Audit + Improvement Plan
+Tags: cards, qr, audit, feature, ui
+Status: done
+
+**Description:**
+QR codes are confirmed working in the app. This task produced a written audit of the
+QR/cards system before any implementation changes. Report delivered 2026-03-15.
+
+**Acceptance Criteria:**
+- [x] Written audit report delivered and approved before any code changes
+
+**Verification:**
+- Audit agent completed read-only analysis (2026-03-15) — see report below
+
+---
+
+#### TASK-39 Audit Report — Cards & QR System
+**Date:** 2026-03-15 | **Analyst:** Explore agent (read-only)
+
+**1. QR Library:** `qrcode.react` v4.2.0 (`QRCodeCanvas` aliased as `QRCode`)
+
+**2. QR Generation:** Single render point at `CardTile.tsx:124-129`. Value = `${window.location.origin}/cards/view/{cardId}`. Size 120px, error correction "M". Toggle-visible only when card is selected + active + QR toggled on.
+
+**3. URL Construction:** Pattern `/cards/view/{cardId}` (UUID from `crypto.randomUUID()`). Share button in CardTile uses `navigator.share()` with clipboard fallback. Route: `App.tsx:91`.
+
+**4. Firestore Lifecycle (`publicCards/{cardId}`):**
+- Create: `savePublicCard()` on card creation — `Cards.tsx:184-205`
+- Active: QR visible; URL resolves to SharedCardPage
+- Update: `savePublicCard()` re-syncs petSnapshot — `Cards.tsx:258-265`
+- Revoke: status → `'revoked'` + `revokedAt` timestamp — `Cards.tsx:233`
+- Undo window: 5 min; after expiry `deletePublicCard()` removes doc — `Cards.tsx:235`
+- Expiry: client-side check via `expiresAt`; SharedCardPage shows "Card Not Found"
+- Old revoked purge: >30 days → deleted on Cards page load — `Cards.tsx:86-88`
+- Security rules: unauthenticated read; owner-only write/delete — `firestore.rules:52-60`
+
+**5. Identified Gaps:**
+
+| # | Gap | Severity |
+|---|-----|----------|
+| G1 | QR only in CardTile sidebar, not in main CardPreview pane | Medium |
+| G2 | QR not printable — no print-media QR context | Medium |
+| G3 | No Firestore TTL; expired docs accumulate until page load | Low-Med |
+| G4 | Revoked cards show generic "Card Not Found" — no revoke context | Low-Med |
+| G5 | petSnapshot staleness not communicated to user | Low-Med |
+| G6 | No tooltip explaining why QR button disappears on expired/revoked cards | Low |
+| G7 | No rate limiting on SharedCardPage (UUID entropy mitigates brute-force) | Low |
+
+**6. Recommended Implementation Order:**
+1. **(P1)** Add QR display to `CardPreview.tsx` (and multi/all-pet previews) — move QR to main pane
+2. **(P2)** Print-friendly QR: "Print Card" button + `@media print` QR visible at ≥200px
+3. **(P3)** Firestore TTL policy on `publicCards.expiresAt` (Firebase Console, no code change)
+4. **(P4)** Tooltip on disabled QR button: "QR unavailable — card is revoked/expired"
+5. **(P5)** SharedCardPage: show "This card was revoked" vs. "Card not found" distinction
+6. **(P6)** CardPreview: "Last updated [date]" + help text for petSnapshot freshness
+
+**Files affected (future work):** `CardPreview.tsx`, `MultiPetCardPreview.tsx`, `AllPetsCardPreview.tsx`, `CardTile.tsx`, `SharedCardPage.tsx`; `firestore.rules` (TTL comment)
+
+---
+
+### [TASK-41] Tech Debt — TypeScript Strict Mode
+Tags: typescript, tech-debt
+Status: done
+
+**Description:**
+Phase 11 audit reported 3,700+ errors; actual baseline (2026-03-15) was **53 errors**.
+All 53 resolved in one session. Key fixes: `react-grid-layout` v2 API migration
+(`cols`/`rowHeight`/`margin` → `gridConfig`; `isDraggable`/`draggableHandle` → `dragConfig`;
+`isResizable`/`resizeHandles` → `resizeConfig`), `DashboardLayoutItem` export, `CommunityRole`
+union fix (`'Member'` → `'User'`), `AlbumDetailModal` PhotoEntry/string guard,
+`firestoreService` updateDoc spread fix, and 8 other files.
+
+**Acceptance Criteria:**
+- [x] All 53 strict errors resolved
+- [x] `npx tsc --noEmit --strict --project app/tsconfig.json` exits 0
+- [x] `cd app && npm run build` still passes after changes
+
+**Verification:**
+- npx tsc --noEmit --strict --project app/tsconfig.json ✓ (0 errors, 2026-03-15)
+- cd app && npm run build ✓ (exit 0, 6.24s, 2026-03-15)
+- firebase deploy --only hosting ✓ (2026-03-15)
+
+---
+
+### [TASK-40] Cleanup — Delete Dead brainfileSync.ts
+Tags: cleanup, functions
+Status: done
+
+**Description:**
+Verified `functions/src/brainfileSync.ts` is absent from the main branch — the file
+was never present here (only existed in the `ui-ux-polish` worktree). No deletion needed.
+
+**Acceptance Criteria:**
+- [x] `functions/src/brainfileSync.ts` not present in main branch
+- [x] No imports or references to this file found
+
+**Verification:**
+- Glob search: no matches in `C:\Admin\Projects\PetBase\functions` ✓ (2026-03-15)
+
+---
+
+### [TASK-38] Deploy — Firestore Reactions Rule for TASK-37
+Tags: firebase, security, community
+Status: done
+
+**Description:**
+The reactions `affectedKeys().hasOnly(['reactions'])` rule was already present in
+`firestore.rules` (posts, comments, event posts subcollections). Deployed to production.
+
+**Acceptance Criteria:**
+- [x] `firebase deploy --only firestore:rules` runs clean
+- [ ] Reactions write succeeds in production for authenticated users (manual verify)
+
+**Verification:**
+- firebase deploy --only firestore:rules ✓ (2026-03-15, rules already current)
+
+---
+
+### [TASK-37] Redesign Phase 4 — Community Hub
+Tags: ui, ux, community, people, redesign
+Contracts: unified-ui-design
+Skills: ui-review
+Status: done
+
+**Description:**
+Unified Community Hub page at /community replacing both the old Community.tsx and
+the /people nav entry. Modular rearrangeable sections (Groups, Events, Feed, Friends,
+Discover) using Reorder.Group with localStorage persistence. Glass surface design,
+paw-pattern hero header, multi-action FAB. Post reactions (paw/bone/heart) added to
+GroupPost type and CommunityContext via arrayUnion/arrayRemove.
+Also fixed: mobile bottom nav "/" label changed from "Home" → "Dashboard" (Layout.tsx:309).
+
+**New files:**
+- `app/src/pages/CommunityHub.tsx`
+- `app/src/components/community/GroupsSection.tsx`
+- `app/src/components/community/PeopleSection.tsx`
+- `app/src/components/community/EventsSection.tsx`
+- `app/src/components/community/FeedSection.tsx`
+- `app/src/components/community/DiscoverSection.tsx`
+- `app/src/components/community/CommunityFAB.tsx`
+
+**Modified:**
+- `app/src/contexts/CommunityContext.tsx` (reactions field + reactToPost)
+- `app/src/App.tsx` (routing — /community → CommunityHub)
+- `app/src/components/Layout.tsx` (nav — renamed to "Community Hub", removed People nav item; "/" label → "Dashboard")
+- `app/src/pages/Community.tsx` (replaced with redirect to /community)
+
+**Verification:**
+- cd app && npm run build ✓ (exit 0, 5.20s, 2026-03-15)
+- firebase deploy --only hosting ✓ (2026-03-15)
+
+---
+
 ### [TASK-36] Redesign Phase 2 — My Pets Page
 Tags: ui, ux, pets, redesign
 Contracts: unified-ui-design
@@ -75,241 +322,6 @@ Hidden Widgets re-show row, motion-safe animations, full accessibility pass.
 
 ---
 
-### [TASK-22] UI Fix — Correct Default Vet Card Template Initialization
-Tags: ui, ux
-Contracts: unified-ui-design
-Skills: ui-review
-Status: done
-
-**Description:**
-Fix state initialization so that when 'Create Card' is clicked, the 'Vet Card' default
-expiration and field selections are correctly applied without requiring a second click.
-
-**Acceptance Criteria:**
-- [ ] Clicking 'Create Card' with 'Vet Card' template selected immediately shows correct fields
-- [ ] No second-click required to apply defaults
-- [ ] Default expiration value is set correctly on first render
-
-**Verification:**
-- cd app && npm run build
-- Manual test: select Vet Card template, click Create Card, verify fields are pre-populated
-
----
-
-### [TASK-27] Bug — Profile Picture Not Saving or Visible in Search
-Tags: bug, ui, profile, security
-Contracts: unified-ui-design, privacy-contract
-Skills: ui-review, privacy-check
-Status: done
-
-**Description:**
-Fix profile picture persistence and visibility. The avatar does not update on the
-navigation bar after saving, and it is not visible in public profile searches.
-Requires ensuring `profile.avatarUrl` is correctly updated and handled in
-`PublicProfileInfo`. Token resolution must remain server-side only.
-
-**Subtasks:**
-- [ ] Debug ProfileSettings save logic for avatarUrl
-- [ ] Verify Layout.tsx re-renders on profile update
-- [ ] Fix PublicProfileInfo missing avatarUrl/token resolution in search
-
-**Acceptance Criteria:**
-- [ ] After saving profile picture, nav bar avatar updates without page reload
-- [ ] Profile picture is visible in People/search results for the user
-- [ ] Avatar still resolves via `tokenService.getAvatarUrl()` — no raw URLs exposed
-
-**Verification:**
-- cd app && npm run build
-- Manual test: save profile photo, verify nav bar updates
-- Manual test: search for user, verify avatar visible in result
-
----
-
-### [TASK-28] UI Fix — Prevent Mobile Sidebar Overlap with Bottom Navigation
-Tags: ui, bug, ux, mobile
-Contracts: unified-ui-design
-Skills: ui-review
-Status: done
-
-**Description:**
-The "user profile" navigation item at the bottom of the mobile sidebar is hidden behind
-the fixed bottom navigation bar. The sidebar must stop where the bottom nav begins so
-all menu items are visible and clickable.
-
-**File:** `app/src/components/Layout.tsx`
-**Fix:** Add `pb-16` (or equivalent) bottom padding to the mobile sidebar scroll container
-to account for the `h-16` bottom navigation bar.
-
-**Acceptance Criteria:**
-- [ ] All sidebar menu items are visible and tappable on mobile viewport (375px)
-- [ ] Profile nav item is not obscured by the bottom navigation bar
-- [ ] Sidebar scroll works correctly with the padding applied
-
-**Verification:**
-- cd app && npm run build
-- Manual test at 375px viewport: open sidebar, scroll to bottom, verify Profile item is visible and tappable
-
----
-
-### [TASK-29] UI/UX — Mobile Bottom Navigation Feature Parity Update
-Tags: ui, ux, mobile, feature
-Contracts: unified-ui-design
-Skills: ui-review
-Status: done
-
-**Description:**
-Align the mobile bottom navigation bar with the desktop sidebar for full feature parity
-and consistent nomenclature.
-
-**Requirements:**
-1. Add "People" button to mobile bottom nav (`/people`, icon: `UserSearch`)
-2. Rename "Search" → "Find Services" in mobile bottom nav
-3. Change mobile "/" route label from "Home" → "Dashboard" to match desktop
-4. Full mobile audit: verify all desktop features are accessible on mobile
-
-**File:** `app/src/components/Layout.tsx`
-
-**Acceptance Criteria:**
-- [ ] "People" route accessible from mobile bottom nav
-- [ ] "Find Services" label used in mobile bottom nav (not "Search")
-- [ ] "/" route shows "Dashboard" label on mobile
-- [ ] All desktop sidebar routes have a mobile equivalent
-
-**Verification:**
-- cd app && npm run build
-- Visual check at 375px: confirm all 5 nav items match desktop feature set
-
----
-
-### [TASK-30] UI Cleanup — Remove Location Popup Modal
-Tags: ui, modal, dashboard, profile, cleanup
-Contracts: unified-ui-design
-Skills: ui-review
-Status: done
-
-**Description:**
-Remove the location popup modal entirely. It currently appears for new users on first
-dashboard load and when users save profile changes. Remove these triggers and all
-related UI/state logic.
-
-**Files:**
-- `app/src/components/Layout.tsx` — remove modal render/import
-- `app/src/components/LocationPromptModal.tsx` — delete file
-
-**Acceptance Criteria:**
-- [x] No location modal appears on first dashboard load
-- [x] No location modal appears after saving profile changes
-- [x] `LocationPromptModal.tsx` is deleted and no dead imports remain
-- [x] No console errors related to location modal
-
-**Verification:**
-- cd app && npm run build ✓ (2026-03-14, exit 0)
-
----
-
-### [TASK-31] Feature — Household System and Management
-Tags: household, permissions, ui, modal, firebase, feature
-Contracts: unified-ui-design, firebase-governance, privacy-contract
-Skills: ui-review, privacy-check
-Status: done
-
-**Description:**
-Build the household system: household creation/management flows, role and permissions
-model (owner, member), and supporting UI modals/pages. Members share visibility of
-pets within the household per the role model.
-
-**Acceptance Criteria:**
-- [x] User can create a household and invite members via invite code (ProfileSettings → Family Sharing)
-- [x] Role model (Family Leader, Extended Family, Child, Member) enforced in Firestore rules
-- [x] Household management inline section in ProfileSettings — responsive on mobile
-- [x] householdName encrypted before Firestore write; displayName encrypted in member doc
-- [x] Household members can view (not edit) pets via HouseholdPetsPanel on Pets page
-
-**Verification:**
-- cd app && npm run build ✓ (2026-03-14, exit 0)
-- cd functions && npm run build ✓ (2026-03-14, exit 0)
-- /privacy-check: PASS (2026-03-14)
-- /ui-review: PASS (2026-03-14)
-
-<!-- UI Review: PASS 2026-03-14. HouseholdPetsPanel is lazy-loaded, theme parity verified, no RESTRICTED_PII displayed. -->
-<!-- Privacy Check: PASS 2026-03-14. Fields: petName, petBreed, petSpecies, petVisibility, displayName (member), householdName, inviteCode, householdOwnerId — all UNRESTRICTED_DATA. 3 fields added to contract dict. -->
-
----
-
-### [TASK-32] Feature — Public User Profile View
-Tags: profile, public, ui, search, feature
-Contracts: unified-ui-design, privacy-contract
-Skills: ui-review, privacy-check
-Status: done
-
-**Description:**
-Define and implement the public-facing user profile view for user search selections.
-Shows basic profile info (display name, bio) and public pet info only. Includes both
-an owner's view of their own public profile and a visitor's view via People/Search.
-
-**Acceptance Criteria:**
-- [x] Public profile shows: display name, avatar (tokenized), public pets only
-- [x] No RESTRICTED_PII fields (address, phone, medical notes) visible on public view
-- [x] Avatar resolves via tokenService — no raw URLs
-- [x] Profile view adapts to bottom-sheet modal on mobile
-- [x] Private pets are not shown on public profile
-
-**Verification:**
-- cd app && npm run build ✓ (2026-03-14, exit 0)
-- /privacy-check: PASS (2026-03-14)
-- /ui-review: PASS (2026-03-14)
-
-<!-- UI Review: PASS 2026-03-14. Glass surface, focus trap, touch targets, lazy load, theme parity all verified. -->
-<!-- Privacy Check: PASS 2026-03-14. Fields: username (added to dict), petName, petBreed, petSpecies, avatarShape, petVisibility, avatarUrl (tokenized), publicStatus, displayName. No RESTRICTED_PII exposed. -->
-
----
-
-### [TASK-33] Feature — Messaging Platform (DMs)
-Tags: messaging, dm, retention, ui, firebase, feature
-Contracts: unified-ui-design, firebase-governance, privacy-contract
-Skills: ui-review, privacy-check
-Status: done
-
-**Description:**
-Implement a text-only direct messaging platform with 365-day retention.
-- Users can delete received DMs (their own copy only)
-- If a user blocks another, existing received messages from that user show "user blocked" but remain visible and deletable
-- Multi-message selection for mass delete and mark-as-read
-- No image sharing — text only
-- UI/page/modal design required (use Pencil MCP)
-
-**Acceptance Criteria:**
-- [ ] Users can send and receive text DMs
-- [ ] Messages older than 365 days are automatically deleted (Firestore TTL or scheduled function)
-- [ ] Block behavior: messages show "user blocked" label, remain deletable
-- [ ] Multi-select: bulk delete and mark-as-read
-- [ ] Firestore rules: users can only read/write their own message collections
-- [ ] No PII stored unencrypted in message metadata
-
-**Verification:**
-- cd app && npm run build
-- cd functions && npm run build
-- /privacy-check on message schema
-- /ui-review on all new components
-
-<!-- Privacy Check: PASS 2026-03-14.
-Fields checked: messageContent, messageFromUid, messageToUid, messageThreadId, messageParticipants, messageCreatedAt, messageExpiresAt, messageRead, messageDeletedBySender, messageDeletedByRecipient
-All 10 fields present in UNRESTRICTED_DATA dictionary. No encryption applied (correct — RESTRICTED_PII only). avatarUrl absent from all messages writes (resolved via tokenService only). Firestore rule: isSignedIn() && request.auth.uid in resource.data.participants. Update rule restricts changes to hasOnly(['deletedBySender','deletedByRecipient','read']).
--->
-
-<!-- UI Review Report — TASK-33 (Re-check)
-Date: 2026-03-14
-
-File: app/src/components/Layout.tsx
-- [PASS] Avatar img backgrounds include dark mode class (bg-stone-200 dark:bg-stone-700) at both mobile search results (line 255) and desktop sidebar search results (line 327)
-- [PASS] All three NotificationsDropdown buttons (vaccine, pending request, unread message) include focus-visible:ring-2 focus-visible:ring-sky-500 focus rings
-- [PASS] Messages nav badge rendering: icon wrapped in <div className="relative"> in both sidebar nav and mobile bottom nav; badge <span> positioned correctly with absolute placement; no new dark mode, focus, or accessibility violations introduced
-
-Result: PASS
--->
-
----
-
 ### [TASK-34] Feature — Community Platform (Groups)
 Tags: community, groups, permissions, events, ui, firebase, feature
 Contracts: unified-ui-design, firebase-governance, privacy-contract
@@ -322,18 +334,18 @@ event scheduling, and configurable message retention (default 365 days, owner ca
 set shorter). Includes UI/page design in Pencil MCP before implementation.
 
 **Acceptance Criteria:**
-- [ ] Users can create, join, and leave groups
-- [ ] Role model (admin, moderator, member) enforced in Firestore rules
-- [ ] Group admins can configure message retention period
-- [ ] Event scheduling: create events with date/time, visible to members
-- [ ] Pencil design spec completed before any code written
-- [ ] Group pages adapt to mobile (bottom-sheet modals, swipe gestures)
+- [x] Users can create, join, and leave groups
+- [x] Role model (admin, moderator, member) enforced in Firestore rules
+- [x] Group admins can configure message retention period
+- [x] Event scheduling: create events with date/time, visible to members
+- [x] Pencil design spec completed before any code written
+- [x] Group pages adapt to mobile (bottom-sheet modals, swipe gestures)
 
 **Verification:**
-- cd app && npm run build
-- cd functions && npm run build
-- /privacy-check on group schema
-- /ui-review on all new components
+- cd app && npm run build ✓ (2026-03-14, exit 0)
+- cd functions && npm run build ✓ (2026-03-14, exit 0)
+- /privacy-check: PASS (2026-03-14)
+- /ui-review: PASS (2026-03-14)
 
 <!-- UI Review Report — TASK-34 (Re-check)
 Date: 2026-03-14
@@ -369,46 +381,195 @@ Result: PASS
 
 ---
 
-### [TASK-37] Redesign Phase 4 — Community Hub
-Tags: ui, ux, community, people, redesign
-Contracts: unified-ui-design
-Skills: ui-review
-Status: review
+### [TASK-33] Feature — Messaging Platform (DMs)
+Tags: messaging, dm, retention, ui, firebase, feature
+Contracts: unified-ui-design, firebase-governance, privacy-contract
+Skills: ui-review, privacy-check
+Status: done
 
 **Description:**
-Unified Community Hub page at /community replacing both the old Community.tsx and
-the /people nav entry. Modular rearrangeable sections (Groups, Events, Feed, Friends,
-Discover) using Reorder.Group with localStorage persistence. Glass surface design,
-paw-pattern hero header, multi-action FAB. Post reactions (paw/bone/heart) added to
-GroupPost type and CommunityContext via arrayUnion/arrayRemove.
+Text-only direct messaging platform with 365-day retention, per-user soft-delete,
+block behavior, multi-message selection, and Firestore security rules.
 
-**New files:**
-- `app/src/pages/CommunityHub.tsx`
-- `app/src/components/community/GroupsSection.tsx`
-- `app/src/components/community/PeopleSection.tsx`
-- `app/src/components/community/EventsSection.tsx`
-- `app/src/components/community/FeedSection.tsx`
-- `app/src/components/community/DiscoverSection.tsx`
-- `app/src/components/community/CommunityFAB.tsx`
-
-**Modified:**
-- `app/src/contexts/CommunityContext.tsx` (reactions field + reactToPost)
-- `app/src/App.tsx` (routing — /community → CommunityHub)
-- `app/src/components/Layout.tsx` (nav — renamed to "Community Hub", removed People nav item)
-- `app/src/pages/Community.tsx` (replaced with redirect to /community)
-
-**Known gap — NOT included in this task:**
-- `firestore.rules` not updated: reactions writes (`reactions.paw/bone/heart` arrayUnion)
-  will be blocked by Firestore security rules in production. Needs a follow-up rule:
-  `allow update: if request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']);`
+**Acceptance Criteria:**
+- [x] Users can send and receive text DMs
+- [x] Messages older than 365 days are automatically deleted (Firestore TTL or scheduled function)
+- [x] Block behavior: messages show "user blocked" label, remain deletable
+- [x] Multi-select: bulk delete and mark-as-read
+- [x] Firestore rules: users can only read/write their own message collections
+- [x] No PII stored unencrypted in message metadata
 
 **Verification:**
-- cd app && npm run build ✓ (exit 0, 4.85s, 2233 modules, CommunityHub-*.js lazy chunk present)
-- No new TypeScript errors in new files (pre-existing Dashboard.tsx layout errors unrelated)
+- cd app && npm run build ✓ (2026-03-14)
+- cd functions && npm run build ✓ (2026-03-14)
+- /privacy-check: PASS (2026-03-14)
+- /ui-review: PASS (2026-03-14)
+
+<!-- Privacy Check: PASS 2026-03-14.
+Fields checked: messageContent, messageFromUid, messageToUid, messageThreadId, messageParticipants, messageCreatedAt, messageExpiresAt, messageRead, messageDeletedBySender, messageDeletedByRecipient
+All 10 fields present in UNRESTRICTED_DATA dictionary. No encryption applied (correct — RESTRICTED_PII only). avatarUrl absent from all messages writes (resolved via tokenService only). Firestore rule: isSignedIn() && request.auth.uid in resource.data.participants. Update rule restricts changes to hasOnly(['deletedBySender','deletedByRecipient','read']).
+-->
+
+<!-- UI Review Report — TASK-33 (Re-check)
+Date: 2026-03-14
+
+File: app/src/components/Layout.tsx
+- [PASS] Avatar img backgrounds include dark mode class (bg-stone-200 dark:bg-stone-700) at both mobile search results (line 255) and desktop sidebar search results (line 327)
+- [PASS] All three NotificationsDropdown buttons (vaccine, pending request, unread message) include focus-visible:ring-2 focus-visible:ring-sky-500 focus rings
+- [PASS] Messages nav badge rendering: icon wrapped in <div className="relative"> in both sidebar nav and mobile bottom nav; badge <span> positioned correctly with absolute placement; no new dark mode, focus, or accessibility violations introduced
+
+Result: PASS
+-->
 
 ---
 
-## Done
+### [TASK-32] Feature — Public User Profile View
+Tags: profile, public, ui, search, feature
+Contracts: unified-ui-design, privacy-contract
+Skills: ui-review, privacy-check
+Status: done
+
+**Description:**
+Public-facing user profile view for user search selections. Shows display name, bio,
+and public pets only. Includes owner's own view and visitor view via People/Search.
+
+**Acceptance Criteria:**
+- [x] Public profile shows: display name, avatar (tokenized), public pets only
+- [x] No RESTRICTED_PII fields (address, phone, medical notes) visible on public view
+- [x] Avatar resolves via tokenService — no raw URLs
+- [x] Profile view adapts to bottom-sheet modal on mobile
+- [x] Private pets are not shown on public profile
+
+**Verification:**
+- cd app && npm run build ✓ (2026-03-14, exit 0)
+- /privacy-check: PASS (2026-03-14)
+- /ui-review: PASS (2026-03-14)
+
+<!-- UI Review: PASS 2026-03-14. Glass surface, focus trap, touch targets, lazy load, theme parity all verified. -->
+<!-- Privacy Check: PASS 2026-03-14. Fields: username (added to dict), petName, petBreed, petSpecies, avatarShape, petVisibility, avatarUrl (tokenized), publicStatus, displayName. No RESTRICTED_PII exposed. -->
+
+---
+
+### [TASK-31] Feature — Household System and Management
+Tags: household, permissions, ui, modal, firebase, feature
+Contracts: unified-ui-design, firebase-governance, privacy-contract
+Skills: ui-review, privacy-check
+Status: done
+
+**Description:**
+Household creation/management flows, role and permissions model (owner, member),
+supporting UI modals/pages. Members share visibility of pets per role model.
+
+**Acceptance Criteria:**
+- [x] User can create a household and invite members via invite code (ProfileSettings → Family Sharing)
+- [x] Role model (Family Leader, Extended Family, Child, Member) enforced in Firestore rules
+- [x] Household management inline section in ProfileSettings — responsive on mobile
+- [x] householdName encrypted before Firestore write; displayName encrypted in member doc
+- [x] Household members can view (not edit) pets via HouseholdPetsPanel on Pets page
+
+**Verification:**
+- cd app && npm run build ✓ (2026-03-14, exit 0)
+- cd functions && npm run build ✓ (2026-03-14, exit 0)
+- /privacy-check: PASS (2026-03-14)
+- /ui-review: PASS (2026-03-14)
+
+<!-- UI Review: PASS 2026-03-14. HouseholdPetsPanel is lazy-loaded, theme parity verified, no RESTRICTED_PII displayed. -->
+<!-- Privacy Check: PASS 2026-03-14. Fields: petName, petBreed, petSpecies, petVisibility, displayName (member), householdName, inviteCode, householdOwnerId — all UNRESTRICTED_DATA. 3 fields added to contract dict. -->
+
+---
+
+### [TASK-30] UI Cleanup — Remove Location Popup Modal
+Tags: ui, modal, dashboard, profile, cleanup
+Contracts: unified-ui-design
+Skills: ui-review
+Status: done
+
+**Description:**
+Removed location popup modal entirely — triggers on first dashboard load and on profile
+save removed. All related UI/state logic and the component file deleted.
+
+**Acceptance Criteria:**
+- [x] No location modal appears on first dashboard load
+- [x] No location modal appears after saving profile changes
+- [x] `LocationPromptModal.tsx` is deleted and no dead imports remain
+- [x] No console errors related to location modal
+
+**Verification:**
+- cd app && npm run build ✓ (2026-03-14, exit 0)
+
+---
+
+### [TASK-29] UI/UX — Mobile Bottom Navigation Feature Parity Update
+Tags: ui, ux, mobile, feature
+Contracts: unified-ui-design
+Skills: ui-review
+Status: done
+> **SUPERSEDED**: Original spec (People + Find Services in bottom nav) was written before
+> TASK-37 merged People into CommunityHub and redesigned the nav as Home/Pets/Community/Messages/Cards.
+> Current nav structure is intentional. Minor remaining gap: "/" label says "Home" instead of "Dashboard" — fix bundled into TASK-37 deploy.
+
+---
+
+### [TASK-28] UI Fix — Prevent Mobile Sidebar Overlap with Bottom Navigation
+Tags: ui, bug, ux, mobile
+Contracts: unified-ui-design
+Skills: ui-review
+Status: done
+
+**Description:**
+Fixed: sidebar scroll container has `pb-16 md:pb-0` at `Layout.tsx:152`, preventing
+profile nav item from being obscured by the fixed h-16 bottom navigation bar.
+
+**Acceptance Criteria:**
+- [x] All sidebar menu items are visible and tappable on mobile viewport (375px)
+- [x] Profile nav item is not obscured by the bottom navigation bar
+- [x] Sidebar scroll works correctly with the padding applied
+
+**Verification:**
+- Codebase verified: `Layout.tsx:152` — `pb-16 md:pb-0` ✓ (2026-03-15)
+
+---
+
+### [TASK-22] UI Fix — Correct Default Vet Card Template Initialization
+Tags: ui, ux
+Status: done
+
+**Description:**
+Vet Card defaults were verified already implemented in `CreateCardModal.tsx`:
+`template='vet'`, `customDays=365`, `customHours=0`, `sharing=TEMPLATE_DEFAULTS.vet`
+all initialize correctly on first render (lines 61-73). No second click required.
+Fixed as part of Phase 4.5 card overhaul; task was incorrectly reopened.
+
+**Acceptance Criteria:**
+- [x] Clicking 'Create Card' with 'Vet Card' template selected immediately shows correct fields
+- [x] No second-click required to apply defaults
+- [x] Default expiration value is set correctly on first render
+
+**Verification:**
+- Codebase verified: `CreateCardModal.tsx:61-73` ✓ (2026-03-15)
+
+---
+
+### [TASK-27] Bug — Profile Picture Not Saving or Visible in Search
+Tags: bug, ui, profile, security
+Contracts: unified-ui-design, privacy-contract
+Skills: ui-review, privacy-check
+Status: done
+
+**Description:**
+Fixed: `ProfileSettings.tsx:252` saves `avatarUrl` via `updateContextProfile`.
+`SocialContext.tsx:142` resolves avatar tokens in `searchUsers`. `People.tsx:138`
+renders avatar images in search results.
+
+**Acceptance Criteria:**
+- [x] After saving profile picture, nav bar avatar updates without page reload
+- [x] Profile picture is visible in People/search results for the user
+- [x] Avatar still resolves via `tokenService.getAvatarUrl()` — no raw URLs exposed
+
+**Verification:**
+- Codebase verified: `ProfileSettings.tsx:252`, `SocialContext.tsx:142`, `People.tsx:138` ✓ (2026-03-15)
+
+---
 
 ### [TASK-21] UI Fix — Remove Duplicate Medical Notes on Multi-Card
 Status: done

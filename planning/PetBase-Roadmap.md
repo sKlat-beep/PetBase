@@ -70,7 +70,8 @@
 - [x] **Card Summary Tiles**: Each card tile must show: pet photo, pet name (clickable → `/pets`), card type, expiration date, and status (Active / Expired / Revoked).
 
 ### Sharing & Access Control
-- [x] **QR Code Generation**: Generate a unique scannable QR code for each card linking to a public read-only URL. The QR must reflect contextual sharing selections.
+- [ ] **QR Code Generation**: Generate a unique scannable QR code for each card linking to a public read-only URL. The QR must reflect contextual sharing selections.
+  > QR infrastructure (publicCards, SharedCardPage, share URLs) is complete. QR display widget not yet implemented — see TASK-39.
 - [x] **Contextual Sharing Toggles**: Per-field share toggle controls before generating a card link: Basic Info, Medical Overview, Vaccine Records, Diet, Emergency Contact, Vet Info. Maps to Vet / Sitter / Emergency templates.
 - [x] **Card Expiration System**: Default 48-hour expiration with a configurable picker (24h / 48h / 1 week / 1 month / 3 months / 6 months / 1 year). Show expiration date in card summary. Auto-expire and deny access after the timer.
 - [x] **Revoke Card**: Add per-card "Revoke" button that immediately invalidates the link/JWT regardless of expiration.
@@ -186,7 +187,7 @@
 ## Phase 6: Search, Location & Polish
 
 ### Global Search & Messaging
-- [ ] **Global Search**: Integrated search bar for finding users and communities.
+- [x] **Global Search**: Integrated search bar for finding users and communities.
   - [x] Profile Visibility Options: Public, Friends Only, Private — `ProfileVisibility` type + `SocialContext.searchUsers` enforces rules.
   - [x] Private profiles cannot be found in search. Public profiles display Username, Avatar, and Pet Info.
   - [x] **Friends System**: `SocialContext` — `sendFriendRequest`, `acceptFriendRequest`, `removeFriend` implemented.
@@ -206,7 +207,7 @@
 - [x] **Theme Persistence**: Dark/light toggle in GettingStartedGuide.tsx with `localStorage.setItem('petbase-theme', newTheme)` persistence.
 
 ### Hyper-Local & Social Enhancements
-- [ ] **Lost Pet Alerts**: Feature triggered from a "Mark as Lost" button inside a specific Pet's Modal, rather than a generic profile flag.
+- [x] **Lost Pet Alerts**: Feature triggered from a "Mark as Lost" button inside a specific Pet's Modal, rather than a generic profile flag.
   - [x] Warns the user of how it works when clicked (confirm dialog in Pets.tsx).
   - [x] **Grace Period**: 15-minute grace period in `lostPetsApi.ts` — alerts inside grace are filtered from community view.
   - [x] **Auto-Expiration**: 3-day auto-expiration in `lostPetsApi.ts`.
@@ -410,14 +411,14 @@
 - [x] **FLAG-5 (resolveAvatarToken)**: Cloud Function upgraded to return signed Firebase Storage URL with 1-hour TTL (`expires: Date.now() + 3600000`) instead of permanent raw URL. Base64 data URLs and external auth photo URLs pass through unchanged.
 - [ ] **Task-22**: UI Fix: Correct Default Vet Card Template Initialization.
 
-## [2026-03-09] Task-22: UI Fix — Correct Default Vet Card Template Initialization [OPEN]
+## [2026-03-09] Task-22: UI Fix — Correct Default Vet Card Template Initialization [INTAKE — pending implementation]
 
 **Task:** task-22.
 **Objective:** Fix initialization bug where Vet Card defaults aren't applied on first modal load.
 
 ---
 
-## [2026-03-09] Task-21: UI Fix — Remove Duplicate Medical Notes on Multi-Card [OPEN]
+## [2026-03-09] Task-21: UI Fix — Remove Duplicate Medical Notes on Multi-Card [DONE]
 
 **Task:** task-21.
 **Objective:** Consolidate 'Diet or Medical Notes' into 'Health & Diet' and remove redundant 'Medical Notes' section on multi-cards.
@@ -427,7 +428,7 @@
 
 ## [2026-03-09] Task-20: PII Fix FLAG-4/5 — Signed Avatar URL Tokenization [IN-PROGRESS]
 Cloud Function upgraded to return signed Firebase Storage URL with 1-hour TTL (`expires: Date.now() + 3600000`) instead of permanent raw URL. Base64 data URLs and external auth photo URLs pass through unchanged.
-- [ ] **Task-21**: UI Fix: Remove Duplicate Medical Notes on Multi-Card.
+- [x] **Task-21**: UI Fix: Remove Duplicate Medical Notes on Multi-Card.
 
 ## Future Considerations (Post-Production Targets)
 *These items are prioritized for post-release development and should not block the initial production launch.*

@@ -3,6 +3,27 @@
 > [!NOTE]
 > Use planning/TODO.md for task status tracking. Write dev-log entries only at Start, Complete, and Verified (no PII).
 
+## [2026-03-15] TASK-39: Cards & QR Audit — COMPLETE
+
+Read-only audit of entire cards/QR system. Key findings: QR renders only in `CardTile.tsx` sidebar (not main `CardPreview` pane); `qrcode.react` v4.2.0; URL pattern `/cards/view/{uuid}`; `publicCards` Firestore collection has correct security rules (unauthenticated read, owner-only write). 7 gaps identified with severity ratings. 6 recommended improvements prioritized (P1: QR in main preview; P2: print QR; P3: Firestore TTL; P4-P6: UX polish). No code changes made — report is the deliverable.
+
+---
+
+## [2026-03-15] TASK-41: TypeScript Strict Mode — COMPLETE
+
+All 53 strict errors resolved to 0. Key changes across 9 files:
+- **Dashboard.tsx**: `react-grid-layout` v2 API migration — flat props (`cols`, `rowHeight`, `margin`, `containerPadding`, `isDraggable`, `isResizable`, `resizeHandles`, `draggableHandle`) moved into `gridConfig`/`dragConfig`/`resizeConfig` objects; `Layout`→`LayoutItem` for single-item types; `onResizeStop` updated to v2 `EventCallback` signature
+- **firestoreService.ts**: `DashboardLayoutItem` exported; `updatePetAlbum`/`updateUserAlbum` spread-fix for Firestore UpdateData compat
+- **GroupHub.tsx**: `'Member'` → `'User'` (not in `CommunityRole` union)
+- **Messages.tsx**: `.map((uid: string) => {` explicit type annotation
+- **Search.tsx**: Removed dead narrowed-out `activeTab !== 'Stores'` check
+- **AlbumDetailModal.tsx**: `typeof entry === 'string'` guard before `addPhotosToAlbum`
+- **CommunityContext.tsx**: `result.posts as unknown as GroupPost[]`
+
+**Verification:** `tsc --strict` exits 0; build exits 0 (6.24s); `firebase deploy --only hosting` ✓
+
+---
+
 ## [2026-03-07] Phase 6: Search, Location & Polish — COMPLETE
 
 All 5 remaining gaps confirmed implemented (session termination recovery). One residual mojibake fixed.

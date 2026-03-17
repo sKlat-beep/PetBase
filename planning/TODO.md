@@ -69,14 +69,14 @@ Status: done
 
 ### Phase 19: Social & Discovery
 Tags: social, discovery, community
-Status: intake
+Status: done
 
-- [ ] **[TASK-67]** Playdate & walking buddy matching — "Find a Buddy" section using publicStatus + H3 proximity *(fun #13)*
-- [ ] **[TASK-68]** Achievement badge system — badges for milestones (First Post, 5 Friends, Vaccination Champion), display on profile *(fun #14)*
-- [ ] **[TASK-69]** Personalized activity feed — friend activity merged timeline on Community Hub (posts, pet updates, highlights) *(fun #19)*
-- [ ] **[TASK-70]** Pet-level follows — follow individual pets, updates in feed, follower count on shareable card *(fun #20)*
-- [ ] **[TASK-71]** Better group discovery — category tag browsing in DiscoverSection, "Recommended for You" by breed/species *(fun #24)*
-- [ ] **[TASK-72]** Pet of the week community vote — groups nominate pet photos, community votes with reactions, winner badge *(fun #45)*
+- [x] **[TASK-67]** Playdate & walking buddy matching — `BuddyMatchSection.tsx` in CommunityHub; filters by publicStatus (Playdates/Walking); pet-type overlap scoring; friend connect button *(fun #13)*
+- [x] **[TASK-68]** Achievement badge system — `badges.ts` with 10 badge definitions + eligibility checker; `badges`/`petFollows` on UserProfile type *(fun #14)*
+- [x] **[TASK-69]** Personalized activity feed — FeedSection now boosts friend posts + engagement-weighted recency (reaction count × 1hr boost) *(fun #19)*
+- [x] **[TASK-70]** Pet-level follows — `followers[]` on Pet type; `petFollows[]` on UserProfile; follower count on SharedCardPage header *(fun #20)*
+- [x] **[TASK-71]** Better group discovery — 8 category filter chips (Dog/Cat/Bird/Rabbit/etc.) in DiscoverSection; combined with text search; dynamic heading *(fun #24)*
+- [x] **[TASK-72]** Pet of the week vote — `PetOfTheWeek.tsx` with weekly reset, nomination flow, vote counting, trophy/medal ranking (top 5) *(fun #45)*
 
 ---
 

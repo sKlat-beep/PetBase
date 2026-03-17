@@ -23,3 +23,6 @@ Archived 8 files to planning/archive/. TODO.md now 66 lines (4 open tasks). All 
 
 ## [2026-03-17] Worktree Cleanup — COMPLETE
 Pruned 2 stale worktrees (feature/ui-ux-polish, feature/phase1-2-improvements) — both 0 commits ahead of master. UI/UX polish plan (12 tasks) confirmed all complete on master via Phases 15-21. Branches deleted.
+
+## [2026-03-17] Git Consolidation — COMPLETE
+Committed security hardening (firestore.rules, functions/src). Gitignored settings.local.json + functions/lib/. Converted app/ from broken submodule to regular tracked directory (167 files). Added remote, force-pushed master→origin/main. Deleted stale remote branch. Single unified repo now.

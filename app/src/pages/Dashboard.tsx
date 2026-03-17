@@ -555,6 +555,53 @@ export function Dashboard() {
       .slice(0, 5);
   }, [user, groups]);
 
+  type Reminder =
+    | { type: 'vaccine'; petName: string; vaccineName: string; daysUntilDue: number }
+    | { type: 'vet'; petName: string; clinic: string; when: 'today' | 'tomorrow' }
+    | { type: 'medication'; petName: string; medName: string; frequency: string };
+
+  const todayReminders = useMemo((): Reminder[] => {
+    const now = Date.now();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const list: Reminder[] = [];
+    for (const pet of pets) {
+      const vaccines = (pet as any).vaccines as { name: string; nextDueDate: string }[] | undefined;
+      if (vaccines) {
+        for (const v of vaccines) {
+          if (!v.nextDueDate) continue;
+          const days = Math.ceil((new Date(v.nextDueDate).getTime() - now) / 86_400_000);
+          if (days >= 0 && days <= 7) {
+            list.push({ type: 'vaccine', petName: pet.name, vaccineName: v.name, daysUntilDue: days });
+          }
+        }
+      }
+      const medVisits = (pet as any).medicalVisits as { date: string; clinic: string }[] | undefined;
+      if (medVisits) {
+        for (const visit of medVisits) {
+          if (!visit.date) continue;
+          const visitDate = new Date(visit.date);
+          visitDate.setHours(0, 0, 0, 0);
+          if (visitDate.getTime() === todayStart.getTime()) {
+            list.push({ type: 'vet', petName: pet.name, clinic: visit.clinic || 'Vet', when: 'today' });
+          } else if (visitDate.getTime() === todayStart.getTime() + 86_400_000) {
+            list.push({ type: 'vet', petName: pet.name, clinic: visit.clinic || 'Vet', when: 'tomorrow' });
+          }
+        }
+      }
+      const meds = (pet as any).medications as { name: string; frequency?: string; endDate?: string }[] | undefined;
+      if (meds) {
+        for (const med of meds) {
+          const isActive = !med.endDate || new Date(med.endDate).getTime() >= todayStart.getTime();
+          if (isActive) {
+            list.push({ type: 'medication', petName: pet.name, medName: med.name, frequency: med.frequency || '' });
+          }
+        }
+      }
+    }
+    return list;
+  }, [pets]);
+
   // Right panel
   useEffect(() => {
     setContent(
@@ -1384,57 +1431,7 @@ export function Dashboard() {
       }
 
       case 'today_reminders': {
-        const now = Date.now();
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        const tomorrowEnd = new Date(todayStart);
-        tomorrowEnd.setDate(tomorrowEnd.getDate() + 2);
-
-        type Reminder =
-          | { type: 'vaccine'; petName: string; vaccineName: string; daysUntilDue: number }
-          | { type: 'vet'; petName: string; clinic: string; when: 'today' | 'tomorrow' }
-          | { type: 'medication'; petName: string; medName: string; frequency: string };
-
-        const reminders = useMemo((): Reminder[] => {
-          const list: Reminder[] = [];
-          for (const pet of pets) {
-            const vaccines = (pet as any).vaccines as { name: string; nextDueDate: string }[] | undefined;
-            if (vaccines) {
-              for (const v of vaccines) {
-                if (!v.nextDueDate) continue;
-                const days = Math.ceil((new Date(v.nextDueDate).getTime() - now) / 86_400_000);
-                if (days >= 0 && days <= 7) {
-                  list.push({ type: 'vaccine', petName: pet.name, vaccineName: v.name, daysUntilDue: days });
-                }
-              }
-            }
-            const medVisits = (pet as any).medicalVisits as { date: string; clinic: string }[] | undefined;
-            if (medVisits) {
-              for (const visit of medVisits) {
-                if (!visit.date) continue;
-                const visitDate = new Date(visit.date);
-                visitDate.setHours(0, 0, 0, 0);
-                if (visitDate.getTime() === todayStart.getTime()) {
-                  list.push({ type: 'vet', petName: pet.name, clinic: visit.clinic || 'Vet', when: 'today' });
-                } else if (visitDate.getTime() === todayStart.getTime() + 86_400_000) {
-                  list.push({ type: 'vet', petName: pet.name, clinic: visit.clinic || 'Vet', when: 'tomorrow' });
-                }
-              }
-            }
-            const meds = (pet as any).medications as { name: string; frequency?: string; endDate?: string }[] | undefined;
-            if (meds) {
-              for (const med of meds) {
-                const isActive = !med.endDate || new Date(med.endDate).getTime() >= todayStart.getTime();
-                if (isActive) {
-                  list.push({ type: 'medication', petName: pet.name, medName: med.name, frequency: med.frequency || '' });
-                }
-              }
-            }
-          }
-          return list;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [pets]);
-
+        const reminders = todayReminders;
         return (
           <section className={`${GLASS_CARD} p-5`} aria-label="Today's Reminders">
             <div className="flex items-center justify-between mb-4">

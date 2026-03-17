@@ -162,7 +162,8 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                       <div className="relative">
                         <button
                           onClick={() => setRoleChangeTarget(roleChangeTarget === m.userId ? null : m.userId)}
-                          className="p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                          className="p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          aria-label="Change role"
                           title="Change role"
                         >
                           <ChevronDown className="w-3 h-3" />
@@ -198,7 +199,8 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                             banMember(groupId, m.userId);
                           }
                         }}
-                        className="p-1 rounded text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                        className="p-1 rounded text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                        aria-label="Ban member"
                         title="Ban member"
                       >
                         <ShieldBan className="w-3 h-3" />

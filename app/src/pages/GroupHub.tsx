@@ -381,12 +381,12 @@ export function GroupHub() {
                                         }
                                     }}
                                     disabled={isJoining}
-                                    className="mt-3 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
+                                    className="mt-3 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2.5 rounded-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
                                 >
                                     <LogIn className="w-4 h-4" />
                                     {isJoining ? 'Joining…' : 'Join Group'}
                                 </button>
-                                {joinError && <p className="text-xs text-rose-500 mt-2 text-center">{joinError}</p>}
+                                {joinError && <p className="text-xs text-rose-500 mt-2 text-center" role="alert">{joinError}</p>}
                                 <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2 text-center">You can browse posts below</p>
                             </div>
                         </div>
@@ -747,7 +747,8 @@ export function GroupHub() {
                                             </div>
                                             <button
                                                 onClick={() => navigate('/messages', { state: { recipientId: m.userId } })}
-                                                className="text-emerald-600 hover:text-emerald-700 transition-colors p-1"
+                                                className="text-emerald-600 hover:text-emerald-700 transition-colors p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                                                aria-label={`Message ${displayName}`}
                                                 title={`Message ${displayName}`}
                                             >
                                                 <Mail className="w-4 h-4" />

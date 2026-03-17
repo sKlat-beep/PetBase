@@ -194,7 +194,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                           {group.posts.length} post{group.posts.length !== 1 ? 's' : ''} · {group.events.length} event{group.events.length !== 1 ? 's' : ''}
                         </p>
                         {joinError && expandedId === group.id && (
-                          <p className="text-xs text-rose-500 mb-2">{joinError}</p>
+                          <p className="text-xs text-rose-500 mb-2" role="alert">{joinError}</p>
                         )}
                         <div className="flex gap-2">
                           <button
@@ -206,7 +206,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                           </button>
                           <button
                             onClick={() => setExpandedId(null)}
-                            className="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors min-h-[36px]"
+                            className="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                           >
                             Cancel
                           </button>

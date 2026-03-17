@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkVaccineReminders = exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.warmYelpCache = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendWeeklyDigest = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.checkVaccineReminders = exports.exportUserData = exports.checkPlacesCostAlert = exports.deleteExpiredMessages = exports.deleteExpiredGroupPosts = exports.warmYelpCache = exports.resolveAvatarToken = exports.getPlaceReviews = exports.getPlaceDetails = exports.findServices = exports.sendReport = exports.onPetLostStatusChange = exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendWeeklyDigest = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
 const v2_1 = require("firebase-functions/v2");
 (0, v2_1.setGlobalOptions)({ region: 'us-central1', maxInstances: 10 });
 const https_1 = require("firebase-functions/v2/https");
@@ -22,6 +22,7 @@ Object.defineProperty(exports, "sendWeeklyDigest", { enumerable: true, get: func
 Object.defineProperty(exports, "checkPetBirthdays", { enumerable: true, get: function () { return notifications_1.checkPetBirthdays; } });
 Object.defineProperty(exports, "onPostReaction", { enumerable: true, get: function () { return notifications_1.onPostReaction; } });
 Object.defineProperty(exports, "onPostComment", { enumerable: true, get: function () { return notifications_1.onPostComment; } });
+Object.defineProperty(exports, "onPetLostStatusChange", { enumerable: true, get: function () { return notifications_1.onPetLostStatusChange; } });
 const notifications_2 = require("./notifications");
 exports.sendReport = (0, https_1.onCall)({
     secrets: ['SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK', 'SLACK_WEBHOOK_URL'],

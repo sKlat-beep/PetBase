@@ -42,7 +42,8 @@
       "Bash(printf:*)",
       "Bash(rm:*)",
       "Bash(git init:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "mcp__jcodemunch__index_repo"
     ]
   },
   "outputStyle": "default",

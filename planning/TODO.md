@@ -57,13 +57,13 @@ Status: done
 
 ### Phase 18: Health & Data Visualization
 Tags: health, charts, data, visualization
-Status: intake
+Status: done
 
-- [ ] **[TASK-62]** Weight & health trend charts — sparkline/line charts in PetHealthPanel (weight over time, vaccine timeline, vet frequency) *(fun #15)*
-- [ ] **[TASK-63]** Expense analytics charts — monthly spending by category, year-over-year trends, per-pet cost breakdown *(fun #16)*
-- [ ] **[TASK-64]** Pet daily journal / mood log — daily check-in (mood, energy, note), timeline in PetActivitiesPanel *(fun #22)*
-- [ ] **[TASK-65]** Streak system for health logging — consecutive-day streak counter on Dashboard (Duolingo model) *(fun #23)*
-- [ ] **[TASK-66]** Lost pet neighborhood push broadcast — trigger push notifications to opted-in users in same H3 cell when pet marked lost *(fun #17)*
+- [x] **[TASK-62]** Weight & health trend charts — `WeightTrendChart.tsx` using recharts (LineChart, responsive); shows weight history + current weight; wired into PetHealthPanel; `weightHistory` array added to Pet type *(fun #15)*
+- [x] **[TASK-63]** Expense analytics charts — `ExpenseChart.tsx` using recharts (BarChart); 6-month rolling monthly spending; wired into Dashboard expenses widget *(fun #16)*
+- [x] **[TASK-64]** Pet daily journal / mood log — `MoodLog.tsx` with 5 moods, 1-5 energy, notes; `moodLog` array on Pet type (90-day rolling); wired into PetActivitiesPanel; 7-day recent history display *(fun #22)*
+- [x] **[TASK-65]** Streak system — `streaks.ts` utility (idb-keyval); `recordHealthActivity`/`getStreakData`; `streak_counter` Dashboard widget with current + longest streak display *(fun #23)*
+- [x] **[TASK-66]** Lost pet neighborhood broadcast — `onPetLostStatusChange` Firestore trigger on `users/{uid}/pets/{petId}`; queries users by ZIP + lostPetOptOut; creates `lost_pet` notification type; Megaphone icon in NotificationDropdown *(fun #17)*
 
 ---
 

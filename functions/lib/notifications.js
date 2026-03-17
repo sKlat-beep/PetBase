@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendWeeklyDigest = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.onPetLostStatusChange = exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendWeeklyDigest = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
 exports.createNotification = createNotification;
 exports.sendVaccineReminder = sendVaccineReminder;
 const firestore_1 = require("firebase-functions/v2/firestore");
@@ -447,4 +447,56 @@ async function sendVaccineReminder(uid, petName, vaccineName, daysUntilDue) {
     });
     console.log(`sendVaccineReminder: created reminder for uid=${uid} pet=${petName} vaccine=${vaccineName} daysUntilDue=${daysUntilDue}`);
 }
+// ─── Lost Pet Neighborhood Broadcast ──────────────────────────────────────────
+// Firestore trigger: when a pet's lostStatus.isLost changes to true,
+// notify all users in the same ZIP code who have not opted out.
+exports.onPetLostStatusChange = (0, firestore_1.onDocumentUpdated)('users/{uid}/pets/{petId}', async (event) => {
+    var _a, _b, _c, _d, _e, _f, _g;
+    const before = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before) === null || _b === void 0 ? void 0 : _b.data();
+    const after = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.after) === null || _d === void 0 ? void 0 : _d.data();
+    if (!before || !after)
+        return;
+    const wasLost = ((_e = before.lostStatus) === null || _e === void 0 ? void 0 : _e.isLost) === true;
+    const isNowLost = ((_f = after.lostStatus) === null || _f === void 0 ? void 0 : _f.isLost) === true;
+    // Only trigger on newly lost (not already lost)
+    if (wasLost || !isNowLost)
+        return;
+    const ownerUid = event.params.uid;
+    const petName = after.name || 'A pet';
+    const petBreed = after.breed || '';
+    const petType = after.type || 'Pet';
+    const db = admin.firestore();
+    // Get owner's ZIP code
+    const ownerProfileSnap = await db.doc(`users/${ownerUid}/profile/data`).get();
+    const ownerProfile = ownerProfileSnap.data();
+    const ownerZip = ownerProfile === null || ownerProfile === void 0 ? void 0 : ownerProfile.zipCode;
+    if (!ownerZip) {
+        console.log('onPetLostStatusChange: owner has no zipCode, skipping broadcast');
+        return;
+    }
+    // Find all users in the same ZIP who haven't opted out
+    const usersSnap = await db.collectionGroup('data')
+        .where('zipCode', '==', ownerZip)
+        .limit(200)
+        .get();
+    let notified = 0;
+    for (const userDoc of usersSnap.docs) {
+        const userData = userDoc.data();
+        const recipientUid = (_g = userDoc.ref.parent.parent) === null || _g === void 0 ? void 0 : _g.id;
+        if (!recipientUid || recipientUid === ownerUid)
+            continue;
+        if (userData.lostPetOptOut === true)
+            continue;
+        await createNotification(recipientUid, {
+            type: 'lost_pet',
+            message: `🚨 Lost ${petType}: ${petName}${petBreed ? ` (${petBreed})` : ''} reported missing near your area!`,
+            fromUid: ownerUid,
+            fromName: (ownerProfile === null || ownerProfile === void 0 ? void 0 : ownerProfile.displayName) || 'A neighbor',
+            targetId: event.params.petId,
+            targetType: 'pet',
+        });
+        notified++;
+    }
+    console.log(`onPetLostStatusChange: broadcast to ${notified} users in ZIP ${ownerZip}`);
+});
 //# sourceMappingURL=notifications.js.map

@@ -52,3 +52,15 @@ Permanent no-op returning `[]` with no Phase 5 ticket yet; silent failure risk. 
 **Acceptance Criteria:**
 - [ ] `getNearbyStores()` throws or logs a warning in development mode
 - [ ] `cd app && npm run build` exits 0
+
+---
+
+### [TASK-90] Remove `functions/node_modules/` from git tracking
+
+**Description:**
+`functions/node_modules/` is currently tracked in git. The root `.gitignore` has `node_modules/` which only matches at the root level. Update `.gitignore` to use `**/node_modules/` and remove `functions/node_modules/` from the git index.
+
+**Acceptance Criteria:**
+- [ ] `.gitignore` uses a pattern that covers all `node_modules/` directories
+- [ ] `functions/node_modules/` is no longer tracked by git
+- [ ] `git status` shows clean after the change

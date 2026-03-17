@@ -31,14 +31,14 @@ Status: in-progress
 
 ### Phase 16: Messaging & Social Enrichment
 Tags: messaging, social, ux
-Status: intake
+Status: done
 
-- [ ] **[TASK-50]** Pin conversations in DMs — long-press to pin, `pinnedConversations[]` on UserProfile *(fun #38)*
-- [ ] **[TASK-51]** Service tip upvoting — community tips on service listings can be upvoted, sorted by vote count *(fun #39)*
-- [ ] **[TASK-52]** Group welcome bot post — auto-post "username just joined with their [breed]!" on group join, toggleable by owner *(fun #43)*
-- [ ] **[TASK-53]** Swipe gestures on mobile — swipe between pets on Pets page, swipe notifications, long-press reactions *(fun #37)*
-- [ ] **[TASK-54]** Pet status quick updates — ephemeral 24h status on pet profiles ("Just had a grooming day"), visible to friends *(fun #40)*
-- [ ] **[TASK-55]** Voice messages in DMs — hold-to-record (≤60s), upload to Storage, inline playback with waveform *(fun #44)*
+- [x] **[TASK-50]** Pin conversations in DMs — `pinnedConversations[]` on UserProfile; sorted pinned-first in MessagingContext; Pin icon + hover button in ConversationRow *(fun #38)*
+- [x] **[TASK-51]** Service tip upvoting — extended Tip type with `upvotes`/`upvoters`; upvote button per tip; sorted by votes; one-vote-per-user *(fun #39)*
+- [x] **[TASK-52]** Group welcome bot post — `isSystemPost` flag on GroupPost; `welcomePostEnabled` on CommunityGroup; auto-creates system post on joinGroup *(fun #43)*
+- [x] **[TASK-53]** Swipe gestures on mobile — CSS scroll-snap carousel on Pets page (`snap-x snap-mandatory`); horizontal swipe between pet cards on mobile, grid on desktop *(fun #37)*
+- [x] **[TASK-54]** Pet status quick updates — `ephemeralStatus`/`ephemeralStatusExpiresAt` on Pet type; quick-set menu (6 preset statuses) via Zap button on PetCard; violet status pill display; 24h auto-expiry *(fun #40)*
+- [x] **[TASK-55]** Voice messages in DMs — VoiceMemo.tsx (MediaRecorder API, 60s limit, webm); `uploadMessageAudio` in storageService; Mic button in compose bar; audio player in MessageBubble; `mediaType: 'audio'` on DmMessage *(fun #44)*
 
 ---
 

@@ -140,6 +140,7 @@ Maintain this table. Add new fields here before writing any code that touches th
 | avatarShape | users/{uid}.avatarShape | No | Display preference (circle/square/squircle) — non-PII |
 | profileVisibility | users/{uid}.visibility | No | User's own profile visibility setting (Public/Friends Only/Private) |
 | publicStatus | users/{uid}.publicStatus | No | Opt-in social status (Open to Playdates, etc.) — user-controlled |
+| nameLower | groups/{id}.nameLower | No | Lowercase normalized group name for case-insensitive uniqueness queries; derived from user-chosen group name — non-PII |
 
 ---
 

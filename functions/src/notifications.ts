@@ -190,6 +190,102 @@ export const checkPetBirthdays = onSchedule('every day 08:00', async () => {
   console.log(`checkPetBirthdays: processed ${usersSnap.size} user(s)`);
 });
 
+// ─── createNotification ───────────────────────────────────────────────────────
+// Generic helper: writes a notification document to notifications/{uid}/items.
+// The onNotificationCreated trigger will deliver it via email/FCM.
+
+export async function createNotification(
+  uid: string,
+  payload: Record<string, unknown>,
+): Promise<void> {
+  const db = admin.firestore();
+  await db.collection(`notifications/${uid}/items`).add({
+    ...payload,
+    read: false,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+}
+
+// ─── onPostReaction ───────────────────────────────────────────────────────────
+// Firestore trigger: groups/{groupId}/posts/{postId}/reactions/{reactionId}
+// Notifies the post author when someone reacts to their post (excluding self-reactions).
+
+export const onPostReaction = onDocumentCreated(
+  'groups/{groupId}/posts/{postId}/reactions/{reactionId}',
+  async (event) => {
+    const data = event.data?.data();
+    if (!data) return;
+
+    const reactionUid = (data.uid || data.userId) as string | undefined;
+    if (!reactionUid) return;
+
+    const postSnap = await admin
+      .firestore()
+      .doc(`groups/${event.params.groupId}/posts/${event.params.postId}`)
+      .get();
+    const post = postSnap.data();
+    if (!post) return;
+
+    const authorUid = (post.authorUid || post.uid) as string | undefined;
+    if (!authorUid) return;
+
+    // Don't notify if reacting to own post
+    if (reactionUid === authorUid) return;
+
+    await createNotification(authorUid, {
+      type: 'post_reaction',
+      groupId: event.params.groupId,
+      postId: event.params.postId,
+      fromUid: reactionUid,
+      message: 'Someone reacted to your post.',
+    });
+
+    console.log(
+      `onPostReaction: notification created for author uid=${authorUid} from uid=${reactionUid}`,
+    );
+  },
+);
+
+// ─── onPostComment ────────────────────────────────────────────────────────────
+// Firestore trigger: groups/{groupId}/posts/{postId}/comments/{commentId}
+// Notifies the post author when someone comments on their post (excluding self-comments).
+
+export const onPostComment = onDocumentCreated(
+  'groups/{groupId}/posts/{postId}/comments/{commentId}',
+  async (event) => {
+    const data = event.data?.data();
+    if (!data) return;
+
+    const commenterUid = (data.uid || data.userId || data.authorUid) as string | undefined;
+    if (!commenterUid) return;
+
+    const postSnap = await admin
+      .firestore()
+      .doc(`groups/${event.params.groupId}/posts/${event.params.postId}`)
+      .get();
+    const post = postSnap.data();
+    if (!post) return;
+
+    const authorUid = (post.authorUid || post.uid) as string | undefined;
+    if (!authorUid) return;
+
+    // Don't notify if commenting on own post
+    if (commenterUid === authorUid) return;
+
+    await createNotification(authorUid, {
+      type: 'post_comment',
+      groupId: event.params.groupId,
+      postId: event.params.postId,
+      fromUid: commenterUid,
+      message: 'Someone commented on your post.',
+    });
+
+    console.log(
+      `onPostComment: notification created for author uid=${authorUid} from uid=${commenterUid}`,
+    );
+  },
+);
+
 // ─── sendVaccineReminder ──────────────────────────────────────────────────────
 // Creates a notification document in users/{uid}/notifications for a vaccine
 // or medication due-date reminder. The onNotificationCreated trigger will then

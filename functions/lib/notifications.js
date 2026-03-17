@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.onPostComment = exports.onPostReaction = exports.checkPetBirthdays = exports.sendEmailDigest = exports.onNotificationCreated = void 0;
+exports.createNotification = createNotification;
 exports.sendVaccineReminder = sendVaccineReminder;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const scheduler_1 = require("firebase-functions/v2/scheduler");
@@ -129,6 +130,120 @@ exports.sendEmailDigest = (0, scheduler_1.onSchedule)('every day 08:00', async (
     console.log('sendEmailDigest: Email digest scheduled function — to be implemented in Phase 3c full');
     // TODO Phase 3c full: query notifications/{uid}/items where read=false grouped by user,
     // batch into daily/weekly digest emails based on emailDigestFrequency preference.
+});
+// ─── checkPetBirthdays ────────────────────────────────────────────────────────
+// Scheduled daily at 08:00 UTC — queries all pets and sends a birthday
+// notification to each owner whose pet's birth month+day matches today.
+exports.checkPetBirthdays = (0, scheduler_1.onSchedule)('every day 08:00', async () => {
+    var _a;
+    const db = admin.firestore();
+    const today = new Date();
+    const todayMonth = today.getMonth() + 1;
+    const todayDay = today.getDate();
+    // Gather all users
+    const usersSnap = await db.collection('users').get();
+    const tasks = [];
+    for (const userDoc of usersSnap.docs) {
+        const uid = userDoc.id;
+        const petsSnap = await db.collection(`users/${uid}/pets`).get();
+        for (const petDoc of petsSnap.docs) {
+            const pet = petDoc.data();
+            const birthday = pet.birthday;
+            if (!birthday)
+                continue;
+            const parts = birthday.split('-').map(Number);
+            const petMonth = parts[1];
+            const petDay = parts[2];
+            if (petMonth !== todayMonth || petDay !== todayDay)
+                continue;
+            const petName = (_a = pet.name) !== null && _a !== void 0 ? _a : 'Your pet';
+            const message = `Happy Birthday to ${petName}! 🎂`;
+            tasks.push(db.collection(`notifications/${uid}/items`).add({
+                type: 'birthday',
+                petName,
+                message,
+                read: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            }).then(() => {
+                console.log(`checkPetBirthdays: birthday notification created for uid=${uid} pet=${petName}`);
+            }));
+        }
+    }
+    await Promise.all(tasks);
+    console.log(`checkPetBirthdays: processed ${usersSnap.size} user(s)`);
+});
+// ─── createNotification ───────────────────────────────────────────────────────
+// Generic helper: writes a notification document to notifications/{uid}/items.
+// The onNotificationCreated trigger will deliver it via email/FCM.
+async function createNotification(uid, payload) {
+    const db = admin.firestore();
+    await db.collection(`notifications/${uid}/items`).add(Object.assign(Object.assign({}, payload), { read: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }));
+}
+// ─── onPostReaction ───────────────────────────────────────────────────────────
+// Firestore trigger: groups/{groupId}/posts/{postId}/reactions/{reactionId}
+// Notifies the post author when someone reacts to their post (excluding self-reactions).
+exports.onPostReaction = (0, firestore_1.onDocumentCreated)('groups/{groupId}/posts/{postId}/reactions/{reactionId}', async (event) => {
+    var _a;
+    const data = (_a = event.data) === null || _a === void 0 ? void 0 : _a.data();
+    if (!data)
+        return;
+    const reactionUid = (data.uid || data.userId);
+    if (!reactionUid)
+        return;
+    const postSnap = await admin
+        .firestore()
+        .doc(`groups/${event.params.groupId}/posts/${event.params.postId}`)
+        .get();
+    const post = postSnap.data();
+    if (!post)
+        return;
+    const authorUid = (post.authorUid || post.uid);
+    if (!authorUid)
+        return;
+    // Don't notify if reacting to own post
+    if (reactionUid === authorUid)
+        return;
+    await createNotification(authorUid, {
+        type: 'post_reaction',
+        groupId: event.params.groupId,
+        postId: event.params.postId,
+        fromUid: reactionUid,
+        message: 'Someone reacted to your post.',
+    });
+    console.log(`onPostReaction: notification created for author uid=${authorUid} from uid=${reactionUid}`);
+});
+// ─── onPostComment ────────────────────────────────────────────────────────────
+// Firestore trigger: groups/{groupId}/posts/{postId}/comments/{commentId}
+// Notifies the post author when someone comments on their post (excluding self-comments).
+exports.onPostComment = (0, firestore_1.onDocumentCreated)('groups/{groupId}/posts/{postId}/comments/{commentId}', async (event) => {
+    var _a;
+    const data = (_a = event.data) === null || _a === void 0 ? void 0 : _a.data();
+    if (!data)
+        return;
+    const commenterUid = (data.uid || data.userId || data.authorUid);
+    if (!commenterUid)
+        return;
+    const postSnap = await admin
+        .firestore()
+        .doc(`groups/${event.params.groupId}/posts/${event.params.postId}`)
+        .get();
+    const post = postSnap.data();
+    if (!post)
+        return;
+    const authorUid = (post.authorUid || post.uid);
+    if (!authorUid)
+        return;
+    // Don't notify if commenting on own post
+    if (commenterUid === authorUid)
+        return;
+    await createNotification(authorUid, {
+        type: 'post_comment',
+        groupId: event.params.groupId,
+        postId: event.params.postId,
+        fromUid: commenterUid,
+        message: 'Someone commented on your post.',
+    });
+    console.log(`onPostComment: notification created for author uid=${authorUid} from uid=${commenterUid}`);
 });
 // ─── sendVaccineReminder ──────────────────────────────────────────────────────
 // Creates a notification document in users/{uid}/notifications for a vaccine

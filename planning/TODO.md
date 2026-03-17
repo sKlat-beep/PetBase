@@ -19,18 +19,6 @@ Use `/intake` skill to add new tasks (place under the appropriate phase header).
 Tags: security, cleanup, dependencies
 Status: intake
 
-### [TASK-86] Archive `backups/` phase-snapshot ZIPs
-
-**Description:**
-8 dev snapshots from 2026-03-14 sitting in working directory; move to external storage (S3/Drive) and delete from repo.
-
-**Acceptance Criteria:**
-- [ ] All ZIP files in `backups/` moved to external storage
-- [ ] `backups/` directory removed from the repo
-- [ ] No references to backup ZIPs remain in active code
-
----
-
 ### [TASK-87] Upgrade vulnerable dependencies
 
 **Description:**

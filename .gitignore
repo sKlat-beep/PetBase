@@ -5,6 +5,15 @@
 firebase-debug.log
 .firebase/
 
+# Claude Code (contains API keys)
+.claude/settings.local.json
+
+# Compiled function output (rebuild with: cd functions && npm run build)
+functions/lib/
+
+# Node
+node_modules/
+
 # OS
 .DS_Store
 Thumbs.db

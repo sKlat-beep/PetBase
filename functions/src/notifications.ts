@@ -131,14 +131,6 @@ export const onNotificationCreated = onDocumentCreated(
   },
 );
 
-// ─── sendEmailDigest ──────────────────────────────────────────────────────────
-// Kept as a no-op stub so index.ts re-export doesn't break. The full weekly
-// digest is implemented below as sendWeeklyDigest.
-
-export const sendEmailDigest = onSchedule('every day 08:00', async () => {
-  console.log('sendEmailDigest: superseded by sendWeeklyDigest — no-op.');
-});
-
 // ─── sendWeeklyDigest ─────────────────────────────────────────────────────────
 // Runs every Monday at 09:00 UTC.
 // For each user who has opted in to email notifications:

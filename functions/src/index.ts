@@ -15,7 +15,7 @@ import { postSlackBlocks, buildAlertBlock } from './slackService';
 
 admin.initializeApp();
 
-export { onNotificationCreated, sendEmailDigest, sendWeeklyDigest, checkPetBirthdays, onPostReaction, onPostComment, onPetLostStatusChange } from './notifications';
+export { onNotificationCreated, sendWeeklyDigest, checkPetBirthdays, onPostReaction, onPostComment, onPetLostStatusChange } from './notifications';
 import { sendVaccineReminder } from './notifications';
 
 // ─── Email configuration ──────────────────────────────────────────────────────
@@ -51,10 +51,26 @@ export const sendReport = onCall(
     secrets: ['SLACK_WEBHOOK_URL', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'EMAIL_BUG', 'EMAIL_FEEDBACK'],
   },
   async (request) => {
+    if (!request.auth) {
+      logSecurityEvent('sendReport', 'unauthenticated');
+      throw new HttpsError('unauthenticated', 'Login required.');
+    }
+
     const data = request.data as SendReportPayload;
 
     if (!data.type || !['crash', 'bug', 'feedback'].includes(data.type)) {
       throw new HttpsError('invalid-argument', 'Invalid report type.');
+    }
+
+    // Input validation
+    if (data.userEmail && (typeof data.userEmail !== 'string' || data.userEmail.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.userEmail))) {
+      throw new HttpsError('invalid-argument', 'Invalid email format.');
+    }
+    if (data.message && (typeof data.message !== 'string' || data.message.length > 5000)) {
+      throw new HttpsError('invalid-argument', 'Message too long (max 5000 chars).');
+    }
+    if (data.log && (typeof data.log !== 'string' || data.log.length > 50000)) {
+      throw new HttpsError('invalid-argument', 'Log too long (max 50000 chars).');
     }
 
     const subject = (() => {
@@ -267,6 +283,14 @@ export const findServices = onCall(
     };
     let { lat, lng } = request.data as { lat?: number; lng?: number };
 
+    // Validate lat/lng if provided
+    if (lat != null && (typeof lat !== 'number' || !isFinite(lat) || lat < -90 || lat > 90)) {
+      throw new HttpsError('invalid-argument', 'Invalid latitude (must be between -90 and 90).');
+    }
+    if (lng != null && (typeof lng !== 'number' || !isFinite(lng) || lng < -180 || lng > 180)) {
+      throw new HttpsError('invalid-argument', 'Invalid longitude (must be between -180 and 180).');
+    }
+
     console.log(`[findServices] invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query ?? ''} uid=${uid}`);
 
     const HARD_LIMIT = 450;
@@ -362,8 +386,38 @@ export const findServices = onCall(
 export const getPlaceDetails = onCall(
   { secrets: ['GOOGLE_PLACES_KEY', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'SLACK_WEBHOOK_URL'] },
   async (request) => {
+    if (!request.auth) {
+      logSecurityEvent('getPlaceDetails', 'unauthenticated');
+      throw new HttpsError('unauthenticated', 'Login required.');
+    }
+
     const { serviceId, name, address } = request.data as { serviceId: string; name: string; address: string };
+
+    // Input validation
+    const ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+    if (!serviceId || typeof serviceId !== 'string' || serviceId.length > 200 || !ID_PATTERN.test(serviceId)) {
+      throw new HttpsError('invalid-argument', 'Invalid serviceId.');
+    }
+    if (!name || typeof name !== 'string' || name.length > 200) {
+      throw new HttpsError('invalid-argument', 'Invalid name (max 200 chars).');
+    }
+    if (!address || typeof address !== 'string' || address.length > 200) {
+      throw new HttpsError('invalid-argument', 'Invalid address (max 200 chars).');
+    }
+
     const db = admin.firestore();
+    const uid = request.auth.uid;
+
+    // Per-user daily rate limit (10 detail lookups/day)
+    const today = new Date().toISOString().slice(0, 10);
+    const usageRef = db.doc(`apiUsage/places_details/perUser/${uid}/${today}`);
+    const usageSnap = await usageRef.get();
+    const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
+    const DAILY_LIMIT = 10;
+    if (count >= DAILY_LIMIT) {
+      throw new HttpsError('resource-exhausted', 'Daily detail lookup limit reached. Try again tomorrow.');
+    }
+    await usageRef.set({ count: count + 1, updatedAt: new Date().toISOString() }, { merge: true });
 
     // Feature flag check
     const flagsSnap = await db.doc('appConfig/places').get();
@@ -423,8 +477,32 @@ export const getPlaceDetails = onCall(
 export const getPlaceReviews = onCall(
   { secrets: ['GOOGLE_PLACES_KEY', 'SLACK_WEBHOOK_URL'] },
   async (request) => {
+    if (!request.auth) {
+      logSecurityEvent('getPlaceReviews', 'unauthenticated');
+      throw new HttpsError('unauthenticated', 'Login required.');
+    }
+
     const { placeId } = request.data as { placeId: string };
+
+    // Input validation
+    const ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+    if (!placeId || typeof placeId !== 'string' || placeId.length > 200 || !ID_PATTERN.test(placeId)) {
+      throw new HttpsError('invalid-argument', 'Invalid placeId.');
+    }
+
     const db = admin.firestore();
+    const uid = request.auth.uid;
+
+    // Per-user daily rate limit (10 review lookups/day)
+    const today = new Date().toISOString().slice(0, 10);
+    const usageRef = db.doc(`apiUsage/places_reviews/perUser/${uid}/${today}`);
+    const usageSnap = await usageRef.get();
+    const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
+    const DAILY_LIMIT = 10;
+    if (count >= DAILY_LIMIT) {
+      throw new HttpsError('resource-exhausted', 'Daily review lookup limit reached. Try again tomorrow.');
+    }
+    await usageRef.set({ count: count + 1, updatedAt: new Date().toISOString() }, { merge: true });
 
     // Feature flag check
     const flagsSnap = await db.doc('appConfig/places').get();

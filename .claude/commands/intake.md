@@ -56,7 +56,8 @@ Status: intake
 
 9. **Write a dev-log entry** in `planning/dev-log.md`:
    ```
-   ## [YYYY-MM-DD] TASK-ID: <title> [INTAKE]
+   ## [YYYY-MM-DD] TASK-ID: <title> — START
+   Task created via /intake. <one-line description>
    ```
 
 ---

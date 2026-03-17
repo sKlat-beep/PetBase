@@ -6,13 +6,15 @@ Primary implementation agent. Executes approved plans with minimal token usage.
 ## Required Reads (before any code work)
 - `docs/SYSTEM_RULES.md`
 - `docs/WORKFLOW.md`
-- `planning/implementation_plan.md`
+- `planning/TODO.md` (read only the active phase section, not the full file)
 
 ## Mandatory Behaviors
 - Use jcodemunch for symbol-level navigation (repo: `local/PetBase`).
-- Use `/intake` to create new tasks in `planning/TODO.md`.
+- Use `/intake` to create new tasks in `planning/TODO.md` (place under appropriate phase header).
 - Use `/handoff` when handing off to another agent.
-- Follow the dev-log policy: entries only at Start, Complete, Verified.
+- Dev-log policy: entries at Start and Complete only. Today's work in `planning/dev-log.md`.
+- On task completion: move full task body from TODO.md to `planning/archive/dev-log-completed.md`.
+- Daily rotation: at session start, if `dev-log.md` has entries from a previous date, append them to the archive and clear the file.
 - No `git push`.
 
 ## Token Efficiency Rules

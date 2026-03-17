@@ -8,7 +8,7 @@ Enforces SYSTEM_RULES.md §11.
 
 ## Steps
 
-1. **Read the last 15 lines** of `planning/dev-log.md` to capture recent context.
+1. **Read `planning/dev-log.md`** for today's session context, then **read `planning/TODO.md`** for the current in-progress task.
 
 2. **Find the current in-progress task** in `planning/TODO.md`
    (Status: in-progress). If multiple: use the most recently updated.

@@ -6,7 +6,7 @@ This repo is organized for low-token navigation and predictable agent workflows.
 - `app/` - React/Vite client
 - `functions/` - Firebase Cloud Functions
 - `planning/TODO.md` - task board (authoritative state)
-- `planning/` - human-readable plan, roadmap, dev log
+- `planning/` - task board (TODO.md) + today's dev log; archive/ for completed work
 - `docs/` - canonical rules and workflows
 - `agents/` - agent instructions
 - `contracts/` - task contracts

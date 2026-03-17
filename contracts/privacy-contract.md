@@ -22,7 +22,7 @@ contract:
   status: delivered
   deliverables:
     - type: docs
-      path: planning/dev-log.md
+      path: planning/dev-log.md (today) or planning/archive/dev-log-completed.md (historical)
       description: Entry noting privacy contract referenced for the task
     - type: file
       path: app/src/lib/crypto.ts
@@ -160,6 +160,17 @@ Token Rules:
 - Token resolution is performed by a Firebase Cloud Function, never client-side JS
 - Revoked tokens return 403 Forbidden
 - No RESTRICTED_PII field may ever have a token created for it (export_token is the only exception, and only for the data owner)
+
+---
+
+## Firestore Rule Rationale
+
+### Pet Documents (users/{uid}/pets/{petId})
+Any authenticated user may read any pet document. This is intentional:
+- Pet notes (the only RESTRICTED_PII field on pets) are encrypted client-side with AES-256-GCM
+- Metadata fields (breed, weight, species) are classified as UNRESTRICTED_DATA (see table above)
+- `isPrivate` filtering is enforced app-side for UI display purposes only
+- Audited 2026-03-17: confirmed acceptable risk given encryption guarantees
 
 ---
 

@@ -34,7 +34,7 @@ contract:
   status: delivered
   deliverables:
     - type: docs
-      path: planning/dev-log.md
+      path: planning/dev-log.md (today) or planning/archive/dev-log-completed.md (historical)
       description: Entry noting new repo ID and index stats after each re-index
   constraints:
     - CURRENT REPO ID: local/PetBase

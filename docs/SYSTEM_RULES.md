@@ -16,11 +16,13 @@ This file is the single source of truth for all agent and developer rules.
 - Tokenized fields must never be resolved client-side.
 
 ## 3. Documentation Discipline
-- `planning/TODO.md` is the authoritative task board. Use `/intake` to create tasks.
-- `planning/implementation_plan.md` is the single source of truth for strategy.
-- `planning/PetBase-Roadmap.md` is a checklist only.
-- `planning/dev-log.md` entries are required at Start, Complete, Verified only (no PII).
-- Dev-log format: `## [YYYY-MM-DD] Title`.
+- `planning/TODO.md` is the authoritative task board (open tasks only, organized by phase). Use `/intake` to create tasks.
+- When reading TODO.md, read only the phase section relevant to your current work — not the entire file.
+- `planning/dev-log.md` is a today-only session journal. Entries at Start and Complete only (no PII).
+- When a task is completed: log in dev-log.md, move full task body from TODO.md to `planning/archive/dev-log-completed.md`.
+- At each new day's start: move yesterday's dev-log entries to the archive, clear dev-log.md.
+- Archive files live in `planning/archive/`. Max ~500 lines per archive file; rotate with date suffix.
+- Dev-log format: `## [YYYY-MM-DD] TASK-XX: Title — STATUS` + one-line summary.
 
 ## 4. jcodemunch Rules
 - Repo ID: `local/PetBase` (last indexed: 2026-03-14).
@@ -39,7 +41,7 @@ This file is the single source of truth for all agent and developer rules.
 - Task tracking uses `planning/TODO.md` — no MCP dependency.
 
 ## 6. Source Control
-- Never run `git push` automatically.
+- Run a `git push` after asking for approval after each phase completion
 
 ## 7. Testing
 - No code changes during test/diagnostic phases.
@@ -52,7 +54,8 @@ This file is the single source of truth for all agent and developer rules.
 
 ## 9. Conversation Compaction
 - Limit tool noise.
-- Read the last 10-20 lines of dev-log at session start.
+- Read `planning/dev-log.md` at session start for today's context.
+- Read only the active phase section of `planning/TODO.md` — not the entire file.
 
 ## 10. LLM Fallback Roles
 - Gemini / Antigravity: strategy and planning; code writes allowed only with user approval.

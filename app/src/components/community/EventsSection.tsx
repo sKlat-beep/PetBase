@@ -4,7 +4,7 @@ import { useCommunity } from '../../contexts/CommunityContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function EventsSection() {
-  const { groups, rsvpEvent } = useCommunity();
+  const { groups, rsvpEvent, loading } = useCommunity();
   const { user } = useAuth();
 
   const upcomingEvents = useMemo(() => {
@@ -27,7 +27,22 @@ export default function EventsSection() {
         )}
       </h2>
 
-      {upcomingEvents.length === 0 && (
+      {/* Skeleton loading state */}
+      {loading && upcomingEvents.length === 0 && (
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="flex-shrink-0 w-64 rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 p-4 animate-pulse">
+              <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3 mb-3" />
+              <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4 mb-2" />
+              <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2 mb-2" />
+              <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3 mb-3" />
+              <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded-lg w-full" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!loading && upcomingEvents.length === 0 && (
         <div className="text-center py-6 text-neutral-400 dark:text-neutral-500">
           <Calendar className="w-10 h-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
           <p className="text-sm">No upcoming events from your groups.</p>

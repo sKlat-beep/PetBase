@@ -12,6 +12,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import {
@@ -70,6 +71,7 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
   const [inviteSuccess, setInviteSuccess] = useState('');
   const [removeFriendDropdownOpen, setRemoveFriendDropdownOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
 
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -178,11 +180,14 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
       await unblockUser(uid);
       onClose();
     } else {
-      if (window.confirm(`Block ${targetProfile?.displayName ?? uid}? They will no longer appear in your community.`)) {
-        await blockUser(uid);
-        onClose();
-      }
+      setBlockConfirmOpen(true);
     }
+  };
+
+  const confirmBlock = async () => {
+    setBlockConfirmOpen(false);
+    await blockUser(uid);
+    onClose();
   };
 
   const handleInviteToGroup = async (groupId: string) => {
@@ -548,6 +553,16 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
           targetId={uid}
         />
       )}
+
+      <ConfirmDialog
+        open={blockConfirmOpen}
+        title="Block User"
+        message={`Block ${targetProfile?.displayName ?? uid}? They will no longer appear in your community.`}
+        confirmLabel="Block"
+        variant="danger"
+        onConfirm={confirmBlock}
+        onCancel={() => setBlockConfirmOpen(false)}
+      />
     </div>
   );
 }

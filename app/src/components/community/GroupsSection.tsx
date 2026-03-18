@@ -18,7 +18,7 @@ interface GroupsSectionProps {
 }
 
 export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) {
-  const { groups, userPreferences, toggleFavorite } = useCommunity();
+  const { groups, userPreferences, toggleFavorite, loading } = useCommunity();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
@@ -78,8 +78,23 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
         </div>
       </div>
 
+      {/* Skeleton loading state */}
+      {loading && userGroups.length === 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="rounded-xl border border-neutral-100 dark:border-neutral-700 overflow-hidden animate-pulse">
+              <div className="h-16 bg-neutral-200 dark:bg-neutral-700" />
+              <div className="p-2.5 space-y-2">
+                <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4" />
+                <div className="h-2.5 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Empty state */}
-      {userGroups.length === 0 && (
+      {!loading && userGroups.length === 0 && (
         <div className="text-center py-8 text-neutral-400 dark:text-neutral-500">
           <PawPrint className="w-10 h-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
           <p className="text-sm">You haven't joined any groups yet.</p>
@@ -126,7 +141,7 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
                     {/* Favorite star */}
                     <button
                       onClick={e => { e.stopPropagation(); toggleFavorite(group.id); }}
-                      className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/20 hover:bg-black/40 transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                      className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/20 hover:bg-black/40 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                       aria-label={isFav ? `Unfavorite ${group.name}` : `Favorite ${group.name}`}
                       aria-pressed={isFav}
                     >

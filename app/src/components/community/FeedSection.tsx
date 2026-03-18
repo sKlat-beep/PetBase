@@ -422,7 +422,7 @@ export default function FeedSection() {
       <div
         ref={feedScrollRef}
         className="overflow-y-auto"
-        style={{ height: recentPosts.length > 0 ? '600px' : undefined }}
+        style={{ height: recentPosts.length > 0 ? 'calc(100vh - 16rem)' : undefined }}
       >
         {recentPosts.length > 0 && (
           <div

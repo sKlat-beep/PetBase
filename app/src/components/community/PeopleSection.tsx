@@ -2,6 +2,7 @@ import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { PawPrint, Search, X, Users, UserPlus, UserCheck, MessageSquare, ShieldOff, Send, ChevronDown, ChevronUp, Home, Eye, Sparkles } from 'lucide-react';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useSocial, type PublicProfile, pymkScore } from '../../contexts/SocialContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHousehold } from '../../contexts/HouseholdContext';
@@ -252,6 +253,7 @@ export default function PeopleSection() {
   const [showRequests, setShowRequests] = useState(true);
   const [familyInvite, setFamilyInvite] = useState<{ code: string; householdName: string } | null>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{ title: string; message: string; onConfirm: () => void; variant?: 'danger' | 'default' } | null>(null);
 
   const pendingIncoming = useMemo(
     () => friendRequests.filter(r => user && r.toUid === user.uid && r.status === 'pending'),
@@ -482,9 +484,12 @@ export default function PeopleSection() {
               onAddFriend={() => sendFriendRequest(person.uid)}
               onMessage={() => { setMessagingUser(person); setActiveUid(person.uid); }}
               onBlock={() => {
-                if (window.confirm(`Block ${person.displayName}? They will no longer appear in your search results.`)) {
-                  blockUser(person.uid);
-                }
+                setConfirmDialog({
+                  title: 'Block User',
+                  message: `Block ${person.displayName}? They will no longer appear in your search results.`,
+                  variant: 'danger',
+                  onConfirm: () => { blockUser(person.uid); setConfirmDialog(null); },
+                });
               }}
               onPromoteToFamily={handlePromoteToFamily}
               onViewProfile={() => setViewingProfile(person)}
@@ -562,6 +567,15 @@ export default function PeopleSection() {
         </AnimatePresence>,
         document.body
       )}
+      <ConfirmDialog
+        open={confirmDialog !== null}
+        title={confirmDialog?.title ?? ''}
+        message={confirmDialog?.message ?? ''}
+        confirmLabel="Block"
+        variant={confirmDialog?.variant}
+        onConfirm={() => confirmDialog?.onConfirm()}
+        onCancel={() => setConfirmDialog(null)}
+      />
     </section>
   );
 }

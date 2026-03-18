@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { formatPetAge } from '../lib/petAge';
-import { Activity, Calendar, MapPin, Plus, ShieldAlert, Syringe, DollarSign, X, Eye, EyeOff, ExternalLink, Users, GripVertical, ChevronLeft, ChevronRight, LayoutDashboard, MessageSquare, Settings2, Heart, RotateCcw, Pencil, SearchX, Zap } from 'lucide-react';
+import { Activity, Calendar, MapPin, Plus, ShieldAlert, Syringe, DollarSign, Eye, EyeOff, Users, GripVertical, ChevronLeft, ChevronRight, LayoutDashboard, Settings2, RotateCcw, Pencil } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import GridLayout, { type Layout, type LayoutItem, type ResizeHandleAxis } from 'react-grid-layout';
@@ -18,9 +18,15 @@ import { useRightPanel } from '../contexts/RightPanelContext';
 import { Confetti, useCelebration } from '../components/ui/Confetti';
 import { getStreakData } from '../utils/streaks';
 import { ExpenseChart } from '../components/dashboard/ExpenseChart';
+import { useWeather } from '../hooks/useWeather';
+import { PetHealthPetsWidget } from '../components/dashboard/widgets/PetHealthPetsWidget';
+import { GroupsActivityWidget } from '../components/dashboard/widgets/GroupsActivityWidget';
+import { FriendsActivityWidget } from '../components/dashboard/widgets/FriendsActivityWidget';
+import { TodayRemindersWidget, type Reminder } from '../components/dashboard/widgets/TodayRemindersWidget';
 const DashboardRightPanel = React.lazy(() =>
   import('../components/dashboard/DashboardRightPanel').then(m => ({ default: m.DashboardRightPanel }))
 );
+const EmergencyModal = React.lazy(() => import('../components/dashboard/EmergencyModal'));
 
 const PetFormModal = React.lazy(() =>
   import('../components/PetFormModal').then(m => ({ default: m.PetFormModal }))
@@ -46,7 +52,7 @@ type WidgetKey =
   | 'pet_of_day'
   | 'weather'
   | 'your_pets'
-  | 'quick_actions'
+
   | 'upcoming'
   | 'expenses'
   | 'groups'
@@ -64,7 +70,7 @@ const WIDGET_LABELS: Record<WidgetKey, string> = {
   pet_of_day: 'Pet of the Day',
   weather: 'Weather',
   your_pets: 'Your Pets',
-  quick_actions: 'Quick Actions',
+
   upcoming: 'Upcoming Events',
   expenses: 'Expenses',
   groups: 'My Groups',
@@ -82,7 +88,7 @@ const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
   pet_of_day: { minW: 2, minH: 3 },
   weather: { minW: 2, minH: 2 },
   your_pets: { minW: 3, minH: 3 },
-  quick_actions: { minW: 2, minH: 2 },
+
   upcoming: { minW: 2, minH: 3 },
   expenses: { minW: 2, minH: 3 },
   groups: { minW: 2, minH: 3 },
@@ -133,9 +139,10 @@ function loadLayout(): LayoutItem[] {
     const raw = localStorage.getItem(LAYOUT_KEY);
     if (!raw) return DEFAULT_LAYOUT.map(l => addMinSizes(l));
     const saved: LayoutItem[] = JSON.parse(raw);
-    const savedKeys = new Set(saved.map(l => l.i));
+    const filtered = saved.filter(l => l.i !== 'quick_actions');
+    const savedKeys = new Set(filtered.map(l => l.i));
     const missing = DEFAULT_LAYOUT.filter(l => !savedKeys.has(l.i));
-    return [...saved, ...missing].map(l => addMinSizes(l));
+    return [...filtered, ...missing].map(l => addMinSizes(l));
   } catch {
     return DEFAULT_LAYOUT.map(l => addMinSizes(l));
   }
@@ -148,109 +155,6 @@ function loadHidden(): Set<WidgetKey> {
   } catch {
     return new Set();
   }
-}
-
-// ─── EmergencyModal ───────────────────────────────────────────────────────────
-
-function EmergencyModal({ onClose, onFindVet }: { onClose: () => void; onFindVet: () => void }) {
-  const prefersReduced = useReducedMotion();
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    dialogRef.current?.focus();
-  }, []);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') { onClose(); return; }
-    if (e.key !== 'Tab') return;
-    const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-      'button, a, [tabindex]:not([tabindex="-1"])'
-    );
-    if (!focusable || focusable.length === 0) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
-    else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
-  };
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="emergency-modal-title"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      onKeyDown={handleKeyDown}
-      ref={dialogRef}
-      tabIndex={-1}
-    >
-      <motion.div
-        initial={prefersReduced ? false : { opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={prefersReduced ? undefined : { opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.15, ease: 'easeOut' }}
-        className="bg-white/75 dark:bg-neutral-900/75 backdrop-blur-xl rounded-t-2xl sm:rounded-2xl shadow-xl shadow-black/10 dark:shadow-black/30 border border-white/20 dark:border-white/10 w-full max-w-sm overflow-hidden"
-      >
-        <div className="bg-rose-600 p-5">
-          <div className="flex items-center justify-between">
-            <h2 id="emergency-modal-title" className="text-xl font-bold text-white flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5" aria-hidden="true" /> Emergency Assistance
-            </h2>
-            <button
-              onClick={onClose}
-              aria-label="Close emergency assistance"
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-white/70 hover:text-white rounded-lg motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <p className="text-rose-100 text-sm mt-1">Tap a service below to get immediate help.</p>
-        </div>
-        <div className="p-4 space-y-3">
-          <button
-            onClick={() => { onFindVet(); onClose(); }}
-            className="w-full flex items-center gap-4 bg-rose-50/80 hover:bg-rose-100/80 dark:bg-rose-950/30 dark:hover:bg-rose-900/40 backdrop-blur-sm border border-rose-200/60 dark:border-rose-900/50 p-4 rounded-2xl motion-safe:transition-colors text-left"
-          >
-            <div className="w-10 h-10 bg-rose-100 dark:bg-rose-900/50 rounded-xl flex items-center justify-center shrink-0">
-              <Activity className="w-5 h-5 text-rose-600 dark:text-rose-400" />
-            </div>
-            <div>
-              <p className="font-bold text-rose-900 dark:text-rose-100 text-sm">Nearest 24/7 ER Vet</p>
-              <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">Find emergency veterinary care near you</p>
-            </div>
-          </button>
-          <a
-            href="https://www.aspca.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100/80 dark:hover:bg-amber-900/40 border border-amber-200/60 dark:border-amber-900/50 p-4 rounded-2xl motion-safe:transition-colors text-left block"
-          >
-            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center shrink-0">
-              <ExternalLink className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p className="font-bold text-amber-900 dark:text-amber-100 text-sm">ASPCA Poison Control</p>
-              <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">aspca.org · Available 24/7</p>
-            </div>
-          </a>
-          <a
-            href="https://www.petpoisonhelpline.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100/80 dark:hover:bg-amber-900/40 border border-amber-200/60 dark:border-amber-900/50 p-4 rounded-2xl motion-safe:transition-colors text-left block"
-          >
-            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center shrink-0">
-              <ExternalLink className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p className="font-bold text-amber-900 dark:text-amber-100 text-sm">Pet Poison Helpline</p>
-              <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">petpoisonhelpline.com · Available 24/7</p>
-            </div>
-          </a>
-        </div>
-      </motion.div>
-    </div>
-  );
 }
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
@@ -331,11 +235,15 @@ export function Dashboard() {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    let rafId = 0;
     const ro = new ResizeObserver(entries => {
-      setContainerWidth(entries[0].contentRect.width);
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setContainerWidth(entries[0].contentRect.width);
+      });
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => { cancelAnimationFrame(rafId); ro.disconnect(); };
   }, []);
 
   // Load layout from Firestore on mount
@@ -348,7 +256,7 @@ export function Dashboard() {
     loadDashboardLayout(user.uid)
       .then(saved => {
         if (saved) {
-          const mergedLayout = saved.layout.map(l => addMinSizes(l as LayoutItem));
+          const mergedLayout = saved.layout.filter(l => l.i !== 'quick_actions').map(l => addMinSizes(l as LayoutItem));
           const savedKeys = new Set(mergedLayout.map(l => l.i));
           const missing = DEFAULT_LAYOUT.filter(l => !savedKeys.has(l.i));
           const fullLayout = [...mergedLayout, ...missing.map(l => addMinSizes(l))];
@@ -555,11 +463,6 @@ export function Dashboard() {
       .slice(0, 5);
   }, [user, groups]);
 
-  type Reminder =
-    | { type: 'vaccine'; petName: string; vaccineName: string; daysUntilDue: number }
-    | { type: 'vet'; petName: string; clinic: string; when: 'today' | 'tomorrow' }
-    | { type: 'medication'; petName: string; medName: string; frequency: string };
-
   const todayReminders = useMemo((): Reminder[] => {
     const now = Date.now();
     const todayStart = new Date();
@@ -607,8 +510,6 @@ export function Dashboard() {
     setContent(
       <React.Suspense fallback={null}>
         <DashboardRightPanel
-          onAddPet={() => setIsModalOpen(true)}
-          onEmergency={() => setIsEmergencyOpen(true)}
           onCalendar={() => setIsCalendarOpen(true)}
         />
       </React.Suspense>
@@ -632,29 +533,8 @@ export function Dashboard() {
       .then(res => { if (res.length > 0) setTopService(res[0]); });
   }, [profile?.zipCode, petTypesKey]);
 
-  // Weather
-  const [weather, setWeather] = useState<{ temp: string; condition: string; icon: string; location: string } | null>(null);
-  const [weatherLoading, setWeatherLoading] = useState(false);
-
-  useEffect(() => {
-    if (!profile?.zipCode) return;
-    setWeatherLoading(true);
-    fetch(`https://wttr.in/${encodeURIComponent(profile.zipCode)}?format=%l|%C|%t|%f`)
-      .then(r => r.text())
-      .then(text => {
-        const [location, condition, temp] = text.split('|').map(s => s.trim());
-        const iconMap: Record<string, string> = {
-          'Sunny': '☀️', 'Clear': '🌙', 'Partly cloudy': '⛅', 'Cloudy': '☁️',
-          'Overcast': '☁️', 'Mist': '🌫️', 'Rain': '🌧️', 'Light rain': '🌦️',
-          'Heavy rain': '🌧️', 'Snow': '❄️', 'Blizzard': '🌨️', 'Thunder': '⛈️',
-          'Fog': '🌫️', 'Drizzle': '🌦️', 'Sleet': '🌨️',
-        };
-        const icon = Object.entries(iconMap).find(([k]) => condition?.includes(k))?.[1] ?? '🌤️';
-        setWeather({ temp, condition, icon, location: location || profile.zipCode || '' });
-      })
-      .catch(() => {})
-      .finally(() => setWeatherLoading(false));
-  }, [profile?.zipCode]);
+  // Weather (debounced via shared hook)
+  const { weather, loading: weatherLoading } = useWeather(profile?.zipCode);
 
   const prefersReduced = useReducedMotion();
 
@@ -824,53 +704,6 @@ export function Dashboard() {
         );
       }
 
-      case 'quick_actions': {
-        return (
-          <section className={`${GLASS_CARD} p-4 flex flex-col gap-3`} aria-label="Quick Actions">
-            <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest flex items-center gap-2">
-              <Zap className="w-4 h-4" aria-hidden="true" /> Quick Actions
-            </h2>
-            <div className="flex flex-col gap-3 flex-1">
-              {/* Emergency — full width */}
-              <button
-                onClick={() => setIsEmergencyOpen(true)}
-                className="w-full flex items-center justify-center gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-100 dark:border-rose-900/50 text-rose-700 dark:text-rose-400 motion-safe:transition-colors min-h-[56px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                title="Open emergency vet finder"
-              >
-                <ShieldAlert className="w-5 h-5" aria-hidden="true" />
-                <span className="text-sm font-semibold">Emergency Help</span>
-              </button>
-              {/* Three actions side by side */}
-              <div className="grid grid-cols-3 gap-2 flex-1">
-                <button
-                  onClick={() => setIsLostPetOpen(true)}
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-100 dark:border-amber-900/50 text-amber-700 dark:text-amber-400 motion-safe:transition-colors min-h-[80px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                  title="Report a lost pet"
-                >
-                  <SearchX className="w-5 h-5" aria-hidden="true" />
-                  <span className="text-xs font-semibold text-center leading-tight">Report Lost</span>
-                </button>
-                <button
-                  onClick={() => navigate('/messages')}
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-sky-50 dark:bg-sky-950/30 hover:bg-sky-100 dark:hover:bg-sky-900/40 border border-sky-100 dark:border-sky-900/50 text-sky-700 dark:text-sky-400 motion-safe:transition-colors min-h-[80px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                  title="Open messages"
-                >
-                  <MessageSquare className="w-5 h-5" aria-hidden="true" />
-                  <span className="text-xs font-semibold text-center leading-tight">Messages</span>
-                </button>
-                <button
-                  onClick={() => navigate('/search')}
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40 border border-violet-100 dark:border-violet-900/50 text-violet-700 dark:text-violet-400 motion-safe:transition-colors min-h-[80px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                  title="Find local pet services"
-                >
-                  <MapPin className="w-5 h-5" aria-hidden="true" />
-                  <span className="text-xs font-semibold text-center leading-tight">Nearby Vets</span>
-                </button>
-              </div>
-            </div>
-          </section>
-        );
-      }
 
       case 'upcoming': {
         return (
@@ -908,9 +741,9 @@ export function Dashboard() {
 
       case 'expenses': {
         return (
-          <section className="h-full bg-emerald-50/80 dark:bg-emerald-950/30 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-sm shadow-black/5 dark:shadow-black/20 overflow-hidden p-6" aria-label="Expenses">
+          <section className={`${GLASS_CARD} p-6`} aria-label="Expenses">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Expenses
               </h2>
               <span className="text-xl font-bold text-emerald-700 dark:text-emerald-300">${totalExpenses.toFixed(2)}</span>
@@ -1210,72 +1043,8 @@ export function Dashboard() {
         );
       }
 
-      case 'pet_health_pets': {
-        const displayPets = pets.slice(0, 6);
-        return (
-          <section className={`${GLASS_CARD} p-5`} aria-label="Pets & Health">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <span aria-hidden="true">🐾</span> Pets &amp; Health
-              </h2>
-              <Link to="/pets" className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">
-                View All →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {displayPets.map(pet => {
-                const vaccines = (pet as any).vaccines as { name: string; nextDueDate: string }[] | undefined;
-                const overdue = vaccines?.filter(v => getVaccineStatus(v.nextDueDate) === 'overdue').length ?? 0;
-                const dueSoon = vaccines?.filter(v => getVaccineStatus(v.nextDueDate) === 'due-soon').length ?? 0;
-                const allGood = overdue === 0 && dueSoon === 0;
-                return (
-                  <div key={pet.id} className="bg-white/60 dark:bg-neutral-700/60 rounded-xl p-3 border border-neutral-200/50 dark:border-neutral-600/50 flex flex-col gap-2">
-                    <Link to="/pets" state={{ editPetId: pet.id }} className="flex flex-col items-center gap-2 group">
-                      <img src={pet.image} alt={pet.name} width={112} height={112} className="w-28 h-28 rounded-xl object-cover shrink-0" referrerPolicy="no-referrer" />
-                      <div className="text-center min-w-0 w-full">
-                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{pet.name}</p>
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{pet.breed}</p>
-                        <div className="flex flex-wrap justify-center gap-1 mt-1">
-                          {pet.age && <span className="text-xs bg-neutral-100 dark:bg-neutral-700 px-1.5 py-0.5 rounded font-medium text-neutral-600 dark:text-neutral-300">{formatPetAge(pet.birthday, pet.age)}</span>}
-                          {pet.weight && <span className="text-xs bg-neutral-100 dark:bg-neutral-700 px-1.5 py-0.5 rounded font-medium text-neutral-600 dark:text-neutral-300">{pet.weight}</span>}
-                        </div>
-                      </div>
-                    </Link>
-                    <div className="flex justify-center">
-                      {overdue > 0 && <span className="text-xs bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 px-2 py-0.5 rounded-full font-medium">{overdue} overdue</span>}
-                      {overdue === 0 && dueSoon > 0 && <span className="text-xs bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">⚠ {dueSoon} due soon</span>}
-                      {allGood && <span className="text-xs bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">✓ Up to date</span>}
-                    </div>
-                    <div className="grid grid-cols-3 gap-1 pt-2 border-t border-neutral-100 dark:border-neutral-700">
-                      <Link to="/pets" state={{ editPetId: pet.id }} aria-label={`Edit ${pet.name}`} title="Edit" className="flex items-center justify-center p-2 rounded-lg bg-neutral-50 dark:bg-neutral-700/50 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 motion-safe:transition-colors min-h-[36px]">
-                        <Settings2 className="w-3.5 h-3.5" aria-hidden="true" />
-                      </Link>
-                      <Link to="/pets" state={{ openMedical: true, tab: 'meds', petId: pet.id }} aria-label={`Medications for ${pet.name}`} title="Meds" className="flex items-center justify-center p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 motion-safe:transition-colors min-h-[36px]">
-                        <Syringe className="w-3.5 h-3.5" aria-hidden="true" />
-                      </Link>
-                      <Link to="/cards" state={{ openCreateModal: true, petId: pet.id }} aria-label={`Pet card for ${pet.name}`} title="Card" className="flex items-center justify-center p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 motion-safe:transition-colors min-h-[36px]">
-                        <Heart className="w-3.5 h-3.5" aria-hidden="true" />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-neutral-50/80 dark:bg-neutral-700/50 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-xl p-3 flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 hover:text-emerald-600 hover:border-emerald-200 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 motion-safe:transition-colors min-h-[120px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-              >
-                <Plus className="w-5 h-5 mb-1" aria-hidden="true" />
-                <span className="text-xs font-medium">Add Pet</span>
-              </button>
-            </div>
-            {pets.length > 6 && (
-              <Link to="/pets" className="block text-xs text-center text-emerald-600 dark:text-emerald-400 font-medium hover:underline mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">
-                View all {pets.length} pets →
-              </Link>
-            )}
-          </section>
-        );
-      }
+      case 'pet_health_pets':
+        return <PetHealthPetsWidget pets={pets} onAddPet={() => setIsModalOpen(true)} />;
 
       case 'groups_activity': {
         const recentPosts = myGroups
@@ -1288,68 +1057,8 @@ export function Dashboard() {
           .filter(e => new Date(e.date) > new Date())
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
           .slice(0, 2);
-        return (
-          <section className={`${GLASS_CARD} p-5`} aria-label="Groups & Activity">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-violet-500" aria-hidden="true" /> Groups &amp; Activity
-            </h2>
-            <div className="flex gap-4 h-full">
-              {/* Left: My Groups */}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">My Groups</p>
-                {myGroups.length === 0 ? (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Join groups to see them here</p>
-                ) : (
-                  <div className="space-y-2">
-                    {myGroups.map(g => (
-                      <Link key={g.id} to={`/community/groups/${g.id}`} className="flex items-center gap-2 p-2 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
-                        <div className="w-8 h-8 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0 text-xs font-bold text-violet-700 dark:text-violet-300">
-                          {g.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{g.name}</p>
-                          <p className="text-xs text-neutral-400 dark:text-neutral-500">{Object.keys(g.members).length} members</p>
-                        </div>
-                        {g.tags?.[0] && <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 px-1.5 py-0.5 rounded-full shrink-0 hidden sm:block">{g.tags[0]}</span>}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {/* Right: Recent Activity */}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">Recent Activity</p>
-                {recentPosts.length > 0 ? (
-                  <div className="space-y-2 mb-3">
-                    {recentPosts.map(post => (
-                      <Link key={post.id} to={`/community/groups/${post.groupId}`} className="block p-2 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
-                        <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300 truncate">{post.groupName}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{post.content.slice(0, 60)}{post.content.length > 60 ? '…' : ''}</p>
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{new Date(post.createdAt).toLocaleDateString()}</p>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">No recent posts</p>
-                )}
-                {upcomingGroupEvents.length > 0 && (
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Upcoming Events</p>
-                    {upcomingGroupEvents.map(event => (
-                      <div key={event.id} className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
-                        <span aria-hidden="true">📅</span>
-                        <div className="min-w-0">
-                          <span className="font-medium truncate block">{event.title}</span>
-                          <span className="text-neutral-400 dark:text-neutral-500">{event.groupName} · {new Date(event.date).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        );
+        const groupSummaries = myGroups.map(g => ({ id: g.id, name: g.name, memberCount: Object.keys(g.members).length, firstTag: g.tags?.[0] }));
+        return <GroupsActivityWidget myGroups={groupSummaries} recentPosts={recentPosts} upcomingGroupEvents={upcomingGroupEvents} />;
       }
 
       case 'friends_activity': {
@@ -1364,142 +1073,11 @@ export function Dashboard() {
           user?.uid && g.members[user.uid] &&
           myFriendUids.some((uid: string) => g.members[uid])
         ).length;
-        return (
-          <section className={`${GLASS_CARD} p-5`} aria-label="Friends & Activity">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-pink-500" aria-hidden="true" /> Friends &amp; Activity
-            </h2>
-            <div className="flex gap-4">
-              {/* Left: My Friends */}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">My Friends</p>
-                {myFriends.length === 0 ? (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Add friends to see their activity here</p>
-                ) : (
-                  <div className="space-y-2">
-                    {myFriends.map(f => (
-                      <Link key={f.uid} to="/community" className="flex items-center gap-2 p-2 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
-                        {f.avatarUrl ? (
-                          <img src={f.avatarUrl} alt={f.displayName} width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0" />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center shrink-0 text-xs font-bold text-pink-700 dark:text-pink-300">
-                            {f.displayName?.charAt(0).toUpperCase() ?? '?'}
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{f.displayName}</p>
-                          {f.pets.length > 0 && <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{f.pets.map(p => `${p.count} ${p.type}`).join(', ')}</p>}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {/* Right: Friend Activity */}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">Friend Activity</p>
-                {friendEvents.length === 0 && myFriends.length === 0 ? (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Add friends to see their activity here</p>
-                ) : friendEvents.length === 0 ? (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">No friend events yet</p>
-                ) : (
-                  <div className="space-y-2 mb-3">
-                    {friendEvents.map(event => {
-                      const attendingFriend = myFriends.find(f => event.attendeeIds.includes(f.uid));
-                      return (
-                        <div key={event.id} className="text-xs text-neutral-600 dark:text-neutral-300 p-2 rounded-xl bg-neutral-50/80 dark:bg-neutral-700/40">
-                          <span aria-hidden="true">🐾 </span>
-                          <span className="font-medium">{attendingFriend?.displayName ?? 'A friend'}</span>
-                          {' is going to '}
-                          <span className="font-medium">{event.title}</span>
-                          {' — '}
-                          <span className="text-neutral-400">{new Date(event.date).toLocaleDateString()}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                {sharedGroupsCount > 0 && (
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
-                    You share <span className="font-semibold text-violet-600 dark:text-violet-400">{sharedGroupsCount}</span> group{sharedGroupsCount !== 1 ? 's' : ''} with friends
-                  </p>
-                )}
-              </div>
-            </div>
-          </section>
-        );
+        return <FriendsActivityWidget myFriends={myFriends} friendEvents={friendEvents} sharedGroupsCount={sharedGroupsCount} />;
       }
 
-      case 'today_reminders': {
-        const reminders = todayReminders;
-        return (
-          <section className={`${GLASS_CARD} p-5`} aria-label="Today's Reminders">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-sky-500" aria-hidden="true" /> Today's Reminders
-              </h2>
-            </div>
-            {reminders.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-6 text-center">
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">All caught up! No reminders today 🎉</p>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  {reminders.slice(0, 5).map((r, idx) => {
-                    if (r.type === 'vaccine') {
-                      return (
-                        <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40">
-                          <span className="text-base shrink-0" aria-hidden="true">💉</span>
-                          <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
-                            <span className="font-semibold">{r.petName}</span>
-                            {' — '}
-                            <span>{r.vaccineName}</span>
-                            {' due in '}
-                            <span className="font-medium text-amber-700 dark:text-amber-400">{r.daysUntilDue === 0 ? 'today' : `${r.daysUntilDue} day${r.daysUntilDue !== 1 ? 's' : ''}`}</span>
-                          </p>
-                        </div>
-                      );
-                    }
-                    if (r.type === 'vet') {
-                      return (
-                        <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200/60 dark:border-sky-800/40">
-                          <span className="text-base shrink-0" aria-hidden="true">🏥</span>
-                          <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
-                            <span className="font-semibold">{r.petName}</span>
-                            {' — vet appointment '}
-                            <span className="font-medium text-sky-700 dark:text-sky-400">{r.when}</span>
-                            {r.clinic && r.clinic !== 'Vet' && <span className="text-neutral-500 dark:text-neutral-400"> at {r.clinic}</span>}
-                          </p>
-                        </div>
-                      );
-                    }
-                    if (r.type === 'medication') {
-                      return (
-                        <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-violet-50/80 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40">
-                          <span className="text-base shrink-0" aria-hidden="true">💊</span>
-                          <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-snug">
-                            <span className="font-semibold">{r.petName}</span>
-                            {' — '}
-                            <span>{r.medName}</span>
-                            {r.frequency && <span className="text-neutral-500 dark:text-neutral-400"> ({r.frequency})</span>}
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-                </div>
-                {reminders.length > 5 && (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center mt-2">
-                    +{reminders.length - 5} more reminder{reminders.length - 5 !== 1 ? 's' : ''}
-                  </p>
-                )}
-              </>
-            )}
-          </section>
-        );
-      }
+      case 'today_reminders':
+        return <TodayRemindersWidget reminders={todayReminders} />;
 
       case 'streak_counter':
         return (
@@ -1674,7 +1252,7 @@ export function Dashboard() {
                 <div key={l.i} className="relative group">
                   {renderWidget(l.i as WidgetKey)}
                   {editMode && (
-                    <div className="absolute inset-0 z-10 rounded-2xl ring-2 ring-emerald-500/60 ring-offset-2 pointer-events-none motion-safe:animate-pulse">
+                    <div className="absolute inset-0 z-10 rounded-2xl ring-2 ring-emerald-300 ring-offset-2 opacity-75 pointer-events-none">
                       <div className="absolute top-0 inset-x-0 flex items-center gap-2 px-3 py-2 bg-neutral-900/90 dark:bg-neutral-950/90 backdrop-blur-sm rounded-t-2xl pointer-events-auto">
                         <div className="widget-drag-handle cursor-grab active:cursor-grabbing min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" aria-label={`Drag ${WIDGET_LABELS[l.i as WidgetKey]}`} title="Drag to reorder">
                           <GripVertical className="w-4 h-4" />
@@ -1755,7 +1333,7 @@ export function Dashboard() {
               </button>
               <button
                 onClick={saveEdit}
-                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
               >
                 Save
               </button>
@@ -1763,6 +1341,16 @@ export function Dashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Emergency FAB */}
+      <button
+        onClick={() => setIsEmergencyOpen(true)}
+        className={`fixed right-4 z-30 flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-2xl px-5 py-3 min-h-[44px] motion-safe:transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ring-offset-2 ring-offset-white dark:ring-offset-neutral-950 ${editMode ? 'bottom-36 md:bottom-20' : 'bottom-20 md:bottom-6'}`}
+        aria-label="Emergency"
+      >
+        <ShieldAlert className="w-5 h-5" aria-hidden="true" />
+        <span className="font-semibold text-sm hidden sm:inline">Emergency</span>
+      </button>
 
       <React.Suspense fallback={<div className="flex items-center justify-center h-32"><div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>}>
         <PetFormModal
@@ -1778,10 +1366,13 @@ export function Dashboard() {
       </React.Suspense>
       <AnimatePresence>
         {isEmergencyOpen && (
-          <EmergencyModal
-            onClose={() => setIsEmergencyOpen(false)}
-            onFindVet={() => navigate('/search?tab=services&filters=Emergency,24%2F7')}
-          />
+          <React.Suspense fallback={null}>
+            <EmergencyModal
+              onClose={() => setIsEmergencyOpen(false)}
+              onFindVet={() => navigate('/search?tab=services&filters=Emergency,24%2F7')}
+              onReportLost={() => setIsLostPetOpen(true)}
+            />
+          </React.Suspense>
         )}
         {isLostPetOpen && (
           <React.Suspense fallback={null}>

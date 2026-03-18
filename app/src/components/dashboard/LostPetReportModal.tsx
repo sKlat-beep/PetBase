@@ -131,7 +131,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder={`Help others identify ${selectedPet?.name ?? 'your pet'}:\n• When was ${selectedPet?.name ?? 'they'} last seen? (date, time, location)\n• What were they wearing? (collar color, tags)\n• What were they doing when last seen?\n• Any distinctive markings or behaviors?\n• Your contact info (optional)`}
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
             </>
@@ -207,7 +207,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
               type="button"
               disabled={!selectedPetId}
               onClick={() => setStep(2)}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50 disabled:cursor-not-allowed motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50 disabled:cursor-not-allowed motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
             >
               Next <ChevronRight className="w-4 h-4" />
             </button>
@@ -216,7 +216,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
               type="button"
               disabled={saving}
               onClick={handleSubmit}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
             >
               {saving ? 'Reporting…' : 'Report Lost Pet'}
             </button>

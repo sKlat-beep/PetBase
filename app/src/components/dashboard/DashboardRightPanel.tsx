@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, MessageSquare, MapPin, ShieldAlert, Calendar, Zap, TriangleAlert } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { ShieldAlert, Calendar, MapPin, TriangleAlert } from 'lucide-react';
+import { Link } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePets } from '../../contexts/PetContext';
 import { useCommunity } from '../../contexts/CommunityContext';
@@ -8,22 +8,20 @@ import { getActiveLostPets, type LostPetAlert } from '../../utils/lostPetsApi';
 import { LostPetBanner } from '../LostPetBanner';
 import { CollapsiblePanelWidget } from '../layout/CollapsiblePanelWidget';
 import { useSafetyAlerts, CATEGORY_COLORS, CATEGORY_LABELS } from '../../contexts/SafetyAlertsContext';
+import { useWeather } from '../../hooks/useWeather';
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 
 interface DashboardRightPanelProps {
-  onAddPet: () => void;
-  onEmergency: () => void;
   onCalendar: () => void;
 }
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
-export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: DashboardRightPanelProps) {
+export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
   const { profile } = useAuth();
   const { pets } = usePets();
   const { groups } = useCommunity();
-  const navigate = useNavigate();
 
   // Safety alerts
   const { alerts: safetyAlerts } = useSafetyAlerts();
@@ -36,29 +34,8 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
     try { localStorage.setItem(SEEN_KEY, String(Date.now())); } catch {}
   };
 
-  // Weather
-  const [weather, setWeather] = useState<{ temp: string; condition: string; icon: string; location: string } | null>(null);
-  const [weatherLoading, setWeatherLoading] = useState(false);
-
-  useEffect(() => {
-    if (!profile?.zipCode) return;
-    setWeatherLoading(true);
-    fetch(`https://wttr.in/${encodeURIComponent(profile.zipCode)}?format=%l|%C|%t|%f`)
-      .then(r => r.text())
-      .then(text => {
-        const [location, condition, temp] = text.split('|').map(s => s.trim());
-        const iconMap: Record<string, string> = {
-          'Sunny': '☀️', 'Clear': '🌙', 'Partly cloudy': '⛅', 'Cloudy': '☁️',
-          'Overcast': '☁️', 'Mist': '🌫️', 'Rain': '🌧️', 'Light rain': '🌦️',
-          'Heavy rain': '🌧️', 'Snow': '❄️', 'Blizzard': '🌨️', 'Thunder': '⛈️',
-          'Fog': '🌫️', 'Drizzle': '🌦️', 'Sleet': '🌨️',
-        };
-        const icon = Object.entries(iconMap).find(([k]) => condition?.includes(k))?.[1] ?? '🌤️';
-        setWeather({ temp, condition, icon, location: location || (profile.zipCode ?? '') });
-      })
-      .catch(() => {})
-      .finally(() => setWeatherLoading(false));
-  }, [profile?.zipCode]);
+  // Weather (debounced via shared hook)
+  const { weather, loading: weatherLoading } = useWeather(profile?.zipCode);
 
   // Lost pet
   const [lostPet, setLostPet] = useState<LostPetAlert | null>(null);
@@ -90,45 +67,7 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
 
   return (
     <>
-      {/* 1. Quick Actions */}
-      <CollapsiblePanelWidget id="dash-quick-actions" title="Quick Actions" icon={<Zap className="w-3 h-3" />}>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={onAddPet}
-            title="Add Pet"
-            aria-label="Add Pet"
-            className="flex items-center justify-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400 motion-safe:transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-          >
-            <Plus className="w-4 h-4" aria-hidden="true" />
-          </button>
-          <button
-            onClick={() => navigate('/messages')}
-            title="Messages"
-            aria-label="Messages"
-            className="flex items-center justify-center p-2 rounded-xl bg-sky-50 dark:bg-sky-950/30 hover:bg-sky-100 dark:hover:bg-sky-900/40 border border-sky-100 dark:border-sky-900/50 text-sky-700 dark:text-sky-400 motion-safe:transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-          >
-            <MessageSquare className="w-4 h-4" aria-hidden="true" />
-          </button>
-          <button
-            onClick={() => navigate('/search')}
-            title="Find Services"
-            aria-label="Find Services"
-            className="flex items-center justify-center p-2 rounded-xl bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40 border border-violet-100 dark:border-violet-900/50 text-violet-700 dark:text-violet-400 motion-safe:transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-          >
-            <MapPin className="w-4 h-4" aria-hidden="true" />
-          </button>
-          <button
-            onClick={onEmergency}
-            title="Emergency"
-            aria-label="Emergency"
-            className="flex items-center justify-center p-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-100 dark:border-rose-900/50 text-rose-700 dark:text-rose-400 motion-safe:transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-          >
-            <ShieldAlert className="w-4 h-4" aria-hidden="true" />
-          </button>
-        </div>
-      </CollapsiblePanelWidget>
-
-      {/* 2. Lost Pet Alert — only when active */}
+      {/* 1. Lost Pet Alert — only when active */}
       {lostPet && (
         <CollapsiblePanelWidget id="dash-lost-pet" title="Lost Pet Alert" icon={<ShieldAlert className="w-3 h-3" />}>
           <LostPetBanner lostPet={lostPet} />
@@ -202,7 +141,7 @@ export function DashboardRightPanel({ onAddPet, onEmergency, onCalendar }: Dashb
         )}
         <button
           onClick={onCalendar}
-          className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded mt-1"
+          className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded mt-1 min-h-[44px] inline-flex items-center"
         >
           View Calendar
         </button>

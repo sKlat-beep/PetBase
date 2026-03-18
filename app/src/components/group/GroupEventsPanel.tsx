@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CalendarDays, Calendar, MapPin, Plus, Trash2, UserCheck, Repeat2, MessageSquare } from 'lucide-react';
 import EventDiscussion from '../community/EventDiscussion';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
-import type { GroupEvent } from '../../contexts/CommunityContext';
+import type { GroupEvent, CommunityRole } from '../../contexts/CommunityContext';
 
 interface GroupEventsPanelProps {
   group: { id: string };
   upcomingEvents: GroupEvent[];
   canManageEvents: boolean;
-  userRole: string | null;
+  userRole: CommunityRole | null;
   currentUserUid: string;
   onCreateEvent: (e: React.FormEvent, form: { title: string; date: string; location: string; description: string; recurring: boolean }) => Promise<void>;
   onRsvpEvent: (groupId: string, eventId: string, going: boolean) => void;

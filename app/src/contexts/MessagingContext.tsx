@@ -42,7 +42,7 @@ interface MessagingContextValue {
 const MessagingContext = createContext<MessagingContextValue | null>(null);
 
 export function MessagingProvider({ children }: { children: ReactNode }) {
-  const { user, profile } = useAuth();
+  const { user, profile, updateProfile } = useAuth();
   const { isBlocked } = useSocial();
   const isBlockedRef = useRef(isBlocked);
   useEffect(() => { isBlockedRef.current = isBlocked; }, [isBlocked]);
@@ -192,9 +192,7 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
       ? current.filter(id => id !== threadId)
       : [...current, threadId];
     // Persist via AuthContext's updateProfile (writes to Firestore + local)
-    import('../lib/firestoreService').then(({ updateProfile }) =>
-      updateProfile(user.uid, { pinnedConversations: next } as any).catch(() => {})
-    );
+    updateProfile({ pinnedConversations: next } as any).catch(() => {});
   }, [user, profile]);
 
   // Sort conversations: pinned first

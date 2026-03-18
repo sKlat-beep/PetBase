@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { formatPetAge } from '../lib/petAge';
-import { Activity, Calendar, MapPin, Plus, ShieldAlert, Syringe, DollarSign, Eye, EyeOff, Users, GripVertical, ChevronLeft, ChevronRight, LayoutDashboard, Settings2, RotateCcw, Pencil } from 'lucide-react';
+import { Calendar, Plus, ShieldAlert, DollarSign, Eye, EyeOff, GripVertical, LayoutDashboard, RotateCcw, Pencil } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import GridLayout, { type Layout, type LayoutItem, type ResizeHandleAxis } from 'react-grid-layout';
@@ -10,15 +9,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePets } from '../contexts/PetContext';
 import { useCommunity } from '../contexts/CommunityContext';
 import { useExpenses } from '../contexts/ExpenseContext';
-import type { Pet } from '../contexts/PetContext';
-import { searchServices, type ServiceResult } from '../utils/serviceApi';
 import { GettingStartedGuide } from '../components/GettingStartedGuide';
 import { RecommendationBanner } from '../components/RecommendationBanner';
 import { useRightPanel } from '../contexts/RightPanelContext';
 import { Confetti, useCelebration } from '../components/ui/Confetti';
 import { getStreakData } from '../utils/streaks';
 import { ExpenseChart } from '../components/dashboard/ExpenseChart';
-import { useWeather } from '../hooks/useWeather';
 import { PetHealthPetsWidget } from '../components/dashboard/widgets/PetHealthPetsWidget';
 import { GroupsActivityWidget } from '../components/dashboard/widgets/GroupsActivityWidget';
 import { FriendsActivityWidget } from '../components/dashboard/widgets/FriendsActivityWidget';
@@ -38,7 +34,6 @@ const LostPetReportModal = React.lazy(() =>
   import('../components/dashboard/LostPetReportModal')
 );
 import { useSocial } from '../contexts/SocialContext';
-import { getVaccineStatus } from '../components/MedicalRecordsModal';
 import { saveDashboardLayout, loadDashboardLayout, type DashboardLayoutItem } from '../lib/firestoreService';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -48,17 +43,7 @@ const LAYOUT_KEY = 'petbase-dashboard-layout-v3';
 const HIDDEN_KEY = 'petbase-dashboard-hidden-v3';
 
 type WidgetKey =
-  | 'pet_health'
-  | 'pet_of_day'
-  | 'weather'
-  | 'your_pets'
-
-  | 'upcoming'
   | 'expenses'
-  | 'groups'
-  | 'friends'
-  | 'services'
-  // v3 combined widgets
   | 'pet_health_pets'
   | 'groups_activity'
   | 'friends_activity'
@@ -66,16 +51,7 @@ type WidgetKey =
   | 'streak_counter';
 
 const WIDGET_LABELS: Record<WidgetKey, string> = {
-  pet_health: 'Pet Health Summary',
-  pet_of_day: 'Pet of the Day',
-  weather: 'Weather',
-  your_pets: 'Your Pets',
-
-  upcoming: 'Upcoming Events',
   expenses: 'Expenses',
-  groups: 'My Groups',
-  friends: 'Friends',
-  services: 'Local Services',
   pet_health_pets: 'Pets & Health',
   groups_activity: 'Groups & Activity',
   friends_activity: 'Friends & Activity',
@@ -84,16 +60,7 @@ const WIDGET_LABELS: Record<WidgetKey, string> = {
 };
 
 const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
-  pet_health: { minW: 3, minH: 3 },
-  pet_of_day: { minW: 2, minH: 3 },
-  weather: { minW: 2, minH: 2 },
-  your_pets: { minW: 3, minH: 3 },
-
-  upcoming: { minW: 2, minH: 3 },
   expenses: { minW: 2, minH: 3 },
-  groups: { minW: 2, minH: 3 },
-  friends: { minW: 2, minH: 2 },
-  services: { minW: 3, minH: 3 },
   pet_health_pets: { minW: 3, minH: 2 },
   groups_activity: { minW: 4, minH: 4 },
   friends_activity: { minW: 4, minH: 4 },
@@ -106,8 +73,7 @@ const DEFAULT_LAYOUT: LayoutItem[] = [
   { i: 'today_reminders',  x: 0,  y: 5,  w: 12, h: 3 },
   { i: 'groups_activity',  x: 0,  y: 8,  w: 6,  h: 5 },
   { i: 'friends_activity', x: 6,  y: 8,  w: 6,  h: 5 },
-  { i: 'expenses',         x: 0,  y: 13, w: 4,  h: 4 },
-  { i: 'services',         x: 4,  y: 13, w: 8,  h: 4 },
+  { i: 'expenses',         x: 0,  y: 13, w: 12, h: 4 },
 ];
 
 interface WidgetSnapConfig {
@@ -117,15 +83,10 @@ interface WidgetSnapConfig {
 }
 
 const WIDGET_SNAP: Partial<Record<WidgetKey, WidgetSnapConfig>> = {
-  pet_health:      { itemHeight: 60,  minItems: 1, padding: 72 },
   pet_health_pets: { itemHeight: 160, minItems: 1, padding: 72 },
   groups_activity: { itemHeight: 56,  minItems: 1, padding: 80 },
   friends_activity:{ itemHeight: 56,  minItems: 1, padding: 80 },
-  groups:          { itemHeight: 56,  minItems: 1, padding: 72 },
-  friends:         { itemHeight: 56,  minItems: 1, padding: 72 },
-  upcoming:        { itemHeight: 72,  minItems: 1, padding: 80 },
   expenses:        { itemHeight: 64,  minItems: 1, padding: 96 },
-  services:        { itemHeight: 120, minItems: 1, padding: 120 },
 };
 
 function addMinSizes(l: LayoutItem): LayoutItem {
@@ -275,7 +236,9 @@ export function Dashboard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
 
-  const visibleLayout = layout.filter(l => !hiddenWidgets.has(l.i as WidgetKey));
+  const visibleLayout = layout.filter(l =>
+    !hiddenWidgets.has(l.i as WidgetKey) && (l.i as WidgetKey) in WIDGET_LABELS
+  );
 
   // Drag-only position updates (no resize)
   const handleLayoutChange = useCallback((newLayout: Layout) => {
@@ -517,25 +480,6 @@ export function Dashboard() {
     return () => setContent(null);
   }, [setContent]);
 
-  // Services
-  const SERVICE_CATS = ['Vets', 'Groomers', 'Sitters', 'Walkers', 'Trainers'] as const;
-  const [serviceCatIdx, setServiceCatIdx] = useState(0);
-  const [topService, setTopService] = useState<ServiceResult | null>(null);
-  const petTypesKey = useMemo(
-    () => [...new Set(pets.map(p => p.type ?? 'Dog'))].sort().join(','),
-    [pets]
-  );
-
-  useEffect(() => {
-    if (!profile?.zipCode) return;
-    const petTypesQuery = petTypesKey ? petTypesKey.split(',') : ['Dog'];
-    searchServices({ query: '', location: profile.zipCode, type: 'Vets', petTypesQuery })
-      .then(res => { if (res.length > 0) setTopService(res[0]); });
-  }, [profile?.zipCode, petTypesKey]);
-
-  // Weather (debounced via shared hook)
-  const { weather, loading: weatherLoading } = useWeather(profile?.zipCode);
-
   const prefersReduced = useReducedMotion();
 
   const GLASS_CARD = 'h-full bg-white/75 dark:bg-neutral-800/75 backdrop-blur-xl rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-sm shadow-black/5 dark:shadow-black/20 overflow-hidden';
@@ -544,200 +488,6 @@ export function Dashboard() {
 
   function renderWidget(key: WidgetKey): React.ReactNode {
     switch (key) {
-
-      case 'pet_health': {
-        return (
-          <section className={`${GLASS_CARD} p-5`} aria-label="Pet Health Summary">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <Syringe className="w-5 h-5 text-emerald-500" aria-hidden="true" /> Pet Health
-              </h2>
-              <Link to="/pets" className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View all</Link>
-            </div>
-            {pets.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-6 text-center">
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">No pets added yet.</p>
-                <button onClick={() => setIsModalOpen(true)} className="text-sm text-emerald-600 dark:text-emerald-400 font-medium hover:underline min-h-[44px] px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Add your first pet</button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {pets.slice(0, 4).map(pet => {
-                  const vaccines = (pet as any).vaccines as { name: string; nextDueDate: string }[] | undefined;
-                  const overdue = vaccines?.filter(v => getVaccineStatus(v.nextDueDate) === 'overdue').length ?? 0;
-                  const dueSoon = vaccines?.filter(v => getVaccineStatus(v.nextDueDate) === 'due-soon').length ?? 0;
-                  const allGood = overdue === 0 && dueSoon === 0;
-                  return (
-                    <Link key={pet.id} to="/pets" state={{ editPetId: pet.id }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
-                      {/* pet.image is resolved via PetContext token pipeline */}
-                      <img src={pet.image} alt={pet.name} width={80} height={80} className="w-20 h-20 rounded-xl object-cover shrink-0" referrerPolicy="no-referrer" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{pet.name}</p>
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{pet.breed}</p>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        {overdue > 0 && <span className="text-xs bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 px-2 py-0.5 rounded-full font-medium">{overdue} overdue</span>}
-                        {dueSoon > 0 && <span className="text-xs bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">{dueSoon} due soon</span>}
-                        {allGood && <span className="text-xs bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">Up to date</span>}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      case 'pet_of_day': {
-        const dayIndex = pets.length > 0
-          ? Math.floor(Date.now() / 86400000) % pets.length
-          : -1;
-        const featuredPet = dayIndex >= 0 ? pets[dayIndex] : null;
-        return (
-          <section className={`${GLASS_CARD} p-5 flex flex-col`} aria-label="Pet of the Day">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <span aria-hidden="true">🌟</span> Pet of the Day
-              </h2>
-            </div>
-            {!featuredPet ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center py-4">
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">Add pets to see your daily feature.</p>
-                <button onClick={() => setIsModalOpen(true)} className="text-sm text-emerald-600 dark:text-emerald-400 font-medium hover:underline min-h-[44px] px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Add a pet</button>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center gap-3">
-                <img src={featuredPet.image} alt={featuredPet.name} width={96} height={96} className="w-24 h-24 rounded-2xl object-cover shadow-md shadow-black/10" referrerPolicy="no-referrer" />
-                <div className="text-center">
-                  <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{featuredPet.name}</p>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{featuredPet.breed}</p>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2 mt-1">
-                  {featuredPet.age && <span className="text-xs bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full font-medium">{formatPetAge(featuredPet.birthday, featuredPet.age)}</span>}
-                  {featuredPet.weight && <span className="text-xs bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 px-3 py-1 rounded-full font-medium">{featuredPet.weight}</span>}
-                  {(featuredPet as any).color && <span className="text-xs bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 px-3 py-1 rounded-full font-medium">{(featuredPet as any).color}</span>}
-                </div>
-                <Link to="/pets" state={{ editPetId: featuredPet.id }} className="mt-auto text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View full profile →</Link>
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      case 'weather': {
-        return (
-          <section className={`${GLASS_CARD} p-5 flex flex-col`} aria-label="Weather">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-emerald-500" aria-hidden="true" /> Weather
-              </h2>
-              {weather && <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate max-w-[120px]">{weather.location}</p>}
-            </div>
-            {!profile?.zipCode ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center">
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-2">Set your location in Settings to see local weather.</p>
-                <Link to="/settings" className="text-sm text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Go to Settings</Link>
-              </div>
-            ) : weatherLoading ? (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="w-6 h-6 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
-              </div>
-            ) : weather ? (
-              <div className="flex-1 flex flex-col items-center justify-center gap-2">
-                <span className="text-5xl" role="img" aria-label={weather.condition}>{weather.icon}</span>
-                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{weather.temp}</p>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">{weather.condition}</p>
-              </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-sm text-neutral-400 dark:text-neutral-500">Weather unavailable</p>
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      case 'your_pets': {
-        const previewPets = pets.slice(0, 2);
-        return (
-          <section className={`${GLASS_CARD} p-6`} aria-label="Your Pets">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Your Pets</h2>
-              <Link to="/pets" className="text-emerald-600 dark:text-emerald-400 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View All</Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {previewPets.map((pet: Pet) => (
-                <div key={pet.id} className="bg-white/60 dark:bg-neutral-700/60 rounded-xl p-4 border border-neutral-200/50 dark:border-neutral-600/50 flex flex-col gap-4">
-                  <Link to="/pets" state={{ editPetId: pet.id }} className="flex items-center gap-4 group cursor-pointer">
-                    <img src={pet.image} alt={pet.name} width={128} height={128} className="w-32 h-32 rounded-xl object-cover" referrerPolicy="no-referrer" />
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg text-neutral-900 dark:text-neutral-100 group-hover:text-emerald-600 motion-safe:transition-colors">{pet.name}</h3>
-                      <p className="text-sm text-neutral-500 dark:text-neutral-400">{pet.breed}</p>
-                      <div className="flex items-center gap-2 mt-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                        {pet.age && <span className="bg-neutral-100 dark:bg-neutral-700 px-2 py-0.5 rounded select-none">{formatPetAge(pet.birthday, pet.age)}</span>}
-                        {pet.weight && <span className="bg-neutral-100 dark:bg-neutral-700 px-2 py-0.5 rounded select-none">{pet.weight}</span>}
-                      </div>
-                    </div>
-                  </Link>
-                  <div className="grid grid-cols-3 gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-700">
-                    <Link to="/pets" state={{ editPetId: pet.id }} aria-label={`Edit ${pet.name}`} className="flex flex-col items-center justify-center p-2 rounded-xl bg-neutral-50 dark:bg-neutral-700/50 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 motion-safe:transition-colors min-h-[44px]">
-                      <Settings2 className="w-4 h-4 mb-1" aria-hidden="true" />
-                      <span className="text-xs font-semibold uppercase tracking-wide">Edit</span>
-                    </Link>
-                    <Link to="/pets" state={{ openMedical: true, tab: 'meds', petId: pet.id }} aria-label={`Medications for ${pet.name}`} className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 motion-safe:transition-colors min-h-[44px]">
-                      <Syringe className="w-4 h-4 mb-1" aria-hidden="true" />
-                      <span className="text-xs font-semibold uppercase tracking-wide">Meds</span>
-                    </Link>
-                    <Link to="/cards" state={{ openCreateModal: true, petId: pet.id }} aria-label={`Pet card for ${pet.name}`} className="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 motion-safe:transition-colors min-h-[44px]">
-                      <ShieldAlert className="w-4 h-4 mb-1" aria-hidden="true" />
-                      <span className="text-xs font-semibold uppercase tracking-wide">Card</span>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-              <button onClick={() => setIsModalOpen(true)} className="bg-neutral-50/80 dark:bg-neutral-700/50 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-2xl p-4 flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:text-emerald-600 hover:border-emerald-200 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/30 motion-safe:transition-colors min-h-[112px]">
-                <Plus className="w-6 h-6 mb-2" />
-                <span className="font-medium text-sm">Add Pet</span>
-              </button>
-            </div>
-          </section>
-        );
-      }
-
-
-      case 'upcoming': {
-        return (
-          <section className={`${GLASS_CARD} p-6`} aria-label="Upcoming Events">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Upcoming</h2>
-              <Calendar className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
-            </div>
-            <div className="space-y-4">
-              {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
-                <div key={event.id} className="flex gap-4 items-start">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${event.bg} ${event.color}`}>
-                    <event.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-neutral-900 dark:text-neutral-100">{event.title}</h4>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400">{event.pet} • {event.date}</p>
-                  </div>
-                </div>
-              )) : (
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-4">
-                  No upcoming events. Join a community group to see RSVPs here.
-                </p>
-              )}
-            </div>
-            <button
-              onClick={() => setIsCalendarOpen(true)}
-              className="w-full mt-6 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-50/80 dark:bg-neutral-700/50 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg motion-safe:transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-            >
-              View Calendar
-            </button>
-          </section>
-        );
-      }
 
       case 'expenses': {
         return (
@@ -901,142 +651,6 @@ export function Dashboard() {
                 className="mt-3 px-3 py-2 bg-emerald-600 text-white text-xs font-medium rounded-lg text-center motion-safe:animate-pulse"
               >
                 {expenseToast}
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      case 'groups': {
-        return (
-          <section className={`${GLASS_CARD} p-6`} aria-label="My Groups">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <Users className="w-5 h-5 text-violet-500" aria-hidden="true" /> My Groups
-              </h2>
-              <Link to="/community" className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View All</Link>
-            </div>
-            {myGroups.length === 0 ? (
-              <div className="text-center py-6">
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">You haven't joined any groups yet.</p>
-                <Link to="/community" className="text-sm text-violet-600 dark:text-violet-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Browse groups</Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {myGroups.map(g => (
-                  <Link key={g.id} to={`/community/groups/${g.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors">
-                    <div className="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0 text-sm font-bold text-violet-700 dark:text-violet-300">
-                      {g.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{g.name}</p>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500">{Object.keys(g.members).length} member{Object.keys(g.members).length !== 1 ? 's' : ''}</p>
-                    </div>
-                    {g.tags?.[0] && <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full shrink-0">{g.tags[0]}</span>}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      case 'friends': {
-        return (
-          <section className={`${GLASS_CARD} p-6`} aria-label="Friends">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <Users className="w-5 h-5 text-pink-500" aria-hidden="true" /> Friends
-              </h2>
-              <Link to="/community" className="text-xs text-pink-600 dark:text-pink-400 hover:underline font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">View All</Link>
-            </div>
-            {myFriends.length === 0 ? (
-              <div className="text-center py-6">
-                <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">No friends added yet.</p>
-                <Link to="/community" className="text-sm text-pink-600 dark:text-pink-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Find people</Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {myFriends.map(f => (
-                  <Link key={f.uid} to="/community" className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 motion-safe:transition-colors">
-                    {f.avatarUrl ? (
-                      // avatarUrl resolved server-side before stored in SocialContext
-                      <img src={f.avatarUrl} alt={f.displayName} width={36} height={36} className="w-9 h-9 rounded-full object-cover shrink-0" />
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center shrink-0 text-sm font-bold text-pink-700 dark:text-pink-300">
-                        {f.displayName?.charAt(0).toUpperCase() ?? '?'}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{f.displayName}</p>
-                      {f.pets.length > 0 && <p className="text-xs text-neutral-400 dark:text-neutral-500">{f.pets.map(p => `${p.count} ${p.type}`).join(', ')}</p>}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      case 'services': {
-        return (
-          <section className={`${GLASS_CARD} p-6`} aria-label="Local Services">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Local Services for You</h2>
-              <Link to="/search" className="text-emerald-600 dark:text-emerald-400 font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">Find more</Link>
-            </div>
-            <div className="flex items-center gap-2 mb-4">
-              <button
-                onClick={() => setServiceCatIdx(i => (i - 1 + SERVICE_CATS.length) % SERVICE_CATS.length)}
-                aria-label="Previous category"
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 motion-safe:transition-colors shrink-0"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <div className="flex gap-2 flex-1 overflow-hidden">
-                {SERVICE_CATS.map((cat, i) => (
-                  <Link
-                    key={cat}
-                    to={`/search?type=${cat}`}
-                    className={`flex-none px-4 py-2 rounded-full text-sm font-medium motion-safe:transition-colors border ${i === serviceCatIdx
-                      ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-white/60 dark:bg-neutral-700/60 border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
-                      } ${Math.abs(i - serviceCatIdx) > 1 ? 'hidden sm:flex' : 'flex'}`}
-                  >
-                    {cat}
-                  </Link>
-                ))}
-              </div>
-              <button
-                onClick={() => setServiceCatIdx(i => (i + 1) % SERVICE_CATS.length)}
-                aria-label="Next category"
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 motion-safe:transition-colors shrink-0"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-            {topService ? (
-              <div className="bg-white/60 dark:bg-neutral-700/60 rounded-2xl p-6 border border-neutral-100/60 dark:border-neutral-600/60 relative overflow-hidden shadow-sm hover:shadow-md motion-safe:transition-shadow">
-                <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-                  <img src={topService.image} alt={topService.name} width={96} height={96} className="w-24 h-24 rounded-xl object-cover shadow-sm" referrerPolicy="no-referrer" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-md uppercase tracking-wider">Top Rated Near You</span>
-                    </div>
-                    <h3 className="font-bold text-lg text-neutral-900 dark:text-neutral-100">{topService.name}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                      <div className="flex items-center gap-1"><MapPin className="w-4 h-4 text-emerald-500" /><span>{topService.distance}</span></div>
-                      <div className="flex items-center gap-1"><Activity className="w-4 h-4 text-rose-400" /><span>{topService.type}</span></div>
-                    </div>
-                  </div>
-                  <Link to="/search" className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-medium text-sm motion-safe:transition-colors text-center w-full sm:w-auto shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">View Profile</Link>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-neutral-50/80 dark:bg-neutral-700/50 rounded-2xl p-6 border border-dashed border-neutral-200 dark:border-neutral-600 text-center text-neutral-500 dark:text-neutral-400">
-                <MapPin className="w-8 h-8 mx-auto mb-3 text-neutral-400" />
-                <p>Set your Zip Code in the Search page to see top-rated services near you.</p>
               </div>
             )}
           </section>

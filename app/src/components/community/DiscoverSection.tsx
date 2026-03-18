@@ -112,7 +112,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
           <div className="flex gap-1.5 overflow-x-auto scrollbar-hide mb-3">
             <button
               onClick={() => setCategoryFilter(null)}
-              className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
+              className={`px-2.5 py-1 min-h-[44px] text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
                 !categoryFilter ? 'bg-emerald-500 text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
               }`}
             >All</button>
@@ -120,7 +120,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
-                className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
+                className={`px-2.5 py-1 min-h-[44px] text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
                   categoryFilter === cat ? 'bg-emerald-500 text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
                 }`}
               >{cat}</button>

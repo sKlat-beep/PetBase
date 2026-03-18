@@ -1,12 +1,35 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Users, UserPlus, MessagesSquare, X } from 'lucide-react';
 import { CreateGroupModal } from '../CreateGroupModal';
 
+function scrollToSection(sectionId: string) {
+  const el = document.getElementById(sectionId);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
 export default function CommunityFAB() {
   const [open, setOpen] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const rafRef = useRef<number>(0);
+
+  const handleFindFriends = useCallback(() => {
+    setOpen(false);
+    scrollToSection('community-section-people');
+    // Wait for scroll to settle, then trigger search UI
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setTimeout(() => {
+        const searchBtn = document.querySelector<HTMLButtonElement>('[aria-label="Find people"]');
+        if (searchBtn) searchBtn.click();
+        setTimeout(() => {
+          const searchInput = document.getElementById('community-people-search');
+          if (searchInput) searchInput.focus();
+        }, 300);
+      }, 400);
+    });
+  }, []);
 
   const actions = [
     {
@@ -19,15 +42,7 @@ export default function CommunityFAB() {
       label: 'Find Friends',
       icon: UserPlus,
       color: 'bg-violet-600 hover:bg-violet-700 text-white',
-      onClick: () => {
-        setOpen(false);
-        document.getElementById('community-section-people')?.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => {
-          const searchBtn = document.querySelector<HTMLButtonElement>('[aria-label="Find people"]');
-          if (searchBtn) searchBtn.click();
-          setTimeout(() => document.getElementById('community-people-search')?.focus(), 300);
-        }, 500);
-      },
+      onClick: handleFindFriends,
     },
     {
       label: 'Post in a Group',
@@ -35,7 +50,7 @@ export default function CommunityFAB() {
       color: 'bg-sky-600 hover:bg-sky-700 text-white',
       onClick: () => {
         setOpen(false);
-        document.getElementById('community-section-groups')?.scrollIntoView({ behavior: 'smooth' });
+        scrollToSection('community-section-groups');
       },
     },
   ];

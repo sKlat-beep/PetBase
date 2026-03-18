@@ -66,7 +66,7 @@ export default function BuddyMatchSection() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+            className={`px-3 py-1.5 min-h-[44px] text-xs font-medium rounded-full transition-colors ${
               filter === f
                 ? 'bg-rose-500 text-white'
                 : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
@@ -118,7 +118,7 @@ export default function BuddyMatchSection() {
                     setSentRequests(prev => new Set([...prev, buddy.uid]));
                   }}
                   disabled={sentRequests.has(buddy.uid) || (profile?.friends ?? []).includes(buddy.uid)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-500 text-white hover:bg-rose-600 disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 min-h-[44px] text-xs font-medium rounded-lg bg-rose-500 text-white hover:bg-rose-600 disabled:opacity-40 transition-colors"
                 >
                   {(profile?.friends ?? []).includes(buddy.uid) ? 'Friends' : sentRequests.has(buddy.uid) ? 'Sent' : 'Connect'}
                 </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, PawPrint, Info, Heart, Stethoscope, Image as ImageIcon, Camera, ChevronLeft, ChevronRight, Save, HeartPulse, Phone, Copy, Eye, Images } from 'lucide-react';
+import { X, PawPrint, Info, Heart, Stethoscope, Image as ImageIcon, Camera, ChevronLeft, ChevronRight, Save, HeartPulse, Phone, Copy, Eye, Images, Lock, Check } from 'lucide-react';
 import type { Pet, EmergencyContacts } from '../types/pet';
 import { usePets } from '../contexts/PetContext';
 import { ImageCropperModal, getCroppedImg } from './ImageCropperModal';
@@ -642,6 +642,58 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                               </div>
                             </label>
                           </div>
+
+                          {/* Public Profile Fields — only visible when not private */}
+                          {!isPrivate && (
+                            <div className="pt-2 border-t border-neutral-200 dark:border-neutral-700/50">
+                              <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-1">Public Profile Fields</p>
+                              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">Choose which fields other users can see on your pet's public profile.</p>
+                              <div className="grid grid-cols-2 gap-1.5">
+                                {/* Always-public fields (disabled, checked) */}
+                                {['name', 'type', 'breed', 'age', 'image'].map(f => (
+                                  <label key={f} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-xs text-emerald-700 dark:text-emerald-400 opacity-70 cursor-default">
+                                    <Check className="w-3.5 h-3.5" />
+                                    <span className="capitalize">{f === 'image' ? 'Photo' : f}</span>
+                                  </label>
+                                ))}
+                                {/* Optional public fields */}
+                                {[
+                                  { key: 'weight', label: 'Weight' },
+                                  { key: 'food', label: 'Diet / Food' },
+                                  { key: 'likes', label: 'Likes' },
+                                  { key: 'dislikes', label: 'Dislikes' },
+                                  { key: 'favoriteActivities', label: 'Activities' },
+                                  { key: 'activity', label: 'Activity Level' },
+                                  { key: 'spayedNeutered', label: 'Spayed/Neutered' },
+                                ].map(({ key, label }) => (
+                                  <label key={key} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-neutral-50 dark:bg-neutral-700/40 text-xs text-neutral-700 dark:text-neutral-300 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-700/60 transition-colors">
+                                    <input
+                                      type="checkbox"
+                                      className="w-3.5 h-3.5 rounded border-neutral-300 dark:border-neutral-600 text-emerald-600 focus:ring-emerald-500"
+                                      checked={publicFields.includes(key)}
+                                      onChange={(e) => {
+                                        setPublicFields(prev => e.target.checked ? [...prev, key] : prev.filter(k => k !== key));
+                                        mark();
+                                      }}
+                                    />
+                                    {label}
+                                  </label>
+                                ))}
+                                {/* Never-public fields (disabled, locked) */}
+                                {[
+                                  { key: 'microchipId', label: 'Microchip ID' },
+                                  { key: 'notes', label: 'Notes' },
+                                  { key: 'emergencyContacts', label: 'Emergency Contacts' },
+                                  { key: 'medicalVisits', label: 'Medical Records' },
+                                ].map(({ key, label }) => (
+                                  <label key={key} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800/40 text-xs text-neutral-400 dark:text-neutral-500 cursor-default opacity-60">
+                                    <Lock className="w-3.5 h-3.5" />
+                                    {label}
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

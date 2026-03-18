@@ -3,6 +3,7 @@ import { Download, Share2 } from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import { formatPetAge } from '../../lib/petAge';
 import { canShare } from '../../utils/platform';
+import { downloadElementAsImage } from '../../utils/exportImage';
 
 interface PetSocialCardProps {
   pet: Pet;
@@ -18,30 +19,7 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
     if (!cardRef.current) return;
     setExporting(true);
     try {
-      // Dynamic import to avoid bundle bloat
-      const { default: html2canvas } = await import('html2canvas');
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: null,
-        width: 540,
-        height: 540,
-      });
-      const blob = await new Promise<Blob>((resolve) =>
-        canvas.toBlob(b => resolve(b!), 'image/png')
-      );
-
-      if (canShare() && navigator.share) {
-        const file = new File([blob], `${pet.name}-petbase.png`, { type: 'image/png' });
-        await navigator.share({ files: [file], title: `${pet.name} on PetBase` });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${pet.name}-petbase.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      await downloadElementAsImage(cardRef.current, `${pet.name}-petbase.png`);
     } catch {
       // Export failed silently
     } finally {

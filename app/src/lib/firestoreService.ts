@@ -331,11 +331,30 @@ export interface PublicPetSummary {
   breed: string;
   type?: string;
   avatarShape?: string;
+  image?: string;
+  age?: string;
+  weight?: string;
+  food?: string;
+  likes?: string[];
+  dislikes?: string[];
+  activity?: string;
+  spayedNeutered?: string;
+}
+
+/** Check if a field is public for this pet based on its publicFields array. */
+function isFieldPublic(data: Record<string, any>, fieldKey: string): boolean {
+  const alwaysPublic = ['name', 'type', 'breed', 'age', 'image'];
+  const neverPublic = ['microchipId', 'notes', 'emergencyContacts', 'medicalVisits'];
+  if (neverPublic.includes(fieldKey)) return false;
+  if (alwaysPublic.includes(fieldKey)) return true;
+  const publicFields: string[] = Array.isArray(data.publicFields) ? data.publicFields : [];
+  return publicFields.includes(fieldKey);
 }
 
 /**
  * Returns public (non-private) pets for a given user UID.
  * Only non-PII fields are returned — notes/medical records are never included.
+ * Respects per-field publicFields array for optional fields.
  * Requires Firestore rule: authenticated users may read any /users/{uid}/pets/{petId}.
  */
 export async function getPublicPetsForUser(uid: string): Promise<PublicPetSummary[]> {
@@ -344,13 +363,24 @@ export async function getPublicPetsForUser(uid: string): Promise<PublicPetSummar
   snap.forEach(d => {
     const data = d.data();
     if (data.isPrivate) return;
-    pets.push({
+    const summary: PublicPetSummary = {
       id: d.id,
       name: data.name ?? '',
       breed: data.breed ?? '',
       type: data.type,
       avatarShape: data.avatarShape,
-    });
+    };
+    // Always-public fields
+    if (data.image) summary.image = data.image;
+    if (data.age || data.birthday) summary.age = data.age ?? '';
+    // Optional fields — respect publicFields
+    if (isFieldPublic(data, 'weight') && data.weight) summary.weight = data.weight;
+    if (isFieldPublic(data, 'food') && data.food) summary.food = data.food;
+    if (isFieldPublic(data, 'likes') && data.likes?.length) summary.likes = data.likes;
+    if (isFieldPublic(data, 'dislikes') && data.dislikes?.length) summary.dislikes = data.dislikes;
+    if (isFieldPublic(data, 'activity') && data.activity) summary.activity = data.activity;
+    if (isFieldPublic(data, 'spayedNeutered') && data.spayedNeutered && data.spayedNeutered !== 'Unknown') summary.spayedNeutered = data.spayedNeutered;
+    pets.push(summary);
   });
   return pets;
 }

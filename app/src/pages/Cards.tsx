@@ -106,12 +106,43 @@ export function Cards() {
   const selectedCard = useMemo(() => cards.find(c => c.id === selectedCardId), [cards, selectedCardId]);
   const selectedPet = useMemo(() => selectedCard ? pets.find(p => p.id === selectedCard.petId) : undefined, [selectedCard, pets]);
 
+  // Auto-select first active card if none selected
+  useEffect(() => {
+    if (selectedCardId) return;
+    const firstActive = cards.find(c => getCardStatus(c) === 'active');
+    if (firstActive) setSelectedCardId(firstActive.id);
+  }, [cards, selectedCardId]);
+
+  /** Derived lists — used for header count badge and rendering. */
+  const activeCards = useMemo(() => cards.filter(c => getCardStatus(c) === 'active'), [cards]);
+  const inactiveCards = useMemo(() => cards.filter(c => getCardStatus(c) !== 'active').slice(0, MAX_INACTIVE_CARDS), [cards]);
+
   /** Set of card IDs whose pet data has changed since the snapshot was taken. */
   const staleCardIds = useMemo(() => {
     const ids = new Set<string>();
-    cards.filter(c => getCardStatus(c) === 'active' && c.petId !== 'multi-pet' && c.petId !== 'all-pets').forEach(c => {
-      const pet = pets.find(p => p.id === c.petId);
-      if (pet && isPetDataStale(c, pet)) ids.add(c.id);
+    cards.filter(c => getCardStatus(c) === 'active').forEach(c => {
+      if (c.petId === 'multi-pet' && c.multiPetConfig) {
+        // Check each pet in multi-pet config
+        for (const cfg of c.multiPetConfig) {
+          const pet = pets.find(p => p.id === cfg.petId);
+          if (pet && isPetDataStale({ ...c, petSnapshot: cfg.petSnapshot } as PetCard, pet)) {
+            ids.add(c.id);
+            break;
+          }
+        }
+      } else if (c.petId === 'all-pets') {
+        // Check all non-private pets
+        for (const pet of pets.filter(p => !p.isPrivate)) {
+          const cfg = c.multiPetConfig?.find(mc => mc.petId === pet.id);
+          if (cfg && isPetDataStale({ ...c, petSnapshot: cfg.petSnapshot } as PetCard, pet)) {
+            ids.add(c.id);
+            break;
+          }
+        }
+      } else {
+        const pet = pets.find(p => p.id === c.petId);
+        if (pet && isPetDataStale(c, pet)) ids.add(c.id);
+      }
     });
     return ids;
   }, [cards, pets]);
@@ -250,23 +281,48 @@ export function Cards() {
     updatePublicCardStatusWithTimestamp(cardId, 'active').catch(() => { });
   };
 
-  /** Rebuild the petSnapshot for a single card using current pet data, then re-sync to Firestore. */
+  /** Rebuild the petSnapshot for a card using current pet data, then re-sync to Firestore. */
   const handleUpdateCard = useCallback((cardId: string) => {
     const card = cards.find(c => c.id === cardId);
-    if (!card || card.petId === 'multi-pet' || card.petId === 'all-pets') return;
+    if (!card || !user) return;
+
+    if (card.petId === 'multi-pet' || card.petId === 'all-pets') {
+      // Rebuild snapshots for each pet in the config
+      const configList = card.petId === 'all-pets'
+        ? pets.filter(p => !p.isPrivate).map(p => ({ petId: p.id, sharing: card.sharing }))
+        : card.multiPetConfig ?? [];
+      const updatedConfig = configList.map(cfg => {
+        const p = pets.find(x => x.id === cfg.petId);
+        if (!p) return cfg;
+        return { ...cfg, petSnapshot: buildPetSnapshot(p, cfg.sharing, false, '', user.uid) };
+      });
+      const updated: PetCard = { ...card, multiPetConfig: updatedConfig };
+      setCards(prev => prev.map(c => c.id === cardId ? updated : c));
+      savePublicCard({
+        id: updated.id, ownerId: user.uid, petId: updated.petId, template: updated.template,
+        sharing: updated.sharing as unknown as Record<string, boolean>,
+        expiresAt: updated.expiresAt, status: 'active', createdAt: updated.createdAt,
+        includeGeneralInfo: updated.includeGeneralInfo, fieldOrder: updated.fieldOrder,
+        multiPetConfig: updatedConfig.map(cfg => ({
+          petId: cfg.petId,
+          sharing: cfg.sharing as unknown as Record<string, boolean>,
+          petSnapshot: (cfg as any).petSnapshot,
+        })),
+      } as any).catch(err => console.warn('Failed to update card snapshot:', err));
+      return;
+    }
+
     const pet = pets.find(p => p.id === card.petId);
-    if (!pet || !user) return;
+    if (!pet) return;
     const snapshot = buildPetSnapshot(pet, card.sharing, card.includeGeneralInfo ?? false, generalInfo, user.uid);
     const updated: PetCard = { ...card, petSnapshot: snapshot };
     setCards(prev => prev.map(c => c.id === cardId ? updated : c));
-    // Firestore boundary: PublicCardDoc.sharing is Record<string,boolean>
     savePublicCard({
       id: updated.id, ownerId: user.uid, petId: updated.petId, template: updated.template,
       sharing: updated.sharing as unknown as Record<string, boolean>,
       expiresAt: updated.expiresAt, status: updated.status as 'active',
       createdAt: updated.createdAt, includeGeneralInfo: updated.includeGeneralInfo,
-      petSnapshot: snapshot,
-      fieldOrder: updated.fieldOrder,
+      petSnapshot: snapshot, fieldOrder: updated.fieldOrder,
     } as any).catch(err => console.warn('Failed to update card snapshot:', err));
   }, [cards, pets, user, generalInfo]);
 
@@ -331,7 +387,9 @@ export function Cards() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">Pet Cards</h1>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+            Pet Cards{activeCards.length > 0 && <span className="ml-2 text-lg font-medium text-neutral-400">({activeCards.length})</span>}
+          </h1>
           <p className="text-neutral-500 dark:text-neutral-400 mt-1">Shareable profiles for sitters, walkers, and emergencies.</p>
         </div>
         {canCreateRevokePetCards && (
@@ -355,41 +413,43 @@ export function Cards() {
         )}
       </header>
 
-      {/* Household Information Block */}
-      <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-100 dark:border-neutral-700 shadow-sm">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-neutral-400" />
-            <h2 className="font-semibold text-neutral-800 dark:text-neutral-200 text-sm">Household Information</h2>
+      {/* Household Information Block — hidden when no cards and no info */}
+      {(cards.length > 0 || generalInfo) && (
+        <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-100 dark:border-neutral-700 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-neutral-400" />
+              <h2 className="font-semibold text-neutral-800 dark:text-neutral-200 text-sm">Household Information</h2>
+            </div>
+            <button
+              onClick={() => {
+                if (editingGeneralInfo) {
+                  localStorage.setItem(GENERAL_INFO_KEY, generalInfo);
+                }
+                setEditingGeneralInfo(v => !v);
+              }}
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+            >
+              {editingGeneralInfo ? 'Save' : 'Edit'}
+            </button>
           </div>
-          <button
-            onClick={() => {
-              if (editingGeneralInfo) {
-                localStorage.setItem(GENERAL_INFO_KEY, generalInfo);
-              }
-              setEditingGeneralInfo(v => !v);
-            }}
-            className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
-          >
-            {editingGeneralInfo ? 'Save' : 'Edit'}
-          </button>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">Household-level notes included when you opt in at card creation (gate codes, bowl ownership, etc.)</p>
+          {editingGeneralInfo ? (
+            <textarea
+              value={generalInfo}
+              onChange={e => setGeneralInfo(e.target.value)}
+              rows={4}
+              maxLength={1000}
+              placeholder="e.g. Gate code: 1234. Max's bowl is blue, Bella's is pink."
+              className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+            />
+          ) : (
+            <p className="text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap break-words">
+              {generalInfo || <span className="text-neutral-400 italic">No household information set.</span>}
+            </p>
+          )}
         </div>
-        <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">Household-level notes included when you opt in at card creation (gate codes, bowl ownership, etc.)</p>
-        {editingGeneralInfo ? (
-          <textarea
-            value={generalInfo}
-            onChange={e => setGeneralInfo(e.target.value)}
-            rows={4}
-            maxLength={1000}
-            placeholder="e.g. Gate code: 1234. Max's bowl is blue, Bella's is pink."
-            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-          />
-        ) : (
-          <p className="text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap break-words">
-            {generalInfo || <span className="text-neutral-400 italic">No household information set.</span>}
-          </p>
-        )}
-      </div>
+      )}
 
       {cards.length === 0 ? (
         /* Empty state — no cards created yet */
@@ -412,42 +472,8 @@ export function Cards() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Card Preview */}
-          <div className="flex justify-center">
-            {selectedCard ? (
-              selectedCard.petId === 'multi-pet' ? (
-                <div className="w-full max-w-md">
-                  <MultiPetCardPreview pets={pets} card={selectedCard} />
-                </div>
-              ) : selectedCard.petId === 'all-pets' ? (
-                <div className="w-full max-w-md">
-                  <AllPetsCardPreview pets={pets} card={selectedCard} />
-                </div>
-              ) : selectedPet ? (
-                (selectedCard.status === 'revoked' && selectedCard.revokedAt && Date.now() >= selectedCard.revokedAt + UNDO_WINDOW_MS) ? (
-                  <div className="w-full max-w-md">
-                    <CardLogEntry card={selectedCard} pet={selectedPet} />
-                  </div>
-                ) : (
-                  <div className="w-full max-w-md">
-                    <CardPreview card={selectedCard} pet={selectedPet} />
-                  </div>
-                )
-              ) : null
-            ) : (
-              <div className="flex w-full max-w-md items-center justify-center h-64 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-2xl">
-                <p className="text-neutral-400 dark:text-neutral-500 text-sm">Select a card to preview</p>
-              </div>
-            )}
-          </div>
-
-          {/* Right panel */}
-          <div className="space-y-5">
-            {(() => {
-              const activeCards = cards.filter(c => getCardStatus(c) === 'active');
-              const inactiveCards = cards.filter(c => getCardStatus(c) !== 'active').slice(0, MAX_INACTIVE_CARDS);
-              return (
-                <>
+          {/* Management panel — first on mobile, second on desktop */}
+          <div className="order-1 lg:order-2 space-y-5">
                   {/* Active cards panel */}
                   <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-neutral-100 dark:border-neutral-700">
                     <div className="flex items-center justify-between mb-3">
@@ -464,7 +490,21 @@ export function Cards() {
                         <span className="text-xs text-neutral-400 dark:text-neutral-500">{activeCards.length} card{activeCards.length !== 1 ? 's' : ''}</span>
                       </div>
                     </div>
-                    <div className="space-y-1">
+                    <div
+                      className="space-y-1"
+                      role="listbox"
+                      aria-label="Card list"
+                      onKeyDown={(e) => {
+                        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+                        e.preventDefault();
+                        const allCards = [...activeCards, ...inactiveCards];
+                        const idx = allCards.findIndex(c => c.id === selectedCardId);
+                        const next = e.key === 'ArrowDown'
+                          ? Math.min(idx + 1, allCards.length - 1)
+                          : Math.max(idx - 1, 0);
+                        setSelectedCardId(allCards[next].id);
+                      }}
+                    >
                       {activeCards.length === 0 && (
                         <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center py-3">No active cards</p>
                       )}
@@ -543,9 +583,35 @@ export function Cards() {
                       )}
                     </div>
                   )}
-                </>
-              );
-            })()}
+          </div>
+
+          {/* Card Preview — second on mobile, first on desktop */}
+          <div className="order-2 lg:order-1 flex justify-center" data-card-preview>
+            {selectedCard ? (
+              selectedCard.petId === 'multi-pet' ? (
+                <div className="w-full max-w-md">
+                  <MultiPetCardPreview pets={pets} card={selectedCard} />
+                </div>
+              ) : selectedCard.petId === 'all-pets' ? (
+                <div className="w-full max-w-md">
+                  <AllPetsCardPreview pets={pets} card={selectedCard} />
+                </div>
+              ) : selectedPet ? (
+                (selectedCard.status === 'revoked' && selectedCard.revokedAt && Date.now() >= selectedCard.revokedAt + UNDO_WINDOW_MS) ? (
+                  <div className="w-full max-w-md">
+                    <CardLogEntry card={selectedCard} pet={selectedPet} />
+                  </div>
+                ) : (
+                  <div className="w-full max-w-md" id={`card-preview-${selectedCard.id}`}>
+                    <CardPreview card={selectedCard} pet={selectedPet} />
+                  </div>
+                )
+              ) : null
+            ) : (
+              <div className="flex w-full max-w-md items-center justify-center h-64 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-2xl">
+                <p className="text-neutral-400 dark:text-neutral-500 text-sm">Select a card to preview</p>
+              </div>
+            )}
           </div>
         </div>
       )}

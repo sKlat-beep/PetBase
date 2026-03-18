@@ -17,6 +17,7 @@ import { postSlackBlocks, buildAlertBlock } from './slackService';
 admin.initializeApp();
 
 export { onNotificationCreated, sendWeeklyDigest, checkPetBirthdays, onPostReaction, onPostComment, onPetLostStatusChange } from './notifications';
+export { cardMetaProxy } from './cardMetaProxy';
 import { sendVaccineReminder } from './notifications';
 
 // ─── Email configuration ──────────────────────────────────────────────────────

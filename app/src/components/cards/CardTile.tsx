@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Share2, QrCode, ShieldOff, RotateCcw, RefreshCw, Pencil, Maximize2 } from 'lucide-react';
-import { QRCodeCanvas as QRCode } from 'qrcode.react';
+import { Share2, QrCode, ShieldOff, RotateCcw, RefreshCw, Pencil, Download, Check } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import type { Pet } from '../../types/pet';
 import type { PetCard } from '../../types/cardExtensions';
@@ -24,8 +23,9 @@ export function CardTile({
 }) {
   const status = getCardStatus(card);
   const isPermanentlyRevoked = status === 'revoked' && card.revokedAt && Date.now() >= card.revokedAt + UNDO_WINDOW_MS;
-  const [showQr, setShowQr] = useState(false);
   const [showQrOverlay, setShowQrOverlay] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const [timeLeft, setTimeLeft] = useState(() =>
     card.revokedAt ? Math.max(0, card.revokedAt + UNDO_WINDOW_MS - Date.now()) : 0
@@ -47,9 +47,25 @@ export function CardTile({
     if (canShare()) {
       navigator.share({ title: `${pet.name}'s Card`, url });
     } else {
-      navigator.clipboard.writeText(url).then(() => onCopied?.());
+      navigator.clipboard.writeText(url).then(() => {
+        setShowCopied(true);
+        setTimeout(() => setShowCopied(false), 1500);
+        onCopied?.();
+      });
     }
   }, [card.id, pet.name, onCopied]);
+
+  const handleDownloadCard = useCallback(async () => {
+    const el = document.getElementById(`card-preview-${card.id}`) ?? document.querySelector('[data-card-preview]');
+    if (!el) return;
+    setDownloading(true);
+    try {
+      const { downloadElementAsImage } = await import('../../utils/exportImage');
+      await downloadElementAsImage(el as HTMLElement, `${pet.name}-card.png`);
+    } catch { /* silent */ } finally {
+      setDownloading(false);
+    }
+  }, [card.id, pet.name]);
 
   return (
     <div className="space-y-1">
@@ -98,11 +114,15 @@ export function CardTile({
         <div className="flex items-center gap-1.5 pl-3 pt-1 pb-1 flex-wrap">
           {status === 'active' && (
             <>
-              <button onClick={handleShare} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors text-xs font-medium">
-                <Share2 className="w-3.5 h-3.5" /> Share
+              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg transition-colors text-xs font-medium ${showCopied ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50'}`}>
+                {showCopied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+                {showCopied ? 'Copied!' : 'Share'}
               </button>
-              <button onClick={() => setShowQr(q => !q)} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium">
+              <button onClick={() => setShowQrOverlay(true)} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium">
                 <QrCode className="w-3.5 h-3.5" /> QR
+              </button>
+              <button onClick={handleDownloadCard} disabled={downloading} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium disabled:opacity-50">
+                <Download className="w-3.5 h-3.5" /> {downloading ? 'Saving...' : 'Download'}
               </button>
               {onEdit && (
                 <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors text-xs font-medium">
@@ -121,22 +141,6 @@ export function CardTile({
               <RotateCcw className="w-3.5 h-3.5" /> Undo ({formatTimeLeft(timeLeft)})
             </button>
           )}
-        </div>
-      )}
-
-      {showQr && selected && status === 'active' && (
-        <div className="ml-3 p-3 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-lg backdrop-blur-sm inline-flex flex-col items-center gap-2">
-          <QRCode value={`${window.location.origin}/cards/view/${card.id}`} size={120} level="M" />
-          <div className="flex items-center gap-2">
-            <p className="text-xs text-neutral-400">Scan to view · Expires {formatExpiry(card.expiresAt)}</p>
-            <button
-              onClick={() => setShowQrOverlay(true)}
-              className="p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
-              aria-label="Show full-screen QR code"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
         </div>
       )}
 

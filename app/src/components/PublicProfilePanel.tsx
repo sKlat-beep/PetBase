@@ -148,16 +148,27 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
             ) : pets.length === 0 ? (
               <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-3">No public pets.</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-2.5">
                 {pets.map(pet => (
                   <li
                     key={pet.id}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl
+                    className="flex items-start gap-3 px-3 py-3 rounded-xl
                                bg-neutral-50 dark:bg-neutral-800/60
                                border border-neutral-100 dark:border-neutral-700/50"
                   >
-                    <PawPrint className="w-4 h-4 text-neutral-400 shrink-0" />
-                    <div className="min-w-0">
+                    {pet.image ? (
+                      <img
+                        src={pet.image}
+                        alt={pet.name}
+                        className="w-10 h-10 rounded-xl object-cover bg-neutral-100 dark:bg-neutral-800 shrink-0"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                        <PawPrint className="w-4 h-4 text-neutral-400" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
                         {pet.name}
                       </p>
@@ -165,6 +176,20 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
                         <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
                           {[pet.type, pet.breed].filter(Boolean).join(' · ')}
                         </p>
+                      )}
+                      {/* Optional public fields as info chips */}
+                      {(pet.weight || pet.activity || pet.likes?.length || pet.food) && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {pet.weight && (
+                            <span className="inline-flex px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-700/60 text-[10px] text-neutral-600 dark:text-neutral-400">{pet.weight}</span>
+                          )}
+                          {pet.activity && (
+                            <span className="inline-flex px-1.5 py-0.5 rounded-md bg-violet-50 dark:bg-violet-900/30 text-[10px] text-violet-600 dark:text-violet-400">{pet.activity}</span>
+                          )}
+                          {pet.likes?.slice(0, 3).map(l => (
+                            <span key={l} className="inline-flex px-1.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-[10px] text-emerald-600 dark:text-emerald-400">{l}</span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </li>

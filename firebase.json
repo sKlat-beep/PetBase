@@ -28,6 +28,10 @@
     ],
     "rewrites": [
       {
+        "source": "/cards/view/**",
+        "function": "cardMetaProxy"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

@@ -5,6 +5,7 @@ import { auth, db } from '../lib/firebase';
 import { DEFAULT_PROFILE, type UserProfile } from '../types/user';
 import { clearCachedKey } from '../lib/crypto';
 import { loadUserProfile, saveUserProfile, updateLastSeen, updateLastActive, logSignIn } from '../lib/firestoreService';
+import { setOnboardingUid } from '../lib/onboardingService';
 
 // Re-export canonical types so existing imports from this module continue to work
 export type { ProfileVisibility, PublicStatus, UserProfile } from '../types/user';
@@ -38,6 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (firebaseUser) {
+        // Wire onboarding service to current user
+        setOnboardingUid(firebaseUser.uid);
+
         // Record last-seen and last-active timestamps on login
         updateLastSeen(firebaseUser.uid).catch(() => {});
         updateLastActive(firebaseUser.uid).catch(() => {});
@@ -83,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error('Profile sync error:', err);
         });
       } else {
+        setOnboardingUid(null);
         setProfile(null);
       }
       setLoading(false);

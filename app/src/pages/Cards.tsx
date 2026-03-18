@@ -22,7 +22,7 @@ import {
   type PublicCardPetSnapshot
 } from '../lib/firestoreService';
 import { logActivity } from '../utils/activityLog';
-import { markCardCreated } from '../components/GettingStartedGuide';
+import { markCardCreated } from '../lib/onboardingService';
 import { useHouseholdPermissions } from '../hooks/useHouseholdPermissions';
 import { Confetti, useCelebration } from '../components/ui/Confetti';
 import { CardPreview } from '../components/cards/CardPreview';

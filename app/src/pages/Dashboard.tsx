@@ -35,10 +35,10 @@ const LostPetReportModal = React.lazy(() =>
 );
 import { useSocial } from '../contexts/SocialContext';
 import { saveDashboardLayout, loadDashboardLayout, type DashboardLayoutItem } from '../lib/firestoreService';
+import { useOnboarding } from '../hooks/useOnboarding';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const GUIDE_COMPLETE_KEY = 'petbase-guide-completed';
 const LAYOUT_KEY = 'petbase-dashboard-layout-v3';
 const HIDDEN_KEY = 'petbase-dashboard-hidden-v3';
 
@@ -132,11 +132,23 @@ export function Dashboard() {
   const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
   const [isLostPetOpen, setIsLostPetOpen] = useState(false);
 
-  // Guide
-  const [guideCompleted, setGuideCompleted] = useState(
-    () => localStorage.getItem(GUIDE_COMPLETE_KEY) === 'true'
-  );
+  // Guide — Firestore-persisted via useOnboarding
+  const ob = useOnboarding(user?.uid ?? null);
   const { confettiActive, celebrate } = useCelebration();
+
+  const handleGuideComplete = useCallback(() => {
+    celebrate('onboarding-complete');
+  }, [celebrate]);
+
+  // Per-step confetti (lighter burst via same celebrate, unique IDs)
+  const handleStepComplete = useCallback(() => {
+    celebrate(`step-${Date.now()}`);
+  }, [celebrate]);
+
+  // Check milestone badges when discovery count changes
+  useEffect(() => {
+    ob.checkMilestones(celebrate);
+  }, [ob.checkMilestones, celebrate]);
 
   // Streak
   const [streakCount, setStreakCount] = useState(0);
@@ -145,10 +157,6 @@ export function Dashboard() {
     if (!user) return;
     getStreakData(user.uid).then(d => { setStreakCount(d.currentStreak); setLongestStreak(d.longestStreak); });
   }, [user]);
-  const handleGuideComplete = useCallback(() => {
-    setGuideCompleted(true);
-    celebrate('onboarding-complete');
-  }, [celebrate]);
 
   // Grid layout
   const [containerWidth, setContainerWidth] = useState(1200);
@@ -723,10 +731,10 @@ export function Dashboard() {
         transition={{ duration: 0.2, ease: 'easeOut' }}
         className="space-y-6"
       >
-        {/* Getting Started Guide */}
+        {/* Getting Started Guide / Recommendation Banner */}
         <Confetti active={confettiActive} />
-        {!guideCompleted && <GettingStartedGuide onComplete={handleGuideComplete} />}
-        {guideCompleted && <RecommendationBanner />}
+        {!ob.guideCompleted && <GettingStartedGuide onComplete={handleGuideComplete} onStepComplete={handleStepComplete} />}
+        {ob.guideCompleted && <RecommendationBanner />}
 
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

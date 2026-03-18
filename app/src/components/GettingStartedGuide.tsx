@@ -1,149 +1,109 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CheckCircle2, Circle, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router';
 import { usePets } from '../contexts/PetContext';
+import { useAuth } from '../contexts/AuthContext';
+import { STEPS, TOTAL_STEPS } from '../data/onboardingSteps';
+import { useOnboarding } from '../hooks/useOnboarding';
+import { LEVEL_LABELS } from '../lib/onboardingService';
 
-// Per petbase-system-instructions.md: when new core features are added,
-// add a corresponding checklist item here if it fundamentally benefits a new user.
-const STEPS = [
-  {
-    id: 'add-pet',
-    label: 'Add your first pet',
-    description: 'Create a profile for your furry companion.',
-    auto: true, // derived from PetContext — not manually toggleable
-    skippable: false,
-    path: '/pets',
-    state: { openAddModal: true },
-  },
-  {
-    id: 'create-card',
-    label: 'Create a pet card',
-    description: 'Generate an emergency or sitter card for your pet.',
-    auto: false,
-    skippable: true,
-    path: '/cards',
-  },
-  {
-    id: 'join-community',
-    label: 'Join a community',
-    description: 'Connect with other pet parents and find local meetups.',
-    auto: false,
-    skippable: true,
-    path: '/community',
-  },
-  {
-    id: 'find-services',
-    label: 'Find nearby services',
-    description: 'Search for top-rated vets, groomers, and sitters near you.',
-    auto: false,
-    skippable: true,
-    path: '/search',
-  },
-  {
-    id: 'create-family',
-    label: 'Create or join a family',
-    description: 'Invite family members to co-manage your pets.',
-    auto: false,
-    skippable: true,
-    path: '/settings',
-    state: { scrollTo: 'section-family' },
-  },
-  {
-    id: 'enable-notifications',
-    label: 'Stay in the loop',
-    description: 'Enable email or push notifications in Settings → Notifications.',
-    auto: false,
-    skippable: true,
-    path: '/settings',
-    state: { scrollTo: 'section-notifications' },
-  },
-  {
-    id: 'privacy-settings',
-    label: 'Control your privacy',
-    description: 'Control who can message you or invite you to groups in Settings → Privacy.',
-    auto: false,
-    skippable: true,
-    path: '/settings',
-    state: { scrollTo: 'section-privacy' },
-  },
-] as const;
-
-const COMPLETE_KEY = 'petbase-guide-completed';
-const SKIPPED_KEY = 'petbase-guide-skipped';
+// Re-export mark*() functions from onboardingService so existing callers don't break
+export {
+  markCardCreated,
+  markServicesFound,
+  markFamilyCreated,
+  markNotificationsEnabled,
+  markPrivacyConfigured,
+  markCommunityJoined,
+  markPetPhotoAdded,
+  markMedicalRecordAdded,
+  markProfileCompleted,
+} from '../lib/onboardingService';
 
 // Circumference of SVG circle with r=16 in a 40×40 viewBox
 const CIRCUMFERENCE = 2 * Math.PI * 16; // ≈ 100.53
 
-interface GettingStartedGuideProps {
-  onComplete: () => void;
+/** Progress ring color class based on completed count. */
+function ringColorClass(count: number): string {
+  if (count >= 7) return 'text-emerald-500';
+  if (count >= 4) return 'text-amber-500';
+  return 'text-neutral-400 dark:text-neutral-500';
 }
 
-export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
+/** Counter text color class matching ring. */
+function counterColorClass(count: number): string {
+  if (count >= 7) return 'text-emerald-600 dark:text-emerald-400';
+  if (count >= 4) return 'text-amber-600 dark:text-amber-400';
+  return 'text-neutral-500 dark:text-neutral-400';
+}
+
+interface GettingStartedGuideProps {
+  onComplete: () => void;
+  onStepComplete?: () => void; // per-step confetti callback
+}
+
+export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStartedGuideProps) {
   const { pets } = usePets();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const ob = useOnboarding(user?.uid ?? null);
+
   const [isExpanded, setIsExpanded] = useState(() => {
     return localStorage.getItem('petbase-guide-expanded') !== 'false';
   });
 
-  const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({});
-  const [skippedSteps, setSkippedSteps] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem(SKIPPED_KEY);
-      return raw ? new Set(JSON.parse(raw)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
+  // Auto-detect steps that are completed by existing data
   useEffect(() => {
-    const checkSteps = () => {
-      setCompletedSteps({
-        'create-card': localStorage.getItem('petbase-step-create-card') === 'true',
-        'join-community': localStorage.getItem('petbase-step-join-community') === 'true',
-        'find-services': localStorage.getItem('petbase-step-find-services') === 'true',
-        'create-family': localStorage.getItem('petbase-step-create-family') === 'true',
-        'enable-notifications': localStorage.getItem('petbase-step-enable-notifications') === 'true',
-        'privacy-settings': localStorage.getItem('petbase-step-privacy-settings') === 'true',
-      });
-    };
-    checkSteps();
-    window.addEventListener('storage', checkSteps);
-    window.addEventListener('petbase-guide-update', checkSteps);
-    return () => {
-      window.removeEventListener('storage', checkSteps);
-      window.removeEventListener('petbase-guide-update', checkSteps);
-    };
-  }, []);
+    if (!user) return;
 
-  const isComplete = useCallback(
-    (id: string) => {
-      if (id === 'add-pet') return pets.length > 0;
-      return !!completedSteps[id];
-    },
-    [pets.length, completedSteps]
-  );
+    // add-pet: derived from PetContext
+    if (pets.length > 0 && !ob.isStepCompleted('add-pet')) {
+      ob.markStepCompleted('add-pet');
+    }
+
+    // add-pet-photo: any pet has an avatar/photo
+    if (pets.some((p) => p.avatarUrl || p.photoUrl) && !ob.isStepCompleted('add-pet-photo')) {
+      ob.markStepCompleted('add-pet-photo');
+    }
+
+    // add-medical-record: any pet has medical records
+    if (pets.some((p) => p.medicalRecords && p.medicalRecords.length > 0) && !ob.isStepCompleted('add-medical-record')) {
+      ob.markStepCompleted('add-medical-record');
+    }
+
+    // complete-profile: user has address + avatar
+    if (profile && profile.address && profile.avatarUrl && !ob.isStepCompleted('complete-profile')) {
+      ob.markStepCompleted('complete-profile');
+    }
+  }, [pets, profile, user, ob.isStepCompleted, ob.markStepCompleted]);
+
+  // Track previous completed count for per-step confetti
+  const [prevCount, setPrevCount] = useState(ob.completedCount);
+  useEffect(() => {
+    if (ob.completedCount > prevCount && prevCount > 0 && onStepComplete) {
+      onStepComplete();
+    }
+    setPrevCount(ob.completedCount);
+  }, [ob.completedCount, prevCount, onStepComplete]);
 
   const isDone = useCallback(
-    (id: string) => isComplete(id) || skippedSteps.has(id),
-    [isComplete, skippedSteps]
+    (id: string) => ob.isStepCompleted(id) || ob.isStepSkipped(id),
+    [ob.isStepCompleted, ob.isStepSkipped],
   );
 
-  const handleSkip = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    const next = new Set(skippedSteps);
-    next.add(id);
-    setSkippedSteps(next);
-    localStorage.setItem(SKIPPED_KEY, JSON.stringify([...next]));
-    window.dispatchEvent(new Event('petbase-guide-update'));
-  };
-
-  const completedCount = STEPS.filter((s) => isDone(s.id)).length;
-  const allComplete = completedCount === STEPS.length;
+  const completedCount = ob.completedCount;
+  const allComplete = completedCount === TOTAL_STEPS;
 
   const handleStepClick = (step: typeof STEPS[number]) => {
     if (step.path) {
-      navigate(step.path, { state: 'state' in step ? step.state : undefined });
+      navigate(step.path, { state: step.state });
     }
+  };
+
+  const handleSkip = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    ob.markStepSkipped(id);
   };
 
   const toggleExpanded = () => {
@@ -158,13 +118,13 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
   useEffect(() => {
     if (!allComplete) return;
     const timer = setTimeout(() => {
-      localStorage.setItem(COMPLETE_KEY, 'true');
+      ob.markGuideCompleted();
       onComplete();
     }, 1400);
     return () => clearTimeout(timer);
-  }, [allComplete, onComplete]);
+  }, [allComplete, onComplete, ob.markGuideCompleted]);
 
-  const progressDash = (completedCount / STEPS.length) * CIRCUMFERENCE;
+  const progressDash = (completedCount / TOTAL_STEPS) * CIRCUMFERENCE;
 
   return (
     <motion.div
@@ -180,7 +140,7 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
         className="w-full flex items-center justify-between p-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors"
       >
         <div className="flex items-center gap-3">
-          {/* Circular progress ring */}
+          {/* Circular progress ring with color transitions */}
           <div className="relative w-10 h-10 shrink-0">
             <svg className="w-10 h-10 -rotate-90" viewBox="0 0 40 40">
               <circle
@@ -195,21 +155,26 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
                 stroke="currentColor"
                 strokeLinecap="round"
                 strokeDasharray={`${progressDash} ${CIRCUMFERENCE}`}
-                className="text-emerald-500 transition-all duration-500"
+                className={`${ringColorClass(completedCount)} transition-all duration-500`}
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              {completedCount}/{STEPS.length}
+            <span className={`absolute inset-0 flex items-center justify-center text-xs font-bold ${counterColorClass(completedCount)}`}>
+              {completedCount}/{TOTAL_STEPS}
             </span>
           </div>
           <div>
-            <p className="font-bold text-neutral-900 dark:text-neutral-100">
-              {allComplete ? 'All done! Great work.' : 'Getting Started'}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-neutral-900 dark:text-neutral-100">
+                {allComplete ? 'All done! Great work.' : 'Getting Started'}
+              </p>
+              {!allComplete && (
+                <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
+                  {LEVEL_LABELS[ob.petParentLevel]}
+                </span>
+              )}
+            </div>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              {allComplete
-                ? 'Your PetBase is set up.'
-                : `${STEPS.length - completedCount} step${STEPS.length - completedCount === 1 ? '' : 's'} remaining`}
+              {ob.milestoneCopy}
             </p>
           </div>
         </div>
@@ -232,9 +197,9 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
           >
             <div className="border-t border-neutral-100 dark:border-neutral-700 px-5 pb-5 pt-4 space-y-2">
               {STEPS.map((step) => {
-                const done = isComplete(step.id);
-                const skipped = skippedSteps.has(step.id);
-                const finished = done || skipped;
+                const completed = ob.isStepCompleted(step.id);
+                const skipped = ob.isStepSkipped(step.id);
+                const finished = completed || skipped;
                 return (
                   <div key={step.id} className={`flex items-start gap-3 px-3 py-3 rounded-xl transition-colors ${finished ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'hover:bg-neutral-50 dark:hover:bg-neutral-700/40'}`}>
                     <button
@@ -242,7 +207,7 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
                       onClick={() => !finished && handleStepClick(step)}
                       className="flex items-start gap-3 flex-1 text-left"
                     >
-                      {done ? (
+                      {completed ? (
                         <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                       ) : skipped ? (
                         <CheckCircle2 className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
@@ -274,41 +239,10 @@ export function GettingStartedGuide({ onComplete }: GettingStartedGuideProps) {
                   </div>
                 );
               })}
-
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
   );
-}
-
-/** Call this from Cards.tsx after a card is actually created. */
-export function markCardCreated() {
-  localStorage.setItem('petbase-step-create-card', 'true');
-  window.dispatchEvent(new Event('petbase-guide-update'));
-}
-
-/** Call this from Search.tsx when a search is submitted or result is clicked. */
-export function markServicesFound() {
-  localStorage.setItem('petbase-step-find-services', 'true');
-  window.dispatchEvent(new Event('petbase-guide-update'));
-}
-
-/** Call this when a household is created or joined. */
-export function markFamilyCreated() {
-  localStorage.setItem('petbase-step-create-family', 'true');
-  window.dispatchEvent(new Event('petbase-guide-update'));
-}
-
-/** Call this from Settings when the user enables email or push notifications. */
-export function markNotificationsEnabled(): void {
-  localStorage.setItem('petbase-step-enable-notifications', 'true');
-  window.dispatchEvent(new Event('petbase-guide-update'));
-}
-
-/** Call this from Settings when the user configures a privacy setting. */
-export function markPrivacyConfigured(): void {
-  localStorage.setItem('petbase-step-privacy-settings', 'true');
-  window.dispatchEvent(new Event('petbase-guide-update'));
 }

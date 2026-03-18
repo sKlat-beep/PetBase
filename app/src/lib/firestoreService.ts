@@ -1744,6 +1744,27 @@ export async function loadDashboardLayout(
   };
 }
 
+// --- Onboarding State Persistence --------------------------------------------
+
+export async function saveOnboardingState(
+  uid: string,
+  patch: Record<string, unknown>,
+): Promise<void> {
+  await setDoc(
+    doc(db, 'users', uid, 'settings', 'onboarding'),
+    { ...patch, savedAt: Date.now(), version: 1 },
+    { merge: true },
+  );
+}
+
+export async function loadOnboardingState(
+  uid: string,
+): Promise<Record<string, unknown> | null> {
+  const snap = await getDoc(doc(db, 'users', uid, 'settings', 'onboarding'));
+  if (!snap.exists()) return null;
+  return snap.data();
+}
+
 // ── Sign-in Activity Log ─────────────────────────────────────────────────────
 
 export interface SignInLogEntry {

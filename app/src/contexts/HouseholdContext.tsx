@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-import { markFamilyCreated } from '../components/GettingStartedGuide';
+import { markFamilyCreated } from '../lib/onboardingService';
 import {
   createHousehold as fsCreateHousehold,
   joinHouseholdByCode as fsJoinByCode,

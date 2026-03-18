@@ -11,7 +11,7 @@ import { CuratedWebsites } from '../components/services/CuratedWebsites';
 import { getPopularWebsites, type WebsiteResult } from '../utils/storeApi';
 import { usePets } from '../contexts/PetContext';
 import { useAuth } from '../contexts/AuthContext';
-import { markServicesFound } from '../components/GettingStartedGuide';
+import { markServicesFound } from '../lib/onboardingService';
 import { getSavedServices } from '../lib/firestoreService';
 import { SkeletonServiceCard } from '../components/ui/Skeleton';
 import { Star } from 'lucide-react';

@@ -17,7 +17,7 @@ import {
   type PetCard,
   type MultiPetConfig,
 } from '../../types/cardExtensions';
-import { markCardCreated } from '../GettingStartedGuide';
+import { markCardCreated } from '../../lib/onboardingService';
 
 // ─── Local SHARING_FIELDS (icons can't live in cardExtensions.ts) ──────────────
 

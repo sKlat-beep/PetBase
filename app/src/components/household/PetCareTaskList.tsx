@@ -1,6 +1,8 @@
-import { useState, useCallback } from 'react';
-import { CheckCircle2, Circle, Plus, X, Clock } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { CheckCircle2, Circle, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { collection, doc, setDoc, deleteDoc, updateDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 export interface PetCareTask {
   id: string;
@@ -13,19 +15,6 @@ export interface PetCareTask {
   createdAt: number;
 }
 
-const STORAGE_KEY = (householdId: string) => `petbase-tasks-${householdId}`;
-
-function loadTasks(householdId: string): PetCareTask[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY(householdId));
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
-
-function saveTasks(householdId: string, tasks: PetCareTask[]) {
-  localStorage.setItem(STORAGE_KEY(householdId), JSON.stringify(tasks));
-}
-
 interface Props {
   householdId: string;
   members: Array<{ uid: string; displayName: string }>;
@@ -33,17 +22,27 @@ interface Props {
 }
 
 export function PetCareTaskList({ householdId, members, currentUid }: Props) {
-  const [tasks, setTasks] = useState<PetCareTask[]>(() => loadTasks(householdId));
+  const [tasks, setTasks] = useState<PetCareTask[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [title, setTitle] = useState('');
   const [assignee, setAssignee] = useState(currentUid);
   const [dueDate, setDueDate] = useState('');
 
-  const addTask = useCallback(() => {
+  // Real-time listener on Firestore tasks subcollection
+  useEffect(() => {
+    const q = query(collection(db, 'households', householdId, 'tasks'), orderBy('createdAt', 'desc'));
+    const unsub = onSnapshot(q, snap => {
+      setTasks(snap.docs.map(d => ({ id: d.id, ...d.data() }) as PetCareTask));
+    }, () => { /* ignore snapshot errors */ });
+    return unsub;
+  }, [householdId]);
+
+  const addTask = useCallback(async () => {
     if (!title.trim()) return;
     const member = members.find(m => m.uid === assignee);
+    const taskId = crypto.randomUUID();
     const task: PetCareTask = {
-      id: crypto.randomUUID(),
+      id: taskId,
       title: title.trim(),
       assignedTo: assignee,
       assignedName: member?.displayName ?? 'Unknown',
@@ -51,26 +50,22 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
       status: 'pending',
       createdAt: Date.now(),
     };
-    const updated = [task, ...tasks];
-    setTasks(updated);
-    saveTasks(householdId, updated);
+    await setDoc(doc(db, 'households', householdId, 'tasks', taskId), task);
     setTitle('');
     setDueDate('');
     setShowAdd(false);
-  }, [title, assignee, dueDate, tasks, householdId, members]);
+  }, [title, assignee, dueDate, householdId, members]);
 
-  const toggleTask = (taskId: string) => {
-    const updated = tasks.map(t =>
-      t.id === taskId ? { ...t, status: t.status === 'pending' ? 'completed' as const : 'pending' as const } : t
-    );
-    setTasks(updated);
-    saveTasks(householdId, updated);
+  const toggleTask = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    await updateDoc(doc(db, 'households', householdId, 'tasks', taskId), {
+      status: task.status === 'pending' ? 'completed' : 'pending',
+    });
   };
 
-  const deleteTask = (taskId: string) => {
-    const updated = tasks.filter(t => t.id !== taskId);
-    setTasks(updated);
-    saveTasks(householdId, updated);
+  const removeTask = async (taskId: string) => {
+    await deleteDoc(doc(db, 'households', householdId, 'tasks', taskId));
   };
 
   const pendingTasks = tasks.filter(t => t.status === 'pending');
@@ -124,7 +119,7 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
                 {t.assignedName}{t.dueDate ? ` · Due ${new Date(t.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}
               </p>
             </div>
-            <button onClick={() => deleteTask(t.id)} className="opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-rose-500">
+            <button onClick={() => removeTask(t.id)} className="opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-rose-500">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>

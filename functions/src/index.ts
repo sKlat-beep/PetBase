@@ -156,6 +156,65 @@ function logSecurityEvent(
     .catch(() => { /* non-critical */ });
 }
 
+// ─── Household Invite Code Resolution ─────────────────────────────────────────
+// Uses admin SDK to query households by invite code (bypasses Firestore rules
+// that block non-members from querying the households collection).
+
+export const resolveInviteCode = onCall(
+  { secrets: ['SLACK_WEBHOOK_URL'] },
+  async (request) => {
+    if (!request.auth) {
+      logSecurityEvent('resolveInviteCode', 'unauthenticated');
+      throw new HttpsError('unauthenticated', 'Login required.');
+    }
+
+    const { code } = request.data as { code: string };
+    if (!code || typeof code !== 'string' || code.length !== 6 || !/^[A-Z0-9]+$/.test(code.toUpperCase())) {
+      throw new HttpsError('invalid-argument', 'Invalid invite code format.');
+    }
+
+    const db = admin.firestore();
+    const normalizedCode = code.toUpperCase().trim();
+
+    const snap = await db.collection('households')
+      .where('inviteCode', '==', normalizedCode)
+      .limit(1)
+      .get();
+
+    if (snap.empty) {
+      throw new HttpsError('not-found', 'Invalid invite code. Please check the code and try again.');
+    }
+
+    const householdDoc = snap.docs[0];
+    const data = householdDoc.data();
+
+    // Check invite code expiration (F6-2)
+    if (data.inviteCodeExpiresAt && Date.now() > data.inviteCodeExpiresAt) {
+      throw new HttpsError('failed-precondition', 'This invite code has expired. Ask the household leader for a new one.');
+    }
+
+    // Check max member limit (F6-3)
+    const membersSnap = await db.collection('households').doc(householdDoc.id).collection('members').get();
+    const MAX_MEMBERS = 20;
+    if (membersSnap.size >= MAX_MEMBERS) {
+      throw new HttpsError('resource-exhausted', 'This household is full (max 20 members).');
+    }
+
+    // Check if already a member
+    const uid = request.auth.uid;
+    const memberDoc = await db.doc(`households/${householdDoc.id}/members/${uid}`).get();
+    if (memberDoc.exists) {
+      throw new HttpsError('already-exists', 'You are already a member of this household.');
+    }
+
+    return {
+      householdId: householdDoc.id,
+      name: data.namePublic ?? data.name,
+      ownerId: data.ownerId,
+    };
+  },
+);
+
 // ─── Find Services (Yelp) ─────────────────────────────────────────────────────
 // Set secrets via:
 //   firebase functions:secrets:set GOOGLE_PLACES_KEY   (for geocoding ZIP codes)
@@ -195,13 +254,20 @@ function fetchJson(url: string, headers?: Record<string, string>): Promise<any> 
       let data = '';
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => {
-        try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+        try {
+          const parsed = JSON.parse(data);
+          if (res.statusCode && res.statusCode !== 200) {
+            reject(new Error(`HTTP ${res.statusCode}: ${JSON.stringify(parsed).slice(0, 500)}`));
+            return;
+          }
+          resolve(parsed);
+        } catch (e) { reject(e); }
       });
     }).on('error', reject);
   });
 }
 
-function mapYelpToServiceDoc(biz: YelpBusiness, category: string, h3Index: string): ServiceDoc {
+function mapYelpToServiceDoc(biz: YelpBusiness, category: string, h3Index: string): ServiceDoc & { distanceMeters?: number } {
   return {
     name: biz.name,
     category,
@@ -221,10 +287,11 @@ function mapYelpToServiceDoc(biz: YelpBusiness, category: string, h3Index: strin
     isSponsored: false,
     specialties: [],
     cachedAt: Date.now(),
+    distanceMeters: biz.distance,
   };
 }
 
-function mapToServiceResult(docs: (ServiceDoc & { id: string })[]) {
+function mapToServiceResult(docs: (ServiceDoc & { id: string; distanceMeters?: number })[]) {
   return [...docs]
     .sort((a, b) => (b.isSponsored ? 1 : 0) - (a.isSponsored ? 1 : 0) || b.rating - a.rating)
     .map(d => ({
@@ -233,7 +300,7 @@ function mapToServiceResult(docs: (ServiceDoc & { id: string })[]) {
       type: d.category,
       rating: d.rating,
       reviews: d.reviewCount,
-      distance: '',
+      distance: d.distanceMeters ? `${(d.distanceMeters / 1609.34).toFixed(1)} mi` : '',
       address: d.address,
       image: d.photos[0] ?? '',
       yelpUrl: d.yelpUrl,
@@ -263,23 +330,25 @@ export const findServices = onCall(
 
     const db = admin.firestore();
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    const usageRef = db.doc(`apiUsage/yelp/perUser/${uid}/${today}`);
+    const usageRef = db.doc(`apiUsage/yelp_user_${uid}_${today}`);
     const usageSnap = await usageRef.get();
     const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
     const DAILY_LIMIT = 5;
 
+    const remainingSearches = DAILY_LIMIT - count;
     if (count >= DAILY_LIMIT) {
-      throw new HttpsError('resource-exhausted', 'Daily search limit reached. Try again tomorrow.');
+      return { results: [], error: { code: 'rate-limited', message: 'Daily search limit reached. Try again tomorrow.' }, remainingSearches: 0 };
     }
     await usageRef.set({ count: count + 1, updatedAt: new Date().toISOString() }, { merge: true });
     // ──────────────────────────────────────────────────────────────────────────
 
-    const { type, location, query } = request.data as {
+    const { type, location, query, radius } = request.data as {
       type: string;
       location: string;
       query?: string;
       lat?: number;
       lng?: number;
+      radius?: number;
     };
     let { lat, lng } = request.data as { lat?: number; lng?: number };
 
@@ -312,7 +381,9 @@ export const findServices = onCall(
       ) as { status: string; results: { geometry: { location: { lat: number; lng: number } } }[] };
       console.log(`[findServices] Geocode status: ${geoData.status} — result count: ${geoData.results?.length ?? 0}`);
       const loc = geoData.results?.[0]?.geometry?.location;
-      if (!loc) throw new HttpsError('not-found', 'Could not geocode location.');
+      if (!loc) {
+        return { results: [], error: { code: 'location-not-found', message: 'Could not find that location. Check your ZIP code.' }, remainingSearches: remainingSearches - 1 };
+      }
       lat = loc.lat;
       lng = loc.lng;
     }
@@ -335,21 +406,22 @@ export const findServices = onCall(
         const results = serviceDocs
           .filter(d => d.exists)
           .map(d => ({ id: d.id, ...(d.data() as ServiceDoc) }));
-        return { results: mapToServiceResult(results) };
+        return { results: mapToServiceResult(results), remainingSearches: remainingSearches - 1 };
       }
     }
 
     // Hard limit — return empty rather than error
     if (currentCount >= HARD_LIMIT) {
       console.warn(`Yelp daily limit reached (${currentCount}/${HARD_LIMIT}). Returning empty.`);
-      return { results: [] };
+      return { results: [], error: { code: 'api-unavailable', message: 'Service temporarily unavailable. Try again later.' }, remainingSearches: remainingSearches - 1 };
     }
 
     // Fetch from Yelp
     const yelpApiKey = process.env.YELP_API_KEY;
     if (!yelpApiKey) throw new HttpsError('failed-precondition', 'Yelp API key not configured.');
     console.log(`[findServices] Calling Yelp API — category=${type} lat=${lat} lng=${lng}`);
-    const businesses = await findServicesYelp(lat, lng, type, yelpApiKey, query);
+    const searchRadius = (radius && Number.isFinite(radius) && radius > 0 && radius <= 40000) ? radius : 8000;
+    const businesses = await findServicesYelp(lat, lng, type, yelpApiKey, query, searchRadius);
     console.log(`[findServices] Yelp returned ${businesses.length} businesses`);
 
     // Persist and cache
@@ -375,7 +447,7 @@ export const findServices = onCall(
       id: `yelp_${biz.id}`,
       ...mapYelpToServiceDoc(biz, type, h3Index),
     }));
-    return { results: mapToServiceResult(allDocs) };
+    return { results: mapToServiceResult(allDocs), remainingSearches: remainingSearches - 1 };
   },
 );
 
@@ -410,7 +482,7 @@ export const getPlaceDetails = onCall(
 
     // Per-user daily rate limit (10 detail lookups/day)
     const today = new Date().toISOString().slice(0, 10);
-    const usageRef = db.doc(`apiUsage/places_details/perUser/${uid}/${today}`);
+    const usageRef = db.doc(`apiUsage/places_details_user_${uid}_${today}`);
     const usageSnap = await usageRef.get();
     const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
     const DAILY_LIMIT = 10;
@@ -495,7 +567,7 @@ export const getPlaceReviews = onCall(
 
     // Per-user daily rate limit (10 review lookups/day)
     const today = new Date().toISOString().slice(0, 10);
-    const usageRef = db.doc(`apiUsage/places_reviews/perUser/${uid}/${today}`);
+    const usageRef = db.doc(`apiUsage/places_reviews_user_${uid}_${today}`);
     const usageSnap = await usageRef.get();
     const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
     const DAILY_LIMIT = 10;

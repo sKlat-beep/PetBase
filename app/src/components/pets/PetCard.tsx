@@ -18,8 +18,8 @@ const QUICK_STATUSES = [
 interface PetCardProps {
   pet: Pet;
   onViewDetail: (pet: Pet) => void;
-  onEdit: (pet: Pet) => void;
-  onMedical: (pet: Pet) => void;
+  onEdit?: (pet: Pet) => void;
+  onMedical?: (pet: Pet) => void;
   onSetStatus?: (pet: Pet, status: string | undefined) => void;
 }
 
@@ -197,20 +197,24 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
         >
           <Eye className="w-4 h-4" />
         </button>
-        <button
-          onClick={() => onEdit(pet)}
-          className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-          aria-label={`Edit ${pet.name}`}
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => onMedical(pet)}
-          className="p-2 rounded-xl text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-900/20 transition-colors"
-          aria-label={`Medical records for ${pet.name}`}
-        >
-          <Syringe className="w-4 h-4" />
-        </button>
+        {onEdit && (
+          <button
+            onClick={() => onEdit(pet)}
+            className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+            aria-label={`Edit ${pet.name}`}
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+        )}
+        {onMedical && (
+          <button
+            onClick={() => onMedical(pet)}
+            className="p-2 rounded-xl text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-900/20 transition-colors"
+            aria-label={`Medical records for ${pet.name}`}
+          >
+            <Syringe className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </motion.div>
   );

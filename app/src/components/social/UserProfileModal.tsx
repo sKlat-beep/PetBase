@@ -16,8 +16,9 @@ import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import {
   X, User, MessageSquare, UserPlus, UserCheck, UserMinus,
-  ShieldOff, Shield, Users, ChevronDown, Loader2, Flag,
+  ShieldOff, Shield, Users, ChevronDown, Loader2, Flag, Award,
 } from 'lucide-react';
+import { getBadgeById } from '../../utils/badges';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocial } from '../../contexts/SocialContext';
 import { useCommunity } from '../../contexts/CommunityContext';
@@ -335,6 +336,21 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                                     bg-emerald-50 dark:bg-emerald-900/30
                                     text-emerald-700 dark:text-emerald-400 text-sm font-medium">
                       {STATUS_LABELS[targetProfile.publicStatus] ?? targetProfile.publicStatus}
+                    </div>
+                  )}
+
+                  {/* Achievement badges */}
+                  {targetProfile.badges && targetProfile.badges.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {targetProfile.badges.map(b => {
+                        const def = getBadgeById(b.id);
+                        if (!def) return null;
+                        return (
+                          <span key={b.id} title={def.description} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-medium">
+                            <span>{def.emoji}</span> {def.title}
+                          </span>
+                        );
+                      })}
                     </div>
                   )}
                 </>

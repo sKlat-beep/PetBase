@@ -13,6 +13,7 @@ import { writeLostPets, type LostPetAlert } from '../utils/lostPetsApi';
 import { PetCard } from '../components/pets/PetCard';
 import { PetFAB } from '../components/pets/PetFAB';
 import { PetLostConfirmModal } from '../components/pets/PetLostConfirmModal';
+import { useHouseholdPermissions } from '../hooks/useHouseholdPermissions';
 import { PhotoManagerModal } from '../components/pets/PhotoManagerModal';
 import { subscribePetAlbums, photoEntryUrl } from '../lib/firestoreService';
 import { lazy, Suspense } from 'react';
@@ -93,6 +94,7 @@ function RecentAlbumsPreview({ pets, uid, onViewAll }: { pets: Pet[]; uid: strin
 export function Pets() {
   const { pets, addPet, updatePet, deletePet, loading } = usePets();
   const { profile, user } = useAuth();
+  const { canEditPetInfo, canAddMedicalInfo } = useHouseholdPermissions();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPet, setEditingPet] = useState<Pet | undefined>(undefined);
   const [isMedicalModalOpen, setIsMedicalModalOpen] = useState(false);
@@ -278,8 +280,8 @@ export function Pets() {
               <PetCard
                 pet={pet}
                 onViewDetail={(p) => { setViewingDetailPet(p); setIsDetailModalOpen(true); }}
-                onEdit={openEditModal}
-                onMedical={openMedicalModal}
+                onEdit={canEditPetInfo ? openEditModal : undefined}
+                onMedical={canAddMedicalInfo ? openMedicalModal : undefined}
                 onSetStatus={(p, status) => {
                   updatePet({
                     ...p,
@@ -327,8 +329,8 @@ export function Pets() {
           pets={pets}
           isOpen={isDetailModalOpen}
           onClose={() => setIsDetailModalOpen(false)}
-          onEdit={(p) => { setIsDetailModalOpen(false); openEditModal(p); }}
-          onMedical={(p) => { setIsDetailModalOpen(false); openMedicalModal(p); }}
+          onEdit={canEditPetInfo ? (p) => { setIsDetailModalOpen(false); openEditModal(p); } : undefined}
+          onMedical={canAddMedicalInfo ? (p) => { setIsDetailModalOpen(false); openMedicalModal(p); } : undefined}
           onToggleLost={toggleLostStatus}
           onDelete={(p) => { setIsDetailModalOpen(false); setPetToDelete(p); }}
           uid={user?.uid}

@@ -180,7 +180,8 @@
  */
 
 import { doc, setDoc, getDoc, collection, getDocs, deleteDoc, collectionGroup, updateDoc, query, where, limit, addDoc, onSnapshot, orderBy, startAfter, type DocumentSnapshot, type Unsubscribe, writeBatch, arrayUnion, arrayRemove, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { db, auth } from './firebase';
+import { db, auth, functions } from './firebase';
+import { httpsCallable } from 'firebase/functions';
 
 /** Convert Firestore Timestamp fields (createdAt, updatedAt, expiresAt) to epoch ms numbers. */
 function coerceTimestamps<T>(data: Record<string, unknown>): T {
@@ -299,6 +300,7 @@ export interface PublicProfileDetails extends PublicProfileInfo {
   showLastActive: boolean;
   lastSeen?: number;
   lastActive?: number;
+  badges?: Array<{ id: string; unlockedAt: number }>;
 }
 
 export async function fetchPublicProfileById(uid: string): Promise<PublicProfileDetails | null> {
@@ -317,6 +319,7 @@ export async function fetchPublicProfileById(uid: string): Promise<PublicProfile
     showLastActive: data.showLastActive !== false, // default true
     lastSeen: typeof data.lastSeen === 'number' ? data.lastSeen : undefined,
     lastActive: typeof data.lastActive === 'number' ? data.lastActive : undefined,
+    badges: Array.isArray(data.badges) ? data.badges : undefined,
   };
 }
 
@@ -598,11 +601,11 @@ export async function createHousehold(
   const householdId = crypto.randomUUID();
   const inviteCode = generateInviteCode();
   const now = Date.now();
-  const household: Household = { id: householdId, name: householdName, ownerId: uid, inviteCode, createdAt: now };
+  const household: Household = { id: householdId, name: householdName, namePublic: householdName, ownerId: uid, inviteCode, createdAt: now };
 
   const leaderPermissions: MemberPermissions = { editPetInfo: true, addMedicalInfo: true, createRevokePetCards: true };
-  await setDoc(doc(db, 'households', householdId), { name: encHouseholdName, ownerId: uid, inviteCode, createdAt: now });
-  await setDoc(doc(db, 'households', householdId, 'members', uid), { uid, displayName: encDisplayName, role: 'Family Leader', joinedAt: now, permissions: leaderPermissions });
+  await setDoc(doc(db, 'households', householdId), { name: encHouseholdName, namePublic: householdName, ownerId: uid, inviteCode, createdAt: now });
+  await setDoc(doc(db, 'households', householdId, 'members', uid), { uid, displayName: encDisplayName, displayNamePublic: displayName, role: 'Family Leader', joinedAt: now, permissions: leaderPermissions });
   await updateDoc(doc(db, 'users', uid, 'profile', 'data'), { householdId });
 
   return household;
@@ -613,28 +616,18 @@ export async function joinHouseholdByCode(
   displayName: string,
   code: string,
 ): Promise<Household> {
-  const q = query(collection(db, 'households'), where('inviteCode', '==', code.toUpperCase().trim()), limit(1));
-  const snap = await getDocs(q);
-  if (snap.empty) throw new Error('Invalid invite code. Please check the code and try again.');
-
-  const d = snap.docs[0];
-  const data = d.data();
-  const household: Household = { id: d.id, ...data } as Household;
-
-  // Try to decrypt household name if possible (only if current user is owner, which is unlikely for joining)
-  // For now, we'll return as-is; it may remain encrypted in the UI if not the owner.
-  // We'll handle broader decryption in getHousehold.
-
-  // Check not already a member
-  const memberSnap = await getDoc(doc(db, 'households', household.id, 'members', uid));
-  if (memberSnap.exists()) throw new Error('You are already a member of this household.');
+  // Use Cloud Function to resolve invite code (bypasses Firestore rules)
+  const resolve = httpsCallable<{ code: string }, { householdId: string; name: string; ownerId: string }>(functions, 'resolveInviteCode');
+  const result = await resolve({ code: code.toUpperCase().trim() });
+  const { householdId, name, ownerId } = result.data;
 
   const key = await getOrCreateUserKey(uid);
   const encDisplayName = await encryptField(displayName, key);
 
-  await setDoc(doc(db, 'households', household.id, 'members', uid), { uid, displayName: encDisplayName, role: 'Member', joinedAt: Date.now(), permissions: DEFAULT_PERMISSIONS });
-  await updateDoc(doc(db, 'users', uid, 'profile', 'data'), { householdId: household.id });
+  await setDoc(doc(db, 'households', householdId, 'members', uid), { uid, displayName: encDisplayName, displayNamePublic: displayName, role: 'Member', joinedAt: Date.now(), permissions: DEFAULT_PERMISSIONS });
+  await updateDoc(doc(db, 'users', uid, 'profile', 'data'), { householdId });
 
+  const household: Household = { id: householdId, name, namePublic: name, ownerId, inviteCode: code.toUpperCase().trim(), createdAt: 0 };
   return household;
 }
 
@@ -645,14 +638,18 @@ export async function getHousehold(householdId: string): Promise<Household | nul
 
   const household: Household = { id: snap.id, ...data } as Household;
 
-  // Decrypt household name if the current user is the owner
-  const currentUser = auth.currentUser;
-  if (currentUser && data.ownerId === currentUser.uid && data.name?.startsWith('ENC:')) {
-    try {
-      const key = await getOrCreateUserKey(currentUser.uid);
-      household.name = await decryptField(data.name, key);
-    } catch (err) {
-      console.error('Failed to decrypt household name:', err);
+  // Use plaintext public name for all members; decrypt for owner as fallback
+  if (data.namePublic) {
+    household.name = data.namePublic;
+  } else {
+    const currentUser = auth.currentUser;
+    if (currentUser && data.ownerId === currentUser.uid && data.name?.startsWith('ENC:')) {
+      try {
+        const key = await getOrCreateUserKey(currentUser.uid);
+        household.name = await decryptField(data.name, key);
+      } catch (err) {
+        console.error('Failed to decrypt household name:', err);
+      }
     }
   }
 
@@ -665,20 +662,41 @@ export async function getHouseholdMembers(householdId: string): Promise<Househol
 
   return Promise.all(snap.docs.map(async d => {
     const data = d.data();
-    let displayName = data.displayName;
+    let displayName = data.displayNamePublic || data.displayName;
 
-    // Attempt decryption if it's the current user's document
-    if (currentUser && data.uid === currentUser.uid && displayName?.startsWith('ENC:')) {
+    // Decrypt own name; use plaintext public name for others
+    if (currentUser && data.uid === currentUser.uid && data.displayName?.startsWith('ENC:')) {
       try {
         const key = await getOrCreateUserKey(currentUser.uid);
-        displayName = await decryptField(displayName, key);
+        displayName = await decryptField(data.displayName, key);
       } catch (err) {
         console.error('Failed to decrypt member display name:', err);
       }
     }
 
-    return { ...data, displayName } as HouseholdMember;
+    return { ...data, displayName, displayNamePublic: data.displayNamePublic ?? displayName } as HouseholdMember;
   }));
+}
+
+export function subscribeToHouseholdMembers(
+  householdId: string,
+  callback: (members: HouseholdMember[]) => void,
+): () => void {
+  return onSnapshot(collection(db, 'households', householdId, 'members'), async snap => {
+    const currentUser = auth.currentUser;
+    const members = await Promise.all(snap.docs.map(async d => {
+      const data = d.data();
+      let displayName = data.displayNamePublic || data.displayName;
+      if (currentUser && data.uid === currentUser.uid && data.displayName?.startsWith('ENC:')) {
+        try {
+          const key = await getOrCreateUserKey(currentUser.uid);
+          displayName = await decryptField(data.displayName, key);
+        } catch { /* fallback to public name */ }
+      }
+      return { ...data, displayName, displayNamePublic: data.displayNamePublic ?? displayName } as HouseholdMember;
+    }));
+    callback(members);
+  });
 }
 
 export async function leaveHousehold(householdId: string, uid: string, isOwner: boolean, memberCount: number): Promise<void> {
@@ -686,6 +704,18 @@ export async function leaveHousehold(householdId: string, uid: string, isOwner: 
   await updateDoc(doc(db, 'users', uid, 'profile', 'data'), { householdId: null });
   if (isOwner && memberCount <= 1) {
     await deleteDoc(doc(db, 'households', householdId));
+  } else if (isOwner && memberCount > 1) {
+    // Transfer ownership to longest-tenured remaining member
+    const membersSnap = await getDocs(collection(db, 'households', householdId, 'members'));
+    const remaining = membersSnap.docs
+      .map(d => d.data())
+      .filter(m => m.uid !== uid)
+      .sort((a, b) => (a.joinedAt ?? 0) - (b.joinedAt ?? 0));
+    if (remaining.length > 0) {
+      const newOwner = remaining[0];
+      await updateDoc(doc(db, 'households', householdId), { ownerId: newOwner.uid });
+      await updateDoc(doc(db, 'households', householdId, 'members', newOwner.uid), { role: 'Family Leader' });
+    }
   }
 }
 
@@ -694,9 +724,20 @@ export async function kickHouseholdMember(householdId: string, memberUid: string
   await updateDoc(doc(db, 'users', memberUid, 'profile', 'data'), { householdId: null });
 }
 
+export async function clearStaleHouseholdId(uid: string): Promise<void> {
+  await updateDoc(doc(db, 'users', uid, 'profile', 'data'), { householdId: null });
+}
+
+export async function renameHousehold(householdId: string, ownerUid: string, newName: string): Promise<void> {
+  const key = await getOrCreateUserKey(ownerUid);
+  const encName = await encryptField(newName, key);
+  await updateDoc(doc(db, 'households', householdId), { name: encName, namePublic: newName });
+}
+
 export async function regenerateInviteCode(householdId: string): Promise<string> {
   const newCode = generateInviteCode();
-  await updateDoc(doc(db, 'households', householdId), { inviteCode: newCode });
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7-day expiry
+  await updateDoc(doc(db, 'households', householdId), { inviteCode: newCode, inviteCodeExpiresAt: expiresAt });
   return newCode;
 }
 

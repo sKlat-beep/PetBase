@@ -35,9 +35,14 @@ import {
   BellOff,
   UserX,
   Loader2,
+  Pencil,
+  Check,
+  X,
+  Info,
+  Share2,
 } from 'lucide-react';
 import type { HouseholdRole, MemberPermissions, ParentalControls } from '../types/household';
-import { DEFAULT_PERMISSIONS, DEFAULT_PARENTAL_CONTROLS } from '../types/household';
+import { DEFAULT_PERMISSIONS, DEFAULT_PARENTAL_CONTROLS, EXTENDED_FAMILY_PERMISSIONS, ROLE_DESCRIPTIONS } from '../types/household';
 import { updateProfile, deleteUser } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../lib/firebase';
@@ -108,13 +113,16 @@ export function ProfileSettings() {
 
     return () => { isMounted = false; };
   }, [profile?.blockedUsers, directory]); // both deps included
-  const { household, members, auditLog, loading: hhLoading, error: hhError, createHousehold, joinHousehold, leaveHousehold, kickMember, regenerateCode, updateMemberRole, updateMemberPermissions, updateParentalControls, clearError: clearHhError } = useHousehold();
+  const { household, members, auditLog, loading: hhLoading, error: hhError, createHousehold, joinHousehold, leaveHousehold, kickMember, regenerateCode, updateMemberRole, updateMemberPermissions, updateParentalControls, renameHousehold, clearError: clearHhError } = useHousehold();
   const [hhName, setHhName] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [hhView, setHhView] = useState<'idle' | 'create' | 'join'>('idle');
   const [codeCopied, setCodeCopied] = useState(false);
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
   const [showAuditLog, setShowAuditLog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{ type: 'kick' | 'leave' | 'regenerate' | 'roleToChild'; label: string; onConfirm: () => void } | null>(null);
+  const [editingHhName, setEditingHhName] = useState(false);
+  const [newHhName, setNewHhName] = useState('');
   const [showPersonalLogs, setShowPersonalLogs] = useState(false);
   const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -1268,13 +1276,31 @@ export function ProfileSettings() {
           </div>
         )}
 
-        {household ? (
+        {hhLoading && !household ? (
+          <div className="flex items-center justify-center py-8 gap-2 text-neutral-400">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span className="text-sm">Loading household...</span>
+          </div>
+        ) : household ? (
           <>
             {/* Current household */}
             <div className="bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-violet-900 dark:text-violet-100">{household.name}</p>
+                  {editingHhName ? (
+                    <div className="flex items-center gap-2">
+                      <input type="text" value={newHhName} onChange={e => setNewHhName(e.target.value)} autoFocus className="px-2 py-1 rounded-lg border border-violet-300 dark:border-violet-600 bg-white dark:bg-neutral-700 text-sm font-semibold text-violet-900 dark:text-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-500 w-48" />
+                      <button onClick={() => { if (newHhName.trim()) renameHousehold(newHhName.trim()).then(() => setEditingHhName(false)); }} className="p-1 text-emerald-600 hover:text-emerald-700" title="Save"><Check className="w-4 h-4" /></button>
+                      <button onClick={() => setEditingHhName(false)} className="p-1 text-neutral-400 hover:text-neutral-600" title="Cancel"><X className="w-4 h-4" /></button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-semibold text-violet-900 dark:text-violet-100">{household.name}</p>
+                      {household.ownerId === user?.uid && (
+                        <button onClick={() => { setNewHhName(household.name); setEditingHhName(true); }} className="p-1 text-violet-400 hover:text-violet-600" title="Rename household"><Pencil className="w-3.5 h-3.5" /></button>
+                      )}
+                    </div>
+                  )}
                   <p className="text-xs text-violet-500 dark:text-violet-400 mt-0.5">
                     {members.find(m => m.uid === user?.uid)?.role ?? (household.ownerId === user?.uid ? 'Family Leader' : 'Member')}
                   </p>
@@ -1306,7 +1332,24 @@ export function ProfileSettings() {
                     </button>
                     <button
                       type="button"
-                      onClick={regenerateCode}
+                      onClick={async () => {
+                        const shareData = { title: 'Join my PetBase household', text: `Join my household on PetBase! Use invite code: ${household.inviteCode}`, url: `${window.location.origin}/join?code=${household.inviteCode}` };
+                        if (navigator.share) {
+                          try { await navigator.share(shareData); } catch { /* user cancelled */ }
+                        } else {
+                          await navigator.clipboard.writeText(`Join my PetBase household! Code: ${household.inviteCode}`);
+                          setCodeCopied(true);
+                          setTimeout(() => setCodeCopied(false), 2000);
+                        }
+                      }}
+                      title="Share invite code"
+                      className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-600 hover:bg-violet-100 dark:hover:bg-violet-900/40 text-neutral-600 dark:text-neutral-300 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmAction({ type: 'regenerate', label: 'Regenerate invite code? The current code will stop working.', onConfirm: () => { regenerateCode(); setConfirmAction(null); } })}
                       disabled={hhLoading}
                       title="Regenerate invite code (invalidates current code)"
                       className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-600 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-neutral-600 dark:text-neutral-300 transition-colors"
@@ -1344,7 +1387,7 @@ export function ProfileSettings() {
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{m.displayName}{isSelf ? ' (you)' : ''}</p>
                           </div>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ROLE_COLORS[m.role as HouseholdRole] ?? ROLE_COLORS['Member']}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ROLE_COLORS[m.role as HouseholdRole] ?? ROLE_COLORS['Member']}`} title={ROLE_DESCRIPTIONS[m.role as HouseholdRole]}>
                             {m.role}
                           </span>
                           {isLeader && !isSelf && (
@@ -1360,7 +1403,7 @@ export function ProfileSettings() {
                           {isLeader && !isSelf && (
                             <button
                               type="button"
-                              onClick={() => kickMember(m.uid)}
+                              onClick={() => setConfirmAction({ type: 'kick', label: `Remove ${m.displayName} from household?`, onConfirm: () => { kickMember(m.uid); setConfirmAction(null); } })}
                               disabled={hhLoading}
                               title="Remove member"
                               className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
@@ -1381,8 +1424,15 @@ export function ProfileSettings() {
                                   <button
                                     key={role}
                                     type="button"
-                                    onClick={() => updateMemberRole(m.uid, role)}
+                                    onClick={() => {
+                                      if (role === 'Child' && m.role !== 'Child') {
+                                        setConfirmAction({ type: 'roleToChild', label: `Change ${m.displayName}'s role to Child? This enables parental controls.`, onConfirm: () => { updateMemberRole(m.uid, role); setConfirmAction(null); } });
+                                      } else {
+                                        updateMemberRole(m.uid, role);
+                                      }
+                                    }}
                                     disabled={hhLoading}
+                                    title={ROLE_DESCRIPTIONS[role]}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${m.role === role ? ROLE_COLORS[role] + ' ring-2 ring-violet-400' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600'}`}
                                   >
                                     {role}
@@ -1391,8 +1441,8 @@ export function ProfileSettings() {
                               </div>
                             </div>
 
-                            {/* Permission toggles (for Extended Family & Child) */}
-                            {(m.role === 'Extended Family' || m.role === 'Child') && (
+                            {/* Permission toggles (all non-Leader roles) */}
+                            {m.role !== 'Family Leader' && (
                               <div>
                                 <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 uppercase tracking-wide">Permissions</p>
                                 <div className="space-y-2">
@@ -1457,7 +1507,14 @@ export function ProfileSettings() {
 
             <button
               type="button"
-              onClick={leaveHousehold}
+              onClick={() => {
+                const isDisband = household.ownerId === user?.uid && members.length === 1;
+                setConfirmAction({
+                  type: 'leave',
+                  label: isDisband ? 'Disband this household? This cannot be undone.' : 'Leave this household?',
+                  onConfirm: () => { leaveHousehold(); setConfirmAction(null); },
+                });
+              }}
               disabled={hhLoading}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-sm font-medium"
             >
@@ -1721,8 +1778,8 @@ export function ProfileSettings() {
           </div>
         )}
 
-        {/* Family Audit Log (Leaders only) */}
-        {household && members.find(m => m.uid === user?.uid && (m.role === 'Family Leader')) && (
+        {/* Family Audit Log (visible to all household members) */}
+        {household && members.find(m => m.uid === user?.uid) && (
           <>
             <button
               onClick={() => setShowAuditLog(v => !v)}
@@ -1775,6 +1832,31 @@ export function ProfileSettings() {
           Delete Account
         </button>
       </div>
+
+      {/* Household Confirmation Dialog */}
+      <AnimatePresence>
+        {confirmAction && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setConfirmAction(null)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-xl border border-neutral-200 dark:border-neutral-700 max-w-sm w-full space-y-4"
+            >
+              <p className="text-sm text-neutral-700 dark:text-neutral-300 font-medium">{confirmAction.label}</p>
+              <div className="flex gap-3">
+                <button onClick={() => setConfirmAction(null)} className="flex-1 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
+                  Cancel
+                </button>
+                <button onClick={confirmAction.onConfirm} className="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold transition-colors">
+                  Confirm
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Encrypted Backup Modal */}
       {showBackupModal && (

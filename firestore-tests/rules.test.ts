@@ -690,3 +690,93 @@ describe('households/{householdId}/members/{uid} — self-join, owner manages', 
     );
   });
 });
+
+// ─── 13. Households/tasks: member-only read/write ─────────────────────────────
+
+describe('households/{householdId}/tasks — member access', () => {
+  const HH = 'hh1';
+
+  beforeEach(async () => {
+    await seed(`households/${HH}`, { ownerId: USER_A, name: 'Smith Family' });
+    await seed(`households/${HH}/members/${USER_A}`, { role: 'Family Leader' });
+    await seed(`households/${HH}/members/${USER_B}`, { role: 'Member' });
+  });
+
+  it('member can create a task', async () => {
+    const db = authed(USER_B);
+    await assertSucceeds(
+      setDoc(doc(db, `households/${HH}/tasks/task1`), { title: 'Walk dog', status: 'pending' })
+    );
+  });
+
+  it('member can read tasks', async () => {
+    await seed(`households/${HH}/tasks/task1`, { title: 'Walk dog', status: 'pending' });
+    const db = authed(USER_B);
+    await assertSucceeds(getDoc(doc(db, `households/${HH}/tasks/task1`)));
+  });
+
+  it('member can update a task', async () => {
+    await seed(`households/${HH}/tasks/task1`, { title: 'Walk dog', status: 'pending' });
+    const db = authed(USER_B);
+    await assertSucceeds(
+      updateDoc(doc(db, `households/${HH}/tasks/task1`), { status: 'completed' })
+    );
+  });
+
+  it('member can delete a task', async () => {
+    await seed(`households/${HH}/tasks/task1`, { title: 'Walk dog', status: 'pending' });
+    const db = authed(USER_B);
+    await assertSucceeds(deleteDoc(doc(db, `households/${HH}/tasks/task1`)));
+  });
+
+  it('non-member cannot read tasks', async () => {
+    await seed(`households/${HH}/tasks/task1`, { title: 'Walk dog', status: 'pending' });
+    const db = authed(USER_C);
+    await assertFails(getDoc(doc(db, `households/${HH}/tasks/task1`)));
+  });
+
+  it('non-member cannot create a task', async () => {
+    const db = authed(USER_C);
+    await assertFails(
+      setDoc(doc(db, `households/${HH}/tasks/task2`), { title: 'Hack', status: 'pending' })
+    );
+  });
+});
+
+// ─── 14. Households/auditLog: member reads, member creates ────────────────────
+
+describe('households/{householdId}/auditLog — member access', () => {
+  const HH = 'hh1';
+
+  beforeEach(async () => {
+    await seed(`households/${HH}`, { ownerId: USER_A, name: 'Smith Family' });
+    await seed(`households/${HH}/members/${USER_A}`, { role: 'Family Leader' });
+    await seed(`households/${HH}/members/${USER_B}`, { role: 'Member' });
+  });
+
+  it('member can read audit log entries', async () => {
+    await seed(`households/${HH}/auditLog/entry1`, { action: 'test', actorUid: USER_A });
+    const db = authed(USER_B);
+    await assertSucceeds(getDoc(doc(db, `households/${HH}/auditLog/entry1`)));
+  });
+
+  it('member can create audit log entries', async () => {
+    const db = authed(USER_B);
+    await assertSucceeds(
+      addDoc(collection(db, `households/${HH}/auditLog`), { action: 'test', actorUid: USER_B, timestamp: Date.now() })
+    );
+  });
+
+  it('non-member cannot read audit log', async () => {
+    await seed(`households/${HH}/auditLog/entry1`, { action: 'test', actorUid: USER_A });
+    const db = authed(USER_C);
+    await assertFails(getDoc(doc(db, `households/${HH}/auditLog/entry1`)));
+  });
+
+  it('non-member cannot create audit log entries', async () => {
+    const db = authed(USER_C);
+    await assertFails(
+      addDoc(collection(db, `households/${HH}/auditLog`), { action: 'hack', actorUid: USER_C })
+    );
+  });
+});

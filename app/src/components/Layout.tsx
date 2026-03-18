@@ -7,6 +7,8 @@ import { useSocial, type PublicProfile } from '../contexts/SocialContext';
 import { useMessaging } from '../contexts/MessagingContext';
 import { HelpModal } from './HelpModal';
 import { FeedbackModal } from './FeedbackModal';
+import { useHouseholdPermissions } from '../hooks/useHouseholdPermissions';
+import { useHousehold } from '../contexts/HouseholdContext';
 import { AnimatePresence } from 'motion/react';
 import { NotificationBell } from './notifications/NotificationBell';
 import { RightPanel } from './layout/RightPanel';
@@ -18,6 +20,8 @@ export function Layout() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
+  const { communityAccessDisabled } = useHouseholdPermissions();
+  const { toast: hhToast, clearToast: clearHhToast } = useHousehold();
   const { theme, toggleTheme } = useTheme();
   const { searchUsers } = useSocial();
   const { totalUnread: totalUnreadMessages } = useMessaging();
@@ -60,16 +64,24 @@ export function Layout() {
   const navItems = [
     { to: '/', icon: Home, label: 'Dashboard' },
     { to: '/pets', icon: PawPrint, label: 'My Pets' },
-    { to: '/community', icon: UsersRound, label: 'Community Hub' },
-    { to: '/messages', icon: MessageSquare, label: 'Messages', badge: totalUnreadMessages > 0 ? totalUnreadMessages : undefined },
+    !communityAccessDisabled && { to: '/community', icon: UsersRound, label: 'Community Hub' },
+    !communityAccessDisabled && { to: '/messages', icon: MessageSquare, label: 'Messages', badge: totalUnreadMessages > 0 ? totalUnreadMessages : undefined },
     { to: '/search', icon: SearchIcon, label: 'Find Services' },
     { to: '/cards', icon: IdCard, label: 'Pet Cards' },
-  ];
+  ].filter(Boolean) as { to: string; icon: any; label: string; badge?: number }[];
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col md:flex-row font-sans">
       <OfflineBanner />
       <KeyboardShortcutsProvider />
+
+      {/* Household event toast */}
+      {hhToast && (
+        <div className="fixed top-4 right-4 z-50 bg-violet-600 text-white px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 animate-in fade-in slide-in-from-top-2" role="alert">
+          {hhToast}
+          <button onClick={clearHhToast} className="ml-2 text-white/70 hover:text-white" aria-label="Dismiss">×</button>
+        </div>
+      )}
       {/* Skip navigation — visually hidden, shown on keyboard focus for screen readers */}
       <a
         href="#main-content"
@@ -307,13 +319,13 @@ export function Layout() {
         aria-label="Mobile bottom navigation"
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-700 flex items-stretch h-16 safe-area-inset-bottom"
       >
-        {[
+        {([
           { to: '/', icon: Home, label: 'Dashboard' },
           { to: '/pets', icon: PawPrint, label: 'Pets' },
-          { to: '/community', icon: UsersRound, label: 'Community' },
-          { to: '/messages', icon: MessageSquare, label: 'Messages', badge: totalUnreadMessages > 0 ? totalUnreadMessages : undefined },
+          !communityAccessDisabled && { to: '/community', icon: UsersRound, label: 'Community' },
+          !communityAccessDisabled && { to: '/messages', icon: MessageSquare, label: 'Messages', badge: totalUnreadMessages > 0 ? totalUnreadMessages : undefined },
           { to: '/cards', icon: IdCard, label: 'Cards' },
-        ].map(({ to, icon: Icon, label, badge }) => (
+        ].filter(Boolean) as { to: string; icon: any; label: string; badge?: number }[]).map(({ to, icon: Icon, label, badge }) => (
           <NavLink
             key={to}
             to={to}

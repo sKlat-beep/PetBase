@@ -5,7 +5,7 @@ import { HealthInsights } from './HealthInsights';
 
 interface PetHealthPanelProps {
   pet: Pet;
-  onMedical: () => void;
+  onMedical?: () => void;
 }
 
 export function PetHealthPanel({ pet, onMedical }: PetHealthPanelProps) {
@@ -26,12 +26,14 @@ export function PetHealthPanel({ pet, onMedical }: PetHealthPanelProps) {
       {isEmpty ? (
         <div className="text-center py-6 text-neutral-500 dark:text-neutral-400">
           <p className="text-sm mb-3">No medical records yet.</p>
-          <button
-            onClick={onMedical}
-            className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
-          >
-            Add medical records →
-          </button>
+          {onMedical && (
+            <button
+              onClick={onMedical}
+              className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
+            >
+              Add medical records →
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -83,12 +85,14 @@ export function PetHealthPanel({ pet, onMedical }: PetHealthPanelProps) {
         </>
       )}
 
-      <button
-        onClick={onMedical}
-        className="w-full mt-4 bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium py-2 rounded-xl text-sm hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
-      >
-        Open Medical Records
-      </button>
+      {onMedical && (
+        <button
+          onClick={onMedical}
+          className="w-full mt-4 bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium py-2 rounded-xl text-sm hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
+        >
+          Open Medical Records
+        </button>
+      )}
     </div>
   );
 }

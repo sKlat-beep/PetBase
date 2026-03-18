@@ -23,6 +23,7 @@ import {
 } from '../lib/firestoreService';
 import { logActivity } from '../utils/activityLog';
 import { markCardCreated } from '../components/GettingStartedGuide';
+import { useHouseholdPermissions } from '../hooks/useHouseholdPermissions';
 import { Confetti, useCelebration } from '../components/ui/Confetti';
 import { CardPreview } from '../components/cards/CardPreview';
 import { MultiPetCardPreview } from '../components/cards/MultiPetCardPreview';
@@ -39,6 +40,7 @@ const CARD_PURGE_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 export function Cards() {
   const { pets, loading } = usePets();
   const { user, profile } = useAuth();
+  const { canCreateRevokePetCards } = useHouseholdPermissions();
   const location = useLocation();
   const navigate = useNavigate();
   const [cards, setCards] = useState<PetCard[]>([]);
@@ -332,23 +334,25 @@ export function Cards() {
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">Pet Cards</h1>
           <p className="text-neutral-500 dark:text-neutral-400 mt-1">Shareable profiles for sitters, walkers, and emergencies.</p>
         </div>
-        <div className="flex gap-2">
-          {pets.filter(p => !p.isPrivate).length >= 2 && (
+        {canCreateRevokePetCards && (
+          <div className="flex gap-2">
+            {pets.filter(p => !p.isPrivate).length >= 2 && (
+              <button
+                onClick={() => setShowMultiPetModal(true)}
+                className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors"
+              >
+                <Layers className="w-4 h-4" /> Multi-pet Card
+              </button>
+            )}
             <button
-              onClick={() => setShowMultiPetModal(true)}
-              className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors"
+              id="create-card-btn"
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 px-5 py-2.5 rounded-xl font-medium transition-colors"
             >
-              <Layers className="w-4 h-4" /> Multi-pet Card
+              <Plus className="w-4 h-4" /> Create New Card
             </button>
-          )}
-          <button
-            id="create-card-btn"
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 px-5 py-2.5 rounded-xl font-medium transition-colors"
-          >
-            <Plus className="w-4 h-4" /> Create New Card
-          </button>
-        </div>
+          </div>
+        )}
       </header>
 
       {/* Household Information Block */}
@@ -393,14 +397,18 @@ export function Cards() {
           <QrCode className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-2">No cards yet</h2>
           <p className="text-neutral-400 dark:text-neutral-500 mb-5 max-w-sm mx-auto">
-            Create a Sitter, Vet, or Custom card for any of your {pets.length} pet{pets.length > 1 ? 's' : ''}.
+            {canCreateRevokePetCards
+              ? `Create a Sitter, Vet, or Custom card for any of your ${pets.length} pet${pets.length > 1 ? 's' : ''}.`
+              : 'You do not have permission to create pet cards. Ask your Family Leader to update your permissions.'}
           </p>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
-          >
-            <Plus className="w-4 h-4" /> Create Your First Card
-          </button>
+          {canCreateRevokePetCards && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Create Your First Card
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

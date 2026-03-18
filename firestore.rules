@@ -227,6 +227,12 @@ service cloud.firestore {
           get(/databases/$(database)/documents/households/$(householdId)).data.ownerId == request.auth.uid;
       }
 
+      // Pet care tasks: any household member can read and write
+      match /tasks/{taskId} {
+        allow read, write: if isSignedIn() &&
+          exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid));
+      }
+
       // Audit log: any household member can read; Family Leaders can write
       match /auditLog/{entryId} {
         allow read: if isSignedIn() &&

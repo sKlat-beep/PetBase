@@ -28,8 +28,8 @@ interface PetDetailModalProps {
   pets: Pet[];           // all pets (for switcher strip)
   isOpen: boolean;
   onClose: () => void;
-  onEdit: (pet: Pet) => void;         // opens PetFormModal
-  onMedical: (pet: Pet) => void;      // opens MedicalRecordsModal
+  onEdit?: (pet: Pet) => void;         // opens PetFormModal
+  onMedical?: (pet: Pet) => void;      // opens MedicalRecordsModal
   onToggleLost: (pet: Pet) => void;   // triggers PetLostConfirmModal
   onDelete: (pet: Pet) => void;       // triggers delete confirm
   uid?: string;                       // for localStorage section keys
@@ -262,14 +262,16 @@ export function PetDetailModal({
 
             {/* Action buttons */}
             <div className="flex items-center gap-1 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => onEdit(activePet)}
-                className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-                aria-label={`Edit ${activePet.name}`}
-              >
-                <Pencil className="w-4 h-4" />
-              </button>
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={() => onEdit(activePet)}
+                  className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                  aria-label={`Edit ${activePet.name}`}
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => onToggleLost(activePet)}
@@ -324,7 +326,7 @@ export function PetDetailModal({
               >
                 <PetOverviewPanel
                   pet={activePet}
-                  onEdit={() => onEdit(activePet)}
+                  onEdit={onEdit ? () => onEdit(activePet) : undefined}
                 />
               </PetDetailSection>
 
@@ -337,7 +339,7 @@ export function PetDetailModal({
               >
                 <PetHealthPanel
                   pet={activePet}
-                  onMedical={() => onMedical(activePet)}
+                  onMedical={onMedical ? () => onMedical(activePet) : undefined}
                 />
               </PetDetailSection>
 
@@ -350,7 +352,7 @@ export function PetDetailModal({
               >
                 <PetDietPanel
                   pet={activePet}
-                  onEdit={() => onEdit(activePet)}
+                  onEdit={onEdit ? () => onEdit(activePet) : undefined}
                 />
               </PetDetailSection>
 
@@ -363,7 +365,7 @@ export function PetDetailModal({
               >
                 <PetActivitiesPanel
                   pet={activePet}
-                  onEdit={() => onEdit(activePet)}
+                  onEdit={onEdit ? () => onEdit(activePet) : undefined}
                 />
               </PetDetailSection>
 
@@ -376,7 +378,7 @@ export function PetDetailModal({
               >
                 <PetDocumentsPanel
                   pet={activePet}
-                  onEdit={() => onEdit(activePet)}
+                  onEdit={onEdit ? () => onEdit(activePet) : undefined}
                 />
               </PetDetailSection>
             </motion.div>

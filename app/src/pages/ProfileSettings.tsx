@@ -51,8 +51,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { loadUserProfile, getSignInLog, type SignInLogEntry } from '../lib/firestoreService';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { ImageCropperModal, getCroppedImg } from '../components/ImageCropperModal';
-import { hasLocalKey, createEncryptedBackup, restoreEncryptedBackup, wrapKeyForVault, type EncryptedBackup } from '../lib/crypto';
-import { getOrCreateUserKey } from '../lib/crypto';
+import { hasLocalKey, createEncryptedBackup, restoreEncryptedBackup, wrapKeyForVault, getOrCreateUserKey, type EncryptedBackup } from '../lib/crypto';
 import { saveVaultKey, loadVaultKey } from '../lib/firestoreService';
 import { getActivityLog, formatRelativeTime, type ActivityEntry } from '../utils/activityLog';
 import { uploadAvatar } from '../lib/storageService';
@@ -161,11 +160,8 @@ export function ProfileSettings() {
   const [backupSuccess, setBackupSuccess] = useState('');
   const backupFileRef = React.useRef<HTMLInputElement>(null);
 
-  // Cross-Device Sync (E2EE Vault)
+  // Cross-Device Sync (E2EE Vault — automatic via UID)
   const [vaultEnabled, setVaultEnabled] = useState(false);
-  const [syncPassword, setSyncPassword] = useState('');
-  const [syncConfirm, setSyncConfirm] = useState('');
-  const [showSyncPw, setShowSyncPw] = useState(false);
   const [syncSaving, setSyncSaving] = useState(false);
   const [syncError, setSyncError] = useState('');
   const [syncSuccess, setSyncSuccess] = useState('');
@@ -318,21 +314,17 @@ export function ProfileSettings() {
     setDeleteError('');
   };
 
-  const handleSetupSync = async () => {
-    if (!user || !syncPassword) return;
-    if (syncPassword !== syncConfirm) { setSyncError('Passwords do not match.'); return; }
-    if (syncPassword.length < 8) { setSyncError('Sync password must be at least 8 characters.'); return; }
+  const handleEnableSync = async () => {
+    if (!user) return;
     setSyncSaving(true);
     setSyncError('');
     setSyncSuccess('');
     try {
       const key = await getOrCreateUserKey(user.uid);
-      const vaultDoc = await wrapKeyForVault(key, syncPassword);
+      const vaultDoc = await wrapKeyForVault(key, user.uid);
       await saveVaultKey(user.uid, vaultDoc);
       setVaultEnabled(true);
-      setSyncSuccess('Cross-device sync enabled! Your encryption key is now securely stored in the cloud.');
-      setSyncPassword('');
-      setSyncConfirm('');
+      setSyncSuccess('Cross-device sync enabled! Sign in on any device to automatically access your encrypted data.');
     } catch (err: any) {
       setSyncError(err.message || 'Failed to enable sync.');
     } finally {
@@ -550,7 +542,7 @@ export function ProfileSettings() {
             <p className="font-semibold text-amber-900 dark:text-amber-100">New device detected</p>
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
               Your encrypted data (medical records, expenses, pet notes) is not yet accessible on this device.
-              If you set up Cross-Device Sync, sign out and back in to be prompted for your sync password.
+              Enable Cross-Device Sync to automatically access your data on any device you sign in to.
               Otherwise, restore from a backup file.
             </p>
             <div className="flex flex-wrap gap-3 mt-3">
@@ -1636,56 +1628,19 @@ export function ProfileSettings() {
         </div>
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-          Set a sync password to securely store your encryption key in the cloud. You can then access your
-          encrypted data (medical records, expenses, notes) on any device using the same sync password.
-          The server only ever stores encrypted ciphertext — your password is never transmitted.
+          Enable automatic cross-device sync to securely store your encryption key in the cloud.
+          Your encrypted data (medical records, expenses, notes) will be accessible on any device
+          you sign in to — no extra passwords needed. The server only ever stores encrypted ciphertext.
         </p>
 
         {vaultEnabled && (
           <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <p className="text-sm text-emerald-800 dark:text-emerald-300">
-              Sync is active. Sign in on any device and enter your sync password to restore access.
-              Use the form below to change your sync password.
+              Sync is active. Sign in on any device to automatically access your encrypted data.
             </p>
           </div>
         )}
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-              {vaultEnabled ? 'New Sync Password' : 'Sync Password'}
-            </label>
-            <div className="relative">
-              <input
-                type={showSyncPw ? 'text' : 'password'}
-                value={syncPassword}
-                onChange={e => setSyncPassword(e.target.value)}
-                placeholder="At least 8 characters"
-                className="w-full px-4 py-2.5 pr-10 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowSyncPw(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
-              >
-                {showSyncPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-              Confirm Sync Password
-            </label>
-            <input
-              type={showSyncPw ? 'text' : 'password'}
-              value={syncConfirm}
-              onChange={e => setSyncConfirm(e.target.value)}
-              placeholder="Re-enter password"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
-            />
-          </div>
-        </div>
 
         {syncError && (
           <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 px-3 py-2 rounded-lg border border-rose-100 dark:border-rose-900/30">
@@ -1698,14 +1653,16 @@ export function ProfileSettings() {
           </p>
         )}
 
-        <button
-          onClick={handleSetupSync}
-          disabled={!syncPassword || !syncConfirm || syncSaving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-medium transition-colors"
-        >
-          {syncSaving && <RefreshCw className="w-4 h-4 animate-spin" />}
-          {syncSaving ? 'Saving…' : vaultEnabled ? 'Update Sync Password' : 'Enable Cross-Device Sync'}
-        </button>
+        {!vaultEnabled && (
+          <button
+            onClick={handleEnableSync}
+            disabled={syncSaving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-medium transition-colors"
+          >
+            {syncSaving && <RefreshCw className="w-4 h-4 animate-spin" />}
+            {syncSaving ? 'Enabling…' : 'Enable Cross-Device Sync'}
+          </button>
+        )}
       </div>
 
       {/* Encrypted Backup */}
@@ -1715,8 +1672,8 @@ export function ProfileSettings() {
           Encrypted Backup
         </h2>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Your encrypted data (address, medical records, expenses) is stored on this device only.
-          Export a backup to restore it on a new device. The backup file is protected by a password you choose.
+          Export an encrypted backup for offline recovery. The backup file is protected by a password you choose.
+          If you have Cross-Device Sync enabled, your data is also accessible automatically on any signed-in device.
         </p>
         <div className="flex gap-3 flex-wrap">
           <button

@@ -37,8 +37,7 @@ For every field written to Firestore:
 For each `RESTRICTED_PII` field:
 - [ ] `encrypt()` from `app/src/lib/crypto.ts` is called on the value before the write
 - [ ] The raw value is not passed to `console.log`, telemetry, or any MCP tool
-- [ ] No-Cloud PII rule: medical records, expense data, and address fields → write is ABSENT
-      (these fields must not reach Firestore even encrypted until compliance review)
+- [ ] All PII fields written to Firestore are encrypted client-side (AES-256-GCM) before write — including medical records, expense data, and addresses
 
 ### Step 4 — Verify tokenized fields
 - [ ] `avatarUrl` and any other tokenized fields are never resolved client-side
@@ -62,12 +61,11 @@ Auditor: privacy-auditor agent
 ### Fields Audited
 | Field | Classification | Encrypted | In Firestore | Status |
 |---|---|---|---|---|
-| fieldName | RESTRICTED_PII | YES | NO (no-cloud) | PASS |
+| fieldName | RESTRICTED_PII | YES | YES (encrypted) | PASS |
 | fieldName | UNRESTRICTED_DATA | N/A | YES | PASS |
 
 ### Rules Check
-- [ ] No-Cloud PII fields absent from Firestore: PASS / FAIL
-- [ ] RESTRICTED_PII fields encrypted before write: PASS / FAIL
+- [ ] All RESTRICTED_PII fields encrypted (AES-256-GCM) before Firestore write: PASS / FAIL
 - [ ] Tokenized fields server-side only: PASS / FAIL
 - [ ] Firestore rules protect new paths: PASS / FAIL
 

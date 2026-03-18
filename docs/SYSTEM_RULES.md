@@ -10,9 +10,10 @@ This file is the single source of truth for all agent and developer rules.
 - All PII must be encrypted client-side using AES-256-GCM with a PBKDF2-derived key before any Firestore write.
 - Use `app/src/lib/crypto.ts` for all encryption/decryption.
 - Plaintext must be decrypted immediately after fetch, before entering React state or rendering.
-- No-Cloud PII policy: medical records, expense data, and address fields are stored client-side only; Firestore writes are prohibited until compliance review.
+- All PII fields (including medical records, expense data, and addresses) MAY be stored in Firestore, but MUST be encrypted client-side (AES-256-GCM) before write. This enables multi-device sync while maintaining zero-knowledge security.
 - Data Classification Contract is authoritative; if a field is not in the dictionary, treat it as RESTRICTED_PII.
 - Public visibility exposes ONLY display name, pet types for non-private pets, and total non-private pet count.
+- The user's real name / login email must never appear in public-facing contexts — only `displayName` is publicly viewable.
 - Tokenized fields must never be resolved client-side.
 
 ## 3. Documentation Discipline

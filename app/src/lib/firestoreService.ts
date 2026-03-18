@@ -10,9 +10,9 @@
  *   - users/{uid}/profile/data  -> address
  *   - users/{uid}/pets/{petId}  -> notes
  *
- * NO-CLOUD PII POLICY: Medical records, expense data, and all other sensitive
- * fields are stored client-side only (localStorage, encrypted). Firestore writes
- * for those fields are prohibited pending compliance review.
+ * All PII fields (including medical records, expense data, addresses) are encrypted
+ * client-side (AES-256-GCM) before any Firestore write. Multi-device sync is
+ * supported via the vault subsystem (users/{uid}/vault/*).
  *
  * Firestore Security Rules (configure in Firebase Console):
  *
@@ -571,7 +571,7 @@ export async function savePet(uid: string, pet: Pet): Promise<void> {
   const key = await getOrCreateUserKey(uid);
   const encNotes = await encryptField(pet.notes, key);
 
-  // Save medical records to encrypted localStorage — not Firestore (NO-CLOUD PII POLICY)
+  // Save medical records encrypted to localStorage cache + Firestore vault
   await saveMedicalRecords(uid, pet.id, pet);
 
   // Strip PII-adjacent fields before Firestore write

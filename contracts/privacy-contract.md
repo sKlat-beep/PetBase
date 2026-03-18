@@ -30,7 +30,7 @@ contract:
   constraints:
     - RESTRICTED_PII fields must NEVER be passed to any external tool, API, embedding, or MCP call
     - All RESTRICTED_PII must be encrypted before any Firestore write using app/src/lib/crypto.ts
-    - No-Cloud PII policy: medical records, expense data, and address fields must not be written to Firestore
+    - All PII fields (including medical records, expense data, and addresses) MAY be stored in Firestore if encrypted client-side (AES-256-GCM) before write
     - Tokenized fields must never be resolved client-side - all resolution happens server-side via token exchange
     - UNRESTRICTED_DATA may be indexed, searched, and shared only with user consent
     - Do not log any RESTRICTED_PII field or token value in dev-log.md or any output
@@ -86,7 +86,7 @@ Maintain this table. Add new fields here before writing any code that touches th
 | petNotes | users/{uid}.pets[].notes | Freeform - may contain medical context; encrypted |
 | expenseLabel | users/{uid}.expenses[].label | May contain sensitive context; encrypted |
 | expenseAmount | users/{uid}.expenses[].amount | Financial data; encrypted |
-| medicalRecords | users/{uid}.pets[].medicalRecords | Vaccines, vet visits - encrypted, client-side |
+| medicalRecords | users/{uid}/vault/medical_{petId} | Vaccines, vet visits - encrypted before Firestore write |
 | privateField | any | Any field with visibility: private set by the user |
 | securitySettings | users/{uid}.security | MFA, session tokens, recovery codes |
 

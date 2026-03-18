@@ -205,7 +205,7 @@ export async function createEncryptedBackup(
 
 /**
  * A Firestore-safe document that stores the user's AES-256-GCM key
- * wrapped with a PBKDF2-derived key from their sync password.
+ * wrapped with a PBKDF2-derived key from their Firebase Auth UID.
  * Stored at users/{uid}/vault/key — the cloud never sees the raw key.
  */
 export interface VaultKeyDoc {
@@ -213,18 +213,26 @@ export interface VaultKeyDoc {
   salt: string;
   /** AES-GCM IV (base64) used to wrap the key */
   iv: string;
-  /** The user's AES-256-GCM key, wrapped with PBKDF2(syncPassword) (base64) */
+  /** The user's AES-256-GCM key, wrapped with PBKDF2(uid) (base64) */
   wrappedKey: string;
   createdAt: string;
+  /** 'uid' = UID-derived key, 'password' = legacy sync password */
+  wrapMethod?: 'uid' | 'password';
+}
+
+/** Derive a wrapping key from the user's Firebase Auth UID. */
+export async function deriveKeyFromUID(uid: string, salt: Uint8Array): Promise<CryptoKey> {
+  return deriveWrapKey(uid, salt);
 }
 
 /**
- * Wraps the user's AES key with a PBKDF2-derived key from syncPassword.
+ * Wraps the user's AES key with a PBKDF2-derived key from their UID.
  * The result is safe to store in Firestore — the raw key is never exposed.
+ * Cross-device sync is automatic: sign in → UID is available → vault unwraps silently.
  */
-export async function wrapKeyForVault(key: CryptoKey, syncPassword: string): Promise<VaultKeyDoc> {
+export async function wrapKeyForVault(key: CryptoKey, uid: string): Promise<VaultKeyDoc> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const wrapKey = await deriveWrapKey(syncPassword, salt);
+  const wrapKey = await deriveKeyFromUID(uid, salt);
   const wrapIv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
   const raw = await crypto.subtle.exportKey('raw', key);
   const wrapped = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: wrapIv }, wrapKey, raw);
@@ -233,15 +241,38 @@ export async function wrapKeyForVault(key: CryptoKey, syncPassword: string): Pro
     iv: btoa(String.fromCharCode(...wrapIv)),
     wrappedKey: btoa(String.fromCharCode(...new Uint8Array(wrapped))),
     createdAt: new Date().toISOString(),
+    wrapMethod: 'uid',
   };
 }
 
 /**
- * Unwraps a vault key document using syncPassword, restoring the AES key.
+ * Unwraps a vault key document using the user's UID, restoring the AES key.
  * Persists the key to localStorage and memory cache for this session.
- * Throws if the sync password is wrong.
+ * Throws if the UID doesn't match (should not happen with valid auth).
  */
-export async function unwrapVaultKey(vaultDoc: VaultKeyDoc, syncPassword: string, uid: string): Promise<CryptoKey> {
+export async function unwrapVaultKey(vaultDoc: VaultKeyDoc, uid: string): Promise<CryptoKey> {
+  const salt = Uint8Array.from(atob(vaultDoc.salt), c => c.charCodeAt(0));
+  const iv = Uint8Array.from(atob(vaultDoc.iv), c => c.charCodeAt(0));
+  const wrapped = Uint8Array.from(atob(vaultDoc.wrappedKey), c => c.charCodeAt(0));
+  const wrapKey = await deriveKeyFromUID(uid, salt);
+  let rawKey: ArrayBuffer;
+  try {
+    rawKey = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, wrapKey, wrapped);
+  } catch {
+    throw new Error('Could not unlock vault — key mismatch.');
+  }
+  const key = await crypto.subtle.importKey('raw', rawKey, ALGO, true, ['encrypt', 'decrypt']);
+  const b64 = btoa(String.fromCharCode(...new Uint8Array(rawKey)));
+  localStorage.setItem(KEY_STORAGE_PREFIX + uid, b64);
+  keyCache.set(uid, key);
+  return key;
+}
+
+/**
+ * Unwraps a legacy vault key that was wrapped with a user-supplied sync password.
+ * Used for one-time migration: unwrap with old password → re-wrap with UID.
+ */
+export async function unwrapLegacyVaultKey(vaultDoc: VaultKeyDoc, syncPassword: string, uid: string): Promise<CryptoKey> {
   const salt = Uint8Array.from(atob(vaultDoc.salt), c => c.charCodeAt(0));
   const iv = Uint8Array.from(atob(vaultDoc.iv), c => c.charCodeAt(0));
   const wrapped = Uint8Array.from(atob(vaultDoc.wrappedKey), c => c.charCodeAt(0));

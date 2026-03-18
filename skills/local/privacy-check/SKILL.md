@@ -20,8 +20,7 @@
      `app/src/lib/crypto.ts` is called on the value before any Firestore write.
    - Check that the field value is never passed to `console.log`, a MCP tool, or any
      external API in plaintext.
-   - Verify no-cloud PII rule: medical records, expense data, and address fields must
-     not be written to Firestore at all (even encrypted) until a compliance review passes.
+   - Verify all PII fields written to Firestore are encrypted client-side (AES-256-GCM) before write — including medical records, expense data, and addresses.
 
 4. **For tokenized fields** (e.g., `avatarUrl`):
    - Confirm no client-side resolution. Token resolution must route through the

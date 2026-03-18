@@ -63,12 +63,12 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
     }
 
     // add-pet-photo: any pet has an avatar/photo
-    if (pets.some((p) => p.avatarUrl || p.photoUrl) && !ob.isStepCompleted('add-pet-photo')) {
+    if (pets.some((p) => p.image) && !ob.isStepCompleted('add-pet-photo')) {
       ob.markStepCompleted('add-pet-photo');
     }
 
     // add-medical-record: any pet has medical records
-    if (pets.some((p) => p.medicalRecords && p.medicalRecords.length > 0) && !ob.isStepCompleted('add-medical-record')) {
+    if (pets.some((p) => p.medicalVisits && p.medicalVisits.length > 0) && !ob.isStepCompleted('add-medical-record')) {
       ob.markStepCompleted('add-medical-record');
     }
 

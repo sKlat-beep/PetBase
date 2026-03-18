@@ -145,7 +145,7 @@ export function saveOnboardingPatch(patch: Partial<OnboardingState>): void {
 
   // Fire-and-forget Firestore write
   if (_uid) {
-    firestoreSave(_uid, patch).catch(() => {});
+    firestoreSave(_uid, patch as Record<string, unknown>).catch(() => {});
   }
 }
 
@@ -226,7 +226,7 @@ export async function loadAndMergeFromFirestore(uid: string): Promise<Onboarding
 
   // Write merged state back to Firestore if it differs
   if (merged.savedAt !== remote.savedAt || merged.discoveryCount !== remote.discoveryCount) {
-    firestoreSave(uid, merged).catch(() => {});
+    firestoreSave(uid, merged as unknown as Record<string, unknown>).catch(() => {});
   }
 
   window.dispatchEvent(new Event('petbase-guide-update'));

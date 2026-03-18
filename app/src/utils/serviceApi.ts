@@ -15,7 +15,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { get, set } from 'idb-keyval';
 import { app } from '../lib/firebase';
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 interface CachedResult {
   data: ServiceResult[];
@@ -40,6 +40,9 @@ export interface ServiceResult {
     text: string;
     author: string;
     date: string;
+    rating?: number;
+    upvotes?: number;
+    upvoters?: string[];
   }[];
   yelpUrl?: string;
   googleUrl?: string;
@@ -62,6 +65,7 @@ export interface SearchFilters {
   serviceFilters?: string[];
   lat?: number;
   lng?: number;
+  radius?: number;
 }
 
 let _functions: ReturnType<typeof getFunctions> | null = null;
@@ -75,8 +79,14 @@ function getFns() {
  * Falls back to an empty array if the function is not deployed or the API key
  * has not been set yet.
  */
-export async function searchServices(filters: SearchFilters): Promise<ServiceResult[]> {
-  if (!filters.location) return [];
+export interface SearchResponse {
+  results: ServiceResult[];
+  error?: { code: string; message: string };
+  remainingSearches?: number;
+}
+
+export async function searchServices(filters: SearchFilters): Promise<SearchResponse> {
+  if (!filters.location) return { results: [] };
 
   // Cache key uses H3 cell (res 7, ~5km²) when lat/lng available, falling back to
   // ZIP code then raw location string. This deduplicates across nearby ZIP codes
@@ -92,13 +102,13 @@ export async function searchServices(filters: SearchFilters): Promise<ServiceRes
   const cacheKey = `petbase_services_${geoKey}_${filters.type}_${filters.query}`;
   const cached = await get<CachedResult>(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
-    return cached.data;
+    return { results: cached.data };
   }
 
   try {
     const call = httpsCallable<
-      { type: string; location: string; query: string },
-      { results: ServiceResult[] }
+      { type: string; location: string; query: string; radius?: number },
+      { results: ServiceResult[]; error?: { code: string; message: string }; remainingSearches?: number }
     >(getFns(), 'findServices');
 
     const res = await call({
@@ -106,25 +116,26 @@ export async function searchServices(filters: SearchFilters): Promise<ServiceRes
       location: filters.location,
       query: filters.query,
       ...(filters.lat != null && filters.lng != null ? { lat: filters.lat, lng: filters.lng } : {}),
+      ...(filters.radius ? { radius: filters.radius } : {}),
     });
 
-    const results = res.data.results ?? [];
+    const { results = [], error, remainingSearches } = res.data;
     if (results.length > 0) {
       await set(cacheKey, { data: results, expiresAt: Date.now() + CACHE_TTL_MS });
-      // Background pre-fetch place details for top 3 results
       prefetchTopPlaceDetails(results, 3);
     }
-    return results;
+    return { results, error, remainingSearches };
   } catch (err: unknown) {
-    // Log so errors are visible in the browser console during development.
-    // Common causes: Cloud Function not deployed, API key not set, Firestore path bug.
     const code = (err as any)?.code ?? 'unknown';
     const message = (err as any)?.message ?? String(err);
     console.error(
       `[searchServices] Cloud Function error — code: ${code} | message: ${message}`,
       err,
     );
-    return [];
+    if (code === 'functions/resource-exhausted' || code === 'resource-exhausted') {
+      return { results: [], error: { code: 'rate-limited', message: "You've used all 5 searches today." }, remainingSearches: 0 };
+    }
+    return { results: [], error: { code: 'api-error', message: 'Service temporarily unavailable. Please try again.' } };
   }
 }
 
@@ -136,7 +147,7 @@ export async function searchServices(filters: SearchFilters): Promise<ServiceRes
 export function prefetchTopPlaceDetails(results: ServiceResult[], count = 3): void {
   results.slice(0, count).forEach(result => {
     // Fire-and-forget — don't block the UI
-    getPlaceDetails(result.id, result.name, result.location).catch(() => {});
+    getPlaceDetails(result.id, result.name, result.address).catch(() => {});
   });
 }
 
@@ -188,4 +199,14 @@ export async function getPlaceReviews(placeId: string): Promise<PlaceAtmosphere 
   } catch {
     return null;
   }
+}
+
+/**
+ * Clear all cached service search results from IndexedDB.
+ */
+export async function clearServiceCache(): Promise<void> {
+  const { keys, del } = await import('idb-keyval');
+  const allKeys = await keys();
+  const serviceKeys = allKeys.filter(k => typeof k === 'string' && k.startsWith('petbase_services_'));
+  await Promise.all(serviceKeys.map(k => del(k)));
 }

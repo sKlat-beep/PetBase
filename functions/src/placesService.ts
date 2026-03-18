@@ -40,7 +40,14 @@ function fetchJson(url: string, headers?: Record<string, string>): Promise<any> 
       let data = '';
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => {
-        try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+        try {
+          const parsed = JSON.parse(data);
+          if (res.statusCode && res.statusCode !== 200) {
+            reject(new Error(`HTTP ${res.statusCode}: ${JSON.stringify(parsed).slice(0, 500)}`));
+            return;
+          }
+          resolve(parsed);
+        } catch (e) { reject(e); }
       });
     }).on('error', reject);
   });

@@ -31,8 +31,15 @@ function fetchYelp(url: string, apiKey: string): Promise<{ businesses: YelpBusin
       let data = '';
       res.on('data', (chunk: string) => { data += chunk; });
       res.on('end', () => {
-        try { resolve(JSON.parse(data) as { businesses: YelpBusiness[] }); }
-        catch (e) { reject(e); }
+        try {
+          const parsed = JSON.parse(data);
+          if (res.statusCode && res.statusCode !== 200) {
+            console.error(`[fetchYelp] HTTP ${res.statusCode}:`, JSON.stringify(parsed).slice(0, 500));
+            reject(new Error(`Yelp API error: HTTP ${res.statusCode}`));
+            return;
+          }
+          resolve(parsed as { businesses: YelpBusiness[] });
+        } catch (e) { reject(e); }
       });
     });
     req.on('error', reject);
@@ -45,6 +52,7 @@ export async function findServicesYelp(
   category: string,
   apiKey: string,
   query?: string,
+  radius: number = 8000,
 ): Promise<YelpBusiness[]> {
   const yelpCategory = YELP_CATEGORY_MAP[category] ?? 'petstore';
   const params = new URLSearchParams({
@@ -52,7 +60,7 @@ export async function findServicesYelp(
     longitude: String(lng),
     categories: yelpCategory,
     limit: '50',
-    radius: '8000',
+    radius: String(Math.min(Math.max(Math.round(radius), 1), 40000)),
     sort_by: 'rating',
     ...(query ? { term: query } : {}),
   });

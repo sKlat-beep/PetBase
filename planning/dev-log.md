@@ -38,3 +38,15 @@ Added dev-mode guard to unimplemented getNearbyStores() in storeApi.ts.
 
 ## [2026-03-17] TASK-90: Remove functions/node_modules from git — COMPLETE
 Updated .gitignore to `**/node_modules/`, removed functions/node_modules/ from index.
+
+## [2026-03-17] TASK-92: Dashboard full review — UI/UX/Performance overhaul — START
+4-phase overhaul: emergency FAB, widget extraction, perf fixes, design system alignment.
+
+## [2026-03-17] TASK-92: Dashboard full review — UI/UX/Performance overhaul — COMPLETE
+Extracted EmergencyModal + 4 widgets to memoized components. Added persistent Emergency FAB. Removed Quick Actions widget with layout migration. Created shared useWeather hook with debounce. Throttled ResizeObserver. Fixed focus rings, touch targets, expenses surface. Dashboard.tsx reduced by ~450 lines.
+
+## [2026-03-17] TASK-92: Dashboard full review — [VERIFIED]
+Commit 90276ad. Frontend build PASS, functions build PASS, TS strict (functions) PASS. TS strict (app) shows 9 pre-existing errors in Search.tsx, MessagingContext.tsx, serviceApi.ts — none introduced by this task. Privacy scan n/a (no new firestoreService writes). Overall PASS.
+
+## [2026-03-17] TASK-92: Dashboard full review — DEPLOYED
+Firebase deploy --only hosting,functions to petbase-ddfd7. Hosting: 53 files uploaded, release complete. Functions: 17 functions confirmed (no changes). Live at https://petbase-ddfd7.web.app. Awaiting manual smoke test.

@@ -23,5 +23,9 @@
     "firebase-functions-test": "^3.3.0",
     "typescript": "^5.4.5"
   },
+  "overrides": {
+    "fast-xml-parser": ">=5.5.6",
+    "@tootallnate/once": ">=3.0.1"
+  },
   "private": true
 }

@@ -34,7 +34,9 @@
     "vite": "^6.2.0"
   },
   "overrides": {
-    "serialize-javascript": ">=7.0.3"
+    "serialize-javascript": ">=7.0.3",
+    "fast-xml-parser": ">=5.5.6",
+    "@tootallnate/once": ">=3.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

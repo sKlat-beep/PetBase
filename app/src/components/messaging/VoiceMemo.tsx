@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Mic, Square, Send, X } from 'lucide-react';
 import { uploadMessageAudio } from '../../lib/storageService';
 
@@ -15,11 +15,13 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [duration, setDuration] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startRecording = useCallback(async () => {
+    setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
@@ -51,7 +53,7 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
         }
       }, 60_000);
     } catch {
-      // Microphone not available or denied
+      setError('Microphone access denied. Please allow mic access and try again.');
     }
   }, []);
 
@@ -70,7 +72,7 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
       const url = await uploadMessageAudio(senderUid, recipientUid, audioBlob);
       onSend(url);
     } catch {
-      // Upload failed
+      setError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -83,6 +85,15 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
     setDuration(0);
     onClose();
   }, [audioUrl, onClose]);
+
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current?.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
@@ -130,6 +141,11 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
             <Send className="w-4 h-4" />
           </button>
         </>
+      )}
+      {error && (
+        <p role="alert" className="text-xs text-rose-500 dark:text-rose-400 mt-1 px-2">
+          {error}
+        </p>
       )}
     </div>
   );

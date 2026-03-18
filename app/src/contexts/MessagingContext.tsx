@@ -5,6 +5,7 @@ import {
   sendDm,
   markDmRead,
   deleteDmForUser,
+  editDmMessage,
   subscribeToConversations,
   subscribeToThread,
   createNotification,
@@ -26,8 +27,9 @@ interface MessagingContextValue {
   threadMessages: DmMessage[];
   activeUid: string | null;
   setActiveUid: (uid: string | null) => void;
-  sendMessage: (toUid: string, content: string, media?: { url: string; type: 'image' | 'gif' | 'audio' }) => Promise<void>;
+  sendMessage: (toUid: string, content: string, media?: { url: string; type: 'image' | 'gif' | 'audio' }, replyTo?: { id: string; content: string; fromUid: string }) => Promise<void>;
   deleteMessage: (messageId: string, fromUid: string) => Promise<void>;
+  editMessage: (messageId: string, newContent: string) => Promise<void>;
   markRead: (messageId: string) => Promise<void>;
   unreadByUser: Record<string, number>;
   totalUnread: number;
@@ -120,10 +122,10 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
     if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
   }, []);
 
-  const sendMessage = useCallback(async (toUid: string, content: string, media?: { url: string; type: 'image' | 'gif' }) => {
+  const sendMessage = useCallback(async (toUid: string, content: string, media?: { url: string; type: 'image' | 'gif' }, replyTo?: { id: string; content: string; fromUid: string }) => {
     if (!user) return;
     if (isBlockedRef.current(toUid)) throw new Error('Cannot send message to a blocked user');
-    await sendDm(user.uid, toUid, content, media);
+    await sendDm(user.uid, toUid, content, media, replyTo);
     // Best-effort: skip notification if we are actively in this conversation
     // (complete server-side de-dup deferred to Phase 3c)
     if (activeUidRef.current !== toUid && profile) {
@@ -148,6 +150,11 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
   const deleteMessage = useCallback(async (messageId: string, fromUid: string) => {
     if (!user) return;
     await deleteDmForUser(messageId, user.uid, fromUid);
+  }, [user]);
+
+  const editMessage = useCallback(async (messageId: string, newContent: string) => {
+    if (!user) return;
+    await editDmMessage(messageId, user.uid, newContent);
   }, [user]);
 
   const markRead = useCallback(async (messageId: string) => {
@@ -209,6 +216,7 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
       setActiveUid,
       sendMessage,
       deleteMessage,
+      editMessage,
       markRead,
       unreadByUser,
       totalUnread,

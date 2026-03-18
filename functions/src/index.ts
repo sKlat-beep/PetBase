@@ -10,6 +10,7 @@ import { latLngToCell } from 'h3-js';
 import { findServicesYelp, type YelpBusiness } from './yelpService';
 import { exportUserData as _exportUserData } from './exportService';
 import { findPlaceId, getPlaceDetailsAndContact, getPlaceAtmosphere } from './placesService';
+import { fetchOgMetadata } from './ogService';
 import { incrementPlacesUsage, checkAndAlertIfOverThreshold, updateFeatureFlags } from './placesUsage';
 import { postSlackBlocks, buildAlertBlock } from './slackService';
 
@@ -892,3 +893,27 @@ export const checkVaccineReminders = onSchedule('every day 09:00', async () => {
 
   console.log(`[checkVaccineReminders] Done. Sent ${reminderCount} reminder(s).`);
 });
+
+// ─── Link Preview ────────────────────────────────────────────────────────────
+const linkPreviewLimits = new Map<string, number[]>();
+
+export const fetchLinkPreview = onCall(
+  { secrets: [], enforceAppCheck: false },
+  async (request) => {
+    if (!request.auth) throw new HttpsError('unauthenticated', 'Auth required');
+    const url = request.data?.url;
+    if (!url || typeof url !== 'string') throw new HttpsError('invalid-argument', 'URL required');
+
+    // Rate limit: 10/min/user
+    const uid = request.auth.uid;
+    const now = Date.now();
+    const userHits = linkPreviewLimits.get(uid) ?? [];
+    const recentHits = userHits.filter(t => now - t < 60_000);
+    if (recentHits.length >= 10) throw new HttpsError('resource-exhausted', 'Rate limit exceeded');
+    recentHits.push(now);
+    linkPreviewLimits.set(uid, recentHits);
+
+    const metadata = await fetchOgMetadata(url);
+    return metadata ?? { title: '', description: '', image: '', siteName: '', url, fetchedAt: now };
+  },
+);

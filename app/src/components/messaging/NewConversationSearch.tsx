@@ -95,7 +95,7 @@ export function NewConversationSearch() {
           onChange={e => { setQuery(e.target.value); handleSearch(e.target.value); setHighlightIndex(-1); }}
           onKeyDown={handleKeyDown}
           placeholder="Search people…"
-          className="w-full pl-8 pr-8 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full pl-8 pr-8 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
         />
         {query && (
           <button onClick={() => { setQuery(''); setHighlightIndex(-1); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">

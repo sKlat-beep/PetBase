@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useSearchParams, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageSquare, Send, Trash2, CheckCheck, ArrowLeft, ShieldOff, SquareCheck, Square, MoreHorizontal, Smile, Image, Search, ChevronDown, Mail, Pin, Mic } from 'lucide-react';
+import { MessageSquare, Send, Trash2, CheckCheck, ArrowLeft, ShieldOff, SquareCheck, Square, MoreHorizontal, Smile, Image, Search, ChevronDown, Mail, Pin, Mic, Reply, X, Pencil } from 'lucide-react';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../lib/firebase';
 import EmptyState from '../components/ui/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocial } from '../contexts/SocialContext';
@@ -141,7 +143,32 @@ function counterColor(current: number, max: number): string {
 
 const MAX_DM = 2000;
 
-function MessageBubble({
+function EditInline({ initialContent, onSave, onCancel }: { initialContent: string; onSave: (content: string) => void; onCancel: () => void }) {
+  const [value, setValue] = useState(initialContent);
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { inputRef.current?.focus(); }, []);
+  return (
+    <div className="flex flex-col gap-1">
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && value.trim()) onSave(value.trim());
+          if (e.key === 'Escape') onCancel();
+        }}
+        maxLength={2000}
+        className="w-full px-2 py-1 text-sm rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+      />
+      <div className="flex gap-1 justify-end">
+        <button onClick={onCancel} className="text-[10px] px-2 py-0.5 rounded text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700">Cancel</button>
+        <button onClick={() => value.trim() && onSave(value.trim())} className="text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white hover:bg-emerald-600">Save</button>
+      </div>
+    </div>
+  );
+}
+
+const MessageBubble = React.memo(function MessageBubble({
   message,
   isMine,
   isBlocked,
@@ -150,13 +177,18 @@ function MessageBubble({
   onToggleSelect,
   onDelete,
   onReport,
+  onReply,
+  onEdit,
+  onCancelEdit,
+  isEditing,
   currentUid,
   otherUid,
   otherDisplayName,
   threadId,
   isLastMine,
-  liveMessages,
+  getReactionStatus,
   highlightRegex,
+  editMessage,
 }: {
   message: DmMessage;
   isMine: boolean;
@@ -166,13 +198,18 @@ function MessageBubble({
   onToggleSelect: () => void;
   onDelete: () => void;
   onReport: () => void;
+  onReply?: () => void;
+  onEdit?: () => void;
+  onCancelEdit?: () => void;
+  isEditing?: boolean;
   currentUid: string;
   otherUid: string;
   otherDisplayName: string;
   threadId: string;
   isLastMine: boolean;
-  liveMessages: DmMessage[];
+  getReactionStatus: (messageId: string, reaction: ReactionKey) => boolean;
   highlightRegex?: RegExp | null;
+  editMessage: (messageId: string, newContent: string) => Promise<void>;
 }) {
   const ts = new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -196,11 +233,10 @@ function MessageBubble({
   }, []);
 
   const handleReact = useCallback((reaction: ReactionKey) => {
-    const liveMsg = liveMessages.find(m => m.id === message.id);
-    const alreadyReacted = liveMsg?.reactions?.[reaction]?.includes(currentUid) ?? false;
+    const alreadyReacted = getReactionStatus(message.id, reaction);
     reactToDm(threadId, message.id, currentUid, reaction, alreadyReacted).catch(() => {});
     setMenuOpen(false);
-  }, [liveMessages, message.id, currentUid, threadId]);
+  }, [getReactionStatus, message.id, currentUid, threadId]);
 
   const reactionKeys: ReactionKey[] = ['paw', 'bone', 'heart'];
   const hasReactions = reactionKeys.some(k => (message.reactions?.[k]?.length ?? 0) > 0);
@@ -208,6 +244,25 @@ function MessageBubble({
   const hasMedia = !!message.mediaUrl && (message.mediaType === 'gif' || message.mediaType === 'image' || message.mediaType === 'audio');
   const hasText = !!message.content && !isBlocked;
   const blockedText = isBlocked && !isMine;
+
+  // Link preview
+  const urlMatch = useMemo(() => {
+    if (!message.content) return null;
+    const match = message.content.match(/https?:\/\/[^\s<]+/);
+    return match ? match[0] : null;
+  }, [message.content]);
+
+  const [linkPreview, setLinkPreview] = useState<{ title: string; description: string; image: string; siteName: string; url: string } | null>(
+    message.linkPreview ?? null
+  );
+
+  useEffect(() => {
+    if (!urlMatch || linkPreview) return;
+    const fetchPreview = httpsCallable(functions, 'fetchLinkPreview');
+    fetchPreview({ url: urlMatch }).then((result: any) => {
+      if (result.data?.title) setLinkPreview(result.data);
+    }).catch(() => {});
+  }, [urlMatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={`flex items-end gap-2 ${isMine ? 'justify-end' : 'justify-start'}`}>
@@ -221,6 +276,21 @@ function MessageBubble({
         </button>
       )}
       <div className={`group max-w-[72%] ${isMine ? 'order-last' : ''}`}>
+        {/* Reply-to quote */}
+        {message.replyToId && (
+          <div className="bg-neutral-200/50 dark:bg-neutral-700/50 rounded-lg px-2 py-1 text-xs mb-1 cursor-pointer hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70 transition-colors"
+            onClick={() => {
+              const el = document.getElementById(`msg-${message.replyToId}`);
+              el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }}
+          >
+            <span className="font-medium text-neutral-500 dark:text-neutral-400">
+              {message.replyToFromUid === currentUid ? 'You' : otherDisplayName}
+            </span>
+            <p className="text-neutral-600 dark:text-neutral-400 line-clamp-1">{message.replyToContent}</p>
+          </div>
+        )}
+
         {/* Text bubble — only if there's text content (or blocked message placeholder) */}
         {(hasText || blockedText) && (
           <div className={`px-3 py-2 rounded-2xl text-sm leading-relaxed
@@ -229,7 +299,18 @@ function MessageBubble({
               : isBlocked
                 ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 italic rounded-bl-sm'
                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-bl-sm'}`}>
-            {blockedText ? 'Message from blocked user' : (highlightRegex && message.content ? highlightText(message.content, highlightRegex) : message.content)}
+            {isEditing ? (
+              <EditInline
+                initialContent={message.content}
+                onSave={(newContent) => {
+                  editMessage(message.id, newContent).catch(() => {});
+                  onCancelEdit?.();
+                }}
+                onCancel={() => onCancelEdit?.()}
+              />
+            ) : (
+              blockedText ? 'Message from blocked user' : (highlightRegex && message.content ? highlightText(message.content, highlightRegex) : message.content)
+            )}
           </div>
         )}
 
@@ -244,6 +325,25 @@ function MessageBubble({
             loading="lazy"
           />
         ) : null}
+
+        {/* Link preview */}
+        {linkPreview && linkPreview.title && (
+          <a
+            href={urlMatch!}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden mt-1.5 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
+          >
+            {linkPreview.image && (
+              <img src={linkPreview.image} alt="" className="w-full h-[120px] object-cover" loading="lazy" referrerPolicy="no-referrer" />
+            )}
+            <div className="px-3 py-2">
+              {linkPreview.siteName && <p className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wide">{linkPreview.siteName}</p>}
+              <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 line-clamp-1">{linkPreview.title}</p>
+              {linkPreview.description && <p className="text-[10px] text-neutral-500 dark:text-neutral-400 line-clamp-2 mt-0.5">{linkPreview.description}</p>}
+            </div>
+          </a>
+        )}
 
         {/* Reaction counts */}
         {hasReactions && (
@@ -276,6 +376,11 @@ function MessageBubble({
 
         <div className={`flex items-center gap-1 mt-0.5 ${isMine ? 'justify-end' : 'justify-start'}`}>
           <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{ts}</span>
+          {message.editedAt && (
+            <span className="text-[10px] text-neutral-400 italic">
+              (edited)
+            </span>
+          )}
           {/* Read receipt: show below last sent message */}
           {isMine && isLastMine && message.read && (
             <span className="text-[10px] text-emerald-500 dark:text-emerald-400 flex items-center gap-0.5">
@@ -319,6 +424,22 @@ function MessageBubble({
                           </button>
                         ))}
                       </div>
+                      {/* Reply */}
+                      <button
+                        onClick={() => { onReply?.(); setMenuOpen(false); }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                      >
+                        <Reply className="w-3.5 h-3.5" /> Reply
+                      </button>
+                      {/* Edit — own messages within 15 min */}
+                      {isMine && Date.now() - message.createdAt < 15 * 60 * 1000 && (
+                        <button
+                          onClick={() => { onEdit?.(); setMenuOpen(false); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> Edit
+                        </button>
+                      )}
                       {/* Delete */}
                       <button
                         onClick={() => { onDelete(); setMenuOpen(false); }}
@@ -345,7 +466,7 @@ function MessageBubble({
       </div>
     </div>
   );
-}
+});
 
 // ─── Thread pane ──────────────────────────────────────────────────────────────
 function ThreadPane({
@@ -364,7 +485,7 @@ function ThreadPane({
   onViewProfile: () => void;
 }) {
   const { user } = useAuth();
-  const { threadMessages, sendMessage, deleteMessage, markRead, otherUserTyping, notifyTyping } = useMessaging();
+  const { threadMessages, sendMessage, deleteMessage, editMessage, markRead, otherUserTyping, notifyTyping } = useMessaging();
   const [text, setText] = useState('');
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -375,6 +496,13 @@ function ThreadPane({
   const [showVoice, setShowVoice] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; fromUid: string } | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const getReactionStatus = useCallback((messageId: string, reaction: ReactionKey) => {
+    const msg = threadMessages.find(m => m.id === messageId);
+    return msg?.reactions?.[reaction]?.includes(user?.uid ?? '') ?? false;
+  }, [threadMessages, user?.uid]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -510,8 +638,9 @@ function ThreadPane({
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim() || isBlocked) return;
-    sendMessage(otherUid, text.trim()).catch(() => {});
+    sendMessage(otherUid, text.trim(), undefined, replyingTo ?? undefined).catch(() => {});
     setText('');
+    setReplyingTo(null);
   };
 
   const insertEmoji = useCallback((emoji: string) => {
@@ -676,6 +805,7 @@ function ThreadPane({
               return (
                 <div
                   key={m.id}
+                  id={`msg-${m.id}`}
                   ref={messageVirtualizer.measureElement}
                   data-index={item.index}
                   style={{
@@ -695,13 +825,18 @@ function ThreadPane({
                     onToggleSelect={() => toggleSelect(m.id)}
                     onDelete={() => deleteMessage(m.id, m.fromUid).catch(() => {})}
                     onReport={() => setReportTarget(m.id)}
+                    onReply={() => setReplyingTo({ id: m.id, content: m.content, fromUid: m.fromUid })}
+                    onEdit={() => setEditingId(m.id)}
+                    onCancelEdit={() => setEditingId(null)}
+                    isEditing={editingId === m.id}
                     currentUid={user?.uid ?? ''}
                     otherUid={otherUid}
                     otherDisplayName={displayName}
                     threadId={threadId}
                     isLastMine={m.id === lastMineId}
-                    liveMessages={threadMessages}
+                    getReactionStatus={getReactionStatus}
                     highlightRegex={highlightRegex}
+                    editMessage={editMessage}
                   />
                 </div>
               );
@@ -743,6 +878,22 @@ function ThreadPane({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Reply preview */}
+      {replyingTo && (
+        <div className="flex items-center gap-2 px-3 py-2 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 shrink-0">
+          <Reply className="w-4 h-4 text-neutral-400 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              Replying to {replyingTo.fromUid === user?.uid ? 'yourself' : displayName}
+            </p>
+            <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">{replyingTo.content}</p>
+          </div>
+          <button onClick={() => setReplyingTo(null)} className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300" aria-label="Cancel reply">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Compose */}
       <form

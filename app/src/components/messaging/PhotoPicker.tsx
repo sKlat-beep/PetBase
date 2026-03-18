@@ -77,7 +77,7 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-2.5 text-xs font-medium transition-colors focus-visible:outline-none
+              className={`flex-1 py-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
                 ${tab === t
                   ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500'
                   : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'}`}
@@ -134,7 +134,7 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
                 <>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center gap-3 w-full py-8 rounded-2xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors group"
+                    className="flex flex-col items-center gap-3 w-full py-8 rounded-2xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors group focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >
                     <Upload className="w-7 h-7 text-neutral-300 dark:text-neutral-600 group-hover:text-emerald-500 transition-colors" />
                     <div className="text-center">

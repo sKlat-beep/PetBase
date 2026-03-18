@@ -185,7 +185,7 @@ import { httpsCallable } from 'firebase/functions';
 
 /** Convert Firestore Timestamp fields (createdAt, updatedAt, expiresAt) to epoch ms numbers. */
 function coerceTimestamps<T>(data: Record<string, unknown>): T {
-  for (const key of ['createdAt', 'updatedAt', 'expiresAt', 'revokedAt', 'lastSeen'] as const) {
+  for (const key of ['createdAt', 'updatedAt', 'expiresAt', 'revokedAt', 'lastSeen', 'editedAt'] as const) {
     const v = data[key];
     if (v instanceof Timestamp) {
       data[key] = v.toMillis();
@@ -800,6 +800,18 @@ export interface DmMessage {
   };
   mediaUrl?: string;       // URL for image or GIF
   mediaType?: 'image' | 'gif' | 'audio'; // type of attached media
+  replyToId?: string;
+  replyToContent?: string;     // first 100 chars
+  replyToFromUid?: string;
+  linkPreview?: {
+    title: string;
+    description: string;
+    image: string;
+    siteName: string;
+    url: string;
+  };
+  editedAt?: number;
+  originalContent?: string;
 }
 
 function buildThreadId(uidA: string, uidB: string): string {
@@ -811,6 +823,7 @@ export async function sendDm(
   toUid: string,
   content: string,
   media?: { url: string; type: 'image' | 'gif' },
+  replyTo?: { id: string; content: string; fromUid: string },
 ): Promise<string> {
   const now = Date.now();
   const participants = [fromUid, toUid].sort();
@@ -826,6 +839,11 @@ export async function sendDm(
     deletedByRecipient: false,
     expiresAt: now + 3 * 365 * 24 * 60 * 60 * 1000,
   };
+  if (replyTo) {
+    payload.replyToId = replyTo.id;
+    payload.replyToContent = replyTo.content.slice(0, 100);
+    payload.replyToFromUid = replyTo.fromUid;
+  }
   if (media) {
     payload.mediaUrl = media.url;
     payload.mediaType = media.type;
@@ -836,6 +854,29 @@ export async function sendDm(
 
 export async function markDmRead(messageId: string): Promise<void> {
   await updateDoc(doc(db, 'messages', messageId), { read: true });
+}
+
+export async function editDmMessage(
+  messageId: string,
+  callerUid: string,
+  newContent: string,
+): Promise<void> {
+  const ref = doc(db, 'messages', messageId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('Message not found');
+  const data = snap.data();
+  if (data.fromUid !== callerUid) throw new Error('Not your message');
+  const ageMs = Date.now() - (data.createdAt ?? 0);
+  if (ageMs > 15 * 60 * 1000) throw new Error('Edit window expired');
+  const updates: Record<string, string | number> = {
+    content: newContent,
+    editedAt: Date.now(),
+  };
+  // Save original content only on first edit
+  if (!data.originalContent) {
+    updates.originalContent = data.content;
+  }
+  await updateDoc(ref, updates);
 }
 
 export async function deleteDmForUser(messageId: string, callerUid: string, fromUid: string): Promise<void> {

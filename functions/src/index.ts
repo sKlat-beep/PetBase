@@ -320,10 +320,49 @@ function mapToServiceResult(docs: (ServiceDoc & { id: string; distanceMeters?: n
     }));
 }
 
+/** Background cache refresh for stale-while-revalidate pattern. */
+async function refreshCache(
+  db: FirebaseFirestore.Firestore,
+  lat: number, lng: number, type: string, h3Index: string,
+  zipCacheId: string | null, h3CacheId: string,
+  query?: string, radius?: number,
+  globalUsageRef?: FirebaseFirestore.DocumentReference,
+  currentCount?: number, HARD_LIMIT?: number, WARN_THRESHOLD?: number,
+): Promise<void> {
+  if (currentCount != null && HARD_LIMIT != null && currentCount >= HARD_LIMIT) return;
+  const yelpApiKey = process.env.YELP_API_KEY;
+  if (!yelpApiKey) return;
+  const searchRadius = (radius && Number.isFinite(radius) && radius > 0 && radius <= 40000) ? radius : 8000;
+  const businesses = await findServicesYelp(lat, lng, type, yelpApiKey, query, searchRadius);
+  if (businesses.length === 0) return;
+
+  const serviceIds: string[] = [];
+  const batch = db.batch();
+  for (const biz of businesses) {
+    const serviceId = `yelp_${biz.id}`;
+    serviceIds.push(serviceId);
+    batch.set(db.doc(`services/${serviceId}`), mapYelpToServiceDoc(biz, type, h3Index), { merge: true });
+  }
+  batch.set(db.doc(`serviceCache/${h3CacheId}`), { serviceIds, cachedAt: Date.now(), source: 'yelp' });
+  if (zipCacheId) {
+    batch.set(db.doc(`zipCache/${zipCacheId}`), {
+      serviceIds, cachedAt: Date.now(), source: 'yelp',
+      zipCode: zipCacheId.split('_')[0], type, lat, lng,
+    });
+  }
+  if (globalUsageRef) {
+    batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
+  }
+  await batch.commit();
+  console.log(`[refreshCache] Background refresh complete for ${zipCacheId ?? h3CacheId}`);
+  if (currentCount != null && WARN_THRESHOLD != null && currentCount + 1 > WARN_THRESHOLD) {
+    console.warn(`[refreshCache] Yelp API warning: ${(currentCount ?? 0) + 1}/${HARD_LIMIT} calls today.`);
+  }
+}
+
 export const findServices = onCall(
   { secrets: ['GOOGLE_PLACES_KEY', 'YELP_API_KEY'] },
   async (request) => {
-    // ── Per-user daily rate limit ──────────────────────────────────────────────
     const uid = request.auth?.uid;
     if (!uid) {
       logSecurityEvent('findServices', 'unauthenticated');
@@ -332,17 +371,6 @@ export const findServices = onCall(
 
     const db = admin.firestore();
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    const usageRef = db.doc(`apiUsage/yelp_user_${uid}_${today}`);
-    const usageSnap = await usageRef.get();
-    const count = (usageSnap.exists ? usageSnap.data()!.count : 0) as number;
-    const DAILY_LIMIT = 5;
-
-    const remainingSearches = DAILY_LIMIT - count;
-    if (count >= DAILY_LIMIT) {
-      return { results: [], error: { code: 'rate-limited', message: 'Daily search limit reached. Try again tomorrow.' }, remainingSearches: 0 };
-    }
-    await usageRef.set({ count: count + 1, updatedAt: new Date().toISOString() }, { merge: true });
-    // ──────────────────────────────────────────────────────────────────────────
 
     const { type, location, query, radius } = request.data as {
       type: string;
@@ -373,52 +401,102 @@ export const findServices = onCall(
     const currentCount = (globalUsageSnap.data()?.count ?? 0) as number;
     console.log(`[findServices] Yelp daily usage: ${currentCount}/${HARD_LIMIT}`);
 
-    // Resolve coordinates if not provided (ZIP-based search)
+    // ── Resolve coordinates via zipGeo cache (Phase 2a) ─────────────────────
+    const isZip = /^\d{5}$/.test(location);
     if (lat == null || lng == null) {
-      const googleKey = process.env.GOOGLE_PLACES_KEY;
-      if (!googleKey) throw new HttpsError('failed-precondition', 'Google key not configured.');
-      console.log(`[findServices] Geocoding location: "${location}"`);
-      const geoData = await fetchJson(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleKey}`,
-      ) as { status: string; results: { geometry: { location: { lat: number; lng: number } } }[] };
-      console.log(`[findServices] Geocode status: ${geoData.status} — result count: ${geoData.results?.length ?? 0}`);
-      const loc = geoData.results?.[0]?.geometry?.location;
-      if (!loc) {
-        return { results: [], error: { code: 'location-not-found', message: 'Could not find that location. Check your ZIP code.' }, remainingSearches: remainingSearches - 1 };
+      // Check zipGeo Firestore cache first
+      if (isZip) {
+        const zipGeoSnap = await db.doc(`zipGeo/${location}`).get();
+        if (zipGeoSnap.exists) {
+          const cached = zipGeoSnap.data()!;
+          lat = cached.lat as number;
+          lng = cached.lng as number;
+          console.log(`[findServices] zipGeo cache hit for ${location}`);
+        }
       }
-      lat = loc.lat;
-      lng = loc.lng;
+      // Fall back to Google Geocoding API
+      if (lat == null || lng == null) {
+        const googleKey = process.env.GOOGLE_PLACES_KEY;
+        if (!googleKey) throw new HttpsError('failed-precondition', 'Google key not configured.');
+        console.log(`[findServices] Geocoding location: "${location}"`);
+        const geoData = await fetchJson(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleKey}`,
+        ) as { status: string; results: { geometry: { location: { lat: number; lng: number } } }[] };
+        console.log(`[findServices] Geocode status: ${geoData.status} — result count: ${geoData.results?.length ?? 0}`);
+        const loc = geoData.results?.[0]?.geometry?.location;
+        if (!loc) {
+          return { results: [], error: { code: 'location-not-found', message: 'Could not find that location. Check your ZIP code.' } };
+        }
+        lat = loc.lat;
+        lng = loc.lng;
+        // Store in zipGeo cache for future lookups
+        if (isZip) {
+          await db.doc(`zipGeo/${location}`).set({ lat, lng, resolvedAt: Date.now() });
+          console.log(`[findServices] zipGeo cache stored for ${location}`);
+        }
+      }
     }
     console.log(`[findServices] Resolved coords — lat=${lat} lng=${lng}`);
 
     // H3 index at resolution 7 (~5km)
     const h3Index = latLngToCell(lat, lng, 7);
-    const cacheId = `${h3Index}_${type}`;
+    const h3CacheId = `${h3Index}_${type}`;
+    const zipCacheId = isZip ? `${location}_${type}` : null;
 
-    // Check serviceCache (TTL 7 days)
-    const cacheRef = db.doc(`serviceCache/${cacheId}`);
+    // ── Cache check priority: zipCache → serviceCache (Phase 2c) ──────────
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+    // Helper to resolve serviceIds → ServiceResult[]
+    const resolveServiceIds = async (serviceIds: string[]) => {
+      const serviceDocs = await Promise.all(serviceIds.map(id => db.doc(`services/${id}`).get()));
+      return serviceDocs
+        .filter(d => d.exists)
+        .map(d => ({ id: d.id, ...(d.data() as ServiceDoc) }));
+    };
+
+    // 1. Check zipCache first (shared across all users for same ZIP)
+    if (zipCacheId) {
+      const zipCacheSnap = await db.doc(`zipCache/${zipCacheId}`).get();
+      if (zipCacheSnap.exists) {
+        const zipData = zipCacheSnap.data()!;
+        const ageMs = Date.now() - ((zipData.cachedAt as number) ?? 0);
+        if (ageMs < SEVEN_DAYS_MS) {
+          const serviceIds: string[] = zipData.serviceIds ?? [];
+          const results = await resolveServiceIds(serviceIds);
+          console.log(`[findServices] zipCache hit for ${zipCacheId} (age: ${Math.round(ageMs / 3600000)}h)`);
+          // Stale-while-revalidate: if 2-7 days old, serve stale + refresh in background
+          if (ageMs >= TWO_DAYS_MS) {
+            console.log(`[findServices] zipCache stale (${Math.round(ageMs / 86400000)}d) — background refresh`);
+            // Fire-and-forget background refresh (don't await)
+            refreshCache(db, lat, lng, type, h3Index, zipCacheId, h3CacheId, query, radius, globalUsageRef, currentCount, HARD_LIMIT, WARN_THRESHOLD).catch(e => console.error('[findServices] background refresh failed:', e));
+          }
+          return { results: mapToServiceResult(results) };
+        }
+      }
+    }
+
+    // 2. Check H3 serviceCache (backward compat / fallback)
+    const cacheRef = db.doc(`serviceCache/${h3CacheId}`);
     const cacheSnap = await cacheRef.get();
-    console.log(`[findServices] H3 cache key: ${cacheId} — exists: ${cacheSnap.exists}`);
+    console.log(`[findServices] H3 cache key: ${h3CacheId} — exists: ${cacheSnap.exists}`);
     if (cacheSnap.exists) {
       const cacheData = cacheSnap.data()!;
       const ageMs = Date.now() - ((cacheData.cachedAt as number) ?? 0);
-      if (ageMs < 30 * 24 * 60 * 60 * 1000) {
+      if (ageMs < SEVEN_DAYS_MS) {
         const serviceIds: string[] = cacheData.serviceIds ?? [];
-        const serviceDocs = await Promise.all(serviceIds.map(id => db.doc(`services/${id}`).get()));
-        const results = serviceDocs
-          .filter(d => d.exists)
-          .map(d => ({ id: d.id, ...(d.data() as ServiceDoc) }));
-        return { results: mapToServiceResult(results), remainingSearches: remainingSearches - 1 };
+        const results = await resolveServiceIds(serviceIds);
+        return { results: mapToServiceResult(results) };
       }
     }
 
     // Hard limit — return empty rather than error
     if (currentCount >= HARD_LIMIT) {
       console.warn(`Yelp daily limit reached (${currentCount}/${HARD_LIMIT}). Returning empty.`);
-      return { results: [], error: { code: 'api-unavailable', message: 'Service temporarily unavailable. Try again later.' }, remainingSearches: remainingSearches - 1 };
+      return { results: [], error: { code: 'api-unavailable', message: 'Service temporarily unavailable. Try again later.' } };
     }
 
-    // Fetch from Yelp
+    // ── Fetch from Yelp ───────────────────────────────────────────────────
     const yelpApiKey = process.env.YELP_API_KEY;
     if (!yelpApiKey) throw new HttpsError('failed-precondition', 'Yelp API key not configured.');
     console.log(`[findServices] Calling Yelp API — category=${type} lat=${lat} lng=${lng}`);
@@ -426,7 +504,7 @@ export const findServices = onCall(
     const businesses = await findServicesYelp(lat, lng, type, yelpApiKey, query, searchRadius);
     console.log(`[findServices] Yelp returned ${businesses.length} businesses`);
 
-    // Persist and cache
+    // Persist services and write to both caches
     const serviceIds: string[] = [];
     const batch = db.batch();
     for (const biz of businesses) {
@@ -437,7 +515,15 @@ export const findServices = onCall(
       batch.set(serviceRef, serviceDoc, { merge: true });
     }
 
+    // Write H3 cache (backward compat)
     batch.set(cacheRef, { serviceIds, cachedAt: Date.now(), source: 'yelp' });
+    // Write ZIP cache (new shared cache)
+    if (zipCacheId) {
+      batch.set(db.doc(`zipCache/${zipCacheId}`), {
+        serviceIds, cachedAt: Date.now(), source: 'yelp',
+        zipCode: location, type, lat, lng,
+      });
+    }
     batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
     await batch.commit();
 
@@ -449,7 +535,7 @@ export const findServices = onCall(
       id: `yelp_${biz.id}`,
       ...mapYelpToServiceDoc(biz, type, h3Index),
     }));
-    return { results: mapToServiceResult(allDocs), remainingSearches: remainingSearches - 1 };
+    return { results: mapToServiceResult(allDocs) };
   },
 );
 

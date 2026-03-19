@@ -28,23 +28,6 @@ export function getH3KRing(h3Index: string, k = 1): string[] {
   return gridDisk(h3Index, k);
 }
 
-/**
- * Request the user's current position via the browser Geolocation API and
- * return its H3 cell index. Returns null if unavailable or denied.
- */
-export function requestGeolocationH3(resolution = H3_RESOLUTION): Promise<string | null> {
-  return new Promise((resolve) => {
-    if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      resolve(null);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve(latLngToH3(pos.coords.latitude, pos.coords.longitude, resolution)),
-      () => resolve(null),
-      { timeout: 6000, maximumAge: 300_000 }, // 5-min cache for battery efficiency
-    );
-  });
-}
 
 // ─── Zip Code → approximate lat/lng lookup ────────────────────────────────────
 // Covers major US metropolitan areas. Falls back to null for unknown zip codes.
@@ -86,14 +69,10 @@ export function zipCodeToH3(zipCode: string, resolution = H3_RESOLUTION): string
 }
 
 /**
- * Best-effort H3 index for a user:
- * 1. Try browser geolocation (highest accuracy)
- * 2. Fall back to zip code lookup
- * 3. Return null if neither is available
+ * Resolve H3 index for a user from their ZIP code.
+ * Returns null if the ZIP is not in the lookup table.
  */
-export async function resolveUserH3(zipCode?: string, resolution = H3_RESOLUTION): Promise<string | null> {
-  const geoH3 = await requestGeolocationH3(resolution);
-  if (geoH3) return geoH3;
+export function resolveUserH3(zipCode?: string, resolution = H3_RESOLUTION): string | null {
   if (zipCode) return zipCodeToH3(zipCode, resolution);
   return null;
 }

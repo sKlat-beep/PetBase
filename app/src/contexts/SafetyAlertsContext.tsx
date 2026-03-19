@@ -96,7 +96,7 @@ export function SafetyAlertsProvider({ children }: { children: ReactNode }) {
   // Resolve the user's H3 index once profile/location is available
   useEffect(() => {
     if (!user) { setUserH3(null); return; }
-    resolveUserH3(profile?.zipCode).then(setUserH3);
+    setUserH3(resolveUserH3(profile?.zipCode));
   }, [user, profile?.zipCode]);
 
   // Load alerts from Firestore whenever H3 index or zipCode changes

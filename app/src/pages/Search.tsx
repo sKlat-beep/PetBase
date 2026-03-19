@@ -27,7 +27,6 @@ export function Search() {
   const [activeTab, setActiveTab] = useState<SearchFilters['type'] | 'Saved'>(initTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
-  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [activeServiceFilters, setActiveServiceFilters] = useState<string[]>(initFilters);
   const [selectedService, setSelectedService] = useState<ServiceResult | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('rating');
@@ -73,7 +72,6 @@ export function Search() {
   const [websiteResults, setWebsiteResults] = useState<WebsiteResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchError, setSearchError] = useState<{ code: string; message: string } | null>(null);
-  const [remainingSearches, setRemainingSearches] = useState<number | undefined>(undefined);
 
   // Place details cache
   const placeDetailsCache = useRef<Map<string, PlaceDetails>>(new Map());
@@ -82,18 +80,10 @@ export function Search() {
   const [favoriteWebsites, setFavoriteWebsites] = useState<string[]>(JSON.parse(localStorage.getItem('petbase_fav_websites') || '[]'));
   const [recentInteractions, setRecentInteractions] = useState<{ id: string, type: 'store' | 'website', name: string, timestamp: number }[]>(JSON.parse(localStorage.getItem('petbase_recent_interactions') || '[]'));
 
-  // Sync initial location from profile
+  // Sync initial location from profile (ZIP only — no geolocation)
   useEffect(() => {
     if (profile?.zipCode && !location) {
       setLocation(profile.zipCode);
-    } else if (!location && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLocation(`${pos.coords.latitude.toFixed(4)},${pos.coords.longitude.toFixed(4)}`);
-          setGpsCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        },
-        () => {}
-      );
     }
   }, [profile?.zipCode]);
 
@@ -154,6 +144,12 @@ export function Search() {
     setLoading(true);
     setSearchError(null);
 
+    // Only search if location is a valid 5-digit ZIP
+    if (!location || !/^\d{5}$/.test(location)) {
+      setLoading(false);
+      return;
+    }
+
     if (activeTab === 'Stores') {
       Promise.all([
         searchServices({
@@ -161,7 +157,6 @@ export function Search() {
           petTypesQuery: activePetTypes, petBreedsQuery: activeBreeds,
           petSizesQuery: activeSizes, serviceFilters: activeServiceFilters,
           radius: searchRadius,
-          ...(gpsCoords ? { lat: gpsCoords.lat, lng: gpsCoords.lng } : {}),
         }),
         getPopularWebsites(location),
       ]).then(([storeResponse, websites]) => {
@@ -169,7 +164,6 @@ export function Search() {
           setStoreResults(storeResponse.results);
           setWebsiteResults(websites);
           setSearchError(storeResponse.error ?? null);
-          if (storeResponse.remainingSearches != null) setRemainingSearches(storeResponse.remainingSearches);
           setLoading(false);
         }
       });
@@ -181,12 +175,10 @@ export function Search() {
         petTypesQuery: activePetTypes, petBreedsQuery: activeBreeds,
         petSizesQuery: activeSizes, serviceFilters: activeServiceFilters,
         radius: searchRadius,
-        ...(gpsCoords ? { lat: gpsCoords.lat, lng: gpsCoords.lng } : {}),
       }).then(res => {
         if (active) {
           setResults(res.results);
           setSearchError(res.error ?? null);
-          if (res.remainingSearches != null) setRemainingSearches(res.remainingSearches);
           setLoading(false);
           res.results.slice(0, 3).forEach(service => {
             if (!placeDetailsCache.current.has(service.id)) {
@@ -200,7 +192,7 @@ export function Search() {
     }
 
     return () => { active = false; };
-  }, [debouncedQuery, location, activeTab, activePetTypes, activeBreeds, activeSizes, activeServiceFilters, gpsCoords, searchRadius]);
+  }, [debouncedQuery, location, activeTab, activePetTypes, activeBreeds, activeSizes, activeServiceFilters, searchRadius]);
 
   const tabs: (SearchFilters['type'] | 'Saved')[] = ['Vets', 'Groomers', 'Sitters', 'Walkers', 'Trainers', 'Stores', 'Boarding', 'Shelters', 'Saved'];
   const savedServiceIds: string[] = (profile as any)?.savedServices ?? [];
@@ -277,29 +269,13 @@ export function Search() {
               />
             </div>
             <div className="relative w-32 md:w-48">
-              <button
-                onClick={() => {
-                  if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                      (pos) => {
-                        setLocation(`${pos.coords.latitude.toFixed(4)},${pos.coords.longitude.toFixed(4)}`);
-                        setGpsCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                        triggerSearchAction();
-                      },
-                      (err) => console.error(err)
-                    );
-                  }
-                }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors bg-transparent border-none p-1 cursor-pointer"
-                title="Use Current Location"
-              >
-                <span className="material-symbols-outlined text-[20px]">location_on</span>
-              </button>
+              <span className="material-symbols-outlined text-[20px] absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">pin_drop</span>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => { setLocation(e.target.value); triggerSearchAction(); }}
-                placeholder="Zip Code"
+                placeholder="ZIP Code"
+                maxLength={5}
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
               />
             </div>
@@ -365,7 +341,14 @@ export function Search() {
         ))}
       </div>
 
-      <SearchErrorBanner error={searchError} remainingSearches={remainingSearches} />
+      <SearchErrorBanner error={searchError} />
+
+      {/* ZIP validation hint */}
+      {location && !/^\d{5}$/.test(location) && (
+        <div className="text-sm text-on-surface-variant bg-surface-container rounded-xl px-4 py-2">
+          Enter a 5-digit ZIP code
+        </div>
+      )}
 
       {/* Sort controls (non-Stores, non-Saved) */}
       {!loading && activeTab !== 'Stores' && activeTab !== 'Saved' && displayedResults.length > 0 && (
@@ -468,9 +451,9 @@ export function Search() {
         <div className="py-20 text-center bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant">
           {!location ? (
             <>
-              <span className="material-symbols-outlined text-[32px] mx-auto mb-3 text-outline-variant block">location_on</span>
-              <h3 className="text-lg font-medium text-on-surface">Enter a location</h3>
-              <p className="text-on-surface-variant">Type a ZIP code or use the GPS button to find services near you.</p>
+              <span className="material-symbols-outlined text-[32px] mx-auto mb-3 text-outline-variant block">pin_drop</span>
+              <h3 className="text-lg font-medium text-on-surface">Enter a ZIP code</h3>
+              <p className="text-on-surface-variant">Type a 5-digit ZIP code to find services near you.</p>
             </>
           ) : activeTab === 'Saved' ? (
             <>
@@ -483,8 +466,7 @@ export function Search() {
               <span className="material-symbols-outlined text-[32px] mx-auto mb-3 text-outline-variant block">search</span>
               <h3 className="text-lg font-medium text-on-surface">No {activeTab.toLowerCase()} found</h3>
               <p className="text-on-surface-variant">
-                Try a different location or adjust your filters.
-                {!gpsCoords && ' You can also use the GPS button for more accurate results.'}
+                Try a different ZIP code or adjust your filters.
               </p>
             </>
           )}

@@ -177,6 +177,26 @@ service cloud.firestore {
       );
     }
 
+    // ─── Service Search Cache ────────────────────────────────────────────────
+    // Readable by any authenticated user; only Cloud Functions write.
+
+    match /zipCache/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    match /services/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    match /serviceCache/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    match /zipGeo/{doc} {
+      allow read: if false;
+      allow write: if false;
+    }
+
     // ─── Direct Messages ──────────────────────────────────────────────────────
     // participants array contains [fromUid, toUid] — used for array-contains queries.
     // Soft-delete: only deletedBySender, deletedByRecipient, and read may be updated

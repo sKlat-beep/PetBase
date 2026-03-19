@@ -12,10 +12,13 @@
  */
 
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { doc, getDoc } from 'firebase/firestore';
 import { get, set } from 'idb-keyval';
-import { app } from '../lib/firebase';
+import { app, db } from '../lib/firebase';
 
-const CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
+const CACHE_TTL_MS = 30 * 60 * 1000; // 30 min (reduced for faster shared cache refresh)
+const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 interface CachedResult {
   data: ServiceResult[];
@@ -57,14 +60,12 @@ export interface ServiceResult {
 
 export interface SearchFilters {
   query: string;
-  location: string;  // ZIP code or 'GPS'
+  location: string;  // 5-digit ZIP code
   type: 'Vets' | 'Groomers' | 'Sitters' | 'Walkers' | 'Trainers' | 'Stores' | 'Boarding' | 'Shelters';
   petTypesQuery: string[];   // e.g., ['Dog', 'Cat']
   petBreedsQuery?: string[]; // e.g., ['Golden Retriever']
   petSizesQuery?: string[];  // e.g., ['Large']
   serviceFilters?: string[];
-  lat?: number;
-  lng?: number;
   radius?: number;
 }
 
@@ -82,59 +83,103 @@ function getFns() {
 export interface SearchResponse {
   results: ServiceResult[];
   error?: { code: string; message: string };
-  remainingSearches?: number;
+}
+
+/**
+ * Read zipCache directly from Firestore (client-side, bypasses Cloud Function).
+ * Returns ServiceResult[] if cache hit, null if miss or expired.
+ */
+async function readZipCacheFromFirestore(zip: string, type: string): Promise<{ results: ServiceResult[]; stale: boolean } | null> {
+  try {
+    const zipCacheSnap = await getDoc(doc(db, 'zipCache', `${zip}_${type}`));
+    if (!zipCacheSnap.exists()) return null;
+    const data = zipCacheSnap.data();
+    const ageMs = Date.now() - ((data.cachedAt as number) ?? 0);
+    if (ageMs > SEVEN_DAYS_MS) return null; // expired
+
+    const serviceIds: string[] = data.serviceIds ?? [];
+    if (serviceIds.length === 0) return null;
+    const serviceDocs = await Promise.all(
+      serviceIds.map(id => getDoc(doc(db, 'services', id)))
+    );
+    const results: ServiceResult[] = serviceDocs
+      .filter(d => d.exists())
+      .map(d => {
+        const s = d.data()!;
+        return {
+          id: d.id, name: s.name, type: s.category, rating: s.rating ?? 0,
+          reviews: s.reviewCount ?? 0, distance: s.distanceMeters ? `${(s.distanceMeters / 1609.34).toFixed(1)} mi` : '',
+          address: s.address ?? '', image: s.photos?.[0] ?? '',
+          isVerified: s.isPetBaseVerified ?? false, petVerified: false,
+          tags: s.specialties ?? [], yelpUrl: s.yelpUrl,
+          isPetBaseVerified: s.isPetBaseVerified, isSponsored: s.isSponsored,
+          status: s.status, specialties: s.specialties ?? [],
+        };
+      });
+    return { results, stale: ageMs >= TWO_DAYS_MS };
+  } catch (err) {
+    console.warn('[readZipCacheFromFirestore] error:', err);
+    return null;
+  }
 }
 
 export async function searchServices(filters: SearchFilters): Promise<SearchResponse> {
   if (!filters.location) return { results: [] };
 
-  // Cache key uses H3 cell (res 7, ~5km²) when lat/lng available, falling back to
-  // ZIP code then raw location string. This deduplicates across nearby ZIP codes
-  // that map to the same H3 cell.
-  let geoKey = filters.location;
-  if (filters.lat != null && filters.lng != null) {
-    const { latLngToH3 } = await import('../lib/h3Service');
-    geoKey = latLngToH3(filters.lat, filters.lng) ?? filters.location;
-  } else if (filters.location?.match(/^\d{5}$/)) {
-    const { zipCodeToH3 } = await import('../lib/h3Service');
-    geoKey = zipCodeToH3(filters.location) ?? filters.location;
-  }
-  const cacheKey = `petbase_services_${geoKey}_${filters.type}_${filters.query}`;
+  // Cache key uses raw ZIP code (no H3 conversion needed)
+  const cacheKey = `petbase_services_${filters.location}_${filters.type}_${filters.query}`;
+
+  // 1. Check IndexedDB cache (30 min TTL)
   const cached = await get<CachedResult>(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return { results: cached.data };
   }
 
+  // 2. Check Firestore zipCache directly (no Cloud Function invocation)
+  const isZip = /^\d{5}$/.test(filters.location);
+  if (isZip) {
+    const firestoreResult = await readZipCacheFromFirestore(filters.location, filters.type);
+    if (firestoreResult) {
+      // Store in IndexedDB for subsequent instant hits
+      await set(cacheKey, { data: firestoreResult.results, expiresAt: Date.now() + CACHE_TTL_MS });
+      // If stale (2-7 days), fire Cloud Function in background to refresh
+      if (firestoreResult.stale) {
+        callFindServices(filters).catch(() => {});
+      }
+      return { results: firestoreResult.results };
+    }
+  }
+
+  // 3. Fall through to Cloud Function (last resort)
+  return callFindServices(filters);
+}
+
+/** Call the findServices Cloud Function directly. */
+async function callFindServices(filters: SearchFilters): Promise<SearchResponse> {
+  const cacheKey = `petbase_services_${filters.location}_${filters.type}_${filters.query}`;
   try {
     const call = httpsCallable<
       { type: string; location: string; query: string; radius?: number },
-      { results: ServiceResult[]; error?: { code: string; message: string }; remainingSearches?: number }
+      { results: ServiceResult[]; error?: { code: string; message: string } }
     >(getFns(), 'findServices');
 
     const res = await call({
       type: filters.type,
       location: filters.location,
       query: filters.query,
-      ...(filters.lat != null && filters.lng != null ? { lat: filters.lat, lng: filters.lng } : {}),
       ...(filters.radius ? { radius: filters.radius } : {}),
     });
 
-    const { results = [], error, remainingSearches } = res.data;
+    const { results = [], error } = res.data;
     if (results.length > 0) {
       await set(cacheKey, { data: results, expiresAt: Date.now() + CACHE_TTL_MS });
       prefetchTopPlaceDetails(results, 3);
     }
-    return { results, error, remainingSearches };
+    return { results, error };
   } catch (err: unknown) {
     const code = (err as any)?.code ?? 'unknown';
     const message = (err as any)?.message ?? String(err);
-    console.error(
-      `[searchServices] Cloud Function error — code: ${code} | message: ${message}`,
-      err,
-    );
-    if (code === 'functions/resource-exhausted' || code === 'resource-exhausted') {
-      return { results: [], error: { code: 'rate-limited', message: "You've used all 5 searches today." }, remainingSearches: 0 };
-    }
+    console.error(`[searchServices] Cloud Function error — code: ${code} | message: ${message}`, err);
     return { results: [], error: { code: 'api-error', message: 'Service temporarily unavailable. Please try again.' } };
   }
 }

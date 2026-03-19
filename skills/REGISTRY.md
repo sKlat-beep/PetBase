@@ -8,5 +8,5 @@ See `skills/external.md`.
 ## Local Skills
 - `skills/local/intake/SKILL.md` — Convert requests to structured tasks in planning/TODO.md
 - `skills/local/privacy-check/SKILL.md` — Pre-flight privacy compliance audit
-- `skills/local/ui-review/SKILL.md` — UI contract and glass design system validation
+- `/ui-review` — Global skill (`~/.claude/commands/ui-review.md`). Stitch-powered visual review + a11y audit.
 - `skills/local/handoff/SKILL.md` — Generate agent handoff prompts

@@ -130,7 +130,7 @@ When I make a mistake (rule skipped, tokens wasted, wrong approach):
 |--------|---------|
 | **jcodemunch** | Symbol-level codebase navigation (always first before raw reads) |
 | **context7** | Live documentation lookup (React 19, Firebase, Tailwind) |
-| **interface-design** | PetBase glass design system — UI audit, critique, pattern consistency |
+| **stitch-kit** | UI design review, accessibility auditing, and design system management |
 
 ### Skills (invoked via `/command`)
 | Skill | Trigger |

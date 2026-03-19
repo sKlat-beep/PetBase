@@ -38,7 +38,7 @@ This file is the single source of truth for all agent and developer rules.
 
 ## 5. MCP Usage
 - Indexed search must use `jcodemunch`.
-- Use `interface-design` plugin for UI design, auditing, and pattern consistency.
+- Use `stitch-kit` plugin for UI design review, accessibility auditing, and design system management.
 - Task tracking uses `planning/TODO.md` — no MCP dependency.
 
 ## 6. Source Control

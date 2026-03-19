@@ -8,12 +8,12 @@ mappings:
   - tag: functions
     skills: [privacy-check]
   - tag: ui
-    skills: [ui-review]
+    skills: [ui-review]  # global skill via ~/.claude/commands/
   - tag: ux
-    skills: [ui-review]
+    skills: [ui-review]  # global skill via ~/.claude/commands/
   - tag: mobile
-    skills: [ui-review]
+    skills: [ui-review]  # global skill via ~/.claude/commands/
   - tag: desktop
-    skills: [ui-review]
+    skills: [ui-review]  # global skill via ~/.claude/commands/
   - tag: handoff
     skills: [handoff]

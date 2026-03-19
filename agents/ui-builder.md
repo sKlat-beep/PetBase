@@ -168,8 +168,8 @@ Skeleton pulse:      opacity 0.5↔1.0                | 1200ms ease-in-out infin
 
 1. **Read `contracts/unified-ui-design.md`** only if working on a new page, new modal, or a component that has not been built before. Skip for incremental changes to existing components.
 2. **Use jcodemunch `get_file_outline`** on any existing component in the same feature area to understand current patterns — do not run `/ui-review` pre-task.
-3. **For new designs:** run `/interface-design:init` to establish design direction and build with craft consistency against `.interface-design/system.md`.
-4. **During development:** run `/interface-design:critique` to evaluate craft quality and rebuild what defaulted to generic patterns.
+3. **For new designs:** use the `stitch-orchestrator` skill to establish design direction and generate screens.
+4. **During development:** use the `stitch-kit` agent for design critique and iteration.
 5. **Use jcodemunch `get_file_outline`** on any file you plan to modify — never read raw files when a symbol exists.
 6. **Write code in ≤50-line edit blocks.** Split large changes across multiple sequential edits.
 7. **Run `cd app && npm run build`** after every code change. Do not move on if build fails.

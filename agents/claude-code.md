@@ -30,7 +30,7 @@ Primary implementation agent. Executes approved plans with minimal token usage.
 - **security-guidance** — PreToolUse hook checks for XSS, eval, command injection before edits
 - **typescript-lsp** — real-time type diagnostics for app/ and functions/
 - **context7** — live documentation lookup (React 19, Firebase, Tailwind) via CE plugin MCP
-- **interface-design** — PetBase glass design system (replaces frontend-design)
+- **stitch-kit** — UI design review, accessibility auditing, and design system management
 
 ## Token Efficiency Rules
 - **Never re-read a file already read in this session.** Reference the earlier read from context instead.

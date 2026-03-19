@@ -1,6 +1,6 @@
 ---
 name: ui-builder
-description: UI design and implementation agent for PetBase. Use when designing new screens, modals, or components, or when implementing UI tasks that require the glass design system, interface-design plugin, or strict accessibility/mobile compliance.
+description: UI design and implementation agent for PetBase. Use when designing new screens, modals, or components, or when implementing UI tasks that require the glass design system, stitch-kit plugin, or strict accessibility/mobile compliance.
 ---
 
 # UI Builder — Design & Implementation Agent
@@ -63,8 +63,8 @@ Always wrap motion classes in `motion-safe:` prefix.
 
 1. Read `contracts/unified-ui-design.md` only for new pages, new modals, or first-time components. Skip for incremental changes.
 2. Use jcodemunch `get_file_outline` on existing components in the same feature area to understand patterns — do not run `/ui-review` pre-task.
-3. For new designs: run `/interface-design:init` to establish design direction and build with craft.
-4. During development: run `/interface-design:critique` to evaluate craft quality and rebuild what defaulted.
+3. For new designs: use the `stitch-orchestrator` skill to establish design direction and generate screens.
+4. During development: use the `stitch-kit` agent for design critique and iteration.
 5. Use jcodemunch `get_file_outline` on files to modify — never read raw files.
 6. Write code in ≤50-line edit blocks.
 7. Run `cd app && npm run build` after every change.

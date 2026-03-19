@@ -4,6 +4,7 @@ import { loadPets, savePet, deletePetDoc, deletePublicCardsForPet, createPetAlbu
 import type { Pet } from '../types/pet';
 import { logActivity } from '../utils/activityLog';
 import { get, set } from 'idb-keyval';
+import { awardPoints } from '../lib/gamificationService';
 
 export type { Pet } from '../types/pet';
 
@@ -54,6 +55,8 @@ export function PetProvider({ children }: { children: ReactNode }) {
         }))
         .catch(console.error);
       logActivity(user.uid, `Added pet: ${data.name}`);
+      awardPoints(user.uid, 'add-pet', newPet.id).catch(() => {});
+      if (data.image) awardPoints(user.uid, 'upload-photo', newPet.id).catch(() => {});
     }
   }, [user]);
 

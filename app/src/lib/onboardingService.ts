@@ -49,14 +49,47 @@ function defaultState(): OnboardingState {
 // ─── localStorage read/write ────────────────────────────────────────────────
 
 export function readLocalOnboardingState(): OnboardingState {
+  let state = defaultState();
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return { ...defaultState(), ...parsed };
+      state = { ...defaultState(), ...parsed };
     }
   } catch { /* fall through */ }
-  return defaultState();
+
+  // Always check legacy petbase-step-* keys and merge them into state.
+  // Some code paths (CommunityContext, Cards) still write these keys directly,
+  // so we need to pick them up even after the initial one-time migration.
+  const LEGACY_STEP_IDS = [
+    'create-card',
+    'find-services',
+    'join-community',
+    'create-family',
+    'enable-notifications',
+    'privacy-settings',
+  ];
+  let merged = false;
+  for (const id of LEGACY_STEP_IDS) {
+    if (
+      localStorage.getItem(LEGACY_STEP_PREFIX + id) === 'true' &&
+      !state.completedSteps[id]
+    ) {
+      state.completedSteps = { ...state.completedSteps, [id]: Date.now() };
+      merged = true;
+    }
+  }
+
+  // If we incorporated any legacy keys, recompute counts and persist the merged state
+  if (merged) {
+    state.discoveryCount =
+      Object.keys(state.completedSteps).length + state.completedHints.length;
+    state.petParentLevel = computeLevel(state.discoveryCount);
+    state.savedAt = Date.now();
+    writeLocalOnboardingState(state);
+  }
+
+  return state;
 }
 
 export function writeLocalOnboardingState(state: OnboardingState): void {

@@ -6,7 +6,7 @@ import { usePets } from '../contexts/PetContext';
 import type { Pet } from '../contexts/PetContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PetFormModal } from '../components/PetFormModal';
-import { MedicalRecordsModal } from '../components/MedicalRecordsModal';
+import { MedicalRecordsModal, getVaccineStatus } from '../components/MedicalRecordsModal';
 import { LostPetBanner } from '../components/LostPetBanner';
 import { writeLostPets, type LostPetAlert } from '../utils/lostPetsApi';
 import { PetCard } from '../components/pets/PetCard';
@@ -303,19 +303,47 @@ export function Pets() {
   const healthSummary = useMemo(() => {
     const lostCount = pets.filter(p => p.lostStatus?.isLost).length;
     if (lostCount > 0) return `${lostCount} Lost`;
+
+    let overdueCount = 0;
+    let dueSoonCount = 0;
+    for (const pet of pets) {
+      const vaccines = (pet as any).vaccines as { nextDueDate: string }[] | undefined;
+      if (!vaccines) continue;
+      for (const v of vaccines) {
+        if (!v.nextDueDate) continue;
+        const status = getVaccineStatus(v.nextDueDate);
+        if (status === 'overdue') overdueCount++;
+        else if (status === 'due-soon') dueSoonCount++;
+      }
+    }
+    if (overdueCount > 0) return `${overdueCount} Overdue`;
+    if (dueSoonCount > 0) return `${dueSoonCount} Due Soon`;
     return 'Optimal';
   }, [pets]);
 
   const nextCheckup = useMemo(() => {
-    // Find soonest upcoming medical visit across all pets
+    // Find soonest upcoming date across medical visits and vaccine due dates
     const now = new Date();
     let soonest: { petName: string; date: string } | null = null;
     for (const pet of pets) {
-      if (!pet.medicalVisits) continue;
-      for (const visit of pet.medicalVisits) {
-        const d = new Date(visit.date);
-        if (d > now && (!soonest || d < new Date(soonest.date))) {
-          soonest = { petName: pet.name, date: visit.date };
+      // Check medical visits
+      if (pet.medicalVisits) {
+        for (const visit of pet.medicalVisits) {
+          const d = new Date(visit.date);
+          if (d > now && (!soonest || d < new Date(soonest.date))) {
+            soonest = { petName: pet.name, date: visit.date };
+          }
+        }
+      }
+      // Check vaccine nextDueDate fields
+      const vaccines = (pet as any).vaccines as { nextDueDate: string }[] | undefined;
+      if (vaccines) {
+        for (const v of vaccines) {
+          if (!v.nextDueDate) continue;
+          const d = new Date(v.nextDueDate);
+          if (d > now && (!soonest || d < new Date(soonest.date))) {
+            soonest = { petName: pet.name, date: v.nextDueDate };
+          }
         }
       }
     }

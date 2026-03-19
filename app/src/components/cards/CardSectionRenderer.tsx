@@ -172,11 +172,28 @@ export function CardSectionRenderer({
       </div>
     ) : null;
 
+  // Format diet schedule for display
+  const dietScheduleText = data.dietSchedule?.length
+    ? data.dietSchedule.map(ds => {
+        const times = ds.entries.map(e => {
+          const [h, m] = e.time.split(':').map(Number);
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          const h12 = h % 12 || 12;
+          return `${e.amount} ${e.unit} at ${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+        }).join(', ');
+        return ds.foodType ? `${ds.foodType}: ${times}` : times;
+      }).join(' | ')
+    : null;
+
   // ── Section: diet ──
   const dietContent: React.ReactNode =
-    sharing.diet && (data.food || data.notes) ? (
+    sharing.diet && (data.food || dietScheduleText || data.notes) ? (
       <div>
-        {data.food && <p className="text-on-surface-variant mb-1 text-sm">{data.food}</p>}
+        {dietScheduleText ? (
+          <p className="text-on-surface-variant mb-1 text-sm">{dietScheduleText}</p>
+        ) : data.food ? (
+          <p className="text-on-surface-variant mb-1 text-sm">{data.food}</p>
+        ) : null}
         {data.notes && (
           <div className={`bg-secondary-container ${compact ? 'rounded-xl' : 'rounded-2xl'} p-2.5 border border-secondary/30 mt-1`}>
             {data.notes.startsWith('eyJ') ? (

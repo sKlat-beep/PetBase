@@ -5,6 +5,7 @@ import { usePets } from '../contexts/PetContext';
 import { ImageCropperModal, getCroppedImg } from './ImageCropperModal';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadPetProfilePhoto } from '../lib/storageService';
+import { DateWheelPicker } from './DateWheelPicker';
 
 const NOTES_MAX = 5000;
 
@@ -228,6 +229,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
   const [foodBrand, setFoodBrand] = useState('');
   const [foodAmount, setFoodAmount] = useState('');
   const [foodUnit, setFoodUnit] = useState<'cups' | 'half cups' | 'oz' | 'grams' | 'lbs'>('cups');
+  const [dietSchedules, setDietSchedules] = useState<import('../types/pet').DietSchedule[]>([]);
   const [notes, setNotes] = useState('');
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContacts | undefined>();
   const [statusTags, setStatusTags] = useState<string[]>([]);
@@ -284,10 +286,21 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
     setSpayedNeutered(pet?.spayedNeutered ?? '');
     setMicrochipId(pet?.microchipId ?? '');
 
-    // Diet
+    // Diet — migrate legacy single-food fields to DietSchedule[]
     setFoodBrand(pet?.foodBrand ?? pet?.food ?? '');
     setFoodAmount(pet?.foodAmount ?? '');
     setFoodUnit((pet?.foodUnit ?? 'cups') as typeof foodUnit);
+    if (pet?.dietSchedule && pet.dietSchedule.length > 0) {
+      setDietSchedules(pet.dietSchedule);
+    } else if (pet?.foodBrand || pet?.food) {
+      // Legacy migration: convert old single-food fields to a DietSchedule
+      setDietSchedules([{
+        foodType: pet?.foodBrand || pet?.food || '',
+        entries: pet?.foodAmount ? [{ amount: pet.foodAmount, unit: pet.foodUnit || 'cups', time: '08:00' }] : [],
+      }]);
+    } else {
+      setDietSchedules([]);
+    }
     setNotes(pet?.notes ?? '');
     setEmergencyContacts(pet?.emergencyContacts);
     setStatusTags(pet?.statusTags ?? []);
@@ -347,14 +360,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
       foodUnit: (foodAmount.trim() ? foodUnit : undefined) as any,
       notes,
       emergencyContacts,
-      dietSchedule: pet?.dietSchedule ?? [],
+      dietSchedule: dietSchedules.length > 0 ? dietSchedules : [],
       medicalVisits: pet?.medicalVisits ?? [],
       statusTags: statusTags.length > 0 ? statusTags : undefined,
       publicFields: publicFields.filter(k => !['microchipId', 'notes', 'emergencyContacts', 'medicalVisits'].includes(k)),
     });
     setIsDirty(false);
 
-    const shouldClose = !isEditMode || action === 'finish';
+    const shouldClose = action === 'finish';
     if (shouldClose) {
       onClose();
     }
@@ -558,31 +571,15 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Birthday
                       </label>
-                      <input
-                        type="date"
+                      <DateWheelPicker
                         value={birthday}
-                        max={new Date().toISOString().split('T')[0]}
-                        onChange={(e) => { setBirthday(e.target.value); mark(); }}
-                        className={inputClass}
+                        onChange={(d) => { setBirthday(d); mark(); }}
+                        maxDate={new Date().toISOString().split('T')[0]}
                       />
                       {birthday && (
                         <p className="text-xs text-on-surface-variant mt-1">Age: {calcAgeFromBirthday(birthday)}</p>
                       )}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
-                        Weight
-                      </label>
-                      <UnitInput
-                        value={weightNum}
-                        unit={weightUnit}
-                        units={['lbs', 'kg'] as const}
-                        onValueChange={(v) => { setWeightNum(v); mark(); }}
-                        onUnitChange={(u) => { setWeightUnit(u); mark(); }}
-                        placeholder="0"
-                      />
-                    </div>
-
                     {/* Profile Photo & Appearance */}
                     <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
@@ -620,22 +617,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         </div>
 
                         <div className="flex-1 space-y-4">
-                          <div>
-                            <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Avatar Shape</label>
-                            <div className="flex flex-wrap gap-2">
-                              {(['circle', 'square', 'squircle'] as const).map(shape => (
-                                <button
-                                  key={shape}
-                                  type="button"
-                                  onClick={() => { setAvatarShape(shape); mark(); }}
-                                  className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors font-medium border ${avatarShape === shape ? 'bg-primary-container text-on-primary-container border-primary shadow-sm' : 'border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
-                                >
-                                  {shape}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
                           <div>
                             <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Background Color</label>
                             <div className="flex flex-wrap gap-2">
@@ -864,14 +845,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         />
                       </MetricCard>
                       <MetricCard icon="monitor_weight" label="Weight">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
-                            {weightNum || '--'}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-xs font-semibold">
-                            {weightUnit}
-                          </span>
-                        </div>
+                        <UnitInput
+                          value={weightNum}
+                          unit={weightUnit}
+                          units={['lbs', 'kg'] as const}
+                          onValueChange={(v) => { setWeightNum(v); mark(); }}
+                          onUnitChange={(u) => { setWeightUnit(u); mark(); }}
+                          placeholder="0"
+                        />
                       </MetricCard>
                       <MetricCard icon="vital_signs" label="Body Condition">
                         <select
@@ -913,47 +894,108 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       </div>
                     </div>
 
-                    {/* Primary Diet */}
+                    {/* Primary Diet — multi-schedule feeding */}
                     <div className="space-y-3">
-                      <label className="block text-sm font-medium text-on-surface-variant">Primary Diet</label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="sm:col-span-1">
-                          <label className="block text-xs text-on-surface-variant mb-1">Food Brand / Type</label>
-                          <input
-                            type="text"
-                            value={foodBrand}
-                            onChange={(e) => { setFoodBrand(e.target.value); mark(); }}
-                            placeholder="e.g. Purina Pro Plan"
-                            className={`${inputClass} text-sm`}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-on-surface-variant mb-1">Amount</label>
-                          <input
-                            type="number"
-                            min="0"
-                            step="1"
-                            value={foodAmount}
-                            onChange={(e) => { setFoodAmount(e.target.value); mark(); }}
-                            placeholder="0"
-                            className={`${inputClass} text-sm`}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-on-surface-variant mb-1">Unit</label>
-                          <select
-                            value={foodUnit}
-                            onChange={(e) => { setFoodUnit(e.target.value as typeof foodUnit); mark(); }}
-                            className={`${inputClass} text-sm`}
+                      <label className="block text-sm font-medium text-on-surface-variant">Feeding Schedule</label>
+                      {dietSchedules.map((sched, si) => (
+                        <div key={si} className="bg-surface-container rounded-xl border border-outline-variant p-3 space-y-3">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={sched.foodType}
+                              onChange={(e) => {
+                                const updated = [...dietSchedules];
+                                updated[si] = { ...updated[si], foodType: e.target.value };
+                                setDietSchedules(updated); mark();
+                              }}
+                              placeholder="Food type (e.g. Purina Pro Plan)"
+                              className={`${inputClass} text-sm flex-1`}
+                            />
+                            {dietSchedules.length > 1 && (
+                              <button type="button" onClick={() => { setDietSchedules(dietSchedules.filter((_, i) => i !== si)); mark(); }}
+                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container transition-colors">
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            )}
+                          </div>
+                          {sched.entries.map((entry, ei) => (
+                            <div key={ei} className="flex items-center gap-2">
+                              <input
+                                type="number" min="0" step="0.5"
+                                value={entry.amount}
+                                onChange={(e) => {
+                                  const updated = [...dietSchedules];
+                                  const entries = [...updated[si].entries];
+                                  entries[ei] = { ...entries[ei], amount: e.target.value };
+                                  updated[si] = { ...updated[si], entries };
+                                  setDietSchedules(updated); mark();
+                                }}
+                                placeholder="Amt"
+                                className={`${inputClass} text-sm w-16`}
+                              />
+                              <select
+                                value={entry.unit}
+                                onChange={(e) => {
+                                  const updated = [...dietSchedules];
+                                  const entries = [...updated[si].entries];
+                                  entries[ei] = { ...entries[ei], unit: e.target.value };
+                                  updated[si] = { ...updated[si], entries };
+                                  setDietSchedules(updated); mark();
+                                }}
+                                className={`${inputClass} text-sm w-24`}
+                              >
+                                <option value="cup">cup</option>
+                                <option value="cups">cups</option>
+                                <option value="oz">oz</option>
+                                <option value="grams">g</option>
+                                <option value="lbs">lbs</option>
+                                <option value="tbsp">tbsp</option>
+                              </select>
+                              <span className="text-xs text-on-surface-variant">at</span>
+                              <input
+                                type="time"
+                                value={entry.time}
+                                onChange={(e) => {
+                                  const updated = [...dietSchedules];
+                                  const entries = [...updated[si].entries];
+                                  entries[ei] = { ...entries[ei], time: e.target.value };
+                                  updated[si] = { ...updated[si], entries };
+                                  setDietSchedules(updated); mark();
+                                }}
+                                className={`${inputClass} text-sm w-28`}
+                              />
+                              <button type="button" onClick={() => {
+                                const updated = [...dietSchedules];
+                                const entries = updated[si].entries.filter((_, i) => i !== ei);
+                                updated[si] = { ...updated[si], entries };
+                                setDietSchedules(updated); mark();
+                              }}
+                                className="p-1 rounded text-on-surface-variant hover:text-error transition-colors">
+                                <span className="material-symbols-outlined text-[16px]">close</span>
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = [...dietSchedules];
+                              const entries = [...updated[si].entries, { amount: '', unit: 'cup', time: '08:00' }];
+                              updated[si] = { ...updated[si], entries };
+                              setDietSchedules(updated); mark();
+                            }}
+                            className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1"
                           >
-                            <option value="cups">cups/day</option>
-                            <option value="half cups">half cups/day</option>
-                            <option value="oz">oz/day</option>
-                            <option value="grams">grams/day</option>
-                            <option value="lbs">lbs/day</option>
-                          </select>
+                            <span className="material-symbols-outlined text-[14px]">add</span> Add feeding time
+                          </button>
                         </div>
-                      </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => { setDietSchedules([...dietSchedules, { foodType: '', entries: [{ amount: '', unit: 'cup', time: '08:00' }] }]); mark(); }}
+                        className="w-full py-2 rounded-xl border-2 border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-sm font-medium transition-colors flex items-center justify-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">add</span> Add food
+                      </button>
                     </div>
 
                     {/* Notes */}
@@ -1134,7 +1176,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
 
                 {/* Row 2: Full-width Save Changes (edit mode: any tab; add mode: last tab only) */}
                 <AnimatePresence>
-                  {isDirty && (isEditMode || isLast) && (
+                  {isDirty && isEditMode && (
                     <motion.button
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
@@ -1160,7 +1202,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
         onClose={() => setShowCropper(false)}
         imageSrc={selectedImage}
         onCropComplete={handleCropComplete}
-        shape={avatarShape}
+        shape="circle"
       />
     </AnimatePresence>
   );

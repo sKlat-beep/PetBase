@@ -73,7 +73,12 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
     } catch (err: any) {
       if (err?.message === 'BANNED') {
         setJoinError("You've been banned from this group");
+      } else if (err?.code === 'permission-denied') {
+        setJoinError("You don't have permission to join this group");
+      } else if (err?.code === 'not-found') {
+        setJoinError("This group no longer exists");
       } else {
+        console.error('handleJoin error:', err);
         setJoinError("Couldn't join — try again");
       }
     } finally {

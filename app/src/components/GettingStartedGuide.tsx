@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router';
 import { usePets } from '../contexts/PetContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useCommunity } from '../contexts/CommunityContext';
 import { STEPS, TOTAL_STEPS } from '../data/onboardingSteps';
 import { useOnboarding } from '../hooks/useOnboarding';
 import { LEVEL_LABELS } from '../lib/onboardingService';
@@ -28,6 +29,7 @@ interface GettingStartedGuideProps {
 export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStartedGuideProps) {
   const { pets } = usePets();
   const { user, profile } = useAuth();
+  const { groups } = useCommunity();
   const navigate = useNavigate();
   const ob = useOnboarding(user?.uid ?? null);
 
@@ -58,7 +60,30 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
     if (profile && profile.address && profile.avatarUrl && !ob.isStepCompleted('complete-profile')) {
       ob.markStepCompleted('complete-profile');
     }
-  }, [pets, profile, user, ob.isStepCompleted, ob.markStepCompleted]);
+
+    // create-card: user has any cards in localStorage
+    if (!ob.isStepCompleted('create-card')) {
+      try {
+        const raw = localStorage.getItem('petbase-cards');
+        if (raw) {
+          const cards = JSON.parse(raw);
+          if (Array.isArray(cards) && cards.length > 0) {
+            ob.markStepCompleted('create-card');
+          }
+        }
+      } catch { /* ignore parse errors */ }
+    }
+
+    // join-community: user is a member of any group
+    if (
+      user &&
+      groups.length > 0 &&
+      !ob.isStepCompleted('join-community') &&
+      groups.some((g) => g.members[user.uid])
+    ) {
+      ob.markStepCompleted('join-community');
+    }
+  }, [pets, profile, user, groups, ob.isStepCompleted, ob.markStepCompleted]);
 
   // Track previous completed count for per-step confetti
   const [prevCount, setPrevCount] = useState(ob.completedCount);

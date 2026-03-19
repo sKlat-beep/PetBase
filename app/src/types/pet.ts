@@ -3,6 +3,17 @@
 //
 // Per petbase-system-instructions.md: the `notes` field is PII and MUST be
 // AES-256-GCM encrypted by src/lib/crypto.ts before any Firestore write.
+export interface FeedingEntry {
+  amount: string;   // "1"
+  unit: string;     // "cup"
+  time: string;     // "08:00" (24h format)
+}
+
+export interface DietSchedule {
+  foodType: string;           // "Purina Pro Plan"
+  entries: FeedingEntry[];    // multiple time slots
+}
+
 export interface EmergencyContacts {
   ownerPhone?: string;
   vetInfo?: { clinic: string; name: string; address: string; phone: string };
@@ -30,11 +41,7 @@ export interface Pet {
   bodyConditionScore?: string;
   favoriteActivities?: string[];
   typeOfPlay?: string;
-  dietSchedule?: {
-    time: string;
-    portion: string;
-    brand: string;
-  }[];
+  dietSchedule?: DietSchedule[];
   medicalVisits?: {
     date: string;
     clinic: string;

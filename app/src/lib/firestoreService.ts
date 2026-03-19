@@ -414,6 +414,7 @@ export interface PublicCardPetSnapshot {
   emergencyContacts?: EmergencyContacts;
   microchipId?: string;
   householdInfo?: string;
+  dietSchedule?: import('../types/pet').DietSchedule[];
 }
 
 export interface PublicCardDoc {

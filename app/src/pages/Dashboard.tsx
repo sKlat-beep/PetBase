@@ -36,6 +36,9 @@ const LostPetReportModal = React.lazy(() =>
 import { useSocial } from '../contexts/SocialContext';
 import { saveDashboardLayout, loadDashboardLayout, type DashboardLayoutItem } from '../lib/firestoreService';
 import { useOnboarding } from '../hooks/useOnboarding';
+import { useGamification } from '../hooks/useGamification';
+import { pointsForNextLevel } from '../lib/gamificationService';
+import LevelProgressCard from '../components/gamification/LevelProgressCard';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -48,7 +51,8 @@ type WidgetKey =
   | 'groups_activity'
   | 'friends_activity'
   | 'today_reminders'
-  | 'streak_counter';
+  | 'streak_counter'
+  | 'level_progress';
 
 const WIDGET_LABELS: Record<WidgetKey, string> = {
   expenses: 'Monthly Expenses',
@@ -57,6 +61,7 @@ const WIDGET_LABELS: Record<WidgetKey, string> = {
   friends_activity: 'Friends Activity',
   today_reminders: 'Today\'s Reminders',
   streak_counter: 'Health Streak',
+  level_progress: 'Level Progress',
 };
 
 const WIDGET_ICONS: Record<WidgetKey, string> = {
@@ -66,6 +71,7 @@ const WIDGET_ICONS: Record<WidgetKey, string> = {
   friends_activity: 'people',
   today_reminders: 'notifications_active',
   streak_counter: 'local_fire_department',
+  level_progress: 'military_tech',
 };
 
 const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
@@ -75,6 +81,7 @@ const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
   friends_activity: { minW: 4, minH: 4 },
   today_reminders: { minW: 2, minH: 2 },
   streak_counter: { minW: 2, minH: 2 },
+  level_progress: { minW: 3, minH: 3 },
 };
 
 const DEFAULT_LAYOUT: LayoutItem[] = [
@@ -83,7 +90,8 @@ const DEFAULT_LAYOUT: LayoutItem[] = [
   { i: 'pet_health_pets',  x: 0,  y: 4,  w: 4,  h: 4 },
   { i: 'groups_activity',  x: 4,  y: 4,  w: 4,  h: 4 },
   { i: 'friends_activity', x: 8,  y: 4,  w: 4,  h: 4 },
-  { i: 'streak_counter',   x: 0,  y: 8,  w: 12, h: 3 },
+  { i: 'streak_counter',   x: 0,  y: 8,  w: 6,  h: 3 },
+  { i: 'level_progress',   x: 6,  y: 8,  w: 6,  h: 3 },
 ];
 
 interface WidgetSnapConfig {
@@ -144,6 +152,8 @@ export function Dashboard() {
 
   // Guide — Firestore-persisted via useOnboarding
   const ob = useOnboarding(user?.uid ?? null);
+  const gamification = useGamification(user?.uid ?? null);
+  const gamificationProgress = gamification.state ? pointsForNextLevel(gamification.state.totalPoints) : { current: 0, next: 100, progress: 0 };
   const { confettiActive, celebrate } = useCelebration();
 
   const handleGuideComplete = useCallback(() => {
@@ -172,6 +182,9 @@ export function Dashboard() {
   const [layout, setLayout] = useState<LayoutItem[]>(loadLayout);
   const [hiddenWidgets, setHiddenWidgets] = useState<Set<WidgetKey>>(loadHidden);
   const [editMode, setEditMode] = useState(false);
+  const [toolbarPos, setToolbarPos] = useState<{ x: number; y: number } | null>(null);
+  const toolbarDragRef = useRef<{ isDragging: boolean; offsetX: number; offsetY: number }>({ isDragging: false, offsetX: 0, offsetY: 0 });
+  const toolbarElRef = useRef<HTMLDivElement>(null);
   const [layoutLoading, setLayoutLoading] = useState(true);
 
   // Widget rename
@@ -483,6 +496,43 @@ export function Dashboard() {
     return () => setContent(null);
   }, [setContent]);
 
+  // Reset toolbar position when exiting edit mode
+  useEffect(() => {
+    if (!editMode) setToolbarPos(null);
+  }, [editMode]);
+
+  // Drag handlers for the floating toolbar
+  useEffect(() => {
+    const handleMove = (clientX: number, clientY: number) => {
+      const drag = toolbarDragRef.current;
+      if (!drag.isDragging) return;
+      const el = toolbarElRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const maxX = window.innerWidth - rect.width;
+      const maxY = window.innerHeight - rect.height;
+      setToolbarPos({
+        x: Math.max(0, Math.min(clientX - drag.offsetX, maxX)),
+        y: Math.max(0, Math.min(clientY - drag.offsetY, maxY)),
+      });
+    };
+    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1) handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    const onEnd = () => { toolbarDragRef.current.isDragging = false; };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onEnd);
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onEnd);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onEnd);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onEnd);
+    };
+  }, []);
+
   const prefersReduced = useReducedMotion();
 
   const WIDGET_CARD = 'h-full glass-card overflow-hidden';
@@ -732,6 +782,11 @@ export function Dashboard() {
           </section>
         );
 
+      case 'level_progress':
+        return gamification.state ? (
+          <LevelProgressCard state={gamification.state} pointsForNext={gamificationProgress} />
+        ) : null;
+
       default:
         return null;
     }
@@ -886,32 +941,54 @@ export function Dashboard() {
         {editMode && (
           <motion.div
             key="edit-toolbar"
+            ref={toolbarElRef}
             initial={prefersReduced ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReduced ? undefined : { opacity: 0, y: 16 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40"
+            className={toolbarPos ? 'fixed z-40' : 'fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40'}
+            style={toolbarPos ? { left: toolbarPos.x, top: toolbarPos.y } : undefined}
           >
-            <div className="glass-card px-4 py-3 flex items-center gap-3">
+            <div className="glass-card px-8 py-5 flex items-center gap-3 border border-outline-variant/50 shadow-lg">
+              {/* Drag handle */}
+              <span
+                className="material-symbols-outlined text-on-surface-variant/60 cursor-grab active:cursor-grabbing shrink-0 select-none"
+                onMouseDown={(e) => {
+                  const el = toolbarElRef.current;
+                  if (!el) return;
+                  const rect = el.getBoundingClientRect();
+                  toolbarDragRef.current = { isDragging: true, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top };
+                  if (!toolbarPos) setToolbarPos({ x: rect.left, y: rect.top });
+                }}
+                onTouchStart={(e) => {
+                  if (e.touches.length !== 1) return;
+                  const el = toolbarElRef.current;
+                  if (!el) return;
+                  const rect = el.getBoundingClientRect();
+                  const touch = e.touches[0];
+                  toolbarDragRef.current = { isDragging: true, offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top };
+                  if (!toolbarPos) setToolbarPos({ x: rect.left, y: rect.top });
+                }}
+              >drag_indicator</span>
               <span className="material-symbols-outlined text-primary-container shrink-0">dashboard_customize</span>
               <span className="text-sm font-medium text-on-surface whitespace-nowrap">Editing layout</span>
               <button
                 onClick={resetLayout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-outline-variant text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium border border-outline-variant text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
                 title="Reset to default layout"
               >
-                <span className="material-symbols-outlined text-sm">restart_alt</span>
+                <span className="material-symbols-outlined text-base">restart_alt</span>
                 Reset
               </button>
               <button
                 onClick={cancelEdit}
-                className="px-3 py-1.5 rounded-xl text-sm font-medium border border-outline-variant text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
+                className="px-5 py-2.5 rounded-xl text-sm font-medium border border-outline-variant text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={saveEdit}
-                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-primary-container hover:opacity-90 text-on-primary-container shadow-sm motion-safe:transition-colors"
+                className="px-5 py-2.5 rounded-xl text-sm font-medium bg-primary-container hover:opacity-90 text-on-primary-container shadow-sm motion-safe:transition-colors"
               >
                 Save
               </button>

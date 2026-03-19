@@ -12,6 +12,9 @@ import { NotificationBell } from './notifications/NotificationBell';
 import { RightPanel } from './layout/RightPanel';
 import { OfflineBanner } from './ui/OfflineBanner';
 import { KeyboardShortcutsProvider } from './ui/KeyboardShortcuts';
+import PointToast from './gamification/PointToast';
+import PointsBadge from './gamification/PointsBadge';
+import { useGamification } from '../hooks/useGamification';
 
 /** Material Symbols helper */
 function MIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -28,6 +31,7 @@ export function Layout() {
   // Theme is managed via CSS custom properties (data-theme attribute on <html>)
   const { searchUsers } = useSocial();
   const { totalUnread: totalUnreadMessages } = useMessaging();
+  const gamification = useGamification(user?.uid ?? null);
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,6 +91,7 @@ export function Layout() {
     <div className="min-h-screen bg-background text-on-surface flex flex-col md:flex-row font-sans">
       <OfflineBanner />
       <KeyboardShortcutsProvider />
+      <PointToast />
 
       {/* Household event toast */}
       {hhToast && (
@@ -293,9 +298,19 @@ export function Layout() {
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-on-surface truncate">
-                  {user?.displayName || 'Pet Parent'}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-on-surface truncate">
+                    {user?.displayName || 'Pet Parent'}
+                  </p>
+                  {gamification.state && (
+                    <PointsBadge
+                      level={gamification.state.level}
+                      totalPoints={gamification.state.totalPoints}
+                      levelLabel={gamification.state.levelLabel}
+                      compact
+                    />
+                  )}
+                </div>
                 <p className="text-xs text-on-surface-variant truncate">
                   {user?.email}
                 </p>

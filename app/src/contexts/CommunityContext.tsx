@@ -63,6 +63,7 @@ import { useAuth } from './AuthContext';
 import { useSocial } from './SocialContext';
 import { logActivity } from '../utils/activityLog';
 import { uploadGroupPostImage } from '../lib/storageService';
+import { awardPoints } from '../lib/gamificationService';
 
 export type CommunityRole = 'Owner' | 'Moderator' | 'Event Coordinator' | 'User';
 
@@ -309,10 +310,21 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       return { ...g, members: { ...g.members, [user.uid]: memberData } };
     }));
 
-    const batch = writeBatch(db);
-    batch.set(doc(db, 'groups', groupId, 'members', user.uid), memberData);
-    batch.update(doc(db, 'groups', groupId), { updatedAt: Date.now() });
-    await batch.commit();
+    try {
+      const batch = writeBatch(db);
+      batch.set(doc(db, 'groups', groupId, 'members', user.uid), memberData);
+      batch.update(doc(db, 'groups', groupId), { updatedAt: Date.now() });
+      await batch.commit();
+    } catch (err: any) {
+      // Rollback optimistic update
+      setGroups(prev => prev.map(g => {
+        if (g.id !== groupId) return g;
+        const { [user.uid]: _, ...rest } = g.members;
+        return { ...g, members: rest };
+      }));
+      console.error('joinGroup failed:', err);
+      throw err;
+    }
 
     setUserPreferences(prev => ({ ...prev, [groupId]: { isFavorite: false, lastVisitedAt: Date.now() } }));
 
@@ -344,6 +356,7 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('petbase-step-join-community', 'true');
       window.dispatchEvent(new Event('petbase-guide-update'));
     }
+    awardPoints(user.uid, 'join-group').catch(() => {});
   }, [user]);
 
   const leaveGroup = useCallback(async (groupId: string) => {
@@ -441,6 +454,7 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       if (g.id !== groupId) return g;
       return { ...g, posts: g.posts.map(p => p.id === tempId ? { ...p, id: newPostId } : p) };
     }));
+    awardPoints(user.uid, 'create-post').catch(() => {});
   }, [user]);
 
   const pinPost = useCallback(async (groupId: string, postId: string, isPinned: boolean) => {

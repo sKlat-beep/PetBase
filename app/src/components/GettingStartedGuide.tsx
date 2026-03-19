@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { CheckCircle2, Circle, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router';
 import { usePets } from '../contexts/PetContext';
@@ -20,23 +19,6 @@ export {
   markMedicalRecordAdded,
   markProfileCompleted,
 } from '../lib/onboardingService';
-
-// Circumference of SVG circle with r=16 in a 40×40 viewBox
-const CIRCUMFERENCE = 2 * Math.PI * 16; // ≈ 100.53
-
-/** Progress ring color class based on completed count. */
-function ringColorClass(count: number): string {
-  if (count >= 7) return 'text-emerald-500';
-  if (count >= 4) return 'text-amber-500';
-  return 'text-neutral-400 dark:text-neutral-500';
-}
-
-/** Counter text color class matching ring. */
-function counterColorClass(count: number): string {
-  if (count >= 7) return 'text-emerald-600 dark:text-emerald-400';
-  if (count >= 4) return 'text-amber-600 dark:text-amber-400';
-  return 'text-neutral-500 dark:text-neutral-400';
-}
 
 interface GettingStartedGuideProps {
   onComplete: () => void;
@@ -87,13 +69,9 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
     setPrevCount(ob.completedCount);
   }, [ob.completedCount, prevCount, onStepComplete]);
 
-  const isDone = useCallback(
-    (id: string) => ob.isStepCompleted(id) || ob.isStepSkipped(id),
-    [ob.isStepCompleted, ob.isStepSkipped],
-  );
-
   const completedCount = ob.completedCount;
   const allComplete = completedCount === TOTAL_STEPS;
+  const progressPercent = (completedCount / TOTAL_STEPS) * 100;
 
   const handleStepClick = (step: typeof STEPS[number]) => {
     if (step.path) {
@@ -124,66 +102,77 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
     return () => clearTimeout(timer);
   }, [allComplete, onComplete, ob.markGuideCompleted]);
 
-  const progressDash = (completedCount / TOTAL_STEPS) * CIRCUMFERENCE;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden"
+      className="glass-card w-full overflow-hidden rounded-2xl"
     >
       {/* Header */}
-      <button
-        type="button"
-        onClick={toggleExpanded}
-        className="w-full flex items-center justify-between p-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          {/* Circular progress ring with color transitions */}
-          <div className="relative w-10 h-10 shrink-0">
-            <svg className="w-10 h-10 -rotate-90" viewBox="0 0 40 40">
-              <circle
-                cx="20" cy="20" r="16"
-                fill="none" strokeWidth="3"
-                className="text-neutral-100 dark:text-neutral-700"
-                stroke="currentColor"
-              />
-              <circle
-                cx="20" cy="20" r="16"
-                fill="none" strokeWidth="3"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeDasharray={`${progressDash} ${CIRCUMFERENCE}`}
-                className={`${ringColorClass(completedCount)} transition-all duration-500`}
-              />
-            </svg>
-            <span className={`absolute inset-0 flex items-center justify-center text-xs font-bold ${counterColorClass(completedCount)}`}>
-              {completedCount}/{TOTAL_STEPS}
-            </span>
-          </div>
-          <div>
+      <div className="flex items-center justify-between p-5">
+        <button
+          type="button"
+          onClick={toggleExpanded}
+          className="flex items-center gap-3 flex-1 text-left"
+        >
+          <span className="material-symbols-outlined text-primary-container text-2xl">
+            auto_awesome
+          </span>
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <p className="font-bold text-neutral-900 dark:text-neutral-100">
-                {allComplete ? 'All done! Great work.' : 'Getting Started'}
+              <p
+                className="font-bold text-on-surface"
+                style={{ fontFamily: 'var(--font-headline)' }}
+              >
+                {allComplete ? 'All done! Great work.' : 'GETTING STARTED'}
               </p>
               {!allComplete && (
-                <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
+                <span className="text-xs font-medium text-on-surface-variant">
                   {LEVEL_LABELS[ob.petParentLevel]}
                 </span>
               )}
             </div>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm text-on-surface-variant mt-0.5">
               {ob.milestoneCopy}
             </p>
+            {/* Progress bar */}
+            <div className="mt-2 h-2 w-full rounded-full bg-surface-container overflow-hidden">
+              <motion.div
+                className="h-full rounded-full"
+                style={{
+                  background: 'linear-gradient(90deg, var(--md-sys-color-primary-container) 0%, var(--md-sys-color-tertiary) 100%)',
+                }}
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercent}%` }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              />
+            </div>
           </div>
+        </button>
+        <div className="flex items-center gap-1 shrink-0 ml-3">
+          <button
+            type="button"
+            onClick={toggleExpanded}
+            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container motion-safe:transition-colors"
+            title={isExpanded ? 'Collapse' : 'Expand'}
+          >
+            <span className="material-symbols-outlined text-xl">
+              {isExpanded ? 'expand_less' : 'expand_more'}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={onComplete}
+            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container motion-safe:transition-colors"
+            title="Dismiss guide"
+          >
+            <span className="material-symbols-outlined text-xl">
+              close
+            </span>
+          </button>
         </div>
-        {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-neutral-400 shrink-0" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-neutral-400 shrink-0" />
-        )}
-      </button>
+      </div>
 
       {/* Step list */}
       <AnimatePresence initial={false}>
@@ -195,50 +184,102 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-neutral-100 dark:border-neutral-700 px-5 pb-5 pt-4 space-y-2">
-              {STEPS.map((step) => {
-                const completed = ob.isStepCompleted(step.id);
-                const skipped = ob.isStepSkipped(step.id);
-                const finished = completed || skipped;
-                return (
-                  <div key={step.id} className={`flex items-start gap-3 px-3 py-3 rounded-xl transition-colors ${finished ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'hover:bg-neutral-50 dark:hover:bg-neutral-700/40'}`}>
-                    <button
-                      type="button"
-                      onClick={() => !finished && handleStepClick(step)}
-                      className="flex items-start gap-3 flex-1 text-left"
+            <div className="border-t border-outline-variant/30 px-5 pb-5 pt-4">
+              {/* 3-col grid on desktop, 1-col on mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {STEPS.map((step) => {
+                  const completed = ob.isStepCompleted(step.id);
+                  const skipped = ob.isStepSkipped(step.id);
+                  const finished = completed || skipped;
+                  return (
+                    <div
+                      key={step.id}
+                      className={`flex items-start gap-3 px-3 py-3 rounded-xl motion-safe:transition-colors ${
+                        finished
+                          ? 'bg-secondary-container/20 border border-secondary/30'
+                          : 'hover:bg-surface-container'
+                      }`}
                     >
-                      {completed ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                      ) : skipped ? (
-                        <CheckCircle2 className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-neutral-300 dark:text-neutral-600 shrink-0 mt-0.5" />
-                      )}
-                      <div>
-                        <p className={`text-sm font-medium ${finished ? 'line-through text-neutral-400 dark:text-neutral-500' : 'text-neutral-900 dark:text-neutral-100'}`}>
-                          {step.label}
-                          {skipped && <span className="ml-1.5 text-xs font-normal no-underline">(skipped)</span>}
-                        </p>
-                        {!finished && (
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                            {step.description}
-                          </p>
-                        )}
-                      </div>
-                    </button>
-                    {step.skippable && !finished && (
                       <button
                         type="button"
-                        onClick={(e) => handleSkip(e, step.id)}
-                        title="Skip this step"
-                        className="p-1 rounded-lg text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors shrink-0 mt-0.5"
+                        onClick={() => !finished && handleStepClick(step)}
+                        className="flex items-start gap-3 flex-1 text-left"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        {completed ? (
+                          <span className="material-symbols-outlined text-xl text-green-500 shrink-0 mt-0.5">
+                            check_circle
+                          </span>
+                        ) : skipped ? (
+                          <span className="material-symbols-outlined text-xl text-on-surface-variant shrink-0 mt-0.5">
+                            check_circle
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-xl text-outline shrink-0 mt-0.5">
+                            radio_button_unchecked
+                          </span>
+                        )}
+                        <div>
+                          <p
+                            className={`text-sm font-medium ${
+                              finished
+                                ? 'line-through text-on-surface-variant'
+                                : 'text-on-surface'
+                            }`}
+                          >
+                            {step.label}
+                            {skipped && (
+                              <span className="ml-1.5 text-xs font-normal no-underline">
+                                (skipped)
+                              </span>
+                            )}
+                          </p>
+                          {!finished && (
+                            <>
+                              <p className="text-xs text-on-surface-variant mt-0.5">
+                                {step.description}
+                              </p>
+                              {step.path && (
+                                <span className="text-xs font-medium text-primary mt-1 inline-block">
+                                  Get started &rarr;
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </button>
-                    )}
-                  </div>
-                );
-              })}
+                      {step.skippable && !finished && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleSkip(e, step.id)}
+                          title="Skip this step"
+                          className="p-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container motion-safe:transition-colors shrink-0 mt-0.5"
+                        >
+                          <span className="material-symbols-outlined text-base">
+                            close
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-outline-variant/30 px-5 py-3 flex items-center justify-between">
+              <p className="text-xs text-on-surface-variant">
+                <span className="material-symbols-outlined text-sm align-middle mr-1">
+                  stars
+                </span>
+                Earn <span className="font-semibold text-secondary">50 bonus points</span> by completing all steps
+              </p>
+              <button
+                type="button"
+                onClick={onComplete}
+                className="text-xs font-medium text-on-surface-variant hover:text-on-surface motion-safe:transition-colors px-3 py-1.5 rounded-lg hover:bg-surface-container"
+              >
+                Skip for now
+              </button>
             </div>
           </motion.div>
         )}

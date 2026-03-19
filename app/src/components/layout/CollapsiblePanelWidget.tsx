@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 interface CollapsiblePanelWidgetProps {
@@ -27,21 +26,20 @@ export function CollapsiblePanelWidget({ id, title, icon, badge, children, defau
   };
 
   return (
-    <div className="bg-white/75 dark:bg-neutral-800/75 backdrop-blur-xl rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-sm overflow-hidden">
+    <div className="glass-card overflow-hidden">
       <button
         onClick={toggle}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-neutral-50/60 dark:hover:bg-neutral-700/40 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface-container-high/40 motion-safe:transition-colors"
         aria-expanded={expanded}
       >
-        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
           {icon}
           {title}
         </span>
         {badge}
-        {expanded
-          ? <ChevronUp className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 shrink-0" />
-          : <ChevronDown className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 shrink-0" />
-        }
+        <span className="material-symbols-outlined text-[16px] text-on-surface-variant shrink-0" aria-hidden="true">
+          {expanded ? 'expand_less' : 'expand_more'}
+        </span>
       </button>
       <AnimatePresence initial={false}>
         {expanded && (

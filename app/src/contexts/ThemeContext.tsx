@@ -1,54 +1,29 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-
-type Theme = 'light' | 'dark';
-
-export const ACCENTS = ['emerald', 'sky', 'violet', 'rose', 'amber', 'indigo'] as const;
-export type AccentColor = typeof ACCENTS[number];
+import { THEMES, type ThemeName } from '../theme/tokens';
 
 interface ThemeContextValue {
-  theme: Theme;
-  toggleTheme: () => void;
-  accentColor: AccentColor;
-  setAccentColor: (color: AccentColor) => void;
+  theme: ThemeName;
+  setTheme: (theme: ThemeName) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'light',
-  toggleTheme: () => { },
-  accentColor: 'emerald',
-  setAccentColor: () => { },
+  theme: 'cinematic',
+  setTheme: () => { },
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
+  const [theme, setTheme] = useState<ThemeName>(() => {
     const stored = localStorage.getItem('petbase-theme');
-    return stored === 'dark' ? 'dark' : 'light';
-  });
-
-  const [accentColor, setAccentColor] = useState<AccentColor>(() => {
-    const saved = localStorage.getItem('petbase-accent');
-    return (ACCENTS.includes(saved as AccentColor) ? saved : 'emerald') as AccentColor;
+    return THEMES.includes(stored as ThemeName) ? (stored as ThemeName) : 'cinematic';
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('petbase-theme', theme);
   }, [theme]);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-accent', accentColor);
-    localStorage.setItem('petbase-accent', accentColor);
-  }, [accentColor]);
-
-  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, accentColor, setAccentColor }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

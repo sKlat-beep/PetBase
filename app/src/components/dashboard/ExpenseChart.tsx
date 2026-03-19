@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { Expense } from '../../contexts/ExpenseContext';
 
-/** Chart color constants (Tailwind palette references) */
-const CHART_EMERALD = '#10b981'; // emerald-500
+/** Chart bar color — reads from CSS custom property at render time */
+function getChartColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--primary-container').trim() || '#FF6B6B';
+}
 
 interface ExpenseChartProps {
   expenses: Expense[];
@@ -40,13 +42,13 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
 
   return (
     <div className="mt-3">
-      <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-2">Monthly Spending (6 months)</p>
+      <p className="text-xs font-medium text-on-surface-variant mb-2">Monthly Spending (6 months)</p>
       <div className="h-36 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={monthlyData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-neutral-200 dark:text-neutral-700" />
-            <XAxis dataKey="month" tick={{ fontSize: 10 }} className="text-neutral-400" />
-            <YAxis tick={{ fontSize: 10 }} className="text-neutral-400" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--outline-variant)" opacity={0.3} />
+            <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} />
+            <YAxis tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} />
             <Tooltip
               contentStyle={{ fontSize: 12, borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)' }}
               formatter={(value) => {
@@ -54,7 +56,7 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
                 return [`$${n.toFixed(2)}`, 'Spent'];
               }}
             />
-            <Bar dataKey="total" fill={CHART_EMERALD} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="total" fill={getChartColor()} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

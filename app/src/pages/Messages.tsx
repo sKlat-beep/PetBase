@@ -3,7 +3,6 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useSearchParams, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageSquare, Send, Trash2, CheckCheck, ArrowLeft, ShieldOff, SquareCheck, Square, MoreHorizontal, Smile, Image, Search, ChevronDown, Mail, Pin, Mic, Reply, X, Pencil } from 'lucide-react';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../lib/firebase';
 import EmptyState from '../components/ui/EmptyState';
@@ -23,6 +22,11 @@ import { GifPicker } from '../components/messaging/GifPicker';
 import { PhotoPicker } from '../components/messaging/PhotoPicker';
 import { VoiceMemo } from '../components/messaging/VoiceMemo';
 import { MessagesRightPanel } from '../components/messaging/MessagesRightPanel';
+
+// ─── Material Symbol helper ──────────────────────────────────────────────────
+function MSIcon({ name, className = '' }: { name: string; className?: string }) {
+  return <span className={`material-symbols-outlined ${className}`}>{name}</span>;
+}
 
 // ─── Conversation row ─────────────────────────────────────────────────────────
 function ConversationRow({
@@ -53,34 +57,40 @@ function ConversationRow({
   return (
     <div className={`relative group flex items-center transition-colors
       ${isActive
-        ? 'bg-emerald-50 dark:bg-emerald-950/30'
-        : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/60'}`}
+        ? 'bg-primary-container/10'
+        : 'hover:bg-surface-container-high'}`}
     >
       <button
         onClick={onClick}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left focus-visible:ring-2 focus-visible:ring-primary outline-none"
       >
-        {avatar ? (
-          <img src={avatar} alt={displayName} width={40} height={40}
-            className="w-10 h-10 rounded-full object-cover shrink-0 bg-neutral-100 dark:bg-neutral-800"
-            referrerPolicy="no-referrer" />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 text-sm font-bold text-neutral-600 dark:text-neutral-300">
-            {initials}
-          </div>
-        )}
+        <div className="relative shrink-0">
+          {avatar ? (
+            <img src={avatar} alt={displayName} width={40} height={40}
+              className="w-10 h-10 rounded-full object-cover bg-surface-container"
+              referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-sm font-bold text-on-surface-variant">
+              {initials}
+            </div>
+          )}
+          {/* Online dot — secondary = online */}
+          {!isBlocked && (
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-surface" />
+          )}
+        </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <p className={`text-sm truncate ${isUnread ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'font-medium text-neutral-700 dark:text-neutral-300'}`}>
-              {isPinned && <Pin className="w-3 h-3 inline-block mr-1 text-amber-500" />}
+            <p className={`text-sm truncate ${isUnread ? 'font-bold text-on-surface' : 'font-medium text-on-surface-variant'}`}>
+              {isPinned && <MSIcon name="push_pin" className="!text-[14px] inline-block mr-1 text-tertiary" />}
               {displayName}
             </p>
             {isUnread && (
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-label="Unread message" />
+              <span className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 shadow-[0_0_6px_var(--primary)]" aria-label="Unread message" />
             )}
           </div>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">
-            {isBlocked ? <span className="text-rose-500 dark:text-rose-400">User Blocked</span>
+          <p className="text-xs text-on-surface-variant truncate mt-0.5">
+            {isBlocked ? <span className="text-error">User Blocked</span>
               : convo.lastMessage.mediaType
                 ? (convo.lastMessage.mediaType === 'gif' ? '🎞 GIF' : convo.lastMessage.mediaType === 'audio' ? '🎤 Voice' : '📷 Photo')
                 : convo.lastMessage.content}
@@ -89,10 +99,10 @@ function ConversationRow({
       </button>
       <button
         onClick={(e) => { e.stopPropagation(); onTogglePin(); }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400"
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-on-surface-variant hover:text-tertiary"
         aria-label={isPinned ? 'Unpin conversation' : 'Pin conversation'}
       >
-        <Pin className={`w-3.5 h-3.5 ${isPinned ? 'text-amber-500 fill-amber-500' : ''}`} />
+        <MSIcon name="push_pin" className={`!text-[16px] ${isPinned ? 'text-tertiary' : ''}`} />
       </button>
     </div>
   );
@@ -127,7 +137,7 @@ function highlightText(text: string, regex: RegExp | null) {
     <>
       {parts.map((part, i) =>
         i % 2 === 1
-          ? <mark key={i} className="bg-amber-200 dark:bg-amber-700 rounded px-0.5">{part}</mark>
+          ? <mark key={i} className="bg-tertiary/30 rounded px-0.5">{part}</mark>
           : part
       )}
     </>
@@ -136,9 +146,9 @@ function highlightText(text: string, regex: RegExp | null) {
 
 function counterColor(current: number, max: number): string {
   const remaining = max - current;
-  if (remaining < 100) return 'text-red-500 dark:text-red-400 font-semibold';
-  if (remaining < 400) return 'text-amber-500 dark:text-amber-400';
-  return 'text-neutral-400 dark:text-neutral-500';
+  if (remaining < 100) return 'text-error font-semibold';
+  if (remaining < 400) return 'text-tertiary';
+  return 'text-on-surface-variant/50';
 }
 
 const MAX_DM = 2000;
@@ -158,11 +168,11 @@ function EditInline({ initialContent, onSave, onCancel }: { initialContent: stri
           if (e.key === 'Escape') onCancel();
         }}
         maxLength={2000}
-        className="w-full px-2 py-1 text-sm rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        className="w-full px-2 py-1 text-sm rounded-lg border border-outline bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <div className="flex gap-1 justify-end">
-        <button onClick={onCancel} className="text-[10px] px-2 py-0.5 rounded text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700">Cancel</button>
-        <button onClick={() => value.trim() && onSave(value.trim())} className="text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white hover:bg-emerald-600">Save</button>
+        <button onClick={onCancel} className="text-[10px] px-2 py-0.5 rounded text-on-surface-variant hover:bg-surface-container-high">Cancel</button>
+        <button onClick={() => value.trim() && onSave(value.trim())} className="text-[10px] px-2 py-0.5 rounded bg-primary-container text-on-primary-container hover:opacity-90">Save</button>
       </div>
     </div>
   );
@@ -270,35 +280,35 @@ const MessageBubble = React.memo(function MessageBubble({
         <button
           onClick={onToggleSelect}
           aria-label={isSelected ? 'Deselect message' : 'Select message'}
-          className="p-1 text-neutral-400 hover:text-emerald-500 transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none shrink-0"
+          className="p-1 text-on-surface-variant hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none shrink-0"
         >
-          {isSelected ? <SquareCheck className="w-4 h-4 text-emerald-500" /> : <Square className="w-4 h-4" />}
+          <MSIcon name={isSelected ? 'check_box' : 'check_box_outline_blank'} className={`!text-[18px] ${isSelected ? 'text-primary' : ''}`} />
         </button>
       )}
       <div className={`group max-w-[72%] ${isMine ? 'order-last' : ''}`}>
         {/* Reply-to quote */}
         {message.replyToId && (
-          <div className="bg-neutral-200/50 dark:bg-neutral-700/50 rounded-lg px-2 py-1 text-xs mb-1 cursor-pointer hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70 transition-colors"
+          <div className="bg-surface-container/50 rounded-lg px-2 py-1 text-xs mb-1 cursor-pointer hover:bg-surface-container-high/70 transition-colors"
             onClick={() => {
               const el = document.getElementById(`msg-${message.replyToId}`);
               el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }}
           >
-            <span className="font-medium text-neutral-500 dark:text-neutral-400">
+            <span className="font-medium text-on-surface-variant">
               {message.replyToFromUid === currentUid ? 'You' : otherDisplayName}
             </span>
-            <p className="text-neutral-600 dark:text-neutral-400 line-clamp-1">{message.replyToContent}</p>
+            <p className="text-on-surface-variant line-clamp-1">{message.replyToContent}</p>
           </div>
         )}
 
-        {/* Text bubble — only if there's text content (or blocked message placeholder) */}
+        {/* Text bubble */}
         {(hasText || blockedText) && (
           <div className={`px-3 py-2 rounded-2xl text-sm leading-relaxed
             ${isMine
-              ? 'bg-emerald-500 text-white rounded-br-sm'
+              ? 'bg-gradient-to-br from-primary-container to-tertiary text-on-primary-container rounded-br-none'
               : isBlocked
-                ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 italic rounded-bl-sm'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-bl-sm'}`}>
+                ? 'bg-surface-container-highest text-on-surface-variant italic rounded-bl-none'
+                : 'bg-surface-container-highest text-on-surface rounded-bl-none'}`}>
             {isEditing ? (
               <EditInline
                 initialContent={message.content}
@@ -332,15 +342,15 @@ const MessageBubble = React.memo(function MessageBubble({
             href={urlMatch!}
             target="_blank"
             rel="noopener noreferrer"
-            className="block border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden mt-1.5 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
+            className="block border border-outline-variant rounded-xl overflow-hidden mt-1.5 hover:border-outline transition-colors"
           >
             {linkPreview.image && (
               <img src={linkPreview.image} alt="" className="w-full h-[120px] object-cover" loading="lazy" referrerPolicy="no-referrer" />
             )}
             <div className="px-3 py-2">
-              {linkPreview.siteName && <p className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wide">{linkPreview.siteName}</p>}
-              <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 line-clamp-1">{linkPreview.title}</p>
-              {linkPreview.description && <p className="text-[10px] text-neutral-500 dark:text-neutral-400 line-clamp-2 mt-0.5">{linkPreview.description}</p>}
+              {linkPreview.siteName && <p className="text-[10px] text-on-surface-variant uppercase tracking-wide">{linkPreview.siteName}</p>}
+              <p className="text-xs font-medium text-on-surface line-clamp-1">{linkPreview.title}</p>
+              {linkPreview.description && <p className="text-[10px] text-on-surface-variant line-clamp-2 mt-0.5">{linkPreview.description}</p>}
             </div>
           </a>
         )}
@@ -362,8 +372,8 @@ const MessageBubble = React.memo(function MessageBubble({
                     onTouchEnd={handleReactionTouchEnd}
                     className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border transition-colors
                       ${reacted
-                        ? 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
-                        : 'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300'}`}
+                        ? 'bg-primary-container/20 border-primary/40 text-primary'
+                        : 'bg-surface-container border-outline-variant text-on-surface-variant hover:border-outline'}`}
                     aria-label={`React with ${k}`}
                   >
                     {REACTION_EMOJIS[k]} {count}
@@ -375,16 +385,16 @@ const MessageBubble = React.memo(function MessageBubble({
         )}
 
         <div className={`flex items-center gap-1 mt-0.5 ${isMine ? 'justify-end' : 'justify-start'}`}>
-          <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{ts}</span>
+          <span className="text-[10px] text-on-surface-variant/60">{ts}</span>
           {message.editedAt && (
-            <span className="text-[10px] text-neutral-400 italic">
+            <span className="text-[10px] text-on-surface-variant/60 italic">
               (edited)
             </span>
           )}
           {/* Read receipt: show below last sent message */}
           {isMine && isLastMine && message.read && (
-            <span className="text-[10px] text-emerald-500 dark:text-emerald-400 flex items-center gap-0.5">
-              <CheckCheck className="w-3 h-3" /> Seen
+            <span className="text-[10px] text-secondary flex items-center gap-0.5">
+              <MSIcon name="done_all" className="!text-[12px]" /> Seen
             </span>
           )}
           {!selectMode && (
@@ -393,9 +403,9 @@ const MessageBubble = React.memo(function MessageBubble({
                 onClick={() => setMenuOpen(v => !v)}
                 aria-label="Message options"
                 aria-expanded={menuOpen}
-                className="opacity-0 group-hover:opacity-100 p-0.5 text-neutral-300 hover:text-neutral-500 dark:hover:text-neutral-300 transition-all focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+                className="opacity-0 group-hover:opacity-100 p-0.5 text-on-surface-variant/40 hover:text-on-surface-variant transition-all focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary outline-none"
               >
-                <MoreHorizontal className="w-3.5 h-3.5" />
+                <MSIcon name="more_horiz" className="!text-[16px]" />
               </button>
               <AnimatePresence>
                 {menuOpen && (
@@ -408,17 +418,16 @@ const MessageBubble = React.memo(function MessageBubble({
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.1 }}
                       className={`absolute z-20 bottom-full mb-1 ${isMine ? 'right-0' : 'left-0'}
-                        bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700
-                        rounded-xl shadow-lg overflow-hidden min-w-[140px]`}
+                        glass-morphism rounded-xl shadow-lg overflow-hidden min-w-[140px]`}
                     >
                       {/* Reaction picker */}
-                      <div className="flex gap-1 px-2 py-2 border-b border-neutral-100 dark:border-neutral-700">
+                      <div className="flex gap-1 px-2 py-2 border-b border-outline-variant">
                         {reactionKeys.map(k => (
                           <button
                             key={k}
                             onClick={() => handleReact(k)}
                             aria-label={`React with ${k}`}
-                            className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-base transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-surface-container-high text-base transition-colors"
                           >
                             {REACTION_EMOJIS[k]}
                           </button>
@@ -427,33 +436,33 @@ const MessageBubble = React.memo(function MessageBubble({
                       {/* Reply */}
                       <button
                         onClick={() => { onReply?.(); setMenuOpen(false); }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high transition-colors"
                       >
-                        <Reply className="w-3.5 h-3.5" /> Reply
+                        <MSIcon name="reply" className="!text-[16px]" /> Reply
                       </button>
                       {/* Edit — own messages within 15 min */}
                       {isMine && Date.now() - message.createdAt < 15 * 60 * 1000 && (
                         <button
                           onClick={() => { onEdit?.(); setMenuOpen(false); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high transition-colors"
                         >
-                          <Pencil className="w-3.5 h-3.5" /> Edit
+                          <MSIcon name="edit" className="!text-[16px]" /> Edit
                         </button>
                       )}
                       {/* Delete */}
                       <button
                         onClick={() => { onDelete(); setMenuOpen(false); }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-error hover:bg-error-container transition-colors"
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                        <MSIcon name="delete" className="!text-[16px]" /> Delete
                       </button>
                       {/* Report */}
                       {!isMine && (
                         <button
                           onClick={() => { onReport(); setMenuOpen(false); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high transition-colors"
                         >
-                          <span className="text-orange-500">⚑</span> Report
+                          <MSIcon name="flag" className="!text-[16px] text-tertiary" /> Report
                         </button>
                       )}
                     </motion.div>
@@ -599,9 +608,6 @@ function ThreadPane({
   const matchCount = q ? displayMessages.length : 0;
 
   // Virtualizer for the DM message list.
-  // Messages are ordered oldest-to-newest (newest at bottom), so we virtualise in natural order.
-  // NOTE: auto-scroll-to-bottom via bottomRef and jump-to-latest via scrollRef still function
-  // because both operate on the same scrollRef element that the virtualizer uses.
   const messageVirtualizer = useVirtualizer({
     count: displayMessages.length,
     getScrollElement: () => scrollRef.current,
@@ -662,25 +668,25 @@ function ThreadPane({
   return (
     <div className="relative flex flex-col h-full">
       {/* Thread header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-outline-variant glass-morphism shrink-0">
         <button
           onClick={onBack}
           aria-label="Back to conversations"
-          className="md:hidden p-2 -ml-1 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none rounded-lg"
+          className="md:hidden p-2 -ml-1 text-on-surface-variant hover:text-on-surface focus-visible:ring-2 focus-visible:ring-primary outline-none rounded-lg"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <MSIcon name="arrow_back" className="!text-[20px]" />
         </button>
         <button
           onClick={onViewProfile}
           aria-label={`View ${displayName}'s profile`}
-          className="shrink-0 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none rounded-full"
+          className="shrink-0 focus-visible:ring-2 focus-visible:ring-primary outline-none rounded-full"
         >
           {avatar ? (
             <img src={avatar} alt={displayName} width={36} height={36}
-              className="w-9 h-9 rounded-full object-cover bg-neutral-100 hover:ring-2 hover:ring-emerald-400 transition-shadow"
+              className="w-9 h-9 rounded-full object-cover bg-surface-container hover:ring-2 hover:ring-primary transition-shadow"
               referrerPolicy="no-referrer" />
           ) : (
-            <div className="w-9 h-9 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:ring-2 hover:ring-emerald-400 transition-shadow">
+            <div className="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-sm font-bold text-on-surface-variant hover:ring-2 hover:ring-primary transition-shadow">
               {initials}
             </div>
           )}
@@ -688,40 +694,54 @@ function ThreadPane({
         <div className="flex-1 min-w-0">
           <button
             onClick={onViewProfile}
-            className="font-semibold text-neutral-900 dark:text-neutral-100 truncate hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded block"
+            className="font-semibold text-on-surface truncate hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded block"
+            style={{ fontFamily: 'var(--font-headline)' }}
           >
             {displayName}
           </button>
           {isBlocked && (
-            <p className="text-xs text-rose-500 dark:text-rose-400 flex items-center gap-1">
-              <ShieldOff className="w-3 h-3" /> Blocked
+            <p className="text-xs text-error flex items-center gap-1">
+              <MSIcon name="shield" className="!text-[14px]" /> Blocked
             </p>
           )}
           {!isBlocked && otherUserProfile?.showLastActive !== false && otherUserProfile?.lastActive && (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">
+            <p className="text-xs text-on-surface-variant">
               {formatLastActive(otherUserProfile.lastActive)}
             </p>
           )}
         </div>
+        {/* Call / Video / Info action buttons */}
+        <button
+          aria-label="Voice call"
+          className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+        >
+          <MSIcon name="call" className="!text-[20px]" />
+        </button>
+        <button
+          aria-label="Video call"
+          className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+        >
+          <MSIcon name="videocam" className="!text-[20px]" />
+        </button>
         <button
           onClick={() => { setSelectMode(v => !v); setSelected(new Set()); }}
           aria-label={selectMode ? 'Cancel selection' : 'Select messages'}
-          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
+          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none
             ${selectMode
-              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-              : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+              ? 'bg-primary-container/20 text-primary'
+              : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
         >
-          <SquareCheck className="w-5 h-5" />
+          <MSIcon name="checklist" className="!text-[20px]" />
         </button>
         <button
           onClick={() => { setShowSearch(v => !v); setSearchQuery(''); }}
           aria-label={showSearch ? 'Close search' : 'Search messages'}
-          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
+          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none
             ${showSearch
-              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-              : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+              ? 'bg-primary-container/20 text-primary'
+              : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
         >
-          <Search className="w-5 h-5" />
+          <MSIcon name="search" className="!text-[20px]" />
         </button>
       </div>
 
@@ -734,23 +754,23 @@ function ThreadPane({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden shrink-0"
           >
-            <div className="px-4 py-2 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/60">
+            <div className="px-4 py-2 border-b border-outline-variant bg-surface-container-low">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+                <MSIcon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 !text-[16px] text-on-surface-variant" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Escape') { setShowSearch(false); setSearchQuery(''); } }}
-                  placeholder="Search messages…"
-                  className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600
-                    bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100
-                    placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="Search messages..."
+                  className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border-0
+                    bg-surface-container text-on-surface
+                    placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               {searchQuery.trim() && (
-                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-1">
+                <p className="text-[10px] text-on-surface-variant mt-1">
                   {matchCount} result{matchCount !== 1 ? 's' : ''}
                 </p>
               )}
@@ -766,34 +786,30 @@ function ThreadPane({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="flex items-center gap-2 px-4 py-2 bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 overflow-hidden shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-surface-container border-b border-outline-variant overflow-hidden shrink-0"
           >
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 flex-1">{selected.size} selected</span>
+            <span className="text-xs text-on-surface-variant flex-1">{selected.size} selected</span>
             <button
               onClick={handleBulkMarkRead}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container text-xs font-medium hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
             >
-              <CheckCheck className="w-3.5 h-3.5" /> Mark Read
+              <MSIcon name="done_all" className="!text-[16px]" /> Mark Read
             </button>
             <button
               onClick={handleBulkDelete}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 text-xs font-medium hover:bg-rose-200 dark:hover:bg-rose-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-error-container text-on-error-container text-xs font-medium hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
             >
-              <Trash2 className="w-3.5 h-3.5" /> Delete
+              <MSIcon name="delete" className="!text-[16px]" /> Delete
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Messages — virtualised for performance.
-          The scroll container (scrollRef) retains flex-1 + overflow-y-auto so existing
-          handleScroll / scrollToBottom / bottomRef logic continues to work.
-          Messages display oldest-to-newest (newest at bottom); virtualizer renders in
-          the same order, so the UX for normal top-to-bottom reading is unchanged. */}
-      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-4">
+      {/* Messages — virtualised for performance */}
+      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
         {threadMessages.length === 0 && (
           <EmptyState
-            icon={<MessageSquare className="w-12 h-12" />}
+            icon={<MSIcon name="chat_bubble_outline" className="!text-[48px] text-on-surface-variant/30" />}
             title="Your inbox is quiet"
             description={`Start a conversation — say hi to ${displayName}!`}
           />
@@ -855,10 +871,10 @@ function ThreadPane({
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
             onClick={scrollToBottom}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 hover:bg-emerald-700 transition-colors z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container text-xs font-medium px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 hover:opacity-90 transition-colors z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label="Jump to latest messages"
           >
-            <ChevronDown className="w-3.5 h-3.5" /> New messages
+            <MSIcon name="keyboard_arrow_down" className="!text-[16px]" /> New messages
           </motion.button>
         )}
       </AnimatePresence>
@@ -872,8 +888,8 @@ function ThreadPane({
             exit={{ opacity: 0, height: 0 }}
             className="px-4 py-1 overflow-hidden shrink-0"
           >
-            <p className="text-xs text-neutral-400 dark:text-neutral-500 italic">
-              {displayName} is typing…
+            <p className="text-xs text-on-surface-variant italic">
+              {displayName} is typing...
             </p>
           </motion.div>
         )}
@@ -881,16 +897,16 @@ function ThreadPane({
 
       {/* Reply preview */}
       {replyingTo && (
-        <div className="flex items-center gap-2 px-3 py-2 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 shrink-0">
-          <Reply className="w-4 h-4 text-neutral-400 shrink-0" />
+        <div className="flex items-center gap-2 px-3 py-2 border-t border-outline-variant bg-surface-container shrink-0">
+          <MSIcon name="reply" className="!text-[18px] text-on-surface-variant shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            <p className="text-xs font-medium text-on-surface-variant">
               Replying to {replyingTo.fromUid === user?.uid ? 'yourself' : displayName}
             </p>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">{replyingTo.content}</p>
+            <p className="text-xs text-on-surface-variant truncate">{replyingTo.content}</p>
           </div>
-          <button onClick={() => setReplyingTo(null)} className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300" aria-label="Cancel reply">
-            <X className="w-3.5 h-3.5" />
+          <button onClick={() => setReplyingTo(null)} className="p-1 text-on-surface-variant hover:text-on-surface" aria-label="Cancel reply">
+            <MSIcon name="close" className="!text-[16px]" />
           </button>
         </div>
       )}
@@ -898,68 +914,23 @@ function ThreadPane({
       {/* Compose */}
       <form
         onSubmit={handleSend}
-        className="flex items-center gap-1.5 p-3 border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shrink-0"
+        className="flex items-center gap-1.5 p-3 border-t border-outline-variant glass-morphism shrink-0"
       >
-        {/* Emoji button */}
+        {/* Attach button */}
         <div className="relative shrink-0">
           <button
             type="button"
             disabled={isBlocked}
-            onClick={() => { setShowEmoji(v => !v); setShowGif(false); setShowPhoto(false); }}
-            aria-label="Emoji picker"
-            className="p-2 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
-              hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors
-              focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
+            onClick={() => { setShowPhoto(true); setShowEmoji(false); setShowGif(false); setShowVoice(false); }}
+            aria-label="Attach file"
+            className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
+              hover:bg-surface-container-high transition-colors
+              focus-visible:ring-2 focus-visible:ring-primary outline-none
               disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <Smile className="w-5 h-5" />
+            <MSIcon name="attach_file" className="!text-[20px]" />
           </button>
-          {showEmoji && (
-            <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
-          )}
         </div>
-
-        {/* GIF button */}
-        <button
-          type="button"
-          disabled={isBlocked}
-          onClick={() => { setShowGif(true); setShowEmoji(false); setShowPhoto(false); }}
-          aria-label="GIF picker"
-          className="p-2 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
-            hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors
-            focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
-            disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-        >
-          <span className="text-xs font-bold tracking-wide">GIF</span>
-        </button>
-
-        {/* Photo button */}
-        <button
-          type="button"
-          disabled={isBlocked}
-          onClick={() => { setShowPhoto(true); setShowEmoji(false); setShowGif(false); setShowVoice(false); }}
-          aria-label="Attach photo"
-          className="p-2 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300
-            hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors
-            focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
-            disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-        >
-          <Image className="w-5 h-5" />
-        </button>
-
-        {/* Voice memo button */}
-        <button
-          type="button"
-          disabled={isBlocked}
-          onClick={() => { setShowVoice(true); setShowEmoji(false); setShowGif(false); setShowPhoto(false); }}
-          aria-label="Record voice message"
-          className={`p-2 rounded-xl transition-colors
-            focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
-            disabled:opacity-40 disabled:cursor-not-allowed shrink-0
-            ${showVoice ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30' : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
-        >
-          <Mic className="w-5 h-5" />
-        </button>
 
         {/* Text input + counter */}
         <div className="flex-1 min-w-0 flex flex-col">
@@ -968,14 +939,14 @@ function ThreadPane({
             type="text"
             value={text}
             onChange={e => { setText(e.target.value); notifyTyping(); }}
-            placeholder={isBlocked ? 'You have blocked this user' : 'Type a message…'}
+            placeholder={isBlocked ? 'You have blocked this user' : 'Type a message...'}
             disabled={isBlocked}
             maxLength={MAX_DM}
             aria-label="Message text"
-            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600
-              bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100
-              placeholder:text-neutral-400 text-sm
-              focus:outline-none focus:ring-2 focus:ring-emerald-500
+            className="w-full px-3 py-2 rounded-xl border-0
+              bg-surface-container text-on-surface
+              placeholder:text-on-surface-variant text-sm
+              focus:outline-none focus:ring-2 focus:ring-primary
               disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <div className="flex justify-end mt-1">
@@ -985,17 +956,78 @@ function ThreadPane({
           </div>
         </div>
 
+        {/* Emoji button */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            disabled={isBlocked}
+            onClick={() => { setShowEmoji(v => !v); setShowGif(false); setShowPhoto(false); }}
+            aria-label="Emoji picker"
+            className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
+              hover:bg-surface-container-high transition-colors
+              focus-visible:ring-2 focus-visible:ring-primary outline-none
+              disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <MSIcon name="mood" className="!text-[20px]" />
+          </button>
+          {showEmoji && (
+            <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
+          )}
+        </div>
+
+        {/* Image button */}
+        <button
+          type="button"
+          disabled={isBlocked}
+          onClick={() => { setShowPhoto(true); setShowEmoji(false); setShowGif(false); setShowVoice(false); }}
+          aria-label="Send image"
+          className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
+            hover:bg-surface-container-high transition-colors
+            focus-visible:ring-2 focus-visible:ring-primary outline-none
+            disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+        >
+          <MSIcon name="image" className="!text-[20px]" />
+        </button>
+
+        {/* GIF button */}
+        <button
+          type="button"
+          disabled={isBlocked}
+          onClick={() => { setShowGif(true); setShowEmoji(false); setShowPhoto(false); }}
+          aria-label="GIF picker"
+          className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
+            hover:bg-surface-container-high transition-colors
+            focus-visible:ring-2 focus-visible:ring-primary outline-none
+            disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+        >
+          <MSIcon name="gif_box" className="!text-[20px]" />
+        </button>
+
+        {/* Voice memo button */}
+        <button
+          type="button"
+          disabled={isBlocked}
+          onClick={() => { setShowVoice(true); setShowEmoji(false); setShowGif(false); setShowPhoto(false); }}
+          aria-label="Record voice message"
+          className={`p-2 rounded-xl transition-colors
+            focus-visible:ring-2 focus-visible:ring-primary outline-none
+            disabled:opacity-40 disabled:cursor-not-allowed shrink-0
+            ${showVoice ? 'text-primary bg-primary-container/20' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
+        >
+          <MSIcon name="mic" className="!text-[20px]" />
+        </button>
+
         {/* Send button */}
         <button
           type="submit"
           disabled={!text.trim() || isBlocked}
           aria-label="Send message"
           className="min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0
-            bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40
-            text-white rounded-xl transition-colors
-            focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+            bg-primary-container hover:opacity-90 disabled:opacity-40
+            text-on-primary-container rounded-xl transition-colors
+            focus-visible:ring-2 focus-visible:ring-primary outline-none"
         >
-          <Send className="w-4 h-4" />
+          <MSIcon name="send" className="!text-[20px]" />
         </button>
       </form>
 
@@ -1176,26 +1208,45 @@ export function Messages() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] flex rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-sm"
+      className="h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] flex rounded-2xl overflow-hidden border border-outline-variant glass-card"
     >
       {/* ── Conversation list (left pane / full-width on mobile) ── */}
       <div className={`
-        flex-col border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900
-        w-full md:w-72 md:flex shrink-0
+        flex-col border-r border-outline-variant bg-surface
+        w-full md:w-80 lg:w-96 md:flex shrink-0
         ${mobileView === 'list' ? 'flex' : 'hidden md:flex'}
       `}>
-        <div className="px-4 py-4 border-b border-neutral-200 dark:border-neutral-700">
-          <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+        {/* Header: "Messages" title + compose button */}
+        <div className="px-4 py-4 border-b border-outline-variant flex items-center justify-between">
+          <h1 className="text-xl font-bold text-on-surface flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
+            <MSIcon name="chat" className="text-primary" />
             Messages
           </h1>
+          <button
+            aria-label="New message"
+            className="p-2 rounded-xl bg-primary-container text-on-primary-container hover:opacity-90 transition-colors"
+          >
+            <MSIcon name="edit_square" className="!text-[20px]" />
+          </button>
         </div>
 
-        <div ref={convoListRef} className="flex-1 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-800">
+        {/* Search bar */}
+        <div className="px-4 py-2 border-b border-outline-variant">
+          <div className="relative">
+            <MSIcon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-on-surface-variant" />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border-0 bg-surface-container text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        <div ref={convoListRef} className="flex-1 overflow-y-auto divide-y divide-outline-variant custom-scrollbar">
           {mainConvos.length === 0 && requestConvos.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-8 px-4 text-center">
               <EmptyState
-                icon={<Mail className="w-12 h-12" />}
+                icon={<MSIcon name="mail" className="!text-[48px] text-on-surface-variant/30" />}
                 title="Your inbox is quiet"
                 description="Start a conversation — your pack misses you!"
               />
@@ -1204,14 +1255,14 @@ export function Messages() {
                 if (!p) return null;
                 return (
                   <button key={uid} onClick={() => setActiveUid(uid)}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors">
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors">
                     {(p as any).avatarUrl ? (
                       <img src={(p as any).avatarUrl} alt={p.displayName} className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400">{p.displayName?.[0]}</div>
+                      <div className="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-xs font-bold text-primary">{p.displayName?.[0]}</div>
                     )}
-                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex-1 text-left truncate">{p.displayName}</span>
-                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Say hi 👋</span>
+                    <span className="text-sm font-medium text-on-surface flex-1 text-left truncate">{p.displayName}</span>
+                    <span className="text-xs text-primary font-medium">Say hi</span>
                   </button>
                 );
               })}
@@ -1219,8 +1270,8 @@ export function Messages() {
           )}
           {requestConvos.length > 0 && (
             <>
-              <div className="px-4 py-2 bg-neutral-50 dark:bg-neutral-800/40">
-                <p className="text-[10px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+              <div className="px-4 py-2 bg-surface-container-low">
+                <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide">
                   Message Requests ({requestConvos.length})
                 </p>
               </div>
@@ -1242,8 +1293,8 @@ export function Messages() {
                 );
               })}
               {mainConvos.length > 0 && (
-                <div className="px-4 py-2 bg-neutral-50 dark:bg-neutral-800/40">
-                  <p className="text-[10px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+                <div className="px-4 py-2 bg-surface-container-low">
+                  <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide">
                     Messages
                   </p>
                 </div>
@@ -1270,27 +1321,27 @@ export function Messages() {
         </div>
       </div>
 
-      {/* ── Thread pane (right pane / full-width on mobile) ── */}
+      {/* ── Thread pane (center pane / full-width on mobile) ── */}
       <div className={`
-        flex-1 flex flex-col
+        flex-1 flex flex-col bg-background
         ${mobileView === 'thread' || activeUid ? 'flex' : 'hidden md:flex'}
       `}>
         {activeUid ? (
           <>
             {activeIsRequest && (
-              <div className="px-4 py-2 bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-900 flex items-center justify-between gap-3 shrink-0">
-                <p className="text-xs text-amber-800 dark:text-amber-300">Not on your friends list — add them?</p>
+              <div className="px-4 py-2 bg-tertiary-container border-b border-outline-variant flex items-center justify-between gap-3 shrink-0">
+                <p className="text-xs text-on-tertiary-container">Not on your friends list — add them?</p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => { if (activeUid) sendFriendRequest(activeUid).catch(() => {}); }}
-                    className="text-xs font-semibold px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
+                    className="text-xs font-semibold px-3 py-1 rounded-lg bg-primary-container hover:opacity-90 text-on-primary-container transition-colors"
                   >Add Friend</button>
                   <button
                     onClick={() => {
                       if (activeUid) deleteConversation(user?.uid ?? '', activeUid, threadMessages).catch(() => {});
                       setActiveUid(null);
                     }}
-                    className="text-xs font-medium px-3 py-1 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"
+                    className="text-xs font-medium px-3 py-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors"
                   >Decline</button>
                 </div>
               </div>
@@ -1305,8 +1356,8 @@ export function Messages() {
             />
           </>
         ) : (
-          <div className="hidden md:flex flex-col items-center justify-center h-full text-neutral-400 dark:text-neutral-500">
-            <MessageSquare className="w-12 h-12 mb-3 opacity-20" />
+          <div className="hidden md:flex flex-col items-center justify-center h-full text-on-surface-variant/40">
+            <MSIcon name="chat_bubble_outline" className="!text-[48px] mb-3 opacity-20" />
             <p className="text-sm font-medium">Select a conversation</p>
           </div>
         )}

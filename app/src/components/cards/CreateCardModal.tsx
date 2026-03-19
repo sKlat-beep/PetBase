@@ -3,9 +3,6 @@
 
 import React, { useState, useRef, useMemo, useEffect, type ReactNode } from 'react';
 import { motion, Reorder } from 'motion/react';
-import {
-  QrCode, Clock, Info, Utensils, Phone, HeartPulse, Syringe, Shield, Heart, GripVertical,
-} from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import {
   TEMPLATE_DEFAULTS,
@@ -17,19 +14,34 @@ import {
 } from '../../types/cardExtensions';
 import { markCardCreated } from '../../lib/onboardingService';
 
-// ─── Local SHARING_FIELDS (icons can't live in cardExtensions.ts) ──────────────
+// ─── Material Symbol helper ──────────────────────────────────────────────────
+
+function MIcon({ name, className = '' }: { name: string; className?: string }) {
+  return <span className={`material-symbols-outlined ${className}`} aria-hidden="true">{name}</span>;
+}
+
+// ─── Local SHARING_FIELDS (icons via Material Symbols) ───────────────────────
 
 const SHARING_FIELDS: { key: keyof SharingToggles; label: string; icon: ReactNode }[] = [
-  { key: 'basicInfo', label: 'Pet Description', icon: <Info className="w-3.5 h-3.5" /> },
-  { key: 'diet', label: 'Health & Diet', icon: <Utensils className="w-3.5 h-3.5" /> },
-  { key: 'emergencyContact', label: 'Emergency Contact', icon: <Phone className="w-3.5 h-3.5" /> },
-  { key: 'medicalOverview', label: 'Medical Notes', icon: <HeartPulse className="w-3.5 h-3.5" /> },
-  { key: 'medications', label: 'Medications', icon: <Syringe className="w-3.5 h-3.5" /> },
-  { key: 'microchip', label: 'Microchip ID', icon: <Shield className="w-3.5 h-3.5" /> },
-  { key: 'personalityPlay', label: 'Personality & Play', icon: <Heart className="w-3.5 h-3.5" /> },
-  { key: 'vaccineRecords', label: 'Vaccine Records', icon: <Syringe className="w-3.5 h-3.5" /> },
-  { key: 'vetInfo', label: 'Vet Info', icon: <HeartPulse className="w-3.5 h-3.5" /> },
+  { key: 'basicInfo', label: 'Pet Description', icon: <MIcon name="info" className="text-[16px]" /> },
+  { key: 'diet', label: 'Health & Diet', icon: <MIcon name="restaurant" className="text-[16px]" /> },
+  { key: 'emergencyContact', label: 'Emergency Contact', icon: <MIcon name="call" className="text-[16px]" /> },
+  { key: 'medicalOverview', label: 'Medical Notes', icon: <MIcon name="monitor_heart" className="text-[16px]" /> },
+  { key: 'medications', label: 'Medications', icon: <MIcon name="vaccines" className="text-[16px]" /> },
+  { key: 'microchip', label: 'Microchip ID', icon: <MIcon name="verified_user" className="text-[16px]" /> },
+  { key: 'personalityPlay', label: 'Personality & Play', icon: <MIcon name="favorite" className="text-[16px]" /> },
+  { key: 'vaccineRecords', label: 'Vaccine Records', icon: <MIcon name="vaccines" className="text-[16px]" /> },
+  { key: 'vetInfo', label: 'Vet Info', icon: <MIcon name="monitor_heart" className="text-[16px]" /> },
 ];
+
+// ─── Template icon map ───────────────────────────────────────────────────────
+
+const TEMPLATE_ICONS: Record<CardTemplate, string> = {
+  vet: 'local_hospital',
+  sitter: 'person',
+  custom: 'tune',
+  emergency: 'emergency',
+};
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -83,6 +95,15 @@ export default function CreateCardModal({
     if (editCard?.fieldOrder) return editCard.fieldOrder;
     return SHARING_FIELDS.map(f => f.key as string);
   });
+
+  // Selected pet for preview summary
+  const selectedPet = useMemo(() => pets.find(p => p.id === selectedPetId), [pets, selectedPetId]);
+
+  // Count enabled fields
+  const enabledCount = Object.values(sharing).filter(Boolean).length + (includeGeneralInfo ? 1 : 0);
+
+  // Progress: step 1=pet, step 2=template, step 3=fields
+  const step = selectedPetId ? (template ? 3 : 2) : 1;
 
   // Focus trap + Escape key
   useEffect(() => {
@@ -160,150 +181,273 @@ export default function CreateCardModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex sm:items-center items-end justify-center sm:p-4 p-0 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/60 backdrop-blur-md"
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
+      {/* Ambient glow decorations */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-tertiary/10 blur-3xl" />
+      </div>
+
       <motion.div
         ref={modalRef}
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.96 }}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-card-modal-title"
-        className="bg-white dark:bg-neutral-900 sm:rounded-2xl rounded-t-2xl rounded-b-none sm:rounded-b-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full sm:max-w-lg overflow-hidden"
+        className="glass-card relative z-10 w-full max-w-6xl min-h-[700px] flex flex-col sm:flex-row overflow-hidden shadow-2xl"
       >
-        <div className="bg-neutral-900 dark:bg-neutral-950 p-5">
-          <h2 id="create-card-modal-title" className="text-xl font-bold text-white flex items-center gap-2">
-            <QrCode className="w-5 h-5 text-emerald-400" /> {editCard ? 'Edit Pet Card' : 'Create Pet Card'}
-          </h2>
-          <p className="text-neutral-400 text-sm mt-1">{editCard ? 'Update sharing options and validity.' : 'Choose your pet, template, and sharing options.'}</p>
-        </div>
+        {/* ─── LEFT: Form Steps ───────────────────────────────────────────── */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="p-6 pb-4 border-b border-outline-variant/30">
+            <div className="flex items-center justify-between">
+              <h2 id="create-card-modal-title" className="text-xl font-bold text-on-surface flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
+                <MIcon name="qr_code_2" className="text-[24px] text-primary" />
+                {editCard ? 'Edit Pet Card' : 'Create Pet Card'}
+              </h2>
+              <button
+                onClick={onClose}
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
+                aria-label="Close"
+              >
+                <MIcon name="close" className="text-[20px]" />
+              </button>
+            </div>
+            <p className="text-on-surface-variant text-sm mt-1">
+              {editCard ? 'Update sharing options and validity.' : 'Choose your pet, template, and sharing options.'}
+            </p>
 
-        <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-          {/* Pet select */}
-          <div>
-            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5 block">Pet</label>
-            <select
-              value={selectedPetId}
-              disabled={!!editCard}
-              onChange={e => setSelectedPetId(e.target.value)}
-              className="w-full border border-neutral-200 dark:border-neutral-600 rounded-xl px-3 py-2 text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-50"
-            >
-              {pets.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Template */}
-          <div>
-            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5 block">Card Type</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['vet', 'sitter', 'custom'] as CardTemplate[]).map(t => (
-                <button
-                  key={t}
-                  onClick={() => handleTemplateChange(t)}
-                  className={`py-2 rounded-xl text-sm font-semibold border-2 transition-all ${template === t
-                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
-                    : 'border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300'}`}
-                >
-                  {TEMPLATE_LABELS[t]}
-                </button>
+            {/* Progress bar */}
+            <div className="flex gap-1.5 mt-4">
+              {[1, 2, 3].map(s => (
+                <div
+                  key={s}
+                  className={`h-1 rounded-full flex-1 motion-safe:transition-all duration-300 ${s <= step ? 'bg-primary' : 'bg-outline-variant/40'}`}
+                />
               ))}
             </div>
           </div>
 
-          {/* Expiration */}
-          <div>
-            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> Expiration (Min 8 hours)
-            </label>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="text-xs text-neutral-500 mb-1 block">Days</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={customDays}
-                  onChange={e => setCustomDays(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full border border-neutral-200 dark:border-neutral-600 rounded-xl px-3 py-2 text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 focus:ring-2 focus:ring-emerald-500 outline-none"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs text-neutral-500 mb-1 block">Hours</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="23"
-                  value={customHours}
-                  onChange={e => setCustomHours(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full border border-neutral-200 dark:border-neutral-600 rounded-xl px-3 py-2 text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-700 focus:ring-2 focus:ring-emerald-500 outline-none"
-                />
+          {/* Scrollable form body */}
+          <div className="flex-1 p-6 space-y-5 overflow-y-auto">
+            {/* Pet select */}
+            <div>
+              <label className="text-sm font-medium text-on-surface mb-1.5 block">Pet</label>
+              <select
+                value={selectedPetId}
+                disabled={!!editCard}
+                onChange={e => setSelectedPetId(e.target.value)}
+                className="w-full rounded-xl px-3 py-2.5 text-on-surface bg-surface-container border border-outline-variant focus:ring-2 focus:ring-primary-container outline-none disabled:opacity-50 motion-safe:transition-colors"
+              >
+                {pets.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Template */}
+            <div>
+              <label className="text-sm font-medium text-on-surface mb-1.5 block">Card Type</label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['vet', 'sitter', 'custom'] as CardTemplate[]).map(t => (
+                  <button
+                    key={t}
+                    onClick={() => handleTemplateChange(t)}
+                    className={`py-2.5 rounded-xl text-sm font-semibold border-2 motion-safe:transition-all flex items-center justify-center gap-1.5 ${template === t
+                      ? 'border-primary bg-primary-container/20 text-on-primary-container'
+                      : 'border-outline-variant text-on-surface-variant hover:border-outline hover:bg-surface-container-high'}`}
+                  >
+                    <MIcon name={TEMPLATE_ICONS[t]} className="text-[18px]" />
+                    {TEMPLATE_LABELS[t]}
+                  </button>
+                ))}
               </div>
             </div>
-            {customDays * 24 + customHours < 8 && (
-              <p className="text-xs text-rose-500 mt-2">Duration will automatically default to the 8 hour minimum.</p>
+
+            {/* Expiration */}
+            <div>
+              <label className="text-sm font-medium text-on-surface mb-1.5 flex items-center gap-1.5">
+                <MIcon name="schedule" className="text-[18px]" /> Expiration (Min 8 hours)
+              </label>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="text-xs text-on-surface-variant mb-1 block">Days</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={customDays}
+                    onChange={e => setCustomDays(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full rounded-xl px-3 py-2 text-on-surface bg-surface-container border border-outline-variant focus:ring-2 focus:ring-primary-container outline-none"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="text-xs text-on-surface-variant mb-1 block">Hours</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="23"
+                    value={customHours}
+                    onChange={e => setCustomHours(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full rounded-xl px-3 py-2 text-on-surface bg-surface-container border border-outline-variant focus:ring-2 focus:ring-primary-container outline-none"
+                  />
+                </div>
+              </div>
+              {customDays * 24 + customHours < 8 && (
+                <p className="text-xs text-error mt-2 flex items-center gap-1">
+                  <MIcon name="warning" className="text-[14px]" />
+                  Duration will automatically default to the 8 hour minimum.
+                </p>
+              )}
+            </div>
+
+            {/* Contextual Sharing Toggles — 2-col toggle grid */}
+            <div>
+              <label className="text-sm font-medium text-on-surface mb-2 block">Shared Fields</label>
+              <div className="space-y-2">
+                {/* Household Information at top */}
+                {generalInfoText && (
+                  <label className="flex items-center justify-between p-3 min-h-[44px] rounded-xl border border-primary-container/30 bg-primary-container/10 hover:bg-primary-container/15 cursor-pointer motion-safe:transition-colors">
+                    <span className="flex items-center gap-2 text-sm text-on-surface">
+                      <MIcon name="info" className="text-[16px] text-primary" /> Household Information
+                    </span>
+                    <input type="checkbox" checked={includeGeneralInfo} onChange={e => setIncludeGeneralInfo(e.target.checked)} className="w-4 h-4 accent-primary" />
+                  </label>
+                )}
+                {/* All other fields — drag to reorder, 2-col grid on wider */}
+                <Reorder.Group axis="y" values={sortableOrder} onReorder={setSortableOrder} className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {sortableOrder.map(key => {
+                    const field = SHARING_FIELDS.find(f => f.key === key);
+                    if (!field) return null;
+                    const isOn = sharing[key as keyof SharingToggles];
+                    return (
+                      <Reorder.Item key={key} value={key} className="list-none">
+                        <label className={`flex items-center justify-between p-3 min-h-[44px] rounded-xl border cursor-pointer motion-safe:transition-all ${
+                          isOn
+                            ? 'border-primary/30 bg-primary-container/10'
+                            : 'border-outline-variant/40 bg-surface-container hover:bg-surface-container-high'
+                        }`}>
+                          <span className="flex items-center gap-2 text-sm text-on-surface">
+                            <MIcon name="drag_indicator" className="text-[16px] text-on-surface-variant/50 cursor-grab active:cursor-grabbing shrink-0" />
+                            {field.icon} {field.label}
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={isOn}
+                            onChange={e => setSharing(s => ({ ...s, [key]: e.target.checked }))}
+                            className="w-4 h-4 accent-primary"
+                          />
+                        </label>
+                      </Reorder.Item>
+                    );
+                  })}
+                </Reorder.Group>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer actions */}
+          <div className="p-5 border-t border-outline-variant/30 flex gap-3">
+            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container-high motion-safe:transition-colors min-h-[44px]">
+              Cancel
+            </button>
+            {(template === 'custom' || template === 'emergency') && !customTemplateSaved ? (
+              <button onClick={handleSaveCustomTemplate} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-semibold hover:brightness-110 motion-safe:transition-all min-h-[44px] flex items-center justify-center gap-2">
+                <MIcon name="save" className="text-[18px]" /> Save Card Template
+              </button>
+            ) : (
+              <button
+                onClick={handleCreate}
+                disabled={!selectedPetId}
+                className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-semibold hover:brightness-110 motion-safe:transition-all disabled:opacity-50 min-h-[44px] flex items-center justify-center gap-2"
+              >
+                <MIcon name={editCard ? 'save' : 'add_card'} className="text-[18px]" />
+                {editCard ? 'Save Changes' : 'Create Card'}
+              </button>
             )}
           </div>
-
-          {/* Contextual Sharing Toggles */}
-          <div>
-            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 block">Shared Fields</label>
-            <div className="space-y-2">
-              {/* Household Information at top */}
-              {generalInfoText && (
-                <label className="flex items-center justify-between p-3 min-h-[44px] rounded-xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-50 cursor-pointer">
-                  <span className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
-                    <Info className="w-3.5 h-3.5 text-emerald-600" /> Household Information
-                  </span>
-                  <input type="checkbox" checked={includeGeneralInfo} onChange={e => setIncludeGeneralInfo(e.target.checked)} className="w-4 h-4 accent-emerald-500" />
-                </label>
-              )}
-              {/* All other fields — drag to reorder */}
-              <Reorder.Group axis="y" values={sortableOrder} onReorder={setSortableOrder} className="space-y-2">
-                {sortableOrder.map(key => {
-                  const field = SHARING_FIELDS.find(f => f.key === key);
-                  if (!field) return null;
-                  return (
-                    <Reorder.Item key={key} value={key} className="list-none">
-                      <label className="flex items-center justify-between p-3 min-h-[44px] rounded-xl border border-neutral-100 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 cursor-pointer bg-white dark:bg-neutral-800">
-                        <span className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
-                          <GripVertical className="w-4 h-4 text-neutral-300 dark:text-neutral-600 cursor-grab active:cursor-grabbing shrink-0" />
-                          {field.icon} {field.label}
-                        </span>
-                        <input
-                          type="checkbox"
-                          checked={sharing[key as keyof SharingToggles]}
-                          onChange={e => setSharing(s => ({ ...s, [key]: e.target.checked }))}
-                          className="w-4 h-4 accent-emerald-500"
-                        />
-                      </label>
-                    </Reorder.Item>
-                  );
-                })}
-              </Reorder.Group>
-            </div>
-          </div>
         </div>
 
-        <div className="p-5 border-t border-neutral-100 dark:border-neutral-700 flex gap-3">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
-            Cancel
-          </button>
-          {(template === 'custom' || template === 'emergency') && !customTemplateSaved ? (
-            <button onClick={handleSaveCustomTemplate} className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold transition-colors">
-              Save Card Template
-            </button>
-          ) : (
-            <button
-              onClick={handleCreate}
-              disabled={!selectedPetId}
-              className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors disabled:opacity-50"
+        {/* ─── RIGHT: Live Preview ────────────────────────────────────────── */}
+        <div className="hidden sm:flex w-[420px] shrink-0 flex-col border-l border-outline-variant/30 bg-surface-container-low/50">
+          <div className="p-6 flex-1 flex flex-col items-center justify-center">
+            {/* Template indicator */}
+            <div className="mb-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-xs font-medium">
+              <MIcon name={TEMPLATE_ICONS[template]} className="text-[16px] text-primary" />
+              {TEMPLATE_LABELS[template]} Template
+            </div>
+
+            {/* Card preview */}
+            <motion.div
+              layout
+              className="glass-morphism w-full max-w-[340px] rounded-2xl p-5 border border-outline-variant/30"
             >
-              {editCard ? 'Save Changes' : 'Create Card'}
-            </button>
-          )}
+              {/* Pet info */}
+              <div className="flex items-center gap-3 mb-4">
+                {selectedPet?.image ? (
+                  <img src={selectedPet.image} alt={selectedPet.name} className="w-14 h-14 rounded-full object-cover border-2 border-primary/30" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center">
+                    <MIcon name="pets" className="text-[28px] text-on-surface-variant/50" />
+                  </div>
+                )}
+                <div>
+                  <p className="text-base font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+                    {selectedPet?.name || 'Select a pet'}
+                  </p>
+                  {selectedPet?.breed && (
+                    <p className="text-xs text-on-surface-variant">{selectedPet.breed}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* QR placeholder */}
+              <div className="w-full aspect-square max-w-[140px] mx-auto mb-4 rounded-xl bg-surface-container flex items-center justify-center border border-outline-variant/20">
+                <MIcon name="qr_code_2" className="text-[56px] text-on-surface-variant/30" />
+              </div>
+
+              {/* Field checklist preview */}
+              <div className="space-y-1.5">
+                {includeGeneralInfo && (
+                  <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+                    <MIcon name="check_circle" className="text-[14px] text-primary" />
+                    Household Information
+                  </div>
+                )}
+                {sortableOrder.map(key => {
+                  const field = SHARING_FIELDS.find(f => f.key === key);
+                  if (!field || !sharing[key as keyof SharingToggles]) return null;
+                  return (
+                    <div key={key} className="flex items-center gap-2 text-xs text-on-surface-variant">
+                      <MIcon name="check_circle" className="text-[14px] text-primary" />
+                      {field.label}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Expiry line */}
+              <div className="mt-4 pt-3 border-t border-outline-variant/20 flex items-center gap-2 text-xs text-on-surface-variant">
+                <MIcon name="schedule" className="text-[14px]" />
+                Expires in {customDays}d {customHours}h
+              </div>
+            </motion.div>
+
+            {/* Summary stats */}
+            <div className="mt-4 flex items-center gap-4 text-xs text-on-surface-variant">
+              <span className="flex items-center gap-1">
+                <MIcon name="checklist" className="text-[16px] text-secondary" />
+                {enabledCount} fields shared
+              </span>
+              <span className="flex items-center gap-1">
+                <MIcon name="timer" className="text-[16px] text-tertiary" />
+                {Math.max(8, customDays * 24 + customHours)}h total
+              </span>
+            </div>
+          </div>
         </div>
       </motion.div>
     </div>

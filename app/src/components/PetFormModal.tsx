@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, PawPrint, Info, Heart, Stethoscope, Image as ImageIcon, Camera, ChevronLeft, ChevronRight, Save, HeartPulse, Phone, Copy, Eye, Images, Lock, Check } from 'lucide-react';
 import type { Pet, EmergencyContacts } from '../types/pet';
 import { usePets } from '../contexts/PetContext';
 import { ImageCropperModal, getCroppedImg } from './ImageCropperModal';
@@ -23,6 +22,12 @@ const TAB_LABELS: Record<Tab, string> = {
   health: 'Health & Diet',
   emergency: 'Emergency Contacts',
 };
+const TAB_ICONS: Record<Tab, string> = {
+  basic: 'info',
+  details: 'favorite',
+  health: 'stethoscope',
+  emergency: 'call',
+};
 
 interface PetFormModalProps {
   isOpen: boolean;
@@ -32,9 +37,9 @@ interface PetFormModalProps {
 }
 
 function getNotesCounterColor(count: number): string {
-  if (count >= NOTES_MAX) return 'text-rose-600 dark:text-rose-400 font-semibold';
-  if (count >= NOTES_MAX * 0.9) return 'text-amber-600 dark:text-amber-400';
-  return 'text-neutral-400 dark:text-neutral-500';
+  if (count >= NOTES_MAX) return 'text-error font-semibold';
+  if (count >= NOTES_MAX * 0.9) return 'text-primary';
+  return 'text-on-surface-variant';
 }
 
 type Tab = 'basic' | 'details' | 'health' | 'emergency';
@@ -74,18 +79,18 @@ function TagInput({
 
   return (
     <div
-      className="flex flex-wrap gap-1.5 w-full px-3 py-2 min-h-[42px] rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 focus-within:ring-2 focus-within:ring-emerald-500 transition-colors cursor-text"
+      className="flex flex-wrap gap-1.5 w-full px-3 py-2 min-h-[42px] rounded-xl border border-outline-variant bg-surface-container text-on-surface focus-within:ring-2 focus-within:ring-primary transition-colors cursor-text"
       onClick={() => inputRef.current?.focus()}
     >
       {tags.map((tag, i) => (
-        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium shrink-0">
+        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-sm font-medium shrink-0">
           {tag}
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onRemove(i); }}
-            className="text-emerald-600 dark:text-emerald-400 hover:text-rose-600 dark:hover:text-rose-400 leading-none"
+            className="text-on-secondary-container hover:text-error leading-none"
             aria-label={`Remove ${tag}`}
-          >×</button>
+          >&times;</button>
         </span>
       ))}
       <input
@@ -98,7 +103,7 @@ function TagInput({
           if (input.trim()) { onAdd(input.trim()); onInputChange(''); }
         }}
         placeholder={tags.length === 0 ? placeholder : ''}
-        className="flex-1 min-w-[100px] bg-transparent outline-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 text-sm"
+        className="flex-1 min-w-[100px] bg-transparent outline-none text-on-surface placeholder:text-on-surface-variant/50 text-sm"
       />
     </div>
   );
@@ -124,15 +129,28 @@ function UnitInput<U extends string>({
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder={placeholder ?? '0'}
-        className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+        className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
       />
       <select
         value={unit}
         onChange={(e) => onUnitChange(e.target.value as U)}
-        className="px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+        className="px-3 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
       >
         {units.map(u => <option key={u} value={u}>{u}</option>)}
       </select>
+    </div>
+  );
+}
+
+// ─── Metric Card ─────────────────────────────────────────────────────────────
+function MetricCard({ icon, label, children }: { icon: string; label: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-surface-container-high rounded-xl p-4 border border-outline-variant">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="material-symbols-outlined text-[18px] text-primary">{icon}</span>
+        <span className="text-sm font-medium text-on-surface">{label}</span>
+      </div>
+      {children}
     </div>
   );
 }
@@ -160,6 +178,8 @@ function calcAgeFromBirthday(birthday: string): string {
   const m = totalMonths % 12;
   return m > 0 ? `${y} yr ${m} mo` : `${y} year${y !== 1 ? 's' : ''}`;
 }
+
+const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps) {
@@ -384,7 +404,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 sm:p-6"
           onMouseDown={handleBackdropClick}
         >
           {/* Backdrop */}
@@ -392,7 +412,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
           />
 
           {/* Modal Card */}
@@ -404,67 +424,72 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
             role="dialog"
             aria-modal="true"
             aria-labelledby="pet-form-modal-title"
-            className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-3xl z-10 flex flex-col max-h-[90vh]"
+            className="relative glass-card w-full max-w-4xl z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
-              <div className="flex items-center gap-2">
-                <PawPrint className="w-5 h-5 text-emerald-600" />
-                <h2 id="pet-form-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                  {isEditMode ? `Edit ${pet.name}` : 'Add a Pet'}
-                </h2>
+            <div className="flex items-center justify-between p-6 border-b border-outline-variant shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[22px] text-primary">pets</span>
+                <div>
+                  <h2 id="pet-form-modal-title" className="text-xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+                    {isEditMode ? 'Edit Pet Profile' : 'Add a Pet'}
+                  </h2>
+                  {isEditMode && pet && (
+                    <p className="text-sm text-secondary">{pet.name}</p>
+                  )}
+                </div>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container"
               >
-                <X className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            {/* Tabs — Desktop */}
-            <div className="hidden sm:flex border-b border-neutral-100 dark:border-neutral-700 px-6 shrink-0">
-              {TAB_ORDER.map((tab) => {
-                const Icon = tab === 'basic' ? Info : tab === 'details' ? Heart : tab === 'health' ? Stethoscope : tab === 'emergency' ? Phone : Camera;
-                return (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab
-                      ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                      : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'
-                      }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {TAB_LABELS[tab]}
-                  </button>
-                );
-              })}
+            {/* Tabs — Desktop (numbered steps) */}
+            <div className="hidden sm:flex border-b border-outline-variant px-6 shrink-0">
+              {TAB_ORDER.map((tab, i) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab
+                    ? 'border-primary-container text-primary'
+                    : 'border-transparent text-on-surface-variant hover:text-on-surface'
+                    }`}
+                >
+                  <span className="w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
+                    {i + 1}
+                  </span>
+                  <span className="material-symbols-outlined text-[18px]">{TAB_ICONS[tab]}</span>
+                  {TAB_LABELS[tab]}
+                </button>
+              ))}
             </div>
 
             {/* Tabs — Mobile: Left/Right arrow navigation */}
-            <div className="flex sm:hidden items-center border-b border-neutral-100 dark:border-neutral-700 px-4 py-3 shrink-0 gap-3">
+            <div className="flex sm:hidden items-center border-b border-outline-variant px-4 py-3 shrink-0 gap-3">
               <button
                 type="button"
                 onClick={goPrev}
                 disabled={isFirst}
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">chevron_left</span>
               </button>
               <div className="flex-1 text-center">
-                <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{TAB_LABELS[activeTab]}</span>
-                <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-2">({tabIdx + 1}/{TAB_ORDER.length})</span>
+                <span className="text-sm font-semibold text-on-surface">{TAB_LABELS[activeTab]}</span>
+                <span className="text-xs text-on-surface-variant ml-2">({tabIdx + 1}/{TAB_ORDER.length})</span>
               </div>
               <button
                 type="button"
                 onClick={goNext}
                 disabled={isLast}
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">chevron_right</span>
               </button>
             </div>
 
@@ -473,7 +498,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
               onSubmit={(e) => e.preventDefault()}
               className="flex flex-col flex-1 overflow-hidden"
             >
-              <div className="p-6 overflow-y-auto flex-1 space-y-5">
+              <div className="p-6 overflow-y-auto flex-1 space-y-5 custom-scrollbar">
 
                 {/* ── Basic Info ── */}
                 {activeTab === 'basic' && (
@@ -483,8 +508,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="grid grid-cols-1 sm:grid-cols-2 gap-5"
                   >
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                        Name <span className="text-rose-500">*</span>
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        Name <span className="text-error">*</span>
                       </label>
                       <input
                         type="text"
@@ -492,17 +517,17 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         value={name}
                         onChange={(e) => { setName(e.target.value); mark(); }}
                         placeholder="e.g. Max"
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className={inputClass}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Pet Type
                       </label>
                       <select
                         value={petType}
                         onChange={(e) => { setPetType(e.target.value); if (e.target.value !== 'Other') setCustomPetType(''); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className={inputClass}
                       >
                         <option value="">Select type...</option>
                         {PET_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -512,13 +537,13 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           type="text"
                           value={customPetType}
                           onChange={(e) => { setCustomPetType(e.target.value); mark(); }}
-                          placeholder="e.g. Bearded Dragon, Axolotl, Tarantula…"
-                          className="mt-2 w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                          placeholder="e.g. Bearded Dragon, Axolotl, Tarantula..."
+                          className={`mt-2 ${inputClass}`}
                         />
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Breed
                       </label>
                       <input
@@ -526,11 +551,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         value={breed}
                         onChange={(e) => { setBreed(e.target.value); mark(); }}
                         placeholder="e.g. Golden Retriever"
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className={inputClass}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Birthday
                       </label>
                       <input
@@ -538,14 +563,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         value={birthday}
                         max={new Date().toISOString().split('T')[0]}
                         onChange={(e) => { setBirthday(e.target.value); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                        className={inputClass}
                       />
                       {birthday && (
-                        <p className="text-xs text-neutral-400 mt-1">Age: {calcAgeFromBirthday(birthday)}</p>
+                        <p className="text-xs text-on-surface-variant mt-1">Age: {calcAgeFromBirthday(birthday)}</p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Weight
                       </label>
                       <UnitInput
@@ -560,51 +585,50 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
 
                     {/* Profile Photo & Appearance */}
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Profile Photo & Appearance
                       </label>
-                      <div className="flex flex-col sm:flex-row gap-6 bg-neutral-50 dark:bg-neutral-700/30 p-4 rounded-xl border border-neutral-200 dark:border-neutral-700">
-                        {/* Preview */}
-                        <div
-                          className="flex flex-col items-center justify-center p-4 rounded-xl shrink-0 w-36 h-36 relative overflow-hidden transition-all duration-300"
-                          style={{ backgroundColor }}
-                        >
-                          <div className="relative group z-10 w-full h-full flex items-center justify-center">
-                            <div className={`w-24 h-24 bg-neutral-200 dark:bg-neutral-600 overflow-hidden shrink-0 ${avatarShape === 'circle' ? 'rounded-full' : avatarShape === 'square' ? 'rounded-xl' : avatarShape === 'squircle' ? 'rounded-[2rem]' : 'rounded-full'} shadow-xl transition-all duration-300 border-2 border-white/20`}>
-                              {image ? (
-                                <img src={image} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-neutral-400">
-                                  <ImageIcon className="w-8 h-8" />
-                                </div>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="absolute inset-[15%] bg-black/40 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                              style={{
-                                borderRadius: avatarShape === 'circle' ? '9999px' : avatarShape === 'square' ? '0.75rem' : avatarShape === 'squircle' ? '2rem' : '0',
-                                clipPath: avatarShape === 'hexagon' ? 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' : undefined
-                              }}
+                      <div className="flex flex-col sm:flex-row gap-6 bg-surface-container p-4 rounded-xl border border-outline-variant">
+                        {/* Preview: circular avatar with story-ring gradient border */}
+                        <div className="flex flex-col items-center justify-center shrink-0">
+                          <div className="story-ring p-[3px] rounded-full">
+                            <div
+                              className="relative group w-28 h-28 rounded-full overflow-hidden"
+                              style={{ backgroundColor }}
                             >
-                              <Camera className="w-6 h-6" />
-                              <span className="text-xs font-medium mt-1">Upload</span>
-                            </button>
-                            <input type="file" ref={fileInputRef} onChange={handleImageSelect} accept="image/*" className="hidden" />
+                              <div className={`w-full h-full overflow-hidden ${avatarShape === 'circle' ? 'rounded-full' : avatarShape === 'square' ? 'rounded-xl' : avatarShape === 'squircle' ? 'rounded-[2rem]' : 'rounded-full'}`}>
+                                {image ? (
+                                  <img src={image} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-on-surface-variant">
+                                    <span className="material-symbols-outlined text-[32px]">image</span>
+                                  </div>
+                                )}
+                              </div>
+                              {/* Camera edit overlay */}
+                              <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="absolute inset-0 bg-black/40 text-on-primary flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                              >
+                                <span className="material-symbols-outlined text-[24px]">photo_camera</span>
+                                <span className="text-xs font-medium mt-0.5">Upload</span>
+                              </button>
+                            </div>
                           </div>
+                          <input type="file" ref={fileInputRef} onChange={handleImageSelect} accept="image/*" className="hidden" />
                         </div>
 
                         <div className="flex-1 space-y-4">
                           <div>
-                            <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Avatar Shape</label>
+                            <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Avatar Shape</label>
                             <div className="flex flex-wrap gap-2">
                               {(['circle', 'square', 'squircle'] as const).map(shape => (
                                 <button
                                   key={shape}
                                   type="button"
                                   onClick={() => { setAvatarShape(shape); mark(); }}
-                                  className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors font-medium border ${avatarShape === shape ? 'bg-white dark:bg-neutral-600 text-neutral-900 dark:text-neutral-100 shadow-sm border-neutral-200 dark:border-neutral-500' : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700/50'}`}
+                                  className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors font-medium border ${avatarShape === shape ? 'bg-primary-container text-on-primary-container border-primary shadow-sm' : 'border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
                                 >
                                   {shape}
                                 </button>
@@ -613,7 +637,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           </div>
 
                           <div>
-                            <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Background Color</label>
+                            <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Background Color</label>
                             <div className="flex flex-wrap gap-2">
                               {['#f87171', '#fb923c', '#fbbf24', '#facc15', '#a3e635',
                                 '#4ade80', '#34d399', '#2dd4bf', '#22d3ee', '#38bdf8',
@@ -623,36 +647,36 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                                     key={color}
                                     type="button"
                                     onClick={() => { setBackgroundColor(color); mark(); }}
-                                    className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${backgroundColor === color ? 'border-white dark:border-neutral-800 shadow-sm ring-2 ring-emerald-500 scale-110' : 'border-transparent shadow-sm'}`}
+                                    className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${backgroundColor === color ? 'border-on-surface shadow-sm ring-2 ring-primary scale-110' : 'border-transparent shadow-sm'}`}
                                     style={{ backgroundColor: color }}
                                   />
                                 ))}
                             </div>
                           </div>
 
-                          <div className="pt-2 border-t border-neutral-200 dark:border-neutral-700/50">
+                          <div className="pt-2 border-t border-outline-variant">
                             <label className="flex items-center justify-between cursor-pointer">
                               <div>
-                                <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Private Profile</span>
-                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Hide this pet from the public community.</p>
+                                <span className="text-sm font-bold text-on-surface">Private Profile</span>
+                                <p className="text-xs text-on-surface-variant mt-0.5">Hide this pet from the public community.</p>
                               </div>
-                              <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPrivate ? 'bg-emerald-600' : 'bg-neutral-200 dark:bg-neutral-700'}`}>
+                              <div className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPrivate ? 'bg-primary' : 'bg-surface-container-highest'}`}>
                                 <input type="checkbox" className="sr-only" checked={isPrivate} onChange={(e) => { setIsPrivate(e.target.checked); mark(); }} />
-                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isPrivate ? 'translate-x-6' : 'translate-x-1'}`} />
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-on-primary transition-transform ${isPrivate ? 'translate-x-6' : 'translate-x-1'}`} />
                               </div>
                             </label>
                           </div>
 
                           {/* Public Profile Fields — only visible when not private */}
                           {!isPrivate && (
-                            <div className="pt-2 border-t border-neutral-200 dark:border-neutral-700/50">
-                              <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-1">Public Profile Fields</p>
-                              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">Choose which fields other users can see on your pet's public profile.</p>
+                            <div className="pt-2 border-t border-outline-variant">
+                              <p className="text-sm font-bold text-on-surface mb-1">Public Profile Fields</p>
+                              <p className="text-xs text-on-surface-variant mb-3">Choose which fields other users can see on your pet's public profile.</p>
                               <div className="grid grid-cols-2 gap-1.5">
                                 {/* Always-public fields (disabled, checked) */}
                                 {['name', 'type', 'breed', 'age', 'image'].map(f => (
-                                  <label key={f} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-xs text-emerald-700 dark:text-emerald-400 opacity-70 cursor-default">
-                                    <Check className="w-3.5 h-3.5" />
+                                  <label key={f} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container text-xs opacity-70 cursor-default">
+                                    <span className="material-symbols-outlined text-[14px]">check</span>
                                     <span className="capitalize">{f === 'image' ? 'Photo' : f}</span>
                                   </label>
                                 ))}
@@ -666,10 +690,10 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                                   { key: 'activity', label: 'Activity Level' },
                                   { key: 'spayedNeutered', label: 'Spayed/Neutered' },
                                 ].map(({ key, label }) => (
-                                  <label key={key} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-neutral-50 dark:bg-neutral-700/40 text-xs text-neutral-700 dark:text-neutral-300 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-700/60 transition-colors">
+                                  <label key={key} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant text-xs cursor-pointer hover:bg-surface-container-high transition-colors">
                                     <input
                                       type="checkbox"
-                                      className="w-3.5 h-3.5 rounded border-neutral-300 dark:border-neutral-600 text-emerald-600 focus:ring-emerald-500"
+                                      className="w-3.5 h-3.5 rounded border-outline-variant text-primary focus:ring-primary"
                                       checked={publicFields.includes(key)}
                                       onChange={(e) => {
                                         setPublicFields(prev => e.target.checked ? [...prev, key] : prev.filter(k => k !== key));
@@ -686,8 +710,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                                   { key: 'emergencyContacts', label: 'Emergency Contacts' },
                                   { key: 'medicalVisits', label: 'Medical Records' },
                                 ].map(({ key, label }) => (
-                                  <label key={key} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800/40 text-xs text-neutral-400 dark:text-neutral-500 cursor-default opacity-60">
-                                    <Lock className="w-3.5 h-3.5" />
+                                  <label key={key} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant text-xs cursor-default opacity-60">
+                                    <span className="material-symbols-outlined text-[14px]">lock</span>
                                     {label}
                                   </label>
                                 ))}
@@ -697,9 +721,9 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1 flex items-center gap-1">
-                      <Images className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      Manage photos in the <button type="button" onClick={onClose} className="underline hover:text-emerald-600">Photo Library</button> on My Pets.
+                    <p className="text-xs text-on-surface-variant mt-1 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px] shrink-0" aria-hidden="true">collections</span>
+                      Manage photos in the <button type="button" onClick={onClose} className="underline hover:text-primary">Photo Library</button> on My Pets.
                     </p>
                   </motion.div>
                 )}
@@ -712,8 +736,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="grid grid-cols-1 gap-5"
                   >
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                        Likes <span className="text-xs text-neutral-400 font-normal">(type then press Enter or comma)</span>
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        Likes <span className="text-xs text-on-surface-variant font-normal">(type then press Enter or comma)</span>
                       </label>
                       <TagInput
                         tags={likeTags}
@@ -721,12 +745,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         onInputChange={(v) => { setLikeInput(v); mark(); }}
                         onAdd={(t) => { setLikeTags(prev => [...prev, t]); mark(); }}
                         onRemove={(i) => { setLikeTags(prev => prev.filter((_, idx) => idx !== i)); mark(); }}
-                        placeholder="e.g. Belly rubs, Tennis balls…"
+                        placeholder="e.g. Belly rubs, Tennis balls..."
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                        Dislikes <span className="text-xs text-neutral-400 font-normal">(type then press Enter or comma)</span>
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        Dislikes <span className="text-xs text-on-surface-variant font-normal">(type then press Enter or comma)</span>
                       </label>
                       <TagInput
                         tags={dislikeTags}
@@ -734,12 +758,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         onInputChange={(v) => { setDislikeInput(v); mark(); }}
                         onAdd={(t) => { setDislikeTags(prev => [...prev, t]); mark(); }}
                         onRemove={(i) => { setDislikeTags(prev => prev.filter((_, idx) => idx !== i)); mark(); }}
-                        placeholder="e.g. Vacuum cleaner, Thunder…"
+                        placeholder="e.g. Vacuum cleaner, Thunder..."
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                        Favorite Activities <span className="text-xs text-neutral-400 font-normal">(type then press Enter or comma)</span>
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        Favorite Activities <span className="text-xs text-on-surface-variant font-normal">(type then press Enter or comma)</span>
                       </label>
                       <TagInput
                         tags={activityTags}
@@ -747,12 +771,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         onInputChange={(v) => { setActivityInput(v); mark(); }}
                         onAdd={(t) => { setActivityTags(prev => [...prev, t]); mark(); }}
                         onRemove={(i) => { setActivityTags(prev => prev.filter((_, idx) => idx !== i)); mark(); }}
-                        placeholder="e.g. Swimming, Hiking, Fetch…"
+                        placeholder="e.g. Swimming, Hiking, Fetch..."
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                           Type of Play
                         </label>
                         <input
@@ -760,17 +784,17 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           value={typeOfPlay}
                           onChange={(e) => { setTypeOfPlay(e.target.value); mark(); }}
                           placeholder="e.g. Rough, Gentle, Independent"
-                          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                          className={inputClass}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                           Activity Level
                         </label>
                         <select
                           value={activity}
                           onChange={(e) => { setActivity(e.target.value); mark(); }}
-                          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                          className={inputClass}
                         >
                           <option value="">Select level...</option>
                           <option value="Low">Low (Couch Potato)</option>
@@ -781,7 +805,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                      <label className="block text-sm font-medium text-on-surface-variant mb-2">
                         Status Tags
                       </label>
                       <div className="flex flex-wrap gap-2 mb-2">
@@ -797,15 +821,15 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                             }}
                             className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
                               statusTags.includes(tag)
-                                ? 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400'
-                                : 'bg-neutral-100 dark:bg-neutral-700 border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-emerald-400'
+                                ? 'bg-secondary-container border-secondary text-on-secondary-container'
+                                : 'bg-surface-container border-outline-variant text-on-surface-variant hover:border-primary'
                             }`}
                           >
                             {tag}
                           </button>
                         ))}
                       </div>
-                      <p className="text-xs text-neutral-400">Click to toggle. Tags appear on your pet's profile.</p>
+                      <p className="text-xs text-on-surface-variant">Click to toggle. Tags appear on your pet's profile.</p>
                     </div>
                   </motion.div>
                 )}
@@ -815,83 +839,96 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+                    className="space-y-5"
                   >
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Height</label>
-                      <UnitInput
-                        value={heightNum}
-                        unit={heightUnit}
-                        units={['inches', 'cm'] as const}
-                        onValueChange={(v) => { setHeightNum(v); mark(); }}
-                        onUnitChange={(u) => { setHeightUnit(u); mark(); }}
-                        placeholder="0"
-                      />
+                    {/* Metric cards in 2-col grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <MetricCard icon="height" label="Height">
+                        <UnitInput
+                          value={heightNum}
+                          unit={heightUnit}
+                          units={['inches', 'cm'] as const}
+                          onValueChange={(v) => { setHeightNum(v); mark(); }}
+                          onUnitChange={(u) => { setHeightUnit(u); mark(); }}
+                          placeholder="0"
+                        />
+                      </MetricCard>
+                      <MetricCard icon="straighten" label="Length">
+                        <UnitInput
+                          value={lengthNum}
+                          unit={lengthUnit}
+                          units={['inches', 'cm'] as const}
+                          onValueChange={(v) => { setLengthNum(v); mark(); }}
+                          onUnitChange={(u) => { setLengthUnit(u); mark(); }}
+                          placeholder="0"
+                        />
+                      </MetricCard>
+                      <MetricCard icon="monitor_weight" label="Weight">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+                            {weightNum || '--'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-xs font-semibold">
+                            {weightUnit}
+                          </span>
+                        </div>
+                      </MetricCard>
+                      <MetricCard icon="vital_signs" label="Body Condition">
+                        <select
+                          value={bodyConditionScore}
+                          onChange={(e) => { setBodyConditionScore(e.target.value); mark(); }}
+                          className={inputClass}
+                        >
+                          <option value="">Not set</option>
+                          <option value="Underweight">Underweight</option>
+                          <option value="Healthy weight">Healthy weight</option>
+                          <option value="Overweight">Overweight</option>
+                        </select>
+                      </MetricCard>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Length</label>
-                      <UnitInput
-                        value={lengthNum}
-                        unit={lengthUnit}
-                        units={['inches', 'cm'] as const}
-                        onValueChange={(v) => { setLengthNum(v); mark(); }}
-                        onUnitChange={(u) => { setLengthUnit(u); mark(); }}
-                        placeholder="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Body Condition</label>
-                      <select
-                        value={bodyConditionScore}
-                        onChange={(e) => { setBodyConditionScore(e.target.value); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
-                      >
-                        <option value="">Not set</option>
-                        <option value="Underweight">Underweight</option>
-                        <option value="Healthy weight">Healthy weight</option>
-                        <option value="Overweight">Overweight</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Spayed / Neutered</label>
-                      <select
-                        value={spayedNeutered}
-                        onChange={(e) => { setSpayedNeutered(e.target.value as typeof spayedNeutered); mark(); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
-                      >
-                        <option value="">Not set</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="Unknown">Unknown</option>
-                      </select>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Microchip ID</label>
-                      <input
-                        type="text"
-                        value={microchipId}
-                        onChange={(e) => { setMicrochipId(e.target.value); mark(); }}
-                        placeholder="e.g. 985112345678901"
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
-                      />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Spayed / Neutered</label>
+                        <select
+                          value={spayedNeutered}
+                          onChange={(e) => { setSpayedNeutered(e.target.value as typeof spayedNeutered); mark(); }}
+                          className={inputClass}
+                        >
+                          <option value="">Not set</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="Unknown">Unknown</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Microchip ID</label>
+                        <input
+                          type="text"
+                          value={microchipId}
+                          onChange={(e) => { setMicrochipId(e.target.value); mark(); }}
+                          placeholder="e.g. 985112345678901"
+                          className={inputClass}
+                        />
+                      </div>
                     </div>
 
                     {/* Primary Diet */}
-                    <div className="sm:col-span-2 space-y-3">
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Primary Diet</label>
+                    <div className="space-y-3">
+                      <label className="block text-sm font-medium text-on-surface-variant">Primary Diet</label>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="sm:col-span-1">
-                          <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">Food Brand / Type</label>
+                          <label className="block text-xs text-on-surface-variant mb-1">Food Brand / Type</label>
                           <input
                             type="text"
                             value={foodBrand}
                             onChange={(e) => { setFoodBrand(e.target.value); mark(); }}
                             placeholder="e.g. Purina Pro Plan"
-                            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
+                            className={`${inputClass} text-sm`}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">Amount</label>
+                          <label className="block text-xs text-on-surface-variant mb-1">Amount</label>
                           <input
                             type="number"
                             min="0"
@@ -899,15 +936,15 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                             value={foodAmount}
                             onChange={(e) => { setFoodAmount(e.target.value); mark(); }}
                             placeholder="0"
-                            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
+                            className={`${inputClass} text-sm`}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-neutral-500 dark:text-neutral-400 mb-1">Unit</label>
+                          <label className="block text-xs text-on-surface-variant mb-1">Unit</label>
                           <select
                             value={foodUnit}
                             onChange={(e) => { setFoodUnit(e.target.value as typeof foodUnit); mark(); }}
-                            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors text-sm"
+                            className={`${inputClass} text-sm`}
                           >
                             <option value="cups">cups/day</option>
                             <option value="half cups">half cups/day</option>
@@ -920,11 +957,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     </div>
 
                     {/* Notes */}
-                    <div className="sm:col-span-2 pt-2">
+                    <div className="pt-2">
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                        <label className="block text-sm font-medium text-on-surface-variant">
                           Diet or Medical Notes{' '}
-                          <span className="text-xs font-normal bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full ml-1">
+                          <span className="text-xs font-normal bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full ml-1">
                             Encrypted
                           </span>
                         </label>
@@ -937,12 +974,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         onChange={handleNotesChange}
                         rows={5}
                         placeholder="Health notes, allergies, medications, behavioral observations..."
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
+                        className={`${inputClass} resize-none`}
                       />
                       {notes.length >= NOTES_MAX && (
-                        <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">Character limit reached.</p>
+                        <p className="text-xs text-error mt-1">Character limit reached.</p>
                       )}
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                      <p className="text-xs text-on-surface-variant mt-1">
                         Health and medical context. Encrypted client-side before storage.
                       </p>
                     </div>
@@ -958,11 +995,11 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="space-y-5"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-neutral-500 dark:text-neutral-400">Vet info and emergency contacts for this pet.</p>
+                      <p className="text-sm text-on-surface-variant">Vet info and emergency contacts for this pet.</p>
                       {allPets.length > 0 && allPets.some(p => p.id !== pet?.id && (p.emergencyContacts?.vetInfo?.clinic || p.emergencyContacts?.ownerPhone || p.emergencyContacts?.additionalContacts?.some(c => c.name))) && (
                         <div className="relative group/autofill">
                           <select
-                            className="appearance-none pl-8 pr-4 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-xs font-medium text-neutral-600 dark:text-neutral-300 cursor-pointer hover:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                            className="appearance-none pl-8 pr-4 py-1.5 rounded-full border border-outline-variant bg-surface-container text-xs font-medium text-on-surface-variant cursor-pointer hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                             value=""
                             onChange={(e) => {
                               const sourcePet = allPets.find(p => p.id === e.target.value);
@@ -977,49 +1014,49 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                               <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
                           </select>
-                          <Copy className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 group-hover/autofill:text-emerald-500 pointer-events-none transition-colors" />
+                          <span className="material-symbols-outlined text-[14px] absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant group-hover/autofill:text-primary pointer-events-none transition-colors">content_copy</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="p-4 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl space-y-4">
-                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200">
-                        <HeartPulse className="w-4 h-4 text-emerald-500" /> Vet Info
+                    <div className="p-4 bg-surface-container rounded-xl border border-outline-variant space-y-4">
+                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-on-surface">
+                        <span className="material-symbols-outlined text-[18px] text-primary">cardiology</span> Vet Info
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Clinic Name</label>
-                          <input type="text" value={emergencyContacts?.vetInfo?.clinic || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, clinic: e.target.value, name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="Happy Paws Clinic" />
+                          <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Clinic Name</label>
+                          <input type="text" value={emergencyContacts?.vetInfo?.clinic || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, clinic: e.target.value, name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className={`${inputClass} text-sm`} placeholder="Happy Paws Clinic" />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Doctor Name</label>
-                          <input type="text" value={emergencyContacts?.vetInfo?.name || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, name: e.target.value, clinic: prev?.vetInfo?.clinic || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="Dr. Smith" />
+                          <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Doctor Name</label>
+                          <input type="text" value={emergencyContacts?.vetInfo?.name || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, name: e.target.value, clinic: prev?.vetInfo?.clinic || '', phone: prev?.vetInfo?.phone || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className={`${inputClass} text-sm`} placeholder="Dr. Smith" />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Vet Phone</label>
-                          <input type="tel" value={emergencyContacts?.vetInfo?.phone || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, phone: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="(555) 000-0000" />
+                          <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Vet Phone</label>
+                          <input type="tel" value={emergencyContacts?.vetInfo?.phone || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, phone: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', address: prev?.vetInfo?.address || '' } })); setIsDirty(true); }} className={`${inputClass} text-sm`} placeholder="(555) 000-0000" />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Vet Address</label>
-                          <input type="text" value={emergencyContacts?.vetInfo?.address || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, address: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '' } })); setIsDirty(true); }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="123 Vet Clinic Way" />
+                          <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Vet Address</label>
+                          <input type="text" value={emergencyContacts?.vetInfo?.address || ''} onChange={e => { setEmergencyContacts(prev => ({ ...prev, vetInfo: { ...prev?.vetInfo, address: e.target.value, clinic: prev?.vetInfo?.clinic || '', name: prev?.vetInfo?.name || '', phone: prev?.vetInfo?.phone || '' } })); setIsDirty(true); }} className={`${inputClass} text-sm`} placeholder="123 Vet Clinic Way" />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Owner / Primary Phone</label>
+                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Owner / Primary Phone</label>
                       <input
                         type="tel"
                         value={emergencyContacts?.ownerPhone || ''}
                         onChange={e => { setEmergencyContacts(prev => ({ ...prev, ownerPhone: e.target.value })); setIsDirty(true); }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400"
+                        className={`${inputClass} text-sm`}
                         placeholder="(555) 123-4567"
                       />
                     </div>
 
-                    <div className="p-4 bg-neutral-50 dark:bg-neutral-700/50 rounded-xl space-y-4">
-                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-neutral-800 dark:text-neutral-200">
-                        <Phone className="w-4 h-4 text-blue-500" /> Additional Contacts
+                    <div className="p-4 bg-surface-container rounded-xl border border-outline-variant space-y-4">
+                      <h4 className="text-sm font-semibold flex items-center gap-1.5 text-on-surface">
+                        <span className="material-symbols-outlined text-[18px] text-tertiary">call</span> Additional Contacts
                       </h4>
                       {[0, 1, 2].map(index => {
                         const contact = emergencyContacts?.additionalContacts?.[index] || { name: '', phone: '' };
@@ -1029,22 +1066,22 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         return (
                           <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 first:pt-0">
                             <div>
-                              <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Contact {index + 1} Name</label>
+                              <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Contact {index + 1} Name</label>
                               <input type="text" value={contact.name} onChange={e => {
                                 const newContacts = [...(emergencyContacts?.additionalContacts || [])];
                                 newContacts[index] = { ...contact, name: e.target.value };
                                 setEmergencyContacts(prev => ({ ...prev, additionalContacts: newContacts }));
                                 setIsDirty(true);
-                              }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="Jane Doe" />
+                              }} className={`${inputClass} text-sm`} placeholder="Jane Doe" />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5">Contact {index + 1} Phone</label>
+                              <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Contact {index + 1} Phone</label>
                               <input type="tel" value={contact.phone} onChange={e => {
                                 const newContacts = [...(emergencyContacts?.additionalContacts || [])];
                                 newContacts[index] = { ...contact, phone: e.target.value };
                                 setEmergencyContacts(prev => ({ ...prev, additionalContacts: newContacts }));
                                 setIsDirty(true);
-                              }} className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm focus:ring-2 focus:ring-emerald-500 outline-none placeholder:text-neutral-400" placeholder="(555) 999-9999" />
+                              }} className={`${inputClass} text-sm`} placeholder="(555) 999-9999" />
                             </div>
                           </div>
                         );
@@ -1056,14 +1093,14 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
               </div>
 
               {/* ── Actions Footer ── */}
-              <div className="p-5 border-t border-neutral-100 dark:border-neutral-700 shrink-0 bg-neutral-50/50 dark:bg-neutral-800/50 space-y-3">
+              <div className="p-5 border-t border-outline-variant shrink-0 bg-surface-container-low/50 space-y-3">
                 {/* Row 1: Navigation buttons */}
                 <div className="flex gap-3">
                   {isFirst ? (
                     <button
                       type="button"
                       onClick={onClose}
-                      className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                      className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
                     >
                       Cancel
                     </button>
@@ -1071,26 +1108,26 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={goPrev}
-                      className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors flex items-center justify-center gap-2"
                     >
-                      <ChevronLeft className="w-4 h-4" /> Back
+                      <span className="material-symbols-outlined text-[18px]">chevron_left</span> Back
                     </button>
                   )}
                   {isLast ? (
                     <button
                       type="button"
                       onClick={() => handleSubmit('finish')}
-                      className="flex-1 py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="flex-1 py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:brightness-110"
                     >
-                      <Save className="w-4 h-4" /> Finish
+                      <span className="material-symbols-outlined text-[18px]">check_circle</span> Finish Profile
                     </button>
                   ) : (
                     <button
                       type="button"
-                      onClick={goNext}
-                      className="flex-1 py-2.5 rounded-xl bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-white text-white dark:text-neutral-900 font-medium transition-colors flex items-center justify-center gap-2"
+                      onClick={() => { handleSubmit('save'); goNext(); }}
+                      className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-medium transition-colors flex items-center justify-center gap-2 hover:brightness-110"
                     >
-                      Next <ChevronRight className="w-4 h-4" />
+                      Save & Continue <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                     </button>
                   )}
                 </div>
@@ -1104,9 +1141,9 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       exit={{ opacity: 0, height: 0 }}
                       type="button"
                       onClick={() => handleSubmit('save')}
-                      className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors flex items-center justify-center gap-2 overflow-hidden"
+                      className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-semibold transition-colors flex items-center justify-center gap-2 overflow-hidden hover:brightness-110"
                     >
-                      <Save className="w-4 h-4" />
+                      <span className="material-symbols-outlined text-[18px]">save</span>
                       {isEditMode ? 'Save Changes' : 'Add Pet'}
                     </motion.button>
                   )}

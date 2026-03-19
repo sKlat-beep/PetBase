@@ -1,7 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import { motion } from 'motion/react';
-import { X, Download, Copy, Printer, Share2, Check } from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import { canShare } from '../../utils/platform';
 
@@ -67,96 +66,180 @@ export function QrOverlay({ cardId, pet, expiresLabel, onClose }: QrOverlayProps
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
       onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}
       role="dialog"
       aria-modal="true"
       aria-label={`QR code for ${pet.name}`}
     >
+      {/* Ambient background */}
+      <div className="absolute inset-0 bg-surface/95" />
+      <div
+        className="absolute top-1/4 -left-20 w-80 h-80 rounded-full blur-3xl opacity-30"
+        style={{ background: 'var(--primary-container)' }}
+      />
+      <div
+        className="absolute bottom-1/4 -right-20 w-72 h-72 rounded-full blur-3xl opacity-20"
+        style={{ background: 'var(--tertiary)' }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: 'radial-gradient(ellipse at center, transparent 40%, var(--surface) 100%)' }}
+      />
+
+      {/* Content panel */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 flex flex-col items-center gap-5 relative"
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="glass-card relative z-10 max-w-md w-full mx-4 p-8 flex flex-col items-center gap-6"
       >
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="absolute top-4 right-4 p-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           aria-label="Close QR overlay"
         >
-          <X className="w-5 h-5" />
+          <span className="material-symbols-outlined text-xl">close</span>
         </button>
 
-        {/* Pet avatar + info */}
-        <div className="flex flex-col items-center gap-2">
-          {pet.image ? (
-            <img
-              src={pet.image}
-              alt={pet.name}
-              className="w-14 h-14 rounded-full object-cover border-2 border-neutral-200 dark:border-neutral-600"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div
-              className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white/80"
-              style={{ backgroundColor: pet.backgroundColor || '#a8a29e' }}
-            >
-              {pet.name?.[0]?.toUpperCase()}
+        {/* Header */}
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-xs font-medium uppercase tracking-widest text-primary-container">
+            Secure Access
+          </span>
+          <h2 className="text-2xl font-bold text-on-surface text-glow">
+            Digital ID Pass
+          </h2>
+        </div>
+
+        {/* QR code with gradient border + glow */}
+        <div className="relative flex items-center justify-center">
+          {/* Glow effect behind */}
+          <div
+            className="absolute inset-0 blur-3xl opacity-20 rounded-[2rem]"
+            style={{ background: 'var(--primary-container)' }}
+          />
+
+          {/* Gradient border wrapper */}
+          <div className="qr-gradient-border relative">
+            <div ref={qrRef} className="bg-white rounded-[calc(2rem-3px)] p-5">
+              <QRCode value={url} size={220} level="H" includeMargin />
             </div>
-          )}
-          <div className="text-center">
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{pet.name}</h2>
-            {pet.breed && (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">{pet.breed}</p>
-            )}
+          </div>
+
+          {/* Verified badge */}
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-10">
+            <div className="glass-morphism flex items-center gap-1.5 px-3 py-1 rounded-full">
+              <span className="material-symbols-outlined text-primary-container text-sm">verified</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface">
+                Verified Pet
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* QR Code — large, scannable */}
-        <div ref={qrRef} className="bg-white p-4 rounded-2xl">
-          <QRCode value={url} size={240} level="H" includeMargin />
+        {/* Pet info */}
+        <div className="flex flex-col items-center gap-1 mt-2">
+          <h3 className="text-3xl font-bold text-on-surface text-glow">
+            {pet.name}
+          </h3>
+          {pet.breed && (
+            <p className="text-sm text-on-surface-variant">
+              {pet.breed}
+            </p>
+          )}
+          <span className="text-xs text-on-surface-variant/70 mt-0.5">
+            Medical Hub Access
+          </span>
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-2 flex-wrap justify-center">
-          <button
-            onClick={handleDownloadQr}
-            className="flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium"
-          >
-            <Download className="w-3.5 h-3.5" /> Download
-          </button>
-          <button
-            onClick={handleCopyLink}
-            className={`flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl transition-colors text-xs font-medium ${
-              copied
-                ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600'
-            }`}
-          >
-            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? 'Copied!' : 'Copy Link'}
-          </button>
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium"
-          >
-            <Printer className="w-3.5 h-3.5" /> Print
-          </button>
-          {canShare() && (
+        {/* Timer chip */}
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary-container/15 border border-primary-container/25">
+          <span className="material-symbols-outlined text-primary-container text-base">timer</span>
+          <span className="text-xs font-medium text-primary-container">
+            Expires {expiresLabel}
+          </span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-col items-center gap-3 w-full mt-1">
+          {/* Share Access Link — primary CTA */}
+          {canShare() ? (
             <button
               onClick={handleShare}
-              className="flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors text-xs font-medium"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 min-h-[48px] rounded-2xl bg-primary text-on-primary font-semibold text-sm transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             >
-              <Share2 className="w-3.5 h-3.5" /> Share
+              <span className="material-symbols-outlined text-lg">share</span>
+              Share Access Link
+            </button>
+          ) : (
+            <button
+              onClick={handleCopyLink}
+              className={`w-full flex items-center justify-center gap-2 px-6 py-3 min-h-[48px] rounded-2xl font-semibold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
+                copied
+                  ? 'bg-tertiary/20 text-tertiary'
+                  : 'bg-primary text-on-primary hover:opacity-90'
+              }`}
+            >
+              <span className="material-symbols-outlined text-lg">
+                {copied ? 'check_circle' : 'link'}
+              </span>
+              {copied ? 'Link Copied!' : 'Share Access Link'}
             </button>
           )}
-        </div>
 
-        {/* Expiry */}
-        <p className="text-xs text-neutral-400 dark:text-neutral-500">
-          Expires {expiresLabel}
-        </p>
+          {/* Secondary actions row */}
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            <button
+              onClick={handleDownloadQr}
+              className="flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-xl bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            >
+              <span className="material-symbols-outlined text-base">download</span>
+              Download
+            </button>
+            {canShare() && (
+              <button
+                onClick={handleCopyLink}
+                className={`flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-xl transition-colors text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
+                  copied
+                    ? 'bg-tertiary/20 text-tertiary'
+                    : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest'
+                }`}
+              >
+                <span className="material-symbols-outlined text-base">
+                  {copied ? 'check_circle' : 'content_copy'}
+                </span>
+                {copied ? 'Copied!' : 'Copy Link'}
+              </button>
+            )}
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-xl bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            >
+              <span className="material-symbols-outlined text-base">print</span>
+              Print
+            </button>
+          </div>
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="text-sm text-on-surface-variant hover:text-on-surface transition-colors mt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded-lg px-4 py-2"
+          >
+            Close
+          </button>
+        </div>
       </motion.div>
+
+      <style>{`
+        .qr-gradient-border {
+          background: linear-gradient(135deg, var(--primary-container), var(--tertiary));
+          padding: 3px;
+          border-radius: 2rem;
+        }
+      `}</style>
     </div>
   );
 }

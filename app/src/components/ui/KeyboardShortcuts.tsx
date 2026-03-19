@@ -1,18 +1,30 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Keyboard } from 'lucide-react';
 
-const SHORTCUTS = [
-  { key: '?', label: 'Show keyboard shortcuts' },
-  { key: 'g h', label: 'Go to Dashboard' },
-  { key: 'g p', label: 'Go to Pets' },
-  { key: 'g c', label: 'Go to Community' },
-  { key: 'g m', label: 'Go to Messages' },
-  { key: 'g k', label: 'Go to Cards' },
-  { key: 'g s', label: 'Go to Search' },
-  { key: 'Esc', label: 'Close modal / panel' },
-] as const;
+const SHORTCUT_CATEGORIES = [
+  {
+    title: 'General',
+    shortcuts: [
+      { key: '?', label: 'Show keyboard shortcuts' },
+      { key: 'Esc', label: 'Close modal / panel' },
+    ],
+  },
+  {
+    title: 'Navigation',
+    shortcuts: [
+      { key: 'g h', label: 'Go to Dashboard' },
+      { key: 'g p', label: 'Go to Pets' },
+      { key: 'g c', label: 'Go to Community' },
+      { key: 'g m', label: 'Go to Messages' },
+      { key: 'g k', label: 'Go to Cards' },
+      { key: 'g s', label: 'Go to Search' },
+    ],
+  },
+];
+
+// Flat list for the hook logic (unused but kept for reference)
+const _SHORTCUTS = SHORTCUT_CATEGORIES.flatMap(c => c.shortcuts);
 
 function isInputFocused(): boolean {
   const el = document.activeElement;
@@ -90,30 +102,48 @@ export function ShortcutsHelpModal({ onClose }: { onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+        className="glass-card rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
       >
-        <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-700">
-          <div className="flex items-center gap-2">
-            <Keyboard className="w-5 h-5 text-emerald-500" />
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Keyboard Shortcuts</h2>
+        {/* Header with gradient icon */}
+        <div className="flex items-center justify-between p-5 border-b border-outline-variant">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-tertiary to-primary flex items-center justify-center">
+              <span className="material-symbols-outlined text-[18px] text-on-primary">keyboard</span>
+            </div>
+            <h2
+              className="text-lg font-semibold text-on-surface"
+              style={{ fontFamily: 'var(--font-headline)' }}
+            >
+              Keyboard Shortcuts
+            </h2>
           </div>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors">
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
-        <div className="p-4 space-y-2">
-          {SHORTCUTS.map(s => (
-            <div key={s.key} className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-neutral-600 dark:text-neutral-300">{s.label}</span>
-              <div className="flex items-center gap-1">
-                {s.key.split(' ').map(k => (
-                  <kbd
-                    key={k}
-                    className="px-2 py-0.5 text-xs font-mono bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 rounded border border-neutral-200 dark:border-neutral-600"
-                  >
-                    {k}
-                  </kbd>
+        {/* Shortcut categories */}
+        <div className="p-4 space-y-5">
+          {SHORTCUT_CATEGORIES.map(category => (
+            <div key={category.title}>
+              <h3 className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
+                {category.title}
+              </h3>
+              <div className="space-y-1.5">
+                {category.shortcuts.map(s => (
+                  <div key={s.key} className="flex items-center justify-between py-1.5">
+                    <span className="text-sm text-on-surface-variant">{s.label}</span>
+                    <div className="flex items-center gap-1">
+                      {s.key.split(' ').map(k => (
+                        <kbd
+                          key={k}
+                          className="px-2 py-0.5 text-xs font-mono bg-surface-container text-on-surface rounded border border-outline-variant border-b-2 border-b-outline-variant/80 min-w-[24px] text-center"
+                        >
+                          {k}
+                        </kbd>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

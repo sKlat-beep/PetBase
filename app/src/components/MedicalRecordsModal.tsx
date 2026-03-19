@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Syringe, Calendar, ClipboardList, FileText, Plus, Trash2, CheckCircle2, AlertTriangle, XCircle, Info, GripVertical, CalendarPlus, Pill, Zap, RefreshCw } from 'lucide-react';
 import type { Pet } from '../contexts/PetContext';
 import { usePets } from '../contexts/PetContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -92,7 +91,7 @@ const INTERVAL_OPTIONS = [
   { label: 'Every 6 months', value: 182 },
   { label: 'Every 1 year', value: 365 },
   { label: 'Every 3 years', value: 1095 },
-  { label: 'Custom interval…', value: -1 },
+  { label: 'Custom interval...', value: -1 },
 ];
 
 const PREDEFINED_INTERVAL_VALS = new Set([0, 91, 182, 365, 1095]);
@@ -141,30 +140,30 @@ export function getVaccineStatus(nextDueDate: string): VaccineStatus {
 function StatusBadge({ status }: { status: VaccineStatus }) {
   const map = {
     'up-to-date': {
-      icon: <CheckCircle2 className="w-3 h-3" />,
+      icon: 'check_circle',
       label: 'Up to Date',
-      cls: 'text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40',
+      cls: 'text-on-secondary-container bg-secondary-container',
     },
     'due-soon': {
-      icon: <AlertTriangle className="w-3 h-3" />,
+      icon: 'schedule',
       label: 'Due Soon',
-      cls: 'text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40',
+      cls: 'text-on-primary-container bg-primary-container',
     },
     'overdue': {
-      icon: <XCircle className="w-3 h-3" />,
+      icon: 'error',
       label: 'Overdue',
-      cls: 'text-rose-700 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/40',
+      cls: 'text-on-error-container bg-error-container',
     },
     'unknown': {
-      icon: null,
+      icon: '',
       label: 'Not Set',
-      cls: 'text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-700',
+      cls: 'text-on-surface-variant bg-surface-container-highest',
     },
   }[status];
 
   return (
     <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${map.cls}`}>
-      {map.icon}
+      {map.icon && <span className="material-symbols-outlined text-[14px]">{map.icon}</span>}
       {map.label}
     </span>
   );
@@ -198,7 +197,13 @@ type VetVisit = {
 };
 
 const inputClass =
-  'w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors';
+  'w-full px-3 py-2 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition-colors';
+
+const TAB_CONFIG: { key: Tab; icon: string; label: string }[] = [
+  { key: 'vaccines', icon: 'vaccines', label: 'Vaccines' },
+  { key: 'visits', icon: 'assignment', label: 'Vet Visits' },
+  { key: 'medications', icon: 'medication', label: 'Medications' },
+];
 
 export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, initialTab }: MedicalRecordsModalProps) {
   const { updatePet } = usePets();
@@ -243,9 +248,9 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
         const el = document.getElementById(id);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          el.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-neutral-800', 'transition-all', 'duration-500');
+          el.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'transition-all', 'duration-500');
           setTimeout(() => {
-            el.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-neutral-800');
+            el.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
           }, 2000);
         }
       }, 100);
@@ -418,11 +423,21 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
   if (!pet) return null;
 
   const overall = overallVaccineStatus(vaccines);
+  const overallIcon =
+    overall === 'up-to-date' ? 'check_circle'
+      : overall === 'due-soon' ? 'schedule'
+        : overall === 'overdue' ? 'error'
+          : 'help_outline';
   const overallLabel =
-    overall === 'up-to-date' ? '✅ All vaccines up to date'
-      : overall === 'due-soon' ? '⚠️ Vaccine due soon'
-        : overall === 'overdue' ? '❌ Overdue vaccines'
+    overall === 'up-to-date' ? 'All vaccines up to date'
+      : overall === 'due-soon' ? 'Vaccine due soon'
+        : overall === 'overdue' ? 'Overdue vaccines'
           : 'Set up vaccine dates below';
+  const overallColor =
+    overall === 'up-to-date' ? 'text-secondary'
+      : overall === 'due-soon' ? 'text-primary'
+        : overall === 'overdue' ? 'text-error'
+          : 'text-on-surface-variant';
 
   return (
     <AnimatePresence>
@@ -436,10 +451,10 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
           />
 
-          {/* Modal card */}
+          {/* Modal card — split-pane layout */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -448,437 +463,521 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
             role="dialog"
             aria-modal="true"
             aria-labelledby="medical-records-modal-title"
-            className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-2xl z-10 flex flex-col max-h-[90vh]"
+            className="relative glass-card w-full max-w-4xl z-10 flex flex-col sm:flex-row h-[700px] max-h-[90vh] overflow-hidden"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                  <Syringe className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            {/* ── Left Sidebar (w-72) ── */}
+            <div className="hidden sm:flex flex-col w-72 shrink-0 border-r border-outline-variant bg-surface-container-low/50">
+              {/* Pet avatar & name */}
+              <div className="p-6 flex flex-col items-center gap-3 border-b border-outline-variant">
+                <div className="story-ring p-[3px] rounded-full">
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-surface-container">
+                    {pet.image ? (
+                      <img src={pet.image} alt={pet.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-on-surface-variant">
+                        <span className="material-symbols-outlined text-[32px]">pets</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h2 id="medical-records-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                <div className="text-center">
+                  <h2 id="medical-records-modal-title" className="text-lg font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
                     Medical Records
                   </h2>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{pet.name} · {overallLabel}</p>
+                  <p className="text-sm text-secondary font-medium">{pet.name}</p>
+                </div>
+              </div>
+
+              {/* Tab navigation */}
+              <nav className="flex-1 p-3 space-y-1">
+                {TAB_CONFIG.map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === tab.key
+                      ? 'bg-primary-container text-on-primary-container'
+                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                      }`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">{tab.icon}</span>
+                    {tab.label}
+                    {tab.key === 'visits' && visits.length > 0 && (
+                      <span className="ml-auto text-xs bg-surface-container-highest text-on-surface-variant px-1.5 py-0.5 rounded-full">{visits.length}</span>
+                    )}
+                    {tab.key === 'medications' && medications.length > 0 && (
+                      <span className="ml-auto text-xs bg-surface-container-highest text-on-surface-variant px-1.5 py-0.5 rounded-full">{medications.length}</span>
+                    )}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Health status card */}
+              <div className="p-4 m-3 rounded-xl bg-surface-container border border-outline-variant">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`material-symbols-outlined text-[18px] ${overallColor}`}>{overallIcon}</span>
+                  <span className="text-xs font-semibold text-on-surface">Health Status</span>
+                </div>
+                <p className={`text-xs font-medium ${overallColor}`}>{overallLabel}</p>
+                <div className="mt-2 flex gap-1">
+                  {vaccines.slice(0, 6).map((v, i) => {
+                    const s = getVaccineStatus(v.nextDueDate);
+                    const dotColor = s === 'up-to-date' ? 'bg-secondary' : s === 'due-soon' ? 'bg-primary-container' : s === 'overdue' ? 'bg-error' : 'bg-surface-container-highest';
+                    return <div key={i} className={`w-2 h-2 rounded-full ${dotColor}`} title={`${v.name}: ${s}`} />;
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Mobile Header (visible on small screens) ── */}
+            <div className="flex sm:hidden items-center justify-between p-4 border-b border-outline-variant shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="story-ring p-[2px] rounded-full">
+                  <div className="w-9 h-9 rounded-full overflow-hidden bg-surface-container">
+                    {pet.image ? (
+                      <img src={pet.image} alt={pet.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="material-symbols-outlined text-[20px] text-on-surface-variant flex items-center justify-center w-full h-full">pets</span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>Medical Records</h2>
+                  <p className="text-xs text-secondary">{pet.name}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container"
               >
-                <X className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            {/* Tabs */}
-            <div className="flex border-b border-neutral-100 dark:border-neutral-700 px-6 shrink-0 overflow-x-auto">
-              {([
-                { key: 'vaccines', icon: <Syringe className="w-4 h-4" />, label: 'Vaccines' },
-                { key: 'visits', icon: <ClipboardList className="w-4 h-4" />, label: `Vet Visits${visits.length ? ` (${visits.length})` : ''}` },
-                { key: 'medications', icon: <Pill className="w-4 h-4" />, label: `Medications${medications.length ? ` (${medications.length})` : ''}` },
-              ] as { key: Tab; icon: React.ReactNode; label: string }[]).map((tab) => (
+            {/* ── Mobile Tabs ── */}
+            <div className="flex sm:hidden border-b border-outline-variant px-4 shrink-0 overflow-x-auto">
+              {TAB_CONFIG.map((tab) => (
                 <button
                   key={tab.key}
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center gap-2 py-3.5 px-2 mr-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab.key
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'
+                  className={`flex items-center gap-2 py-3 px-2 mr-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab.key
+                    ? 'border-primary-container text-primary'
+                    : 'border-transparent text-on-surface-variant hover:text-on-surface'
                     }`}
                 >
-                  {tab.icon}
+                  <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
                   {tab.label}
                 </button>
               ))}
             </div>
 
-            {/* Content */}
-            <div className="overflow-y-auto flex-1 p-6">
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mb-6 flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-amber-800 dark:text-amber-400 font-medium">
-                  <strong>Disclaimer: </strong>Always consult your vet's office for specific medical advice and dosages for your pet.
-                </p>
+            {/* ── Right Content Pane ── */}
+            <div className="flex flex-col flex-1 min-w-0">
+              {/* Desktop close button */}
+              <div className="hidden sm:flex items-center justify-between p-4 border-b border-outline-variant shrink-0">
+                <h3 className="text-sm font-semibold text-on-surface-variant uppercase tracking-wider">
+                  {TAB_CONFIG.find(t => t.key === activeTab)?.label}
+                </h3>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
               </div>
 
-              {/* ── Vaccines tab ── */}
-              {activeTab === 'vaccines' && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-3"
-                >
-                  {sortedVaccines.map((vaccine) => (
-                    <div
-                      key={vaccine.originalIndex}
-                      id={`vaccine-${vaccine.name.replace(/\s+/g, '-')}`}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, vaccine.originalIndex)}
-                      onDragOver={(e) => handleDragOver(e, vaccine.originalIndex)}
-                      onDragEnd={handleDragEnd}
-                      className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-neutral-100 dark:border-neutral-600 transition-all cursor-move"
-                    >
-                      {/* Name row */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <GripVertical className="w-4 h-4 text-neutral-300 dark:text-neutral-500 cursor-grab active:cursor-grabbing shrink-0" />
-                        <div className="flex-1 relative flex items-center gap-2 group">
-                          <input
-                            type="text"
-                            value={vaccine.name}
-                            onChange={(e) => updateVaccine(vaccine.originalIndex, 'name', e.target.value)}
-                            placeholder="Vaccine name"
-                            className={`${inputClass} font-medium flex-1`}
-                          />
-                          {VACCINE_INFO[vaccine.name] && (
-                            <div className="relative flex items-center">
-                              <Info className="w-4 h-4 text-neutral-400 cursor-help" />
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
-                                {VACCINE_INFO[vaccine.name]}
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-900 dark:border-t-neutral-100" />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <StatusBadge status={getVaccineStatus(vaccine.nextDueDate)} />
-                        {['due-soon', 'overdue'].includes(getVaccineStatus(vaccine.nextDueDate)) && (
-                          <button
-                            type="button"
-                            onClick={() => downloadICS(vaccine)}
-                            className="text-neutral-400 hover:text-blue-500 transition-colors p-1 rounded"
-                            title="Add Reminder to Calendar"
-                          >
-                            <CalendarPlus className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeVaccine(vaccine.originalIndex)}
-                          className="text-neutral-400 hover:text-rose-500 transition-colors p-1 rounded"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+              {/* Scrollable content */}
+              <div className="overflow-y-auto flex-1 p-6 custom-scrollbar">
 
-                      {/* Date grid */}
-                      {(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        return (
-                          <div className="grid grid-cols-2 gap-3 pl-6 mb-2">
-                            <div>
-                              <div className="flex items-center justify-between mb-1">
-                                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Last Administered</label>
-                                <button type="button" onClick={() => updateVaccine(vaccine.originalIndex, 'lastDate', today)} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Today</button>
-                              </div>
-                              <input type="date" value={vaccine.lastDate} onChange={(e) => updateVaccine(vaccine.originalIndex, 'lastDate', e.target.value)} className={inputClass} />
-                            </div>
-                            <div>
-                              <div className="flex items-center justify-between mb-1">
-                                <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Next Due</label>
-                                <button type="button" onClick={() => updateVaccine(vaccine.originalIndex, 'nextDueDate', today)} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Today</button>
-                              </div>
-                              <input type="date" value={vaccine.nextDueDate} onChange={(e) => updateVaccine(vaccine.originalIndex, 'nextDueDate', e.target.value)} className={inputClass} />
-                            </div>
-                          </div>
-                        );
-                      })()}
+                <div className="bg-error-container/30 border border-error-container rounded-xl p-3 mb-6 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-[20px] text-error shrink-0 mt-0.5">warning</span>
+                  <p className="text-xs text-on-surface-variant font-medium">
+                    <strong>Disclaimer: </strong>Always consult your vet's office for specific medical advice and dosages for your pet.
+                  </p>
+                </div>
 
-                      {/* Interval + Administered Today */}
-                      <div className="flex flex-col gap-1.5 pl-6 flex-1">
-                        <div className="flex items-center gap-2">
-                        <RefreshCw className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                        {(() => {
-                          const days = vaccine.intervalDays ?? 0;
-                          const isCustom = days > 0 && !PREDEFINED_INTERVAL_VALS.has(days);
-                          const selectVal = isCustom ? -1 : days;
-                          return (
-                            <>
-                              <select
-                                value={selectVal}
-                                onChange={(e) => {
-                                  const val = parseInt(e.target.value);
-                                  if (val === -1) {
-                                    updateVaccine(vaccine.originalIndex, 'intervalDays', 1);
-                                  } else {
-                                    updateVaccine(vaccine.originalIndex, 'intervalDays', val || undefined);
-                                  }
-                                }}
-                                className="flex-1 px-2 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              >
-                                {INTERVAL_OPTIONS.map(opt => (
-                                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                              </select>
-                              {isCustom && (
-                                <input
-                                  type="text"
-                                  defaultValue={`${days} days`}
-                                  placeholder="e.g. 14 days, 2 months"
-                                  onBlur={(e) => {
-                                    const parsed = parseIntervalText(e.target.value);
-                                    if (parsed && parsed > 0) {
-                                      updateVaccine(vaccine.originalIndex, 'intervalDays', parsed);
-                                      if (vaccine.lastDate) {
-                                        const nextDue = new Date(new Date(vaccine.lastDate).getTime() + parsed * 86_400_000).toISOString().split('T')[0];
-                                        updateVaccine(vaccine.originalIndex, 'nextDueDate', nextDue);
-                                      }
-                                    }
-                                  }}
-                                  className="w-32 px-2 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                              )}
-                            </>
-                          );
-                        })()}
-                        <button
-                          type="button"
-                          onClick={() => administeredToday(vaccine.originalIndex)}
-                          title="Mark as administered today and auto-calculate next due date"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors text-xs font-medium shrink-0"
-                        >
-                          <Zap className="w-3 h-3" /> Today
-                        </button>
-                      </div>{/* end flex items-center row */}
-                      </div>{/* end flex-col interval wrapper */}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addVaccine}
-                    className="w-full py-2.5 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-blue-400 hover:text-blue-500 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                {/* ── Vaccines tab ── */}
+                {activeTab === 'vaccines' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-3"
                   >
-                    <Plus className="w-4 h-4" /> Add Vaccine
-                  </button>
-                </motion.div>
-              )}
-
-              {/* ── Vet Visits tab ── */}
-              {activeTab === 'visits' && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-4"
-                >
-                  <button
-                    type="button"
-                    onClick={addVisit}
-                    className="w-full py-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-sm font-medium flex items-center justify-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" /> Log a Vet Visit
-                  </button>
-
-                  {visits.length === 0 ? (
-                    <div className="text-center py-10 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-xl">
-                      <Calendar className="w-9 h-9 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
-                      <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium">No visits recorded yet.</p>
-                    </div>
-                  ) : (
-                    visits.map((visit, i) => (
+                    {sortedVaccines.map((vaccine) => (
                       <div
-                        key={i}
-                        className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-neutral-100 dark:border-neutral-600 space-y-3"
+                        key={vaccine.originalIndex}
+                        id={`vaccine-${vaccine.name.replace(/\s+/g, '-')}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, vaccine.originalIndex)}
+                        onDragOver={(e) => handleDragOver(e, vaccine.originalIndex)}
+                        onDragEnd={handleDragEnd}
+                        className="bg-surface-container rounded-xl p-4 border border-outline-variant transition-all cursor-move"
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Date</span>
-                              <button type="button" onClick={() => updateVisit(i, 'date', new Date().toISOString().split('T')[0])} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Today</button>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
-                              <input type="date" value={visit.date} onChange={(e) => updateVisit(i, 'date', e.target.value)} className={`${inputClass} flex-1`} />
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeVisit(i)}
-                            className="text-neutral-400 hover:text-rose-500 transition-colors p-1 rounded shrink-0 mt-5"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                        {(() => {
-                          const lastClinic = visits.slice(i + 1).concat(visits.slice(0, i)).find(v => v.clinic.trim())?.clinic;
-                          let savedClinic = pet?.emergencyContacts?.vetInfo?.clinic?.trim() || '';
-                          if (!savedClinic && user) {
-                            try {
-                              const raw = localStorage.getItem(`petbase-profile-emergency-${user.uid}`);
-                              if (raw) savedClinic = JSON.parse(raw)?.vetInfo?.clinic?.trim() || '';
-                            } catch { /* ignore */ }
-                          }
-                          const hint = !visit.clinic ? (lastClinic || savedClinic || undefined) : undefined;
-                          const hintLabel = hint === lastClinic && lastClinic ? `Use last: ${lastClinic}` : hint ? `Use pet's vet: ${hint}` : undefined;
-                          return (
-                            <div>
-                              {hint && hintLabel && (
-                                <div className="flex justify-end mb-0.5">
-                                  <button type="button" onClick={() => updateVisit(i, 'clinic', hint)} className="text-xs text-teal-600 dark:text-teal-400 hover:underline">{hintLabel}</button>
-                                </div>
-                              )}
-                              <input type="text" value={visit.clinic} onChange={(e) => updateVisit(i, 'clinic', e.target.value)} placeholder="Clinic / Vet name" className={inputClass} />
-                            </div>
-                          );
-                        })()}
-                        <input type="text" value={visit.reason} onChange={(e) => updateVisit(i, 'reason', e.target.value)} placeholder="Reason for visit" className={inputClass} />
-                        <div className="relative">
-                          <FileText className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5 pointer-events-none" />
-                          <textarea
-                            value={visit.notes}
-                            onChange={(e) => updateVisit(i, 'notes', e.target.value)}
-                            placeholder="Notes (diagnosis, treatments, follow-ups…)"
-                            rows={2}
-                            className={`${inputClass} pl-9 resize-none`}
-                          />
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </motion.div>
-              )}
-
-              {/* ── Medications tab ── */}
-              {activeTab === 'medications' && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-4"
-                >
-                  <button
-                    type="button"
-                    onClick={addMedication}
-                    className="w-full py-2.5 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors text-sm font-medium flex items-center justify-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" /> Add Medication
-                  </button>
-
-                  {medications.length === 0 ? (
-                    <div className="text-center py-10 border-2 border-dashed border-neutral-200 dark:border-neutral-600 rounded-xl">
-                      <Pill className="w-9 h-9 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
-                      <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium">No medications tracked yet.</p>
-                      <p className="text-neutral-400 dark:text-neutral-500 text-xs mt-1">Add prescriptions, supplements, or ongoing treatments.</p>
-                    </div>
-                  ) : (
-                    medications.map((med) => (
-                      <div
-                        key={med.id}
-                        className="bg-neutral-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-neutral-100 dark:border-neutral-600 space-y-3"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2 flex-1">
-                            <Pill className="w-4 h-4 text-violet-500 shrink-0" />
+                        {/* Name row */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant/50 cursor-grab active:cursor-grabbing shrink-0">drag_indicator</span>
+                          <div className="flex-1 relative flex items-center gap-2 group">
                             <input
                               type="text"
-                              value={med.name}
-                              onChange={(e) => updateMedication(med.id, 'name', e.target.value)}
-                              placeholder="Medication name (e.g., Apoquel, Bravecto)"
+                              value={vaccine.name}
+                              onChange={(e) => updateVaccine(vaccine.originalIndex, 'name', e.target.value)}
+                              placeholder="Vaccine name"
                               className={`${inputClass} font-medium flex-1`}
                             />
+                            {VACCINE_INFO[vaccine.name] && (
+                              <div className="relative flex items-center">
+                                <span className="material-symbols-outlined text-[18px] text-on-surface-variant cursor-help">info</span>
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-inverse-surface text-inverse-on-surface text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
+                                  {VACCINE_INFO[vaccine.name]}
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-inverse-surface" />
+                                </div>
+                              </div>
+                            )}
                           </div>
+                          <StatusBadge status={getVaccineStatus(vaccine.nextDueDate)} />
+                          {['due-soon', 'overdue'].includes(getVaccineStatus(vaccine.nextDueDate)) && (
+                            <button
+                              type="button"
+                              onClick={() => downloadICS(vaccine)}
+                              className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded"
+                              title="Add Reminder to Calendar"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">calendar_add_on</span>
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => removeMedication(med.id)}
-                            className="text-neutral-400 hover:text-rose-500 transition-colors p-1 rounded shrink-0"
+                            onClick={() => removeVaccine(vaccine.originalIndex)}
+                            className="text-on-surface-variant hover:text-error transition-colors p-1 rounded"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
                           </button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Dosage</label>
-                            <input
-                              type="text"
-                              value={med.dosage}
-                              onChange={(e) => updateMedication(med.id, 'dosage', e.target.value)}
-                              placeholder="e.g., 16mg, 1 tablet"
-                              className={inputClass}
+                        {/* Date grid */}
+                        {(() => {
+                          const today = new Date().toISOString().split('T')[0];
+                          return (
+                            <div className="grid grid-cols-2 gap-3 pl-6 mb-2">
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <label className="text-xs font-medium text-on-surface-variant">Last Administered</label>
+                                  <button type="button" onClick={() => updateVaccine(vaccine.originalIndex, 'lastDate', today)} className="text-xs text-secondary hover:underline">Today</button>
+                                </div>
+                                <input type="date" value={vaccine.lastDate} onChange={(e) => updateVaccine(vaccine.originalIndex, 'lastDate', e.target.value)} className={inputClass} />
+                              </div>
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <label className="text-xs font-medium text-on-surface-variant">Next Due</label>
+                                  <button type="button" onClick={() => updateVaccine(vaccine.originalIndex, 'nextDueDate', today)} className="text-xs text-secondary hover:underline">Today</button>
+                                </div>
+                                <input type="date" value={vaccine.nextDueDate} onChange={(e) => updateVaccine(vaccine.originalIndex, 'nextDueDate', e.target.value)} className={inputClass} />
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Interval + Administered Today */}
+                        <div className="flex flex-col gap-1.5 pl-6 flex-1">
+                          <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[16px] text-on-surface-variant/50 shrink-0">refresh</span>
+                          {(() => {
+                            const days = vaccine.intervalDays ?? 0;
+                            const isCustom = days > 0 && !PREDEFINED_INTERVAL_VALS.has(days);
+                            const selectVal = isCustom ? -1 : days;
+                            return (
+                              <>
+                                <select
+                                  value={selectVal}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (val === -1) {
+                                      updateVaccine(vaccine.originalIndex, 'intervalDays', 1);
+                                    } else {
+                                      updateVaccine(vaccine.originalIndex, 'intervalDays', val || undefined);
+                                    }
+                                  }}
+                                  className="flex-1 px-2 py-1.5 rounded-lg border border-outline-variant bg-surface-container text-on-surface-variant text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                >
+                                  {INTERVAL_OPTIONS.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                  ))}
+                                </select>
+                                {isCustom && (
+                                  <input
+                                    type="text"
+                                    defaultValue={`${days} days`}
+                                    placeholder="e.g. 14 days, 2 months"
+                                    onBlur={(e) => {
+                                      const parsed = parseIntervalText(e.target.value);
+                                      if (parsed && parsed > 0) {
+                                        updateVaccine(vaccine.originalIndex, 'intervalDays', parsed);
+                                        if (vaccine.lastDate) {
+                                          const nextDue = new Date(new Date(vaccine.lastDate).getTime() + parsed * 86_400_000).toISOString().split('T')[0];
+                                          updateVaccine(vaccine.originalIndex, 'nextDueDate', nextDue);
+                                        }
+                                      }
+                                    }}
+                                    className="w-32 px-2 py-1.5 rounded-lg border border-outline-variant bg-surface-container text-on-surface-variant text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                  />
+                                )}
+                              </>
+                            );
+                          })()}
+                          <button
+                            type="button"
+                            onClick={() => administeredToday(vaccine.originalIndex)}
+                            title="Mark as administered today and auto-calculate next due date"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:brightness-110 transition-colors text-xs font-medium shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">bolt</span> Today
+                          </button>
+                        </div>{/* end flex items-center row */}
+                        </div>{/* end flex-col interval wrapper */}
+                      </div>
+                    ))}
+
+                    {/* Add Vaccine — dashed border inline form trigger */}
+                    <button
+                      type="button"
+                      onClick={addVaccine}
+                      className="w-full py-2.5 rounded-xl border-2 border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">add</span> Add Vaccine
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* ── Vet Visits tab ── */}
+                {activeTab === 'visits' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-4"
+                  >
+                    <button
+                      type="button"
+                      onClick={addVisit}
+                      className="w-full py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container hover:brightness-110 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">add</span> Log a Vet Visit
+                    </button>
+
+                    {visits.length === 0 ? (
+                      <div className="text-center py-10 border-2 border-dashed border-outline-variant rounded-xl">
+                        <span className="material-symbols-outlined text-[36px] text-on-surface-variant/30 mx-auto mb-2">calendar_month</span>
+                        <p className="text-on-surface-variant text-sm font-medium">No visits recorded yet.</p>
+                      </div>
+                    ) : (
+                      visits.map((visit, i) => (
+                        <div
+                          key={i}
+                          className="bg-surface-container rounded-xl p-4 border border-outline-variant space-y-3"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs font-medium text-on-surface-variant">Date</span>
+                                <button type="button" onClick={() => updateVisit(i, 'date', new Date().toISOString().split('T')[0])} className="text-xs text-secondary hover:underline">Today</button>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[18px] text-on-surface-variant/50 shrink-0">calendar_month</span>
+                                <input type="date" value={visit.date} onChange={(e) => updateVisit(i, 'date', e.target.value)} className={`${inputClass} flex-1`} />
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeVisit(i)}
+                              className="text-on-surface-variant hover:text-error transition-colors p-1 rounded shrink-0 mt-5"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </div>
+                          {(() => {
+                            const lastClinic = visits.slice(i + 1).concat(visits.slice(0, i)).find(v => v.clinic.trim())?.clinic;
+                            let savedClinic = pet?.emergencyContacts?.vetInfo?.clinic?.trim() || '';
+                            if (!savedClinic && user) {
+                              try {
+                                const raw = localStorage.getItem(`petbase-profile-emergency-${user.uid}`);
+                                if (raw) savedClinic = JSON.parse(raw)?.vetInfo?.clinic?.trim() || '';
+                              } catch { /* ignore */ }
+                            }
+                            const hint = !visit.clinic ? (lastClinic || savedClinic || undefined) : undefined;
+                            const hintLabel = hint === lastClinic && lastClinic ? `Use last: ${lastClinic}` : hint ? `Use pet's vet: ${hint}` : undefined;
+                            return (
+                              <div>
+                                {hint && hintLabel && (
+                                  <div className="flex justify-end mb-0.5">
+                                    <button type="button" onClick={() => updateVisit(i, 'clinic', hint)} className="text-xs text-secondary hover:underline">{hintLabel}</button>
+                                  </div>
+                                )}
+                                <input type="text" value={visit.clinic} onChange={(e) => updateVisit(i, 'clinic', e.target.value)} placeholder="Clinic / Vet name" className={inputClass} />
+                              </div>
+                            );
+                          })()}
+                          <input type="text" value={visit.reason} onChange={(e) => updateVisit(i, 'reason', e.target.value)} placeholder="Reason for visit" className={inputClass} />
+                          <div className="relative">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant/50 absolute left-3 top-2.5 pointer-events-none">description</span>
+                            <textarea
+                              value={visit.notes}
+                              onChange={(e) => updateVisit(i, 'notes', e.target.value)}
+                              placeholder="Notes (diagnosis, treatments, follow-ups...)"
+                              rows={2}
+                              className={`${inputClass} pl-9 resize-none`}
                             />
                           </div>
-                          <div>
-                            <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Frequency</label>
-                            {(() => {
-                              const predefinedFreqs = ['Once daily','Twice daily','Every 8 hours','Every 12 hours','Weekly','Bi-weekly','Monthly','As needed'];
-                              const isCustom = !predefinedFreqs.includes(med.frequency) && med.frequency !== '' && med.frequency !== 'Other';
-                              const selectVal = predefinedFreqs.includes(med.frequency) ? med.frequency : 'Other';
-                              return (
-                                <>
-                                  <select
-                                    value={selectVal}
-                                    onChange={(e) => updateMedication(med.id, 'frequency', e.target.value === 'Other' ? 'Other' : e.target.value)}
-                                    className={inputClass}
-                                  >
-                                    <option value="">Select frequency</option>
-                                    {predefinedFreqs.map(f => <option key={f}>{f}</option>)}
-                                    <option value="Other">Other</option>
-                                  </select>
-                                  {(isCustom || med.frequency === 'Other') && (
-                                    <input
-                                      type="text"
-                                      value={med.frequency === 'Other' ? '' : med.frequency}
-                                      onChange={(e) => updateMedication(med.id, 'frequency', e.target.value || 'Other')}
-                                      placeholder="e.g., Every 2 days, Every 6 hours"
-                                      className={`${inputClass} mt-1.5`}
-                                    />
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
                         </div>
+                      ))
+                    )}
+                  </motion.div>
+                )}
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400">Start Date</label>
-                              <button type="button" onClick={() => updateMedication(med.id, 'startDate', new Date().toISOString().split('T')[0])} className="text-xs text-teal-600 dark:text-teal-400 hover:underline">Today</button>
-                            </div>
-                            <input type="date" value={med.startDate} onChange={(e) => updateMedication(med.id, 'startDate', e.target.value)} className={inputClass} />
-                          </div>
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400">End Date <span className="font-normal text-neutral-400">(optional)</span></label>
-                              <button type="button" onClick={() => updateMedication(med.id, 'endDate', new Date().toISOString().split('T')[0])} className="text-xs text-teal-600 dark:text-teal-400 hover:underline">Today</button>
-                            </div>
-                            <input type="date" value={med.endDate} onChange={(e) => updateMedication(med.id, 'endDate', e.target.value)} className={inputClass} />
-                          </div>
-                        </div>
+                {/* ── Medications tab ── */}
+                {activeTab === 'medications' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-4"
+                  >
+                    <button
+                      type="button"
+                      onClick={addMedication}
+                      className="w-full py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container hover:brightness-110 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">add</span> Add Medication
+                    </button>
 
-                        <div>
-                          <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">Notes</label>
-                          <textarea
-                            value={med.notes}
-                            onChange={(e) => updateMedication(med.id, 'notes', e.target.value)}
-                            placeholder="Side effects to watch, administering instructions, prescribing vet…"
-                            rows={2}
-                            className={`${inputClass} resize-none`}
-                          />
-                        </div>
+                    {medications.length === 0 ? (
+                      <div className="text-center py-10 border-2 border-dashed border-outline-variant rounded-xl">
+                        <span className="material-symbols-outlined text-[36px] text-on-surface-variant/30 mx-auto mb-2">medication</span>
+                        <p className="text-on-surface-variant text-sm font-medium">No medications tracked yet.</p>
+                        <p className="text-on-surface-variant/60 text-xs mt-1">Add prescriptions, supplements, or ongoing treatments.</p>
                       </div>
-                    ))
-                  )}
-                </motion.div>
-              )}
-            </div>
+                    ) : (
+                      medications.map((med) => (
+                        <div
+                          key={med.id}
+                          className="bg-surface-container rounded-xl p-4 border border-outline-variant space-y-3"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 flex-1">
+                              <span className="material-symbols-outlined text-[18px] text-tertiary shrink-0">medication</span>
+                              <input
+                                type="text"
+                                value={med.name}
+                                onChange={(e) => updateMedication(med.id, 'name', e.target.value)}
+                                placeholder="Medication name (e.g., Apoquel, Bravecto)"
+                                className={`${inputClass} font-medium flex-1`}
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeMedication(med.id)}
+                              className="text-on-surface-variant hover:text-error transition-colors p-1 rounded shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </div>
 
-            {/* Footer */}
-            <div className="p-6 border-t border-neutral-100 dark:border-neutral-700 shrink-0 bg-neutral-50/50 dark:bg-neutral-800/50 flex gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={!isDirty}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-600 disabled:cursor-not-allowed text-white font-medium transition-colors"
-              >
-                Save Records
-              </button>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-on-surface-variant mb-1">Dosage</label>
+                              <input
+                                type="text"
+                                value={med.dosage}
+                                onChange={(e) => updateMedication(med.id, 'dosage', e.target.value)}
+                                placeholder="e.g., 16mg, 1 tablet"
+                                className={inputClass}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-on-surface-variant mb-1">Frequency</label>
+                              {(() => {
+                                const predefinedFreqs = ['Once daily','Twice daily','Every 8 hours','Every 12 hours','Weekly','Bi-weekly','Monthly','As needed'];
+                                const isCustom = !predefinedFreqs.includes(med.frequency) && med.frequency !== '' && med.frequency !== 'Other';
+                                const selectVal = predefinedFreqs.includes(med.frequency) ? med.frequency : 'Other';
+                                return (
+                                  <>
+                                    <select
+                                      value={selectVal}
+                                      onChange={(e) => updateMedication(med.id, 'frequency', e.target.value === 'Other' ? 'Other' : e.target.value)}
+                                      className={inputClass}
+                                    >
+                                      <option value="">Select frequency</option>
+                                      {predefinedFreqs.map(f => <option key={f}>{f}</option>)}
+                                      <option value="Other">Other</option>
+                                    </select>
+                                    {(isCustom || med.frequency === 'Other') && (
+                                      <input
+                                        type="text"
+                                        value={med.frequency === 'Other' ? '' : med.frequency}
+                                        onChange={(e) => updateMedication(med.id, 'frequency', e.target.value || 'Other')}
+                                        placeholder="e.g., Every 2 days, Every 6 hours"
+                                        className={`${inputClass} mt-1.5`}
+                                      />
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-medium text-on-surface-variant">Start Date</label>
+                                <button type="button" onClick={() => updateMedication(med.id, 'startDate', new Date().toISOString().split('T')[0])} className="text-xs text-secondary hover:underline">Today</button>
+                              </div>
+                              <input type="date" value={med.startDate} onChange={(e) => updateMedication(med.id, 'startDate', e.target.value)} className={inputClass} />
+                            </div>
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-medium text-on-surface-variant">End Date <span className="font-normal text-on-surface-variant/50">(optional)</span></label>
+                                <button type="button" onClick={() => updateMedication(med.id, 'endDate', new Date().toISOString().split('T')[0])} className="text-xs text-secondary hover:underline">Today</button>
+                              </div>
+                              <input type="date" value={med.endDate} onChange={(e) => updateMedication(med.id, 'endDate', e.target.value)} className={inputClass} />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-medium text-on-surface-variant mb-1">Notes</label>
+                            <textarea
+                              value={med.notes}
+                              onChange={(e) => updateMedication(med.id, 'notes', e.target.value)}
+                              placeholder="Side effects to watch, administering instructions, prescribing vet..."
+                              rows={2}
+                              className={`${inputClass} resize-none`}
+                            />
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-5 border-t border-outline-variant shrink-0 bg-surface-container-low/50 flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={!isDirty}
+                  className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container disabled:opacity-40 disabled:cursor-not-allowed font-medium transition-colors hover:brightness-110 flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">save</span>
+                  Save Records
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>

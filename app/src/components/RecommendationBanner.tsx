@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ArrowRight, Sparkles, Shuffle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,7 +16,7 @@ export function RecommendationBanner() {
   const [overrideHint, setOverrideHint] = useState<ReturnType<typeof ob.randomHint>>(null);
   const current = overrideHint ?? ob.currentHint;
 
-  // Detect when a new hint appears for the first time → shimmer
+  // Detect when a new hint appears for the first time -> shimmer
   useEffect(() => {
     if (current && current.id !== prevHintIdRef.current) {
       if (prevHintIdRef.current !== null) {
@@ -50,7 +49,7 @@ export function RecommendationBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.25 }}
-          className={`relative bg-gradient-to-r ${current.accentClasses} rounded-2xl p-4 border flex items-center gap-3 overflow-hidden`}
+          className={`relative glass-card p-4 border border-outline-variant flex items-center gap-3 overflow-hidden`}
         >
           {/* Unlock shimmer overlay */}
           {showShimmer && (
@@ -58,58 +57,58 @@ export function RecommendationBanner() {
               initial={{ x: '-100%' }}
               animate={{ x: '200%' }}
               transition={{ duration: 1.2, ease: 'easeInOut' }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent pointer-events-none"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-surface-tint/20 to-transparent pointer-events-none"
             />
           )}
 
-          <Sparkles className="w-5 h-5 text-neutral-400 dark:text-neutral-500 shrink-0" />
+          <span className="material-symbols-outlined text-[20px] text-on-surface-variant shrink-0">auto_awesome</span>
 
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">
-              <span className="text-neutral-500 dark:text-neutral-400 font-normal">Did you know? </span>
+            <p className="font-semibold text-on-surface text-sm">
+              <span className="text-on-surface-variant font-normal">Did you know? </span>
               {current.title}
             </p>
-            <p className="text-neutral-600 dark:text-neutral-400 text-sm mt-0.5 hidden sm:block">
+            <p className="text-on-surface-variant text-sm mt-0.5 hidden sm:block">
               {current.description}
             </p>
           </div>
 
           <Link
             to={current.to}
-            className="shrink-0 flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors whitespace-nowrap"
+            className="shrink-0 flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
           >
             {current.cta}
-            <ArrowRight className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
           </Link>
 
           {/* Surprise me button */}
           <button
             type="button"
             onClick={handleSurprise}
-            className="shrink-0 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5"
+            className="shrink-0 text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-md hover:bg-surface-container"
             aria-label="Show a random tip"
             title="Surprise me"
           >
-            <Shuffle className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">shuffle</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleDismiss(current.id)}
-            className="shrink-0 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5"
+            className="shrink-0 text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-md hover:bg-surface-container"
             aria-label="Dismiss recommendation"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
         </motion.div>
       </AnimatePresence>
 
       {/* Discovery counter + Pet Parent Level */}
       <div className="flex items-center justify-between px-1">
-        <p className="text-xs text-neutral-400 dark:text-neutral-500">
+        <p className="text-xs text-on-surface-variant/60">
           You've explored {ob.discoveryCount} of {TOTAL_FEATURES} features
         </p>
-        <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
+        <p className="text-xs font-medium text-on-surface-variant/60">
           {LEVEL_LABELS[ob.petParentLevel]}
         </p>
       </div>

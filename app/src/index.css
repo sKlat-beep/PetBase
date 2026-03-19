@@ -1,114 +1,386 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 @import "tailwindcss";
 
-/* Enable class-based dark mode for Tailwind v4 */
-@custom-variant dark (&:where(.dark, .dark *));
+/* ─── Material Design 3 Theme Tokens ─────────────────────────────────────────
+   Each theme defines ~40 semantic color tokens plus font families.
+   Active theme is selected by [data-theme] on <html>. Default: cinematic.
+────────────────────────────────────────────────────────────────────────────── */
 
+/* ── Cinematic Coral (default) ──────────────────────────────────────────── */
+:root, [data-theme="cinematic"] {
+  --background: #121212;
+  --surface: #1A1A2E;
+  --surface-container-lowest: #0D0D1A;
+  --surface-container-low: #1A1A2E;
+  --surface-container: #2A2A3E;
+  --surface-container-high: #2A2A3E;
+  --surface-container-highest: #3A3A4E;
+  --surface-bright: #3A3A4E;
+  --surface-dim: #121218;
+  --surface-variant: #2A2A3E;
+  --surface-tint: #FF6B6B;
+  --on-surface: #FFFFFF;
+  --on-surface-variant: #9CA3AF;
+  --on-background: #FFFFFF;
+  --primary: #FF6B6B;
+  --primary-container: #FF6B6B;
+  --on-primary: #FFFFFF;
+  --on-primary-container: #FFFFFF;
+  --primary-fixed: #FF6B6B;
+  --primary-fixed-dim: #E05555;
+  --on-primary-fixed: #FFFFFF;
+  --on-primary-fixed-variant: #1A1A2E;
+  --inverse-primary: #8B2E2E;
+  --secondary: #4ECDC4;
+  --secondary-container: #1A3D3A;
+  --on-secondary: #FFFFFF;
+  --on-secondary-container: #4ECDC4;
+  --secondary-fixed: #4ECDC4;
+  --secondary-fixed-dim: #3AB5AD;
+  --on-secondary-fixed: #FFFFFF;
+  --on-secondary-fixed-variant: #1A3D3A;
+  --tertiary: #7C5CFC;
+  --tertiary-container: #2A1F5C;
+  --on-tertiary: #FFFFFF;
+  --on-tertiary-container: #7C5CFC;
+  --tertiary-fixed: #7C5CFC;
+  --tertiary-fixed-dim: #6A4AE0;
+  --on-tertiary-fixed: #FFFFFF;
+  --on-tertiary-fixed-variant: #2A1F5C;
+  --error: #F44336;
+  --error-container: #3D1414;
+  --on-error: #FFFFFF;
+  --on-error-container: #F44336;
+  --outline: #4A4A5E;
+  --outline-variant: #2A2A3E;
+  --inverse-surface: #FFFFFF;
+  --inverse-on-surface: #1A1A2E;
+  --font-headline: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Be Vietnam Pro', sans-serif;
+}
+
+/* ── Botanical Emerald ──────────────────────────────────────────────────── */
+[data-theme="emerald"] {
+  --background: #131313;
+  --surface: #1C1B1B;
+  --surface-container-lowest: #0E0E0E;
+  --surface-container-low: #1C1B1B;
+  --surface-container: #1C1B1B;
+  --surface-container-high: #1C1B1B;
+  --surface-container-highest: #2C2B2B;
+  --surface-bright: #2C2B2B;
+  --surface-dim: #131313;
+  --surface-variant: #1C1B1B;
+  --surface-tint: #2ECC71;
+  --on-surface: #E5E2E1;
+  --on-surface-variant: #8E8D8C;
+  --on-background: #E5E2E1;
+  --primary: #2ECC71;
+  --primary-container: #2ECC71;
+  --on-primary: #FFFFFF;
+  --on-primary-container: #FFFFFF;
+  --primary-fixed: #2ECC71;
+  --primary-fixed-dim: #25A85D;
+  --on-primary-fixed: #FFFFFF;
+  --on-primary-fixed-variant: #1C1B1B;
+  --inverse-primary: #1A7A42;
+  --secondary: #A8E6CF;
+  --secondary-container: #1A3D2F;
+  --on-secondary: #1C1B1B;
+  --on-secondary-container: #A8E6CF;
+  --secondary-fixed: #A8E6CF;
+  --secondary-fixed-dim: #8CCFB5;
+  --on-secondary-fixed: #1C1B1B;
+  --on-secondary-fixed-variant: #1A3D2F;
+  --tertiary: #2ECC71;
+  --tertiary-container: #1A3D2F;
+  --on-tertiary: #FFFFFF;
+  --on-tertiary-container: #2ECC71;
+  --tertiary-fixed: #2ECC71;
+  --tertiary-fixed-dim: #25A85D;
+  --on-tertiary-fixed: #FFFFFF;
+  --on-tertiary-fixed-variant: #1A3D2F;
+  --error: #F44336;
+  --error-container: #3D1414;
+  --on-error: #FFFFFF;
+  --on-error-container: #F44336;
+  --outline: #3C3B3B;
+  --outline-variant: #1C1B1B;
+  --inverse-surface: #E5E2E1;
+  --inverse-on-surface: #1C1B1B;
+  --font-headline: 'Manrope', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+
+/* ── Golden Amber ───────────────────────────────────────────────────────── */
+[data-theme="amber"] {
+  --background: #131313;
+  --surface: #1B1B1B;
+  --surface-container-lowest: #0E0E0E;
+  --surface-container-low: #1B1B1B;
+  --surface-container: #1B1B1B;
+  --surface-container-high: #1B1B1B;
+  --surface-container-highest: #2B2B2B;
+  --surface-bright: #2B2B2B;
+  --surface-dim: #131313;
+  --surface-variant: #1B1B1B;
+  --surface-tint: #F1C40F;
+  --on-surface: #FDFCFB;
+  --on-surface-variant: #D1C6AC;
+  --on-background: #FDFCFB;
+  --primary: #F1C40F;
+  --primary-container: #F1C40F;
+  --on-primary: #3C2F00;
+  --on-primary-container: #3C2F00;
+  --primary-fixed: #F1C40F;
+  --primary-fixed-dim: #D4AD0E;
+  --on-primary-fixed: #3C2F00;
+  --on-primary-fixed-variant: #1B1B1B;
+  --inverse-primary: #8B7200;
+  --secondary: #E67E22;
+  --secondary-container: #3D2108;
+  --on-secondary: #FFFFFF;
+  --on-secondary-container: #E67E22;
+  --secondary-fixed: #E67E22;
+  --secondary-fixed-dim: #CC6D1A;
+  --on-secondary-fixed: #FFFFFF;
+  --on-secondary-fixed-variant: #3D2108;
+  --tertiary: #F1C40F;
+  --tertiary-container: #3D3100;
+  --on-tertiary: #3C2F00;
+  --on-tertiary-container: #F1C40F;
+  --tertiary-fixed: #F1C40F;
+  --tertiary-fixed-dim: #D4AD0E;
+  --on-tertiary-fixed: #3C2F00;
+  --on-tertiary-fixed-variant: #3D3100;
+  --error: #F44336;
+  --error-container: #3D1414;
+  --on-error: #FFFFFF;
+  --on-error-container: #F44336;
+  --outline: #3B3B3B;
+  --outline-variant: #1B1B1B;
+  --inverse-surface: #FDFCFB;
+  --inverse-on-surface: #1B1B1B;
+  --font-headline: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Modern Gallery (Light) ─────────────────────────────────────────────── */
+[data-theme="light"] {
+  --background: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-container-lowest: #FFFFFF;
+  --surface-container-low: #F8F9FA;
+  --surface-container: #F1F3F5;
+  --surface-container-high: #F1F3F5;
+  --surface-container-highest: #E9ECEF;
+  --surface-bright: #FFFFFF;
+  --surface-dim: #F1F3F5;
+  --surface-variant: #F1F3F5;
+  --surface-tint: #FF6B6B;
+  --on-surface: #1A1A2E;
+  --on-surface-variant: #6B7280;
+  --on-background: #1A1A2E;
+  --primary: #FF6B6B;
+  --primary-container: #FF6B6B;
+  --on-primary: #FFFFFF;
+  --on-primary-container: #FFFFFF;
+  --primary-fixed: #FF6B6B;
+  --primary-fixed-dim: #E05555;
+  --on-primary-fixed: #FFFFFF;
+  --on-primary-fixed-variant: #F8F9FA;
+  --inverse-primary: #FF6B6B;
+  --secondary: #4ECDC4;
+  --secondary-container: #E0F7F4;
+  --on-secondary: #FFFFFF;
+  --on-secondary-container: #1A3D3A;
+  --secondary-fixed: #4ECDC4;
+  --secondary-fixed-dim: #3AB5AD;
+  --on-secondary-fixed: #FFFFFF;
+  --on-secondary-fixed-variant: #E0F7F4;
+  --tertiary: #7C5CFC;
+  --tertiary-container: #EDE9FE;
+  --on-tertiary: #FFFFFF;
+  --on-tertiary-container: #2A1F5C;
+  --tertiary-fixed: #7C5CFC;
+  --tertiary-fixed-dim: #6A4AE0;
+  --on-tertiary-fixed: #FFFFFF;
+  --on-tertiary-fixed-variant: #EDE9FE;
+  --error: #F44336;
+  --error-container: #FEE2E2;
+  --on-error: #FFFFFF;
+  --on-error-container: #991B1B;
+  --outline: #D1D5DB;
+  --outline-variant: #E9ECEF;
+  --inverse-surface: #1A1A2E;
+  --inverse-on-surface: #FFFFFF;
+  --font-headline: 'DM Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+/* ─── Tailwind v4 Theme Extension ────────────────────────────────────────── */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body);
+  --font-headline: var(--font-headline);
+
+  /* M3 surface hierarchy */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-variant: var(--surface-variant);
+  --color-surface-tint: var(--surface-tint);
+
+  /* M3 content colors */
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-background: var(--on-background);
+
+  /* M3 primary */
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-primary-fixed-dim: var(--primary-fixed-dim);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+  --color-on-primary-fixed-variant: var(--on-primary-fixed-variant);
+  --color-inverse-primary: var(--inverse-primary);
+
+  /* M3 secondary */
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-secondary-fixed: var(--secondary-fixed);
+  --color-secondary-fixed-dim: var(--secondary-fixed-dim);
+  --color-on-secondary-fixed: var(--on-secondary-fixed);
+  --color-on-secondary-fixed-variant: var(--on-secondary-fixed-variant);
+
+  /* M3 tertiary */
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  --color-tertiary-fixed: var(--tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--tertiary-fixed-dim);
+  --color-on-tertiary-fixed: var(--on-tertiary-fixed);
+  --color-on-tertiary-fixed-variant: var(--on-tertiary-fixed-variant);
+
+  /* M3 error */
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
+  --color-on-error: var(--on-error);
+  --color-on-error-container: var(--on-error-container);
+
+  /* M3 outline */
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  /* M3 inverse */
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
 }
 
+/* ─── Base Styles ────────────────────────────────────────────────────────── */
 body {
-  font-family: "Inter", sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-body);
 }
 
-/* ─── Accent Color Palettes ──────────────────────────────────────────────────
-   CSS custom properties for the accent color theme picker. The active palette
-   is selected by setting data-accent on <html>. Default is emerald.
-────────────────────────────────────────────────────────────────────────────── */
-:root, [data-accent="emerald"] {
-  --accent-50: #ecfdf5;
-  --accent-100: #d1fae5;
-  --accent-400: #34d399;
-  --accent-500: #10b981;
-  --accent-600: #059669;
-  --accent-700: #047857;
-}
-[data-accent="sky"] {
-  --accent-50: #f0f9ff;
-  --accent-100: #e0f2fe;
-  --accent-400: #38bdf8;
-  --accent-500: #0ea5e9;
-  --accent-600: #0284c7;
-  --accent-700: #0369a1;
-}
-[data-accent="violet"] {
-  --accent-50: #f5f3ff;
-  --accent-100: #ede9fe;
-  --accent-400: #a78bfa;
-  --accent-500: #8b5cf6;
-  --accent-600: #7c3aed;
-  --accent-700: #6d28d9;
-}
-[data-accent="rose"] {
-  --accent-50: #fff1f2;
-  --accent-100: #ffe4e6;
-  --accent-400: #fb7185;
-  --accent-500: #f43f5e;
-  --accent-600: #e11d48;
-  --accent-700: #be123c;
-}
-[data-accent="amber"] {
-  --accent-50: #fffbeb;
-  --accent-100: #fef3c7;
-  --accent-400: #fbbf24;
-  --accent-500: #f59e0b;
-  --accent-600: #d97706;
-  --accent-700: #b45309;
-}
-[data-accent="indigo"] {
-  --accent-50: #eef2ff;
-  --accent-100: #e0e7ff;
-  --accent-400: #818cf8;
-  --accent-500: #6366f1;
-  --accent-600: #4f46e5;
-  --accent-700: #4338ca;
+/* ─── Glass Effect Utility ───────────────────────────────────────────────── */
+.glass {
+  background: rgba(26, 26, 46, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-/* ─── oklch() Color Fallback (Android WebView < Chromium 111) ───────────────
-   Tailwind v4 generates colors in oklch() space. Chromium < 111 (Android 8/9
-   system WebViews) does not support oklch(). The @supports block below provides
-   explicit sRGB fallbacks for the critical page background and text surfaces so
-   the app remains readable on those platforms.
-   Primary surfaces only — interactive/brand colors degrade gracefully.
-────────────────────────────────────────────────────────────────────────────── */
-@supports not (color: oklch(0 0 0)) {
-  html {
-    background-color: #fafafa; /* neutral-50 equivalent */
-    color: #171717;            /* neutral-900 equivalent */
-  }
-  html.dark {
-    background-color: #171717; /* neutral-900 equivalent */
-    color: #fafafa;
-  }
-  /* Ensure primary surfaces don't go transparent */
-  .bg-white { background-color: #ffffff !important; }
-  .bg-neutral-50 { background-color: #fafafa !important; }
-  .bg-neutral-800 { background-color: #262626 !important; }
-  .bg-neutral-900 { background-color: #171717 !important; }
-  .text-neutral-900 { color: #171717 !important; }
-  .text-neutral-100 { color: #f5f5f5 !important; }
-  /* Accent: emerald-600 → safe sRGB green */
-  .bg-emerald-600 { background-color: #16a34a !important; }
-  .text-emerald-600 { color: #16a34a !important; }
+.glass-morphism {
+  background: rgba(26, 26, 46, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ─── WCAG 2.1 Focus Visibility ─────────────────────────────────────────────
-   Ensure keyboard focus rings are always visible, regardless of browser
-   default styles. Applies to all interactive elements globally.
-────────────────────────────────────────────────────────────────────────────── */
+/* Light theme glass uses white base */
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.7);
+}
+[data-theme="light"] .glass-morphism {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ─── Text Glow (Cinematic) ──────────────────────────────────────────────── */
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+}
+[data-theme="emerald"] .text-glow {
+  text-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+}
+[data-theme="amber"] .text-glow {
+  text-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+}
+[data-theme="light"] .text-glow {
+  text-shadow: none;
+}
+
+/* ─── Glass Card ─────────────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(26, 26, 46, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.5rem;
+}
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #E9ECEF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ─── Story Ring (Gradient Avatar Border) ────────────────────────────────── */
+.story-ring {
+  background: linear-gradient(135deg, var(--primary-container), var(--tertiary));
+  padding: 3px;
+  border-radius: 9999px;
+}
+[data-theme="emerald"] .story-ring {
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.3);
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────────────────────── */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--outline-variant) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  display: block;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--outline-variant);
+  border-radius: 3px;
+}
+
+/* ─── WCAG 2.1 Focus Visibility ──────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #10b981; /* emerald-500 */
+  outline: 2px solid var(--primary-container);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ─── Print Scoping ──────────────────────────────────────────────────────────
-   When window.print() is triggered from a Pet Card, only the card preview
-   should be rendered. Everything else (sidebar, header, actions panel) is
-   hidden. The card preview element has id="card-preview-{cardId}".
-   Elements with Tailwind's print:hidden class are also suppressed.
-──────────────────────────────────────────────────────────────────────────── */
+/* ─── Print Scoping ──────────────────────────────────────────────────────── */
 @media print {
   body * {
     visibility: hidden;
@@ -125,16 +397,12 @@ body {
     box-shadow: none !important;
     border: none !important;
   }
-  /* Suppress the embedded actions panel inside the card */
   .print\:hidden {
     display: none !important;
   }
 }
 
-/* ─── Seamless UI: Hide Scrollbars ──────────────────────────────────────────
-   Eliminate visual scrollbars across the UI for an app-centric experience.
-   Functionality is preserved (scrolling still works via touch/wheel).
-──────────────────────────────────────────────────────────────────────────── */
+/* ─── Seamless UI: Hide Scrollbars ───────────────────────────────────────── */
 * {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -144,15 +412,13 @@ body {
   display: none;
 }
 
-/* ─── react-grid-layout ──────────────────────────────────────────────────────
-   Custom styling for the drag-and-drop grid on the Dashboard.
-────────────────────────────────────────────────────────────────────────────── */
+/* ─── react-grid-layout ──────────────────────────────────────────────────── */
 .react-resizable-handle {
   opacity: 0;
   transition: opacity 0.15s;
 }
 .react-resizable-handle::after {
-  border-color: #10b981 !important; /* emerald-500 */
+  border-color: var(--primary-container) !important;
   border-width: 0 2px 2px 0 !important;
   width: 8px !important;
   height: 8px !important;
@@ -162,8 +428,24 @@ body {
   opacity: 1;
 }
 .react-grid-item.react-grid-placeholder {
-  background: rgba(16, 185, 129, 0.15) !important;
+  background: color-mix(in srgb, var(--primary-container) 15%, transparent) !important;
   border-radius: 16px !important;
-  border: 2px dashed rgba(16, 185, 129, 0.4) !important;
+  border: 2px dashed color-mix(in srgb, var(--primary-container) 40%, transparent) !important;
 }
 
+/* ─── Material Symbols Configuration ─────────────────────────────────────── */
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.material-symbols-outlined.font-variation-fill {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}

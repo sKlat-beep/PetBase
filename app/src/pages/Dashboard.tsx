@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Calendar, Plus, ShieldAlert, DollarSign, Eye, EyeOff, GripVertical, LayoutDashboard, RotateCcw, Pencil } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Link, useNavigate } from 'react-router';
 import GridLayout, { type Layout, type LayoutItem, type ResizeHandleAxis } from 'react-grid-layout';
@@ -51,12 +51,21 @@ type WidgetKey =
   | 'streak_counter';
 
 const WIDGET_LABELS: Record<WidgetKey, string> = {
-  expenses: 'Expenses',
-  pet_health_pets: 'Pets & Health',
-  groups_activity: 'Groups & Activity',
-  friends_activity: 'Friends & Activity',
+  expenses: 'Monthly Expenses',
+  pet_health_pets: 'Health Status',
+  groups_activity: 'Groups Activity',
+  friends_activity: 'Friends Activity',
   today_reminders: 'Today\'s Reminders',
   streak_counter: 'Health Streak',
+};
+
+const WIDGET_ICONS: Record<WidgetKey, string> = {
+  expenses: 'payments',
+  pet_health_pets: 'monitor_heart',
+  groups_activity: 'groups',
+  friends_activity: 'people',
+  today_reminders: 'notifications_active',
+  streak_counter: 'local_fire_department',
 };
 
 const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
@@ -69,11 +78,12 @@ const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
 };
 
 const DEFAULT_LAYOUT: LayoutItem[] = [
-  { i: 'pet_health_pets',  x: 0,  y: 0,  w: 12, h: 5 },
-  { i: 'today_reminders',  x: 0,  y: 5,  w: 12, h: 3 },
-  { i: 'groups_activity',  x: 0,  y: 8,  w: 6,  h: 5 },
-  { i: 'friends_activity', x: 6,  y: 8,  w: 6,  h: 5 },
-  { i: 'expenses',         x: 0,  y: 13, w: 12, h: 4 },
+  { i: 'expenses',         x: 0,  y: 0,  w: 8,  h: 4 },
+  { i: 'today_reminders',  x: 8,  y: 0,  w: 4,  h: 4 },
+  { i: 'pet_health_pets',  x: 0,  y: 4,  w: 4,  h: 4 },
+  { i: 'groups_activity',  x: 4,  y: 4,  w: 4,  h: 4 },
+  { i: 'friends_activity', x: 8,  y: 4,  w: 4,  h: 4 },
+  { i: 'streak_counter',   x: 0,  y: 8,  w: 12, h: 3 },
 ];
 
 interface WidgetSnapConfig {
@@ -140,12 +150,10 @@ export function Dashboard() {
     celebrate('onboarding-complete');
   }, [celebrate]);
 
-  // Per-step confetti (lighter burst via same celebrate, unique IDs)
   const handleStepComplete = useCallback(() => {
     celebrate(`step-${Date.now()}`);
   }, [celebrate]);
 
-  // Check milestone badges when discovery count changes
   useEffect(() => {
     ob.checkMilestones(celebrate);
   }, [ob.checkMilestones, celebrate]);
@@ -188,7 +196,6 @@ export function Dashboard() {
       setWidgetLabels(next);
       localStorage.setItem('petbase-widget-labels', JSON.stringify(next));
     } else if (!trimmed || trimmed === WIDGET_LABELS[key]) {
-      // Reset to default if empty or unchanged
       const next = { ...widgetLabels };
       delete next[key];
       setWidgetLabels(next);
@@ -264,7 +271,7 @@ export function Dashboard() {
   const onResizeStop = useCallback((newLayout: Layout, _oldItem: LayoutItem | null, _newItem: LayoutItem | null, _placeholder: LayoutItem | null, _event: Event) => {
     const ROW_HEIGHT = 80;
     const MARGIN = 16;
-    const rowPx = ROW_HEIGHT + MARGIN; // 96px per grid row
+    const rowPx = ROW_HEIGHT + MARGIN;
 
     const snapped = newLayout.map(item => {
       const snap = WIDGET_SNAP[item.i as WidgetKey];
@@ -317,7 +324,6 @@ export function Dashboard() {
     }
   }, [user?.uid]);
 
-  // Edit mode actions
   const enterEditMode = useCallback(() => {
     preEditLayoutRef.current = layout;
     preEditHiddenRef.current = new Set(hiddenWidgets);
@@ -406,17 +412,6 @@ export function Dashboard() {
     return 'Good evening';
   }, []);
 
-  const birthdayPets = useMemo(() => {
-    const today = new Date();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    return pets.filter(p => {
-      if (!p.birthday) return false;
-      const [, m, d] = p.birthday.split('-').map(Number);
-      return m === month && d === day;
-    });
-  }, [pets]);
-
   const upcomingEvents = useMemo(() => {
     if (!user) return [];
     return groups
@@ -428,8 +423,8 @@ export function Dashboard() {
         pet: e.groupName,
         date: new Date(e.date).toLocaleDateString(),
         icon: Calendar,
-        color: 'text-indigo-500',
-        bg: 'bg-indigo-50 dark:bg-indigo-950',
+        color: 'text-tertiary',
+        bg: 'bg-tertiary-container',
       }))
       .slice(0, 5);
   }, [user, groups]);
@@ -490,7 +485,7 @@ export function Dashboard() {
 
   const prefersReduced = useReducedMotion();
 
-  const GLASS_CARD = 'h-full bg-white/75 dark:bg-neutral-800/75 backdrop-blur-xl rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-sm shadow-black/5 dark:shadow-black/20 overflow-hidden';
+  const WIDGET_CARD = 'h-full glass-card overflow-hidden';
 
   // ─── Widget Renderer ──────────────────────────────────────────────────────
 
@@ -499,17 +494,18 @@ export function Dashboard() {
 
       case 'expenses': {
         return (
-          <section className={`${GLASS_CARD} p-6`} aria-label="Expenses">
+          <section className={`${WIDGET_CARD} p-6`} aria-label="Expenses">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Expenses
+              <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
+                <span className="material-symbols-outlined text-primary-container">payments</span>
+                Monthly Expenses
               </h2>
-              <span className="text-xl font-bold text-emerald-700 dark:text-emerald-300">${totalExpenses.toFixed(2)}</span>
+              <span className="text-xl font-bold text-primary-container">${totalExpenses.toFixed(2)}</span>
             </div>
             {showExpenseForm ? (
               <form onSubmit={handleAddExpense} className="space-y-3 mb-4">
                 <div>
-                  <label htmlFor="expense-label" className="block text-xs font-medium text-emerald-800 dark:text-emerald-200 mb-1">Description</label>
+                  <label htmlFor="expense-label" className="block text-xs font-medium text-on-surface-variant mb-1">Description</label>
                   <input
                     id="expense-label"
                     type="text"
@@ -517,11 +513,11 @@ export function Dashboard() {
                     placeholder="E.g., Vet bill, food"
                     value={newExpenseLabel}
                     onChange={(e) => setNewExpenseLabel(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-surface-container border-0 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary-container"
                   />
                 </div>
                 <div>
-                  <label htmlFor="expense-amount" className="block text-xs font-medium text-emerald-800 dark:text-emerald-200 mb-1">Amount ($)</label>
+                  <label htmlFor="expense-amount" className="block text-xs font-medium text-on-surface-variant mb-1">Amount ($)</label>
                   <input
                     id="expense-amount"
                     type="number"
@@ -531,7 +527,7 @@ export function Dashboard() {
                     placeholder="0.00"
                     value={newExpenseAmount}
                     onChange={(e) => setNewExpenseAmount(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-surface-container border-0 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary-container"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -541,20 +537,20 @@ export function Dashboard() {
                     aria-label="Recurring expense"
                     aria-checked={newExpenseRecurring}
                     onClick={() => setNewExpenseRecurring(v => !v)}
-                    className={`relative w-9 h-5 rounded-full motion-safe:transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${newExpenseRecurring ? 'bg-emerald-500' : 'bg-neutral-300 dark:bg-neutral-600'}`}
+                    className={`relative w-9 h-5 rounded-full motion-safe:transition-colors shrink-0 ${newExpenseRecurring ? 'bg-primary-container' : 'bg-outline'}`}
                   >
                     <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow motion-safe:transition-transform ${newExpenseRecurring ? 'translate-x-4' : 'translate-x-0'}`} />
                   </button>
-                  <span className="text-sm text-emerald-800 dark:text-emerald-200 select-none">Recurring</span>
+                  <span className="text-sm text-on-surface-variant select-none">Recurring</span>
                 </div>
                 {newExpenseRecurring && (
                   <div>
-                    <label htmlFor="expense-frequency" className="block text-xs font-medium text-emerald-800 dark:text-emerald-200 mb-1">Frequency</label>
+                    <label htmlFor="expense-frequency" className="block text-xs font-medium text-on-surface-variant mb-1">Frequency</label>
                     <select
                       id="expense-frequency"
                       value={newExpenseFrequency}
                       onChange={(e) => setNewExpenseFrequency(e.target.value as typeof newExpenseFrequency)}
-                      className="w-full px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3 py-2 rounded-lg bg-surface-container border-0 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary-container"
                     >
                       <option>Weekly</option>
                       <option>Bi-weekly</option>
@@ -567,13 +563,13 @@ export function Dashboard() {
                   <button
                     type="button"
                     onClick={() => { setShowExpenseForm(false); setNewExpenseRecurring(false); }}
-                    className="flex-1 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-900/50 rounded-lg hover:bg-emerald-200/50 dark:hover:bg-emerald-800/50 motion-safe:transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="flex-1 py-1.5 text-sm font-medium text-on-surface-variant bg-surface-container rounded-lg hover:bg-surface-container-high motion-safe:transition-colors min-h-[44px]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-1.5 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg motion-safe:transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="flex-1 py-1.5 text-sm font-medium text-on-primary-container bg-primary-container hover:opacity-90 rounded-lg motion-safe:transition-colors min-h-[44px]"
                   >
                     Save
                   </button>
@@ -583,38 +579,38 @@ export function Dashboard() {
               <button
                 type="button"
                 onClick={() => setShowExpenseForm(true)}
-                className="w-full py-2 mb-4 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-900/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 rounded-lg motion-safe:transition-colors flex items-center justify-center gap-2 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="w-full py-2 mb-4 text-sm font-medium text-primary-container bg-primary-container/10 hover:bg-primary-container/20 rounded-lg motion-safe:transition-colors flex items-center justify-center gap-2 min-h-[44px]"
               >
-                <Plus className="w-4 h-4" /> Add Expense
+                <span className="material-symbols-outlined text-lg">add</span> Add Expense
               </button>
             )}
             {(() => {
               const recurring = expenses.filter(e => e.recurring);
               if (!recurring.length) return null;
               return (
-                <div className="mb-3 p-3 bg-emerald-100/60 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
-                  <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-2 uppercase tracking-wide">Recurring</p>
+                <div className="mb-3 p-3 bg-secondary/10 rounded-xl border border-secondary/20">
+                  <p className="text-xs font-semibold text-secondary mb-2 uppercase tracking-wide">Recurring</p>
                   <div className="space-y-1.5">
                     {recurring.map(e => (
                       <div key={e.id} className="flex items-center justify-between text-xs">
                         <div>
-                          <span className="font-medium text-neutral-800 dark:text-neutral-200">{e.label}</span>
-                          <span className="text-emerald-600 dark:text-emerald-400 ml-1">· {e.frequency}</span>
+                          <span className="font-medium text-on-surface">{e.label}</span>
+                          <span className="text-secondary ml-1">· {e.frequency}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-neutral-700 dark:text-neutral-300">${e.amount.toFixed(2)}</span>
+                          <span className="font-medium text-on-surface">${e.amount.toFixed(2)}</span>
                           {confirmStopId === e.id ? (
                             <span className="flex items-center gap-1">
                               <button
                                 type="button"
                                 onClick={() => setConfirmStopId(null)}
-                                className="text-xs text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600 px-1.5 py-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                                className="text-xs text-on-surface-variant border border-outline-variant px-1.5 py-0.5 rounded"
                               >Cancel</button>
                               <button
                                 type="button"
                                 onClick={() => { stopRecurring(e.id); setConfirmStopId(null); }}
                                 aria-label={`Confirm stop recurring expense ${e.label}`}
-                                className="text-xs text-white bg-rose-500 hover:bg-rose-600 px-1.5 py-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                                className="text-xs text-on-error bg-error hover:opacity-90 px-1.5 py-0.5 rounded"
                               >Stop</button>
                             </span>
                           ) : (
@@ -622,7 +618,7 @@ export function Dashboard() {
                               type="button"
                               onClick={() => setConfirmStopId(e.id)}
                               aria-label={`Stop recurring expense ${e.label}`}
-                              className="text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 text-xs font-semibold uppercase tracking-wide border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                              className="text-error hover:opacity-80 text-xs font-semibold uppercase tracking-wide border border-error/30 px-1.5 py-0.5 rounded"
                             >Stop</button>
                           )}
                         </div>
@@ -634,21 +630,21 @@ export function Dashboard() {
             })()}
             <div className="space-y-3">
               {expenses.filter(e => !e.recurring).slice(0, 5).map((expense) => (
-                <div key={expense.id} className="flex items-center justify-between text-sm py-1 border-b border-emerald-100/50 dark:border-emerald-800/50 last:border-0">
+                <div key={expense.id} className="flex items-center justify-between text-sm py-1 border-b border-outline-variant/30 last:border-0">
                   <div>
-                    <p className="font-medium text-neutral-900 dark:text-neutral-100">{expense.label}</p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{new Date(expense.date).toLocaleDateString()}</p>
+                    <p className="font-medium text-on-surface">{expense.label}</p>
+                    <p className="text-xs text-on-surface-variant">{new Date(expense.date).toLocaleDateString()}</p>
                   </div>
-                  <span className="font-medium text-neutral-900 dark:text-neutral-100">${expense.amount.toFixed(2)}</span>
+                  <span className="font-medium text-on-surface">${expense.amount.toFixed(2)}</span>
                 </div>
               ))}
               {expenses.filter(e => !e.recurring).length > 5 && (
-                <Link to="/settings" className="block text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline pt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded">
+                <Link to="/settings" className="block text-xs text-primary-container font-medium hover:underline pt-1 rounded">
                   View all {expenses.filter(e => !e.recurring).length} expenses
                 </Link>
               )}
               {expenses.length === 0 && !showExpenseForm && (
-                <p className="text-sm text-center text-emerald-600/70 dark:text-emerald-400/70 py-2">No expenses yet</p>
+                <p className="text-sm text-center text-on-surface-variant/70 py-2">No expenses yet</p>
               )}
             </div>
             <ExpenseChart expenses={expenses} />
@@ -656,7 +652,7 @@ export function Dashboard() {
               <div
                 role="status"
                 aria-live="polite"
-                className="mt-3 px-3 py-2 bg-emerald-600 text-white text-xs font-medium rounded-lg text-center motion-safe:animate-pulse"
+                className="mt-3 px-3 py-2 bg-primary-container text-on-primary-container text-xs font-medium rounded-lg text-center motion-safe:animate-pulse"
               >
                 {expenseToast}
               </div>
@@ -703,14 +699,36 @@ export function Dashboard() {
 
       case 'streak_counter':
         return (
-          <section className={`${GLASS_CARD} flex flex-col items-center justify-center gap-2`} aria-label="Health Streak">
-            <div className="text-4xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{streakCount}</div>
-            <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
-              day streak
-            </p>
-            {longestStreak > 0 && (
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">Best: {longestStreak} days</p>
-            )}
+          <section className={`${WIDGET_CARD} flex flex-col sm:flex-row items-center justify-center gap-6 p-6`} aria-label="Health Streak">
+            {/* Streak ring */}
+            <div className="relative w-24 h-24 flex items-center justify-center">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="var(--outline-variant)" strokeWidth="6" opacity="0.3" />
+                <circle cx="50" cy="50" r="44" fill="none" stroke="var(--primary-container)" strokeWidth="6"
+                  strokeDasharray={`${Math.min(streakCount / 30, 1) * 276.5} 276.5`}
+                  strokeLinecap="round" />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-black text-primary-container tabular-nums">{streakCount}</span>
+                <span className="text-[10px] font-medium text-on-surface-variant uppercase tracking-wider">days</span>
+              </div>
+            </div>
+            <div className="text-center sm:text-left">
+              <p className="text-lg font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+                {streakCount >= 7 ? 'On fire!' : streakCount > 0 ? 'Keep it up!' : 'Start your streak'}
+              </p>
+              <p className="text-sm text-on-surface-variant mt-1">
+                {streakCount > 0
+                  ? `You've been caring for your pets ${streakCount} day${streakCount === 1 ? '' : 's'} in a row.`
+                  : 'Log a health activity to start your streak.'}
+              </p>
+              {longestStreak > 0 && (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="material-symbols-outlined text-secondary text-lg">emoji_events</span>
+                  <span className="text-xs text-on-surface-variant">Personal best: <strong className="text-secondary">{longestStreak} days</strong></span>
+                </div>
+              )}
+            </div>
           </section>
         );
 
@@ -739,10 +757,10 @@ export function Dashboard() {
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+            <h1 className="text-2xl font-bold text-on-surface tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>
               {greeting}, {user?.displayName?.split(' ')[0] || 'Pet Parent'}!
             </h1>
-            <p className="text-neutral-500 dark:text-neutral-400 mt-1">
+            <p className="text-on-surface-variant mt-1">
               {pets.length > 0
                 ? `Here's what's happening with ${pets.length === 1 ? pets[0].name : 'your furry friends'} today.`
                 : "Here's what's happening with your furry friends today."}
@@ -752,92 +770,30 @@ export function Dashboard() {
             {!editMode && (
               <button
                 onClick={enterEditMode}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium motion-safe:transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium motion-safe:transition-all border border-outline-variant text-on-surface-variant hover:bg-surface-container-high"
               >
-                <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
-                Edit Layout
+                <span className="material-symbols-outlined text-lg">dashboard_customize</span>
+                Customize Layout
               </button>
             )}
           </div>
         </header>
 
-        {/* Birthday Banner */}
-        <AnimatePresence>
-          {birthdayPets.length > 0 && (
-            <motion.div
-              key="birthday-banner"
-              initial={prefersReduced ? false : { opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={prefersReduced ? undefined : { opacity: 0, y: -16 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-400 via-pink-400 to-emerald-400 p-0.5 shadow-lg"
-              aria-live="polite"
-            >
-              {/* Confetti layer */}
-              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true">
-                {Array.from({ length: 20 }).map((_, i) => {
-                  const colors = ['bg-yellow-300', 'bg-pink-400', 'bg-emerald-400', 'bg-sky-300', 'bg-violet-400'];
-                  const color = colors[i % colors.length];
-                  const left = `${(i * 5.1) % 100}%`;
-                  const delay = `${(i * 0.15) % 2}s`;
-                  const duration = `${1.8 + (i % 5) * 0.3}s`;
-                  const rotate = `${(i * 37) % 360}deg`;
-                  return (
-                    <motion.div
-                      key={i}
-                      className={`absolute w-2 h-2 rounded-sm opacity-80 ${color}`}
-                      style={{ left, top: '-8px', rotate }}
-                      animate={prefersReduced ? {} : {
-                        y: ['0%', '120%'],
-                        rotate: [rotate, `${(i * 37 + 180) % 360}deg`],
-                        opacity: [0.9, 0],
-                      }}
-                      transition={{
-                        duration: parseFloat(duration),
-                        delay: parseFloat(delay),
-                        repeat: Infinity,
-                        ease: 'easeIn',
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Banner content */}
-              <div className="relative rounded-[14px] bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm px-6 py-4 flex items-center gap-3">
-                <span className="text-3xl" role="img" aria-label="birthday cake">🎂</span>
-                <div>
-                  <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
-                    Happy Birthday,{' '}
-                    {birthdayPets.length === 1
-                      ? birthdayPets[0].name
-                      : birthdayPets.slice(0, -1).map(p => p.name).join(', ') + ' & ' + birthdayPets[birthdayPets.length - 1].name}
-                    !
-                  </p>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                    {birthdayPets.length === 1 ? 'Your furry friend' : 'Your furry friends'} {birthdayPets.length === 1 ? 'has' : 'have'} a birthday today. 🎉
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Grid container */}
         <div ref={containerRef} className="w-full">
-          {/* Hidden widgets tray — edit mode only, shown ABOVE the grid */}
+          {/* Hidden widgets tray — edit mode only */}
           {editMode && hiddenWidgets.size > 0 && (
-            <div className="mb-6 p-4 bg-white/50 dark:bg-neutral-800/50 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600">
-              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-3">Hidden Widgets — click to restore</p>
+            <div className="mb-6 p-4 bg-surface-container/50 rounded-2xl border border-dashed border-outline-variant">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3">Hidden Widgets — click to restore</p>
               <div className="flex flex-wrap gap-2">
                 {[...hiddenWidgets].map(key => (
                   <button
                     key={key}
                     onClick={() => showWidget(key)}
-                    className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 text-neutral-600 dark:text-neutral-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-300 dark:hover:border-emerald-800 hover:text-emerald-700 dark:hover:text-emerald-400 motion-safe:transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-xl border border-outline-variant bg-surface-container text-on-surface-variant hover:bg-primary-container/10 hover:border-primary-container/30 hover:text-primary-container motion-safe:transition-colors text-sm font-medium"
                     title={`Restore ${WIDGET_LABELS[key]}`}
                   >
-                    <Eye className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span className="material-symbols-outlined text-lg">visibility</span>
                     {WIDGET_LABELS[key]}
                   </button>
                 ))}
@@ -848,7 +804,7 @@ export function Dashboard() {
           {layoutLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-48 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                <div key={i} className="h-48 rounded-2xl bg-surface-container animate-pulse" />
               ))}
             </div>
           ) : isMobile ? (
@@ -874,10 +830,10 @@ export function Dashboard() {
                 <div key={l.i} className="relative group">
                   {renderWidget(l.i as WidgetKey)}
                   {editMode && (
-                    <div className="absolute inset-0 z-10 rounded-2xl ring-2 ring-emerald-300 ring-offset-2 opacity-75 pointer-events-none">
-                      <div className="absolute top-0 inset-x-0 flex items-center gap-2 px-3 py-2 bg-neutral-900/90 dark:bg-neutral-950/90 backdrop-blur-sm rounded-t-2xl pointer-events-auto">
-                        <div className="widget-drag-handle cursor-grab active:cursor-grabbing min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" aria-label={`Drag ${WIDGET_LABELS[l.i as WidgetKey]}`} title="Drag to reorder">
-                          <GripVertical className="w-4 h-4" />
+                    <div className="absolute inset-0 z-10 rounded-2xl ring-2 ring-primary-container ring-offset-2 opacity-75 pointer-events-none">
+                      <div className="absolute top-0 inset-x-0 flex items-center gap-2 px-3 py-2 bg-background/90 backdrop-blur-sm rounded-t-2xl pointer-events-auto">
+                        <div className="widget-drag-handle cursor-grab active:cursor-grabbing min-h-[44px] min-w-[44px] flex items-center justify-center text-on-surface-variant hover:text-on-surface" aria-label={`Drag ${WIDGET_LABELS[l.i as WidgetKey]}`} title="Drag to reorder">
+                          <span className="material-symbols-outlined">drag_indicator</span>
                         </div>
                         {renamingWidget === (l.i as WidgetKey) ? (
                           <input
@@ -889,30 +845,30 @@ export function Dashboard() {
                               if (e.key === 'Enter') commitRename(l.i as WidgetKey);
                               if (e.key === 'Escape') setRenamingWidget(null);
                             }}
-                            className="text-xs font-semibold bg-transparent border-b border-neutral-400 outline-none flex-1 text-neutral-100 uppercase tracking-widest"
+                            className="text-xs font-semibold bg-transparent border-b border-on-surface-variant outline-none flex-1 text-on-surface uppercase tracking-widest"
                             autoFocus
                             maxLength={40}
                           />
                         ) : (
                           <div className="flex items-center gap-1 flex-1 group/label min-w-0">
-                            <span className="text-xs font-semibold text-neutral-300 uppercase tracking-widest truncate select-none">{widgetLabels[l.i as WidgetKey] ?? WIDGET_LABELS[l.i as WidgetKey]}</span>
+                            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest truncate select-none">{widgetLabels[l.i as WidgetKey] ?? WIDGET_LABELS[l.i as WidgetKey]}</span>
                             <button
                               onClick={() => startRename(l.i as WidgetKey)}
-                              className="opacity-0 group-hover/label:opacity-100 transition-opacity p-0.5 rounded hover:bg-neutral-700 shrink-0"
+                              className="opacity-0 group-hover/label:opacity-100 transition-opacity p-0.5 rounded hover:bg-surface-container-high shrink-0"
                               aria-label={`Rename ${WIDGET_LABELS[l.i as WidgetKey]} widget`}
                               title="Rename widget"
                             >
-                              <Pencil className="w-3 h-3 text-neutral-400" />
+                              <span className="material-symbols-outlined text-sm text-on-surface-variant">edit</span>
                             </button>
                           </div>
                         )}
                         <button
                           onClick={() => hideWidget(l.i as WidgetKey)}
-                          className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-rose-400 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          className="min-h-[44px] min-w-[44px] flex items-center justify-center text-on-surface-variant hover:text-error motion-safe:transition-colors"
                           aria-label={`Hide ${WIDGET_LABELS[l.i as WidgetKey]}`}
                           title="Hide widget"
                         >
-                          <EyeOff className="w-4 h-4" />
+                          <span className="material-symbols-outlined">visibility_off</span>
                         </button>
                       </div>
                     </div>
@@ -936,26 +892,26 @@ export function Dashboard() {
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40"
           >
-            <div className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
-              <LayoutDashboard className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />
-              <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300 whitespace-nowrap">Editing layout</span>
+            <div className="glass-card px-4 py-3 flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary-container shrink-0">dashboard_customize</span>
+              <span className="text-sm font-medium text-on-surface whitespace-nowrap">Editing layout</span>
               <button
                 onClick={resetLayout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-outline-variant text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
                 title="Reset to default layout"
               >
-                <RotateCcw className="w-3 h-3" aria-hidden="true" />
+                <span className="material-symbols-outlined text-sm">restart_alt</span>
                 Reset
               </button>
               <button
                 onClick={cancelEdit}
-                className="px-3 py-1.5 rounded-xl text-sm font-medium border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="px-3 py-1.5 rounded-xl text-sm font-medium border border-outline-variant text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={saveEdit}
-                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="px-4 py-1.5 rounded-xl text-sm font-medium bg-primary-container hover:opacity-90 text-on-primary-container shadow-sm motion-safe:transition-colors"
               >
                 Save
               </button>
@@ -967,14 +923,14 @@ export function Dashboard() {
       {/* Emergency FAB */}
       <button
         onClick={() => setIsEmergencyOpen(true)}
-        className={`fixed right-4 z-30 flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-2xl px-5 py-3 min-h-[44px] motion-safe:transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ring-offset-2 ring-offset-white dark:ring-offset-neutral-950 ${editMode ? 'bottom-36 md:bottom-20' : 'bottom-20 md:bottom-6'}`}
+        className={`fixed right-4 z-30 flex items-center gap-2 bg-error hover:opacity-90 text-on-error rounded-full shadow-2xl px-5 py-3 min-h-[44px] motion-safe:transition-all ${editMode ? 'bottom-36 md:bottom-20' : 'bottom-20 md:bottom-6'}`}
         aria-label="Emergency"
       >
-        <ShieldAlert className="w-5 h-5" aria-hidden="true" />
+        <span className="material-symbols-outlined">emergency</span>
         <span className="font-semibold text-sm hidden sm:inline">Emergency</span>
       </button>
 
-      <React.Suspense fallback={<div className="flex items-center justify-center h-32"><div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <React.Suspense fallback={<div className="flex items-center justify-center h-32"><div className="w-6 h-6 border-2 border-primary-container border-t-transparent rounded-full animate-spin" /></div>}>
         <PetFormModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

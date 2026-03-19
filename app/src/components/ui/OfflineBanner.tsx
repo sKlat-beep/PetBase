@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { WifiOff } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 export function OfflineBanner() {
@@ -28,11 +27,11 @@ export function OfflineBanner() {
           className="overflow-hidden"
         >
           <div
-            className="bg-amber-500 dark:bg-amber-600 text-white text-xs font-medium px-4 py-2 flex items-center justify-center gap-2 z-50"
+            className="bg-tertiary-container text-on-tertiary-container text-xs font-medium px-4 py-2 flex items-center justify-center gap-2 z-50"
             role="status"
             aria-live="polite"
           >
-            <WifiOff className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+            <span className="material-symbols-outlined text-[14px] flex-shrink-0" aria-hidden="true">wifi_off</span>
             You're offline — changes will sync when reconnected
           </div>
         </motion.div>

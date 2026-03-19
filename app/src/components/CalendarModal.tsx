@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar as CalendarIcon, X } from 'lucide-react';
 
 interface EventProps {
     id: string | number;
@@ -36,55 +35,55 @@ export function CalendarModal({ isOpen, onClose, events }: CalendarModalProps) {
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="calendar-modal-title"
-                        className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]"
+                        className="glass-card bg-surface-container rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-5 border-b border-neutral-100 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-800/50">
+                        <div className="flex items-center justify-between p-5 border-b border-outline-variant bg-surface-container-low/50">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center">
-                                    <CalendarIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[20px] text-primary">calendar_month</span>
                                 </div>
                                 <div>
-                                    <h2 id="calendar-modal-title" className="text-lg font-bold text-neutral-900 dark:text-neutral-100">90-Day Outlook</h2>
-                                    <p className="text-sm text-neutral-500 dark:text-neutral-400">Upcoming events & reminders</p>
+                                    <h2 id="calendar-modal-title" className="text-lg font-bold text-on-surface">90-Day Outlook</h2>
+                                    <p className="text-sm text-on-surface-variant">Upcoming events & reminders</p>
                                 </div>
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full transition-colors"
+                                className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-full transition-colors"
                             >
-                                <X className="w-5 h-5" />
+                                <span className="material-symbols-outlined text-[20px]">close</span>
                             </button>
                         </div>
 
                         {/* Content Timeline */}
                         <div className="p-6 overflow-y-auto space-y-6">
                             {events.length === 0 ? (
-                                <div className="text-center py-10 text-neutral-500 dark:text-neutral-400">
-                                    <CalendarIcon className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                                <div className="text-center py-10 text-on-surface-variant">
+                                    <span className="material-symbols-outlined text-[48px] mx-auto mb-3 opacity-20 block">calendar_month</span>
                                     <p>No events scheduled for the next 90 days.</p>
                                 </div>
                             ) : (
-                                <div className="relative border-l-2 border-neutral-100 dark:border-neutral-700 ml-3 space-y-8 pb-4">
+                                <div className="relative border-l-2 border-outline-variant ml-3 space-y-8 pb-4">
                                     {events.map((event, index) => (
                                         <div key={event.id} className="relative pl-6">
                                             {/* Timeline dot */}
-                                            <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white dark:bg-neutral-800 border-2 border-emerald-500" />
+                                            <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-surface border-2 border-primary" />
 
-                                            <div className="bg-white dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                                            <div className="glass-card bg-surface-container-low border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex gap-4 items-start">
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${event.bg} ${event.color}`}>
                                                         <event.icon className="w-5 h-5" />
                                                     </div>
                                                     <div>
-                                                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 block">
+                                                        <span className="text-xs font-bold text-primary uppercase tracking-wider mb-1 block">
                                                             {event.date}
                                                         </span>
-                                                        <h4 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">
+                                                        <h4 className="font-bold text-on-surface text-lg">
                                                             {event.title}
                                                         </h4>
-                                                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                                            For <span className="font-medium text-neutral-700 dark:text-neutral-300">{event.pet}</span>
+                                                        <p className="text-sm text-on-surface-variant mt-0.5">
+                                                            For <span className="font-medium text-on-surface">{event.pet}</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -94,17 +93,17 @@ export function CalendarModal({ isOpen, onClose, events }: CalendarModalProps) {
 
                                     {/* End of 90 days marker */}
                                     <div className="relative pl-6 pt-4">
-                                        <div className="absolute -left-[5px] top-6 w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-600" />
-                                        <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500 italic">End of 90-day period</p>
+                                        <div className="absolute -left-[5px] top-6 w-2 h-2 rounded-full bg-outline-variant" />
+                                        <p className="text-xs font-medium text-on-surface-variant/60 italic">End of 90-day period</p>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className="p-4 border-t border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
+                        <div className="p-4 border-t border-outline-variant bg-surface-container-low">
                             <button
                                 onClick={onClose}
-                                className="w-full py-2.5 rounded-xl bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-medium hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"
+                                className="w-full py-2.5 rounded-xl bg-surface-container-high text-on-surface font-medium hover:bg-surface-container-highest transition-colors"
                             >
                                 Close
                             </button>

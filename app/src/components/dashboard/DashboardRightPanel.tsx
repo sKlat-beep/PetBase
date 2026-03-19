@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ShieldAlert, Calendar, MapPin, TriangleAlert } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePets } from '../../contexts/PetContext';
@@ -9,6 +8,21 @@ import { LostPetBanner } from '../LostPetBanner';
 import { CollapsiblePanelWidget } from '../layout/CollapsiblePanelWidget';
 import { useSafetyAlerts, CATEGORY_COLORS, CATEGORY_LABELS } from '../../contexts/SafetyAlertsContext';
 import { useWeather } from '../../hooks/useWeather';
+
+// ─── Material Symbol helper ──────────────────────────────────────────────────
+
+function MIcon({ name, className = '' }: { name: string; className?: string }) {
+  return <span className={`material-symbols-outlined ${className}`} aria-hidden="true">{name}</span>;
+}
+
+// ─── Quick action definitions ────────────────────────────────────────────────
+
+const QUICK_ACTIONS: { label: string; icon: string; to: string; colorClass: string }[] = [
+  { label: 'Add Pet', icon: 'pets', to: '/pets', colorClass: 'bg-primary-container text-on-primary-container' },
+  { label: 'Create Card', icon: 'qr_code_2', to: '/cards', colorClass: 'bg-tertiary-container text-on-tertiary-container' },
+  { label: 'Find Vet', icon: 'local_hospital', to: '/services', colorClass: 'bg-secondary-container text-on-secondary-container' },
+  { label: 'Report Lost', icon: 'emergency', to: '/lost-pets', colorClass: 'bg-error-container text-on-error-container' },
+];
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 
@@ -65,43 +79,92 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
     return pets[idx];
   }, [pets]);
 
+  // Mini calendar state
+  const [calDate, setCalDate] = useState(() => new Date());
+  const calYear = calDate.getFullYear();
+  const calMonth = calDate.getMonth();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const firstDow = new Date(calYear, calMonth, 1).getDay();
+  const today = new Date();
+
+  // Events this month (for dots)
+  const monthEvents = useMemo(() => {
+    if (!user) return new Map<number, number>();
+    const evMap = new Map<number, number>();
+    groups
+      .flatMap(g => g.events)
+      .filter(e => {
+        const d = new Date(e.date);
+        return d.getFullYear() === calYear && d.getMonth() === calMonth;
+      })
+      .forEach(e => {
+        const day = new Date(e.date).getDate();
+        evMap.set(day, (evMap.get(day) || 0) + 1);
+      });
+    return evMap;
+  }, [user, groups, calYear, calMonth]);
+
+  const prevMonth = () => setCalDate(new Date(calYear, calMonth - 1, 1));
+  const nextMonth = () => setCalDate(new Date(calYear, calMonth + 1, 1));
+
+  const monthLabel = calDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
   return (
     <>
-      {/* 1. Lost Pet Alert — only when active */}
+      {/* 1. Quick Actions — 2x2 grid */}
+      <CollapsiblePanelWidget id="dash-quick-actions" title="Quick Actions" icon={<MIcon name="bolt" className="text-[14px]" />}>
+        <div className="grid grid-cols-2 gap-2">
+          {QUICK_ACTIONS.map(qa => (
+            <Link
+              key={qa.label}
+              to={qa.to}
+              className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl ${qa.colorClass} hover:brightness-110 motion-safe:transition-all min-h-[72px] text-center`}
+            >
+              <MIcon name={qa.icon} className="text-[24px]" />
+              <span className="text-xs font-medium">{qa.label}</span>
+            </Link>
+          ))}
+        </div>
+      </CollapsiblePanelWidget>
+
+      {/* 2. Lost Pet Alert — only when active */}
       {lostPet && (
-        <CollapsiblePanelWidget id="dash-lost-pet" title="Lost Pet Alert" icon={<ShieldAlert className="w-3 h-3" />}>
+        <CollapsiblePanelWidget id="dash-lost-pet" title="Lost Pet Alert" icon={<MIcon name="shield" className="text-[14px]" />}>
           <LostPetBanner lostPet={lostPet} />
         </CollapsiblePanelWidget>
       )}
 
-      {/* 3. Safety Alerts — collapsible, collapsed by default */}
+      {/* 3. Safety Alerts — collapsed by default */}
       <CollapsiblePanelWidget
         id="dash-safety-alerts"
         title="Safety Alerts"
-        icon={<TriangleAlert className="w-3 h-3 text-amber-500" />}
+        icon={<MIcon name="warning" className="text-[14px] text-error" />}
         defaultExpanded={false}
         badge={unseenCount > 0 ? (
-          <span className="ml-auto mr-1 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center">
+          <span className="ml-auto mr-1 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center">
             {unseenCount}
           </span>
         ) : undefined}
       >
         <div onClick={markAlertsSeen}>
           {safetyAlerts.length === 0 ? (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">No safety alerts in your area.</p>
+            <p className="text-xs text-on-surface-variant/60">No safety alerts in your area.</p>
           ) : (
             <div className="space-y-2">
               {safetyAlerts.slice(0, 5).map(alert => (
-                <div key={alert.id} className="flex items-start gap-2 p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-700/50 border border-neutral-100 dark:border-neutral-700">
-                  <TriangleAlert className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${alert.severity === 'high' ? 'text-rose-500' : alert.severity === 'medium' ? 'text-amber-500' : 'text-sky-500'}`} aria-hidden="true" />
+                <div key={alert.id} className="flex items-start gap-2 p-2.5 rounded-xl bg-surface-container border border-outline-variant/30">
+                  <MIcon
+                    name="warning"
+                    className={`text-[16px] mt-0.5 shrink-0 ${alert.severity === 'high' ? 'text-error' : alert.severity === 'medium' ? 'text-primary' : 'text-secondary'}`}
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 truncate">{alert.title}</span>
+                      <span className="text-xs font-semibold text-on-surface truncate">{alert.title}</span>
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${CATEGORY_COLORS[alert.category]}`}>
                         {CATEGORY_LABELS[alert.category]}
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2">{alert.description}</p>
+                    <p className="text-xs text-on-surface-variant mt-0.5 line-clamp-2">{alert.description}</p>
                   </div>
                 </div>
               ))}
@@ -112,53 +175,100 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
 
       {/* 4. Weather — only when data available */}
       {!weatherLoading && weather && (
-        <CollapsiblePanelWidget id="dash-weather" title="Weather" icon={<MapPin className="w-3 h-3" />}>
+        <CollapsiblePanelWidget id="dash-weather" title="Weather" icon={<MIcon name="location_on" className="text-[14px]" />}>
           <div className="flex items-center gap-3">
             <span className="text-4xl leading-none" role="img" aria-label={weather.condition}>{weather.icon}</span>
             <div>
-              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">{weather.temp}</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">{weather.condition}</p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{weather.location}</p>
+              <p className="text-2xl font-bold text-on-surface leading-tight">{weather.temp}</p>
+              <p className="text-xs text-on-surface-variant">{weather.condition}</p>
+              <p className="text-xs text-on-surface-variant/60 truncate">{weather.location}</p>
             </div>
           </div>
         </CollapsiblePanelWidget>
       )}
 
-      {/* 4. Upcoming Events */}
-      <CollapsiblePanelWidget id="dash-upcoming" title="Upcoming" icon={<Calendar className="w-3 h-3" />}>
-        {upcomingEvents.length === 0 ? (
-          <p className="text-xs text-neutral-400 dark:text-neutral-500">No upcoming events</p>
-        ) : (
-          <div className="space-y-2 mb-3">
+      {/* 5. Mini Calendar */}
+      <CollapsiblePanelWidget id="dash-calendar" title="Calendar" icon={<MIcon name="calendar_month" className="text-[14px]" />}>
+        {/* Month navigation */}
+        <div className="flex items-center justify-between mb-3">
+          <button onClick={prevMonth} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors" aria-label="Previous month">
+            <MIcon name="chevron_left" className="text-[18px] text-on-surface-variant" />
+          </button>
+          <span className="text-xs font-semibold text-on-surface">{monthLabel}</span>
+          <button onClick={nextMonth} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors" aria-label="Next month">
+            <MIcon name="chevron_right" className="text-[18px] text-on-surface-variant" />
+          </button>
+        </div>
+
+        {/* Day headers */}
+        <div className="grid grid-cols-7 gap-px mb-1">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+            <div key={i} className="text-center text-[10px] font-medium text-on-surface-variant/50 py-1">{d}</div>
+          ))}
+        </div>
+
+        {/* Day grid */}
+        <div className="grid grid-cols-7 gap-px">
+          {Array.from({ length: firstDow }).map((_, i) => <div key={`e-${i}`} />)}
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const day = i + 1;
+            const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === day;
+            const hasEvent = monthEvents.has(day);
+            return (
+              <div
+                key={day}
+                className={`relative flex items-center justify-center h-8 rounded-lg text-xs font-medium motion-safe:transition-colors ${
+                  isToday
+                    ? 'bg-primary text-on-primary'
+                    : 'text-on-surface-variant hover:bg-surface-container-high'
+                }`}
+              >
+                {day}
+                {hasEvent && (
+                  <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-secondary" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Event list for this month */}
+        {upcomingEvents.length > 0 && (
+          <div className="mt-3 space-y-1.5">
             {upcomingEvents.map(event => (
-              <div key={event.id} className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
-                <Calendar className="w-3 h-3 mt-0.5 shrink-0 text-indigo-500" aria-hidden="true" />
+              <div key={event.id} className="flex items-start gap-1.5 text-xs text-on-surface-variant">
+                <MIcon name="event" className="text-[14px] mt-0.5 shrink-0 text-tertiary" />
                 <span className="font-medium truncate">{event.title}</span>
-                <span className="text-neutral-400 dark:text-neutral-500 shrink-0">· {new Date(event.date).toLocaleDateString()}</span>
+                <span className="text-on-surface-variant/50 shrink-0">
+                  {new Date(event.date).toLocaleDateString()}
+                </span>
               </div>
             ))}
           </div>
         )}
+
+        {/* Calendar launcher */}
         <button
           onClick={onCalendar}
-          className="text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded mt-1 min-h-[44px] inline-flex items-center"
+          className="mt-3 w-full text-xs text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded min-h-[44px] inline-flex items-center justify-center gap-1"
         >
-          View Calendar
+          <MIcon name="open_in_new" className="text-[14px]" />
+          View Full Calendar
         </button>
       </CollapsiblePanelWidget>
 
-      {/* 5. Pet of the Day — only when pets exist */}
+      {/* 6. Recent Photos / Pet of the Day — only when pets exist */}
       {featuredPet && (
-        <CollapsiblePanelWidget id="dash-pet-of-day" title="Pet of the Day" icon={<span>🌟</span>}>
-          <Link to="/pets" state={{ editPetId: featuredPet.id }} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-xl">
+        <CollapsiblePanelWidget id="dash-pet-of-day" title="Pet of the Day" icon={<MIcon name="star" className="text-[14px] text-primary" />}>
+          <Link to="/pets" state={{ editPetId: featuredPet.id }} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl">
             <img
               src={featuredPet.image}
               alt={featuredPet.name}
               className="w-full h-24 object-cover rounded-xl mb-2 shadow-sm group-hover:opacity-90 motion-safe:transition-opacity"
               referrerPolicy="no-referrer"
             />
-            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{featuredPet.name}</p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">{featuredPet.breed}</p>
+            <p className="text-sm font-semibold text-on-surface">{featuredPet.name}</p>
+            <p className="text-xs text-on-surface-variant">{featuredPet.breed}</p>
           </Link>
         </CollapsiblePanelWidget>
       )}

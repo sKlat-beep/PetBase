@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ZoomIn, ZoomOut, Check } from 'lucide-react';
 
 interface ImageCropperModalProps {
     isOpen: boolean;
@@ -39,16 +38,24 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="image-cropper-modal-title"
-                    className="relative bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-2xl w-full max-w-lg z-10 flex flex-col"
+                    className="glass-card relative rounded-3xl overflow-hidden shadow-2xl w-full max-w-lg z-10 flex flex-col"
                 >
-                    <div className="flex items-center justify-between p-4 border-b border-neutral-100 dark:border-neutral-700 bg-white/50 dark:bg-neutral-800/50 backdrop-blur-md z-10">
-                        <h3 id="image-cropper-modal-title" className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Adjust Photo</h3>
-                        <button onClick={onClose} className="p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full transition-colors">
-                            <X className="w-5 h-5" />
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-4 border-b border-outline-variant bg-surface/50 backdrop-blur-md z-10">
+                        <h3
+                            id="image-cropper-modal-title"
+                            className="text-lg font-bold text-on-surface"
+                            style={{ fontFamily: 'var(--font-headline)' }}
+                        >
+                            Adjust Photo
+                        </h3>
+                        <button onClick={onClose} className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+                            <span className="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
 
-                    <div className="relative w-full h-80 sm:h-96 bg-neutral-950">
+                    {/* Crop area */}
+                    <div className="relative w-full h-80 sm:h-96 bg-surface-container">
                         <Cropper
                             image={imageSrc}
                             crop={crop}
@@ -62,17 +69,35 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                             classes={{ containerClassName: 'h-full w-full relative' }}
                         />
 
+                        {/* Rule-of-thirds grid overlay */}
+                        <div className="absolute inset-0 pointer-events-none z-[4] flex items-center justify-center">
+                            <div className="w-64 h-64 relative">
+                                <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20" />
+                                <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20" />
+                                <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20" />
+                                <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20" />
+                            </div>
+                        </div>
+
+                        {/* Primary-container border on crop circle */}
+                        {shape === 'circle' && (
+                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-[5]">
+                                <div className="w-64 h-64 rounded-full border-2 border-primary-container" />
+                            </div>
+                        )}
+
                         {/* Overlay indicators for special shapes */}
                         {shape === 'squircle' && (
                             <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-[5]">
-                                <div className={`w-64 h-64 border-2 border-white/50 rounded-[3rem] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]`} />
+                                <div className="w-64 h-64 border-2 border-primary-container rounded-[3rem] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]" />
                             </div>
                         )}
                     </div>
 
-                    <div className="p-6 bg-white dark:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-700">
+                    {/* Controls */}
+                    <div className="p-6 bg-surface border-t border-outline-variant">
                         <div className="flex items-center gap-4 mb-6 px-2">
-                            <ZoomOut className="w-5 h-5 text-neutral-400" />
+                            <span className="material-symbols-outlined text-[20px] text-on-surface-variant">zoom_out</span>
                             <input
                                 type="range"
                                 value={zoom}
@@ -81,17 +106,18 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                                 step={0.1}
                                 aria-label="Zoom"
                                 onChange={(e) => setZoom(Number(e.target.value))}
-                                className="flex-1 h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                                className="flex-1 h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary"
                             />
-                            <ZoomIn className="w-5 h-5 text-neutral-400" />
+                            <span className="material-symbols-outlined text-[20px] text-on-surface-variant">zoom_in</span>
                         </div>
 
                         <div className="flex gap-3">
-                            <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-700 transition">
+                            <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition">
                                 Cancel
                             </button>
-                            <button onClick={handleSave} className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition flex items-center justify-center gap-2">
-                                <Check className="w-4 h-4" /> Apply Crop
+                            <button onClick={handleSave} className="flex-1 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl font-medium transition hover:brightness-110 flex items-center justify-center gap-2">
+                                <span className="material-symbols-outlined text-[18px]">check</span>
+                                Apply Changes
                             </button>
                         </div>
                     </div>

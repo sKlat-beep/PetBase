@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
-import { HandshakeIcon, MessageSquare, Users, CalendarDays, AlertTriangle, Cake, Syringe, Pill, Megaphone } from 'lucide-react';
 import { useNotifications } from '../../contexts/NotificationsContext';
 import type { AppNotification } from '../../types/user';
 
@@ -22,59 +21,60 @@ function relativeTime(ts: number): string {
   return `${days}d ago`;
 }
 
-function typeIcon(type: AppNotification['type']) {
+/** Material Symbol name per notification type */
+function typeIconName(type: AppNotification['type']): string {
   switch (type) {
     case 'friend_request':
     case 'friend_accepted':
-      return <HandshakeIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
+      return 'handshake';
     case 'dm_received':
-      return <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
+      return 'chat';
     case 'group_post':
     case 'group_invite':
     case 'group_event':
-      return <Users className="w-4 h-4 text-violet-600 dark:text-violet-400" />;
+      return 'groups';
     case 'event_reminder':
-      return <CalendarDays className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
+      return 'calendar_today';
     case 'birthday':
-      return <Cake className="w-4 h-4 text-pink-600 dark:text-pink-400" />;
+      return 'cake';
     case 'vaccine':
-      return <Syringe className="w-4 h-4 text-sky-600 dark:text-sky-400" />;
+      return 'vaccines';
     case 'medication':
-      return <Pill className="w-4 h-4 text-teal-600 dark:text-teal-400" />;
+      return 'medication';
     case 'lost_pet':
-      return <Megaphone className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
+      return 'campaign';
     case 'report_action':
-      return <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />;
+      return 'warning';
     default:
-      return <AlertTriangle className="w-4 h-4 text-neutral-400" />;
+      return 'notifications';
   }
 }
 
-function typeIconBg(type: AppNotification['type']) {
+/** M3 token-based icon circle color per notification type */
+function typeIconColor(type: AppNotification['type']): { bg: string; text: string } {
   switch (type) {
     case 'friend_request':
     case 'friend_accepted':
-      return 'bg-emerald-100 dark:bg-emerald-900/30';
+      return { bg: 'bg-tertiary-container', text: 'text-on-tertiary-container' };
     case 'dm_received':
-      return 'bg-blue-100 dark:bg-blue-900/30';
+      return { bg: 'bg-primary-container/20', text: 'text-primary' };
     case 'group_post':
     case 'group_invite':
     case 'group_event':
-      return 'bg-violet-100 dark:bg-violet-900/30';
+      return { bg: 'bg-primary-container/20', text: 'text-primary-container' };
     case 'event_reminder':
-      return 'bg-amber-100 dark:bg-amber-900/30';
+      return { bg: 'bg-secondary-container', text: 'text-on-secondary-container' };
     case 'birthday':
-      return 'bg-pink-100 dark:bg-pink-900/30';
+      return { bg: 'bg-tertiary-container', text: 'text-on-tertiary-container' };
     case 'vaccine':
-      return 'bg-sky-100 dark:bg-sky-900/30';
     case 'medication':
-      return 'bg-teal-100 dark:bg-teal-900/30';
+      return { bg: 'bg-secondary-container', text: 'text-on-secondary-container' };
     case 'lost_pet':
-      return 'bg-orange-100 dark:bg-orange-900/30';
+      return { bg: 'bg-error-container', text: 'text-on-error-container' };
     case 'report_action':
-      return 'bg-rose-100 dark:bg-rose-900/30';
+      return { bg: 'bg-error-container', text: 'text-on-error-container' };
     default:
-      return 'bg-neutral-100 dark:bg-neutral-700';
+      return { bg: 'bg-surface-container-high', text: 'text-on-surface-variant' };
   }
 }
 
@@ -132,15 +132,15 @@ export function NotificationDropdown({ onClose, side = 'right' }: Props) {
   return (
     <div
       ref={ref}
-      className={`absolute ${side === 'left' ? 'left-0' : 'right-0'} top-8 w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 z-50 overflow-hidden`}
+      className={`absolute ${side === 'left' ? 'left-0' : 'right-0'} top-8 w-80 max-w-[calc(100vw-1rem)] glass-morphism rounded-2xl shadow-2xl z-50 overflow-hidden`}
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-700 flex items-center justify-between">
-        <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">Notifications</h3>
+      <div className="px-4 py-3 border-b border-outline-variant/30 flex items-center justify-between">
+        <h3 className="font-bold text-on-surface text-sm">Notifications</h3>
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
-            className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+            className="text-xs text-primary hover:underline"
           >
             Mark all read
           </button>
@@ -148,51 +148,56 @@ export function NotificationDropdown({ onClose, side = 'right' }: Props) {
       </div>
 
       {/* List */}
-      <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-700">
+      <div className="max-h-96 overflow-y-auto divide-y divide-outline-variant/20">
         {notifications.length === 0 ? (
-          <div className="p-6 text-center text-neutral-400 dark:text-neutral-500 text-sm">
-            All caught up 🐾
+          <div className="p-6 text-center text-on-surface-variant text-sm">
+            All caught up
           </div>
         ) : (
-          notifications.map(notif => (
-            <motion.div
-              key={notif.id}
-              drag="x"
-              dragConstraints={{ left: -200, right: 0 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -120) {
-                  dismiss(notif.id);
-                }
-              }}
-              className="touch-pan-y relative overflow-hidden"
-            >
-              {/* Red dismiss indicator behind */}
-              <div className="absolute inset-y-0 right-0 w-16 bg-rose-500/20 flex items-center justify-end pr-3 pointer-events-none">
-                <span className="text-xs text-rose-500">✓</span>
-              </div>
-
-              <button
-                onClick={() => handleNotifClick(notif)}
-                className="w-full flex items-start gap-3 p-3 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          notifications.map(notif => {
+            const iconColor = typeIconColor(notif.type);
+            return (
+              <motion.div
+                key={notif.id}
+                drag="x"
+                dragConstraints={{ left: -200, right: 0 }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -120) {
+                    dismiss(notif.id);
+                  }
+                }}
+                className="touch-pan-y relative overflow-hidden"
               >
-                {/* Type icon */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${typeIconBg(notif.type)}`}>
-                  {typeIcon(notif.type)}
+                {/* Dismiss indicator behind */}
+                <div className="absolute inset-y-0 right-0 w-16 bg-error/20 flex items-center justify-end pr-3 pointer-events-none">
+                  <span className="material-symbols-outlined text-error text-base" aria-hidden="true">check</span>
                 </div>
 
-                {/* Content */}
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-neutral-900 dark:text-neutral-100 leading-snug">{notif.message}</p>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{relativeTime(notif.createdAt)}</p>
-                </div>
+                <button
+                  onClick={() => handleNotifClick(notif)}
+                  className="w-full flex items-start gap-3 p-3 hover:bg-surface-container-high/40 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                >
+                  {/* Type icon */}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${iconColor.bg}`}>
+                    <span className={`material-symbols-outlined text-base ${iconColor.text}`} aria-hidden="true">
+                      {typeIconName(notif.type)}
+                    </span>
+                  </div>
 
-                {/* Unread dot */}
-                {!notif.read && (
-                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1.5" aria-label="Unread" />
-                )}
-              </button>
-            </motion.div>
-          ))
+                  {/* Content */}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-on-surface leading-snug">{notif.message}</p>
+                    <p className="text-xs text-on-surface-variant mt-0.5">{relativeTime(notif.createdAt)}</p>
+                  </div>
+
+                  {/* Unread dot */}
+                  {!notif.read && (
+                    <span className="w-2 h-2 rounded-full bg-primary-container shrink-0 mt-1.5" aria-label="Unread" />
+                  )}
+                </button>
+              </motion.div>
+            );
+          })
         )}
       </div>
     </div>

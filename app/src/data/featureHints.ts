@@ -5,16 +5,16 @@
 import type { FeatureHint, HintCategory } from '../types/onboarding';
 
 export const CATEGORY_ACCENTS: Record<HintCategory, string> = {
-  pets: 'from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-100 dark:border-emerald-900/30',
-  cards: 'from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 border-violet-100 dark:border-violet-900/30',
-  services: 'from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30 border-blue-100 dark:border-blue-900/30',
-  community: 'from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-100 dark:border-purple-900/30',
-  messaging: 'from-pink-50 to-rose-50 dark:from-pink-950/30 dark:to-rose-950/30 border-pink-100 dark:border-pink-900/30',
-  social: 'from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-100 dark:border-orange-900/30',
-  family: 'from-cyan-50 to-teal-50 dark:from-cyan-950/30 dark:to-teal-950/30 border-cyan-100 dark:border-cyan-900/30',
-  settings: 'from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30 border-slate-100 dark:border-slate-900/30',
-  dashboard: 'from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-100 dark:border-amber-900/30',
-  safety: 'from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border-red-100 dark:border-red-900/30',
+  pets: 'bg-secondary-container/20 border-secondary/20',
+  cards: 'bg-tertiary-container/20 border-tertiary/20',
+  services: 'bg-secondary-container/20 border-secondary/20',
+  community: 'bg-tertiary-container/20 border-tertiary/20',
+  messaging: 'bg-primary-container/20 border-primary-container/20',
+  social: 'bg-primary-container/20 border-primary-container/20',
+  family: 'bg-secondary-container/20 border-secondary/20',
+  settings: 'bg-surface-container-high border-outline-variant',
+  dashboard: 'bg-primary-container/20 border-primary-container/20',
+  safety: 'bg-error-container/20 border-error/20',
 };
 
 export const HINTS: FeatureHint[] = [

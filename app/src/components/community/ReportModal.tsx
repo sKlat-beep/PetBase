@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Flag, CheckCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { submitReport, type Report } from '../../lib/reportService';
 
@@ -127,17 +126,17 @@ export default function ReportModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.97 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="relative w-full sm:max-w-sm bg-white dark:bg-neutral-900
-                       border border-neutral-200 dark:border-neutral-700 shadow-2xl
+            className="relative w-full sm:max-w-sm bg-surface-container
+                       border border-outline-variant shadow-2xl
                        rounded-t-2xl sm:rounded-2xl overflow-hidden z-10 flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
+            <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-outline-variant shrink-0">
               <h2
                 id="report-modal-title"
-                className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2"
+                className="text-base font-bold text-on-surface flex items-center gap-2"
               >
-                <Flag className="w-4 h-4 text-orange-500" aria-hidden="true" />
+                <span className="material-symbols-outlined text-[16px] text-orange-500" aria-hidden="true">flag</span>
                 Report {targetType === 'user' ? 'User' : targetType === 'post' ? 'Post' : targetType === 'comment' ? 'Comment' : 'Content'}
               </h2>
               <button
@@ -145,11 +144,11 @@ export default function ReportModal({
                 onClick={onClose}
                 aria-label="Close report dialog"
                 className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg
-                           text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200
-                           hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors
+                           text-on-surface-variant hover:text-on-surface
+                           hover:bg-surface-container-high transition-colors
                            focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
               >
-                <X className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
@@ -158,17 +157,17 @@ export default function ReportModal({
               {submitted ? (
                 /* Confirmation screen */
                 <div className="flex flex-col items-center gap-4 py-4 text-center">
-                  <CheckCircle className="w-12 h-12 text-emerald-500" aria-hidden="true" />
+                  <span className="material-symbols-outlined text-[48px] text-primary" aria-hidden="true">check_circle</span>
                   <div>
-                    <p className="font-semibold text-neutral-900 dark:text-neutral-100">Report submitted</p>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                    <p className="font-semibold text-on-surface">Report submitted</p>
+                    <p className="text-sm text-on-surface-variant mt-1">
                       Our team will review it.
                     </p>
                   </div>
                   <button
                     onClick={onClose}
                     className="px-6 py-2 rounded-xl text-sm font-medium
-                               bg-emerald-500 text-white hover:bg-emerald-600
+                               bg-primary text-on-primary hover:bg-primary/90
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >
                     Done
@@ -177,7 +176,7 @@ export default function ReportModal({
               ) : (
                 /* Form screen */
                 <>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p className="text-sm text-on-surface-variant">
                     Why are you reporting this {targetType === 'user' ? 'user' : 'content'}?
                   </p>
 
@@ -193,8 +192,8 @@ export default function ReportModal({
                         className={`w-full text-left px-4 py-2.5 rounded-xl border text-sm transition-colors
                                     focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
                                     ${reason === r
-                                      ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 font-medium'
-                                      : 'border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:border-neutral-300 dark:hover:border-neutral-600'
+                                      ? 'border-orange-400 bg-orange-50 text-orange-700 font-medium'
+                                      : 'border-outline-variant bg-surface-container-low text-on-surface-variant hover:border-outline'
                                     }`}
                       >
                         {r}
@@ -206,9 +205,9 @@ export default function ReportModal({
                   <div>
                     <label
                       htmlFor="report-detail"
-                      className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-1.5"
+                      className="block text-xs font-medium text-on-surface-variant mb-1.5"
                     >
-                      Additional details <span className="font-normal text-neutral-400">(optional)</span>
+                      Additional details <span className="font-normal text-on-surface-variant">(optional)</span>
                     </label>
                     <textarea
                       id="report-detail"
@@ -217,18 +216,18 @@ export default function ReportModal({
                       rows={3}
                       maxLength={500}
                       placeholder="Describe the issue…"
-                      className="w-full text-sm rounded-xl border border-neutral-200 dark:border-neutral-700
-                                 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200
-                                 placeholder-neutral-400 px-3 py-2.5 resize-none
-                                 focus:outline-none focus:ring-2 focus:ring-orange-400 dark:focus:ring-orange-500"
+                      className="w-full text-sm rounded-xl border border-outline-variant
+                                 bg-surface-container-low text-on-surface
+                                 placeholder-on-surface-variant px-3 py-2.5 resize-none
+                                 focus:outline-none focus:ring-2 focus:ring-orange-400"
                       disabled={submitting}
                     />
-                    <p className="text-right text-[10px] text-neutral-400 mt-0.5">{detail.length}/500</p>
+                    <p className="text-right text-[10px] text-on-surface-variant mt-0.5">{detail.length}/500</p>
                   </div>
 
                   {/* Error */}
                   {error && (
-                    <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 rounded-lg px-3 py-2">
+                    <p className="text-sm text-error bg-error-container rounded-lg px-3 py-2">
                       {error}
                     </p>
                   )}
@@ -242,7 +241,7 @@ export default function ReportModal({
                                disabled:opacity-40 disabled:cursor-not-allowed
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >
-                    {submitting && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
+                    {submitting && <span className="material-symbols-outlined text-[16px] animate-spin" aria-hidden="true">progress_activity</span>}
                     Submit Report
                   </button>
                 </>

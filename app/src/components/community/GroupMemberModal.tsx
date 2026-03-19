@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Search, ShieldBan, ChevronDown } from 'lucide-react';
 import { useSocial } from '../../contexts/SocialContext';
 import { useCommunity, type CommunityRole } from '../../contexts/CommunityContext';
 import type { GroupMember } from '../../contexts/CommunityContext';
@@ -57,17 +56,17 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
   }, [allMembers, search, roleFilter, directory]);
 
   const roleBgClass = (role: string) => {
-    if (role === 'Owner') return 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400';
-    if (role === 'Moderator') return 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400';
-    if (role === 'Event Coordinator') return 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400';
-    return 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300';
+    if (role === 'Owner') return 'bg-primary-container text-on-primary-container';
+    if (role === 'Moderator') return 'bg-tertiary-container text-on-tertiary-container';
+    if (role === 'Event Coordinator') return 'bg-amber-100 text-amber-700';
+    return 'bg-surface-container-high text-on-surface-variant';
   };
 
   const roleCircleClass = (role: string) => {
-    if (role === 'Owner') return 'bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200';
-    if (role === 'Moderator') return 'bg-violet-200 dark:bg-violet-800 text-violet-800 dark:text-violet-200';
-    if (role === 'Event Coordinator') return 'bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200';
-    return 'bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200';
+    if (role === 'Owner') return 'bg-primary-container text-on-primary-container';
+    if (role === 'Moderator') return 'bg-tertiary-container text-on-tertiary-container';
+    if (role === 'Event Coordinator') return 'bg-amber-200 text-amber-800';
+    return 'bg-surface-container-highest text-on-surface';
   };
 
   const roleLabel = (role: string) => (role === 'User' ? 'Member' : role);
@@ -80,38 +79,38 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]"
+        className="bg-surface-container rounded-2xl border border-outline-variant shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]"
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Group Members"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200/60 dark:border-neutral-700/60 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant shrink-0">
           <div>
-            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">Members</h2>
-            <p className="text-[10px] text-neutral-400 dark:text-neutral-500">{allMembers.length} member{allMembers.length !== 1 ? 's' : ''}</p>
+            <h2 className="text-sm font-semibold text-on-surface">Members</h2>
+            <p className="text-[10px] text-on-surface-variant">{allMembers.length} member{allMembers.length !== 1 ? 's' : ''}</p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1.5 rounded-lg text-neutral-400 dark:text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
 
         {/* Search */}
         <div className="px-4 pt-3 pb-2 shrink-0">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+            <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[14px] text-on-surface-variant pointer-events-none">search</span>
             <input
               ref={searchRef}
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search members…"
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-surface-container-high border border-outline-variant text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
         </div>
@@ -125,7 +124,7 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
               className={`text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                 roleFilter === f
                   ? 'bg-sky-500 text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
+                  : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
               }`}
             >
               {f}
@@ -136,7 +135,7 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
         {/* Member list */}
         <div className="overflow-y-auto flex-1 px-4 pb-4 space-y-2">
           {filteredMembers.length === 0 ? (
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 py-4 text-center">No members match your search.</p>
+            <p className="text-xs text-on-surface-variant py-4 text-center">No members match your search.</p>
           ) : (
             filteredMembers.map(m => {
               const dirEntry = directory.find(p => p.uid === m.userId);
@@ -148,8 +147,8 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                     {initial}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{displayName}</p>
-                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                    <p className="text-xs font-medium text-on-surface truncate">{displayName}</p>
+                    <p className="text-[10px] text-on-surface-variant">
                       Joined {new Date(m.joinedAt).toLocaleDateString([], { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
@@ -162,14 +161,14 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                       <div className="relative">
                         <button
                           onClick={() => setRoleChangeTarget(roleChangeTarget === m.userId ? null : m.userId)}
-                          className="p-1 rounded text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          className="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                           aria-label="Change role"
                           title="Change role"
                         >
-                          <ChevronDown className="w-3 h-3" />
+                          <span className="material-symbols-outlined text-[12px]">expand_more</span>
                         </button>
                         {roleChangeTarget === m.userId && (
-                          <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-[130px]">
+                          <div className="absolute right-0 top-full mt-1 z-20 bg-surface-container border border-outline-variant rounded-lg shadow-lg py-1 min-w-[130px]">
                             {(['User', 'Event Coordinator', 'Moderator', 'Owner'] as CommunityRole[])
                               .filter(r => r !== m.role)
                               .map(r => (
@@ -181,7 +180,7 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                                     }
                                     setRoleChangeTarget(null);
                                   }}
-                                  className="w-full text-left px-3 py-1.5 text-[10px] font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                                  className="w-full text-left px-3 py-1.5 text-[10px] font-medium text-on-surface hover:bg-surface-container-high transition-colors"
                                 >
                                   {r === 'User' ? 'Member' : r}
                                 </button>
@@ -199,11 +198,11 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                             banMember(groupId, m.userId);
                           }
                         }}
-                        className="p-1 rounded text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                        className="p-1 rounded text-on-surface-variant hover:text-error hover:bg-error-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                         aria-label="Ban member"
                         title="Ban member"
                       >
-                        <ShieldBan className="w-3 h-3" />
+                        <span className="material-symbols-outlined text-[12px]">block</span>
                       </button>
                     )}
                   </div>

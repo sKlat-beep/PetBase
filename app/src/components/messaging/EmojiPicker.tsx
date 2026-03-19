@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Search, X } from 'lucide-react';
 
 const RECENTS_KEY = 'petbase-emoji-recents';
 const MAX_RECENTS = 16;
@@ -119,26 +118,26 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
       <div className="fixed inset-0 z-20" onClick={onClose} aria-hidden="true" />
 
       {/* Picker card */}
-      <div className="absolute bottom-full mb-2 left-0 z-30 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-2xl shadow-xl w-80 flex flex-col max-h-[360px]">
+      <div className="absolute bottom-full mb-2 left-0 z-30 bg-surface-container border border-outline-variant rounded-2xl shadow-xl w-80 flex flex-col max-h-[360px]">
         {/* Search bar */}
         <div className="px-3 pt-3 pb-2 shrink-0">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+            <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[14px]">search</span>
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search emojis..."
-              className="w-full pl-8 pr-8 py-1.5 text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full pl-8 pr-8 py-1.5 text-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 focus-visible:ring-2 focus-visible:ring-sky-500 outline-none rounded"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface focus-visible:ring-2 focus-visible:ring-primary outline-none rounded"
                 aria-label="Clear search"
               >
-                <X className="w-3.5 h-3.5" />
+                <span className="material-symbols-outlined text-[14px]">close</span>
               </button>
             )}
           </div>
@@ -151,10 +150,10 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
               <button
                 key={cat.label}
                 onClick={() => handleCategoryClick(i)}
-                className={`shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center rounded-lg text-sm transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
+                className={`shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center rounded-lg text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none
                   ${activeCategory === i
-                    ? 'bg-emerald-100 dark:bg-emerald-900/40'
-                    : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                    ? 'bg-primary-container'
+                    : 'hover:bg-surface-container-highest'}`}
                 aria-label={cat.label}
                 title={cat.label}
               >
@@ -169,14 +168,14 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
           {searchResults !== null ? (
             // Search results
             searchResults.length === 0 ? (
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center py-6">No emojis found</p>
+              <p className="text-xs text-on-surface-variant text-center py-6">No emojis found</p>
             ) : (
               <div className="grid grid-cols-7 gap-0.5">
                 {searchResults.map(emoji => (
                   <button
                     key={emoji}
                     onClick={() => handleSelect(emoji)}
-                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:bg-surface-container-highest rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
                     aria-label={emoji}
                   >
                     {emoji}
@@ -193,7 +192,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
                   key={cat.label}
                   ref={el => { sectionRefs.current[i] = el; }}
                 >
-                  <p className="sticky top-0 bg-white dark:bg-neutral-800 text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wide py-1.5 z-10">
+                  <p className="sticky top-0 bg-surface-container text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide py-1.5 z-10">
                     {cat.label}
                   </p>
                   <div className="grid grid-cols-7 gap-0.5">
@@ -201,7 +200,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
                       <button
                         key={`${emoji}-${j}`}
                         onClick={() => handleSelect(emoji)}
-                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:bg-surface-container-highest rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
                         aria-label={emoji}
                       >
                         {emoji}

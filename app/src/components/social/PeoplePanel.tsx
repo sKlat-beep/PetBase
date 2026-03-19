@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Users, MessageSquare, UserPlus, Check, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocial } from '../../contexts/SocialContext';
 import { useCommunity } from '../../contexts/CommunityContext';
@@ -80,7 +79,7 @@ export function PeoplePanel() {
         <CollapsiblePanelWidget
           id="people-requests"
           title="Friend Requests"
-          icon={<UserPlus className="w-3 h-3" />}
+          icon={<span className="material-symbols-outlined text-[12px]">person_add</span>}
         >
           <div className="space-y-2.5">
             {incomingRequests.map(req => {
@@ -89,28 +88,28 @@ export function PeoplePanel() {
               const initial = displayName.charAt(0).toUpperCase();
               return (
                 <div key={req.id} className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase">
+                  <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <span className="text-[10px] font-bold text-amber-700 uppercase">
                       {initial}
                     </span>
                   </div>
-                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-on-surface truncate flex-1 min-w-0">
                     {displayName}
                   </p>
                   <div className="flex gap-1 shrink-0">
                     <button
                       onClick={() => acceptFriendRequest(req.id)}
                       aria-label="Accept friend request"
-                      className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                      className="p-1 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
-                      <Check className="w-3 h-3" />
+                      <span className="material-symbols-outlined text-[12px]">check</span>
                     </button>
                     <button
                       onClick={() => rejectFriendRequest(req.id)}
                       aria-label="Decline friend request"
-                      className="p-1 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                      className="p-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-error-container hover:text-error transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
-                      <X className="w-3 h-3" />
+                      <span className="material-symbols-outlined text-[12px]">close</span>
                     </button>
                   </div>
                 </div>
@@ -124,10 +123,10 @@ export function PeoplePanel() {
       <CollapsiblePanelWidget
         id="people-friends"
         title="My Friends"
-        icon={<Users className="w-3 h-3" />}
+        icon={<span className="material-symbols-outlined text-[12px]">group</span>}
       >
         {allFriends.length === 0 ? (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs text-on-surface-variant">
             No friends yet. Find people below!
           </p>
         ) : (
@@ -136,7 +135,7 @@ export function PeoplePanel() {
               const initial = friend.displayName.charAt(0).toUpperCase();
               return (
                 <div key={friend.uid} className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center shrink-0 overflow-hidden">
                     {friend.avatarUrl ? (
                       <img
                         src={friend.avatarUrl}
@@ -145,20 +144,20 @@ export function PeoplePanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
+                      <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                         {initial}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-on-surface truncate flex-1 min-w-0">
                     {friend.displayName}
                   </p>
                   <button
                     onClick={() => navigate('/messages')}
                     aria-label={`Message ${friend.displayName}`}
-                    className="p-1 rounded-lg bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="p-1 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   >
-                    <MessageSquare className="w-3 h-3" />
+                    <span className="material-symbols-outlined text-[12px]">chat</span>
                   </button>
                 </div>
               );
@@ -166,7 +165,7 @@ export function PeoplePanel() {
             {allFriends.length > 0 && (
               <button
                 onClick={() => setShowFriendModal(true)}
-                className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded pt-0.5"
+                className="text-[10px] font-semibold text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded pt-0.5"
               >
                 View all {allFriends.length} friend{allFriends.length !== 1 ? 's' : ''} →
               </button>
@@ -179,17 +178,17 @@ export function PeoplePanel() {
       <CollapsiblePanelWidget
         id="people-suggested"
         title="People You May Know"
-        icon={<UserPlus className="w-3 h-3" />}
+        icon={<span className="material-symbols-outlined text-[12px]">person_add</span>}
       >
         {suggestedFriends.length === 0 ? (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">No suggestions right now.</p>
+          <p className="text-xs text-on-surface-variant">No suggestions right now.</p>
         ) : (
           <div className="space-y-2.5">
             {suggestedFriends.map(person => {
               const initial = person.displayName.charAt(0).toUpperCase();
               return (
                 <div key={person.uid} className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center shrink-0 overflow-hidden">
                     {person.avatarUrl ? (
                       <img
                         src={person.avatarUrl}
@@ -198,18 +197,18 @@ export function PeoplePanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
+                      <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                         {initial}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-on-surface truncate flex-1 min-w-0">
                     {person.displayName}
                   </p>
                   <button
                     onClick={() => sendFriendRequest(person.uid)}
                     aria-label={`Add ${person.displayName}`}
-                    className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   >
                     Add
                   </button>

@@ -3,7 +3,6 @@
 // Eliminates triplication across CardPreview, MultiPetCardPreview, and SharedCardPage.
 
 import React from 'react';
-import { Info, Heart, Utensils, Syringe, Shield, ShieldOff, Phone, HeartPulse } from 'lucide-react';
 import { getVaccineStatus } from '../MedicalRecordsModal';
 import type { PublicCardPetSnapshot } from '../../lib/firestoreService';
 import type { SharingToggles } from '../../types/cardExtensions';
@@ -32,42 +31,42 @@ interface SectionConfig {
 const SECTION_CONFIGS: Record<string, SectionConfig> = {
   basicInfo: {
     title: 'Pet Description',
-    icon: <Info className="w-4 h-4 text-neutral-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-on-surface-variant">info</span>,
     defaultOpen: true,
   },
   personalityPlay: {
     title: 'Personality & Play',
-    icon: <Heart className="w-4 h-4 text-violet-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-tertiary">favorite</span>,
     defaultOpen: true,
   },
   diet: {
     title: 'Health & Diet',
-    icon: <Utensils className="w-4 h-4 text-neutral-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-on-surface-variant">restaurant</span>,
     defaultOpen: false,
   },
   medicalOverview: {
     title: 'Medical Notes',
-    icon: <Syringe className="w-4 h-4 text-blue-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-secondary">syringe</span>,
     defaultOpen: false,
   },
   vaccineRecords: {
     title: 'Vaccine Records',
-    icon: <Syringe className="w-4 h-4 text-neutral-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-on-surface-variant">syringe</span>,
     defaultOpen: false,
   },
   microchip: {
     title: 'Microchip ID',
-    icon: <Shield className="w-4 h-4 text-neutral-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-on-surface-variant">shield</span>,
     defaultOpen: false,
   },
   emergencyContact: {
     title: 'Emergency Contacts',
-    icon: <Phone className="w-4 h-4 text-blue-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-secondary">phone</span>,
     defaultOpen: false,
   },
   vetInfo: {
     title: 'Vet Info',
-    icon: <HeartPulse className="w-4 h-4 text-emerald-400" />,
+    icon: <span className="material-symbols-outlined text-[16px] text-primary">monitor_heart</span>,
     defaultOpen: false,
   },
 };
@@ -86,9 +85,9 @@ interface CardSectionRendererProps {
 
 function InfoChip({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-700/60 rounded-xl p-2 border border-neutral-100 dark:border-neutral-600">
-      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">{label}</p>
-      <p className="font-semibold text-neutral-800 dark:text-neutral-100 text-xs">{value}</p>
+    <div className="bg-surface-container-low rounded-xl p-2 border border-outline-variant">
+      <p className="text-xs text-on-surface-variant mb-0.5">{label}</p>
+      <p className="font-semibold text-on-surface text-xs">{value}</p>
     </div>
   );
 }
@@ -117,9 +116,9 @@ export function CardSectionRenderer({
       )}
       {data.weight && <InfoChip label="Weight" value={data.weight} />}
       {data.spayedNeutered && data.spayedNeutered !== 'Unknown' && (
-        <div className="bg-neutral-50 dark:bg-neutral-700/60 rounded-xl p-2 border border-neutral-100 dark:border-neutral-600 col-span-2">
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">Spayed/Neutered</p>
-          <p className="font-semibold text-neutral-800 dark:text-neutral-100 text-xs">{data.spayedNeutered}</p>
+        <div className="bg-surface-container-low rounded-xl p-2 border border-outline-variant col-span-2">
+          <p className="text-xs text-on-surface-variant mb-0.5">Spayed/Neutered</p>
+          <p className="font-semibold text-on-surface text-xs">{data.spayedNeutered}</p>
         </div>
       )}
     </div>
@@ -138,34 +137,34 @@ export function CardSectionRenderer({
       <div
         className={
           compact
-            ? 'bg-violet-50 dark:bg-violet-900/20 rounded-xl p-2.5 border border-violet-100 dark:border-violet-800'
-            : 'bg-violet-50 dark:bg-violet-900/20 rounded-2xl p-3 border border-violet-100 dark:border-violet-800'
+            ? 'bg-tertiary-container rounded-xl p-2.5 border border-tertiary/30'
+            : 'bg-tertiary-container rounded-2xl p-3 border border-tertiary/30'
         }
       >
         <div className="space-y-1.5 text-xs">
           {(data.likes?.length ?? 0) > 0 && (
-            <p className="text-emerald-700 dark:text-emerald-400">
+            <p className="text-primary">
               <span className="font-semibold">Likes:</span> {data.likes!.join(', ')}
             </p>
           )}
           {(data.dislikes?.length ?? 0) > 0 && (
-            <p className="text-rose-700 dark:text-rose-400">
+            <p className="text-error">
               <span className="font-semibold">Dislikes:</span> {data.dislikes!.join(', ')}
             </p>
           )}
           {(data.favoriteActivities?.length ?? 0) > 0 && (
-            <p className="text-amber-700 dark:text-amber-400">
+            <p className="text-tertiary">
               <span className="font-semibold">Favorite Activities:</span>{' '}
               {data.favoriteActivities!.join(', ')}
             </p>
           )}
           {data.typeOfPlay && (
-            <p className="text-sky-700 dark:text-sky-400">
+            <p className="text-secondary">
               <span className="font-semibold">Type of Play:</span> {data.typeOfPlay}
             </p>
           )}
           {data.activity && (
-            <p className="text-violet-700 dark:text-violet-400">
+            <p className="text-tertiary">
               <span className="font-semibold">Activity Level:</span> {data.activity}
             </p>
           )}
@@ -177,15 +176,15 @@ export function CardSectionRenderer({
   const dietContent: React.ReactNode =
     sharing.diet && (data.food || data.notes) ? (
       <div>
-        {data.food && <p className="text-neutral-600 dark:text-neutral-300 mb-1 text-sm">{data.food}</p>}
+        {data.food && <p className="text-on-surface-variant mb-1 text-sm">{data.food}</p>}
         {data.notes && (
-          <div className={`bg-blue-50 dark:bg-blue-900/20 ${compact ? 'rounded-xl' : 'rounded-2xl'} p-2.5 border border-blue-100 dark:border-blue-800 mt-1`}>
+          <div className={`bg-secondary-container ${compact ? 'rounded-xl' : 'rounded-2xl'} p-2.5 border border-secondary/30 mt-1`}>
             {data.notes.startsWith('eyJ') ? (
-              <p className="text-xs text-blue-400 italic flex items-center gap-1" title="This information is encrypted and only visible to the pet owner">
+              <p className="text-xs text-secondary italic flex items-center gap-1" title="This information is encrypted and only visible to the pet owner">
                 <span>🔒</span> Encrypted
               </p>
             ) : (
-              <p className="text-xs text-blue-700 dark:text-blue-300">{data.notes}</p>
+              <p className="text-xs text-on-secondary-container">{data.notes}</p>
             )}
           </div>
         )}
@@ -198,8 +197,8 @@ export function CardSectionRenderer({
       <div
         className={
           compact
-            ? 'bg-blue-50 dark:bg-blue-900/20 rounded-xl p-2.5 border border-blue-100 dark:border-blue-800'
-            : 'bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-3 border border-blue-100 dark:border-blue-800'
+            ? 'bg-secondary-container rounded-xl p-2.5 border border-secondary/30'
+            : 'bg-secondary-container rounded-2xl p-3 border border-secondary/30'
         }
       >
         <div className="space-y-2 mt-1.5">
@@ -211,22 +210,22 @@ export function CardSectionRenderer({
             return (
               <div
                 key={i}
-                className="text-xs border-b border-blue-100 dark:border-blue-800 last:border-0 pb-1.5 last:pb-0"
+                className="text-xs border-b border-secondary/30 last:border-0 pb-1.5 last:pb-0"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-blue-900 dark:text-blue-100">{m.name}</span>
-                  {freq && <span className="text-blue-600 dark:text-blue-300 font-medium">{freq}</span>}
+                  <span className="font-bold text-on-secondary-container">{m.name}</span>
+                  {freq && <span className="text-secondary font-medium">{freq}</span>}
                 </div>
-                {m.dosage && <p className="text-blue-700 dark:text-blue-300 mt-0.5">Dosage: {m.dosage}</p>}
+                {m.dosage && <p className="text-on-secondary-container mt-0.5">Dosage: {m.dosage}</p>}
                 {(m.startDate || m.endDate) && (
-                  <p className="text-blue-500 dark:text-blue-400 text-[9px] mt-0.5 uppercase tracking-tight">
+                  <p className="text-secondary text-[9px] mt-0.5 uppercase tracking-tight">
                     {m.startDate && `Start: ${m.startDate}`}
                     {m.startDate && m.endDate && ' • '}
                     {m.endDate && `End: ${m.endDate}`}
                   </p>
                 )}
                 {m.notes && (
-                  <p className="text-blue-600 dark:text-blue-400 mt-1 italic leading-snug text-[10px]">
+                  <p className="text-secondary mt-1 italic leading-snug text-[10px]">
                     {m.notes}
                   </p>
                 )}
@@ -253,21 +252,21 @@ export function CardSectionRenderer({
           return (
             <div
               key={i}
-              className={`text-xs border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 ${
+              className={`text-xs border border-outline-variant bg-surface-container-low ${
                 compact ? 'rounded-lg px-2.5 py-1.5' : 'rounded-xl px-3 py-2'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium text-neutral-800 dark:text-neutral-200">{v.name}</span>
+                <span className="font-medium text-on-surface">{v.name}</span>
                 <span
                   className={`font-semibold ${
                     st === 'overdue'
-                      ? 'text-rose-600'
+                      ? 'text-error'
                       : st === 'due-soon'
-                      ? 'text-amber-600'
+                      ? 'text-tertiary'
                       : st === 'up-to-date'
-                      ? 'text-emerald-600'
-                      : 'text-neutral-400'
+                      ? 'text-primary'
+                      : 'text-on-surface-variant'
                   }`}
                 >
                   {st === 'overdue'
@@ -280,7 +279,7 @@ export function CardSectionRenderer({
                 </span>
               </div>
               {(v.lastDate || v.nextDueDate) && (
-                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-0.5">
+                <p className="text-[10px] text-on-surface-variant mt-0.5">
                   {v.lastDate && `Last: ${v.lastDate}`}
                   {v.lastDate && v.nextDueDate && ' · '}
                   {v.nextDueDate && `Next: ${v.nextDueDate}`}
@@ -297,18 +296,18 @@ export function CardSectionRenderer({
     <div>
       {data.microchipId ? (
         data.microchipId.startsWith('eyJ') ? (
-          <p className="text-xs bg-neutral-50 dark:bg-neutral-800/60 rounded-xl px-3 py-2 border border-neutral-100 dark:border-neutral-700 font-mono text-neutral-400 italic flex items-center gap-1" title="This information is encrypted and only visible to the pet owner">
+          <p className="text-xs bg-surface-container-low rounded-xl px-3 py-2 border border-outline-variant font-mono text-on-surface-variant italic flex items-center gap-1" title="This information is encrypted and only visible to the pet owner">
             <span>🔒</span> Encrypted
           </p>
         ) : (
-          <p className="text-xs bg-neutral-50 dark:bg-neutral-800/60 rounded-xl px-3 py-2 border border-neutral-100 dark:border-neutral-700 font-mono text-neutral-700 dark:text-neutral-200 break-all">
+          <p className="text-xs bg-surface-container-low rounded-xl px-3 py-2 border border-outline-variant font-mono text-on-surface break-all">
             {data.microchipId}
           </p>
         )
       ) : (
-        <div className="flex items-center gap-2 text-sm bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-3 border border-neutral-100 dark:border-neutral-700">
-          <ShieldOff className="w-4 h-4 text-neutral-400 shrink-0" />
-          <span className="text-neutral-500 dark:text-neutral-400">Not Microchipped</span>
+        <div className="flex items-center gap-2 text-sm bg-surface-container-low rounded-xl p-3 border border-outline-variant">
+          <span className="material-symbols-outlined text-[16px] text-on-surface-variant shrink-0">shield_off</span>
+          <span className="text-on-surface-variant">Not Microchipped</span>
         </div>
       )}
     </div>
@@ -323,14 +322,14 @@ export function CardSectionRenderer({
     <div
       className={
         compact
-          ? 'bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-3 border border-neutral-100 dark:border-neutral-700'
-          : 'bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl p-4 border border-neutral-100 dark:border-neutral-700 space-y-3 text-left'
+          ? 'bg-surface-container-low rounded-xl p-3 border border-outline-variant'
+          : 'bg-surface-container-low rounded-2xl p-4 border border-outline-variant space-y-3 text-left'
       }
     >
       {data.emergencyContacts?.ownerPhone && (
         <div className="mb-2">
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">Owner</p>
-          <p className="font-medium text-neutral-800 dark:text-neutral-100 text-sm">
+          <p className="text-xs text-on-surface-variant">Owner</p>
+          <p className="font-medium text-on-surface text-sm">
             {data.emergencyContacts.ownerPhone}
           </p>
         </div>
@@ -339,12 +338,12 @@ export function CardSectionRenderer({
         ?.filter(c => c.name || c.phone)
         .map((c, i) => (
           <div key={i} className="mb-2 last:mb-0">
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">{c.name}</p>
-            <p className="font-medium text-neutral-800 dark:text-neutral-100 text-sm">{c.phone}</p>
+            <p className="text-xs text-on-surface-variant">{c.name}</p>
+            <p className="font-medium text-on-surface text-sm">{c.phone}</p>
           </div>
         ))}
       {!hasEmergencyData && (
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 italic">
+        <p className="text-xs text-on-surface-variant italic">
           Secondary contact info is not on file.
         </p>
       )}
@@ -354,13 +353,13 @@ export function CardSectionRenderer({
   // ── Section: vetInfo ──
   const vetInfoContent: React.ReactNode =
     sharing.vetInfo && data.emergencyContacts?.vetInfo ? (
-      <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl p-4 border border-neutral-100 dark:border-neutral-700">
-        <p className="font-medium text-neutral-800 dark:text-neutral-100 text-sm">
+      <div className="bg-surface-container-low rounded-2xl p-4 border border-outline-variant">
+        <p className="font-medium text-on-surface text-sm">
           {data.emergencyContacts!.vetInfo!.name}
         </p>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400">{data.emergencyContacts!.vetInfo!.phone}</p>
+        <p className="text-xs text-on-surface-variant">{data.emergencyContacts!.vetInfo!.phone}</p>
         {data.emergencyContacts!.vetInfo!.address && (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">{data.emergencyContacts!.vetInfo!.address}</p>
+          <p className="text-xs text-on-surface-variant">{data.emergencyContacts!.vetInfo!.address}</p>
         )}
       </div>
     ) : null;
@@ -410,14 +409,14 @@ export function CardSectionRenderer({
     .filter(Boolean);
 
   return (
-    <div className={compact ? 'space-y-2' : 'divide-y divide-neutral-100 dark:divide-neutral-700'}>
+    <div className={compact ? 'space-y-2' : 'divide-y divide-outline-variant'}>
       {orderedSections}
       {includeGeneralInfo && data.householdInfo && (
         <div className={compact ? 'py-1' : 'px-6 py-4'}>
-          <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1.5 uppercase tracking-wider text-xs flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5" /> Household Information
+          <h3 className="font-bold text-on-surface mb-1.5 uppercase tracking-wider text-xs flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[14px]">info</span> Household Information
           </h3>
-          <p className="text-xs text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800/60 rounded-xl px-3 py-2 border border-neutral-100 dark:border-neutral-700 whitespace-pre-wrap break-words">
+          <p className="text-xs text-on-surface-variant bg-surface-container-low rounded-xl px-3 py-2 border border-outline-variant whitespace-pre-wrap break-words">
             {data.householdInfo}
           </p>
         </div>

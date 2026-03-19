@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Mic, Square, Send, X } from 'lucide-react';
 import { uploadMessageAudio } from '../../lib/storageService';
 
 interface VoiceMemoProps {
@@ -98,52 +97,54 @@ export function VoiceMemo({ onSend, onClose, senderUid, recipientUid }: VoiceMem
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
+    <div className="flex items-center gap-2 p-2 bg-surface-container-low rounded-xl border border-outline-variant">
       {!audioBlob ? (
         <>
           <button
             onClick={recording ? stopRecording : startRecording}
             className={`p-2 rounded-full transition-colors ${
               recording
-                ? 'bg-rose-500 text-white animate-pulse'
-                : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                ? 'bg-error text-on-error animate-pulse'
+                : 'bg-primary text-on-primary hover:bg-primary/90'
             }`}
             aria-label={recording ? 'Stop recording' : 'Start recording'}
           >
-            {recording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            {recording
+              ? <span className="material-symbols-outlined text-[16px]">stop</span>
+              : <span className="material-symbols-outlined text-[16px]">mic</span>}
           </button>
-          <span className="text-sm text-neutral-600 dark:text-neutral-300 tabular-nums min-w-[3rem]">
+          <span className="text-sm text-on-surface-variant tabular-nums min-w-[3rem]">
             {recording ? formatTime(duration) : 'Tap to record'}
           </span>
           {!recording && (
-            <button onClick={onClose} className="ml-auto p-1 text-neutral-400 hover:text-neutral-600">
-              <X className="w-4 h-4" />
+            <button onClick={onClose} className="ml-auto p-1 text-on-surface-variant hover:text-on-surface">
+              <span className="material-symbols-outlined text-[16px]">close</span>
             </button>
           )}
         </>
       ) : (
         <>
           <audio src={audioUrl!} controls className="h-8 flex-1" />
-          <span className="text-xs text-neutral-400">{formatTime(duration)}</span>
+          <span className="text-xs text-on-surface-variant">{formatTime(duration)}</span>
           <button
             onClick={handleDiscard}
-            className="p-1.5 text-neutral-400 hover:text-rose-500 transition-colors"
+            className="p-1.5 text-on-surface-variant hover:text-error transition-colors"
             aria-label="Discard recording"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
           <button
             onClick={handleSend}
             disabled={uploading}
-            className="p-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 disabled:opacity-50 transition-colors"
+            className="p-2 bg-primary text-on-primary rounded-full hover:bg-primary/90 disabled:opacity-50 transition-colors"
             aria-label="Send voice message"
           >
-            <Send className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">send</span>
           </button>
         </>
       )}
       {error && (
-        <p role="alert" className="text-xs text-rose-500 dark:text-rose-400 mt-1 px-2">
+        <p role="alert" className="text-xs text-error mt-1 px-2">
           {error}
         </p>
       )}

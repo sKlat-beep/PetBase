@@ -1,5 +1,4 @@
 import { motion } from 'motion/react';
-import { X } from 'lucide-react';
 
 const COMMON_FILTERS = [
   'Emergency', '24/7', 'Vaccination', 'Surgery', 'Dental', 'Microchipping', 'Spay/Neuter', 'Exotics',
@@ -51,16 +50,16 @@ export function ServiceFilters({
   };
 
   return (
-    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="bg-white dark:bg-neutral-800 rounded-xl p-4 border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden">
+    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="bg-surface-container-low rounded-xl p-4 border border-outline-variant shadow-sm overflow-hidden">
       <div className="space-y-6">
         {/* Clear all + Radius */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <label className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">Search Radius</label>
+            <label className="text-xs font-semibold text-on-surface-variant">Search Radius</label>
             <select
               value={searchRadius}
               onChange={(e) => onRadiusChange(Number(e.target.value))}
-              className="text-sm rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="text-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {RADIUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -68,24 +67,24 @@ export function ServiceFilters({
             </select>
           </div>
           {hasActiveFilters && (
-            <button onClick={clearAll} className="flex items-center gap-1 text-xs font-medium text-rose-500 hover:text-rose-600 transition-colors">
-              <X className="w-3.5 h-3.5" /> Clear all
+            <button onClick={clearAll} className="flex items-center gap-1 text-xs font-medium text-error hover:text-error/80 transition-colors">
+              <span className="material-symbols-outlined text-[14px]">close</span> Clear all
             </button>
           )}
         </div>
 
         {/* Pet type filters */}
         <div>
-          <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">My Pets (Smart Filter)</h4>
+          <h4 className="text-sm font-semibold text-on-surface mb-2">My Pets (Smart Filter)</h4>
           {availablePetTypes.length === 0 ? (
-            <p className="text-sm text-neutral-400 dark:text-neutral-500">Add pets to your profile to enable smart filtering.</p>
+            <p className="text-sm text-on-surface-variant">Add pets to your profile to enable smart filtering.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {availablePetTypes.map(type => (
                 <button
                   key={type}
                   onClick={() => onPetTypesChange(activePetTypes.includes(type) ? activePetTypes.filter(t => t !== type) : [...activePetTypes, type])}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${activePetTypes.includes(type) ? 'bg-emerald-100 border-emerald-200 text-emerald-700 dark:bg-emerald-900/40 dark:border-emerald-800 dark:text-emerald-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600 dark:bg-neutral-700/50 dark:border-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${activePetTypes.includes(type) ? 'bg-primary-container border-primary/30 text-on-primary-container' : 'bg-surface-container border-outline-variant text-on-surface-variant hover:bg-surface-container-high'}`}
                 >
                   {type} Friendly
                 </button>
@@ -94,13 +93,13 @@ export function ServiceFilters({
           )}
           {availableBreeds.length > 0 && (
             <div className="mt-3">
-              <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-2">Breeds (used for Verified matching)</p>
+              <p className="text-xs font-medium text-on-surface-variant mb-2">Breeds (used for Verified matching)</p>
               <div className="flex flex-wrap gap-1.5">
                 {availableBreeds.map(breed => (
                   <button
                     key={breed}
                     onClick={() => onBreedsChange(activeBreeds.includes(breed) ? activeBreeds.filter(b => b !== breed) : [...activeBreeds, breed])}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors border ${activeBreeds.includes(breed) ? 'bg-indigo-100 border-indigo-200 text-indigo-700 dark:bg-indigo-900/40 dark:border-indigo-800 dark:text-indigo-400' : 'bg-neutral-50 border-neutral-200 text-neutral-400 dark:bg-neutral-700/50 dark:border-neutral-600 dark:text-neutral-500 line-through hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors border ${activeBreeds.includes(breed) ? 'bg-indigo-100 border-indigo-200 text-indigo-700' : 'bg-surface-container border-outline-variant text-on-surface-variant line-through hover:bg-surface-container-high'}`}
                   >
                     {breed}
                   </button>
@@ -110,13 +109,13 @@ export function ServiceFilters({
           )}
           {availableSizes.length > 0 && (
             <div className="mt-3">
-              <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-2">Size (derived from pet weight)</p>
+              <p className="text-xs font-medium text-on-surface-variant mb-2">Size (derived from pet weight)</p>
               <div className="flex flex-wrap gap-1.5">
                 {availableSizes.map(size => (
                   <button
                     key={size}
                     onClick={() => onSizesChange(activeSizes.includes(size) ? activeSizes.filter(s => s !== size) : [...activeSizes, size])}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors border ${activeSizes.includes(size) ? 'bg-violet-100 border-violet-200 text-violet-700 dark:bg-violet-900/40 dark:border-violet-800 dark:text-violet-400' : 'bg-neutral-50 border-neutral-200 text-neutral-400 dark:bg-neutral-700/50 dark:border-neutral-600 dark:text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors border ${activeSizes.includes(size) ? 'bg-tertiary-container border-tertiary/30 text-on-tertiary-container' : 'bg-surface-container border-outline-variant text-on-surface-variant hover:bg-surface-container-high'}`}
                   >
                     {size}
                   </button>
@@ -129,13 +128,13 @@ export function ServiceFilters({
         {/* Service capability filters */}
         {activeTab !== 'Stores' && (
           <div>
-            <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Service Capabilities</h4>
+            <h4 className="text-sm font-semibold text-on-surface mb-2">Service Capabilities</h4>
             <div className="flex flex-wrap gap-2">
               {COMMON_FILTERS.map(filter => (
                 <button
                   key={filter}
                   onClick={() => onServiceFiltersChange(activeServiceFilters.includes(filter) ? activeServiceFilters.filter(f => f !== filter) : [...activeServiceFilters, filter])}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${activeServiceFilters.includes(filter) ? 'bg-indigo-100 border-indigo-200 text-indigo-700 dark:bg-indigo-900/40 dark:border-indigo-800 dark:text-indigo-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600 dark:bg-neutral-700/50 dark:border-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${activeServiceFilters.includes(filter) ? 'bg-indigo-100 border-indigo-200 text-indigo-700' : 'bg-surface-container border-outline-variant text-on-surface-variant hover:bg-surface-container-high'}`}
                 >
                   {filter}
                 </button>

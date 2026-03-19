@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Compass, PawPrint, Search, Users } from 'lucide-react';
 import EmptyState from '../ui/EmptyState';
 import { useCommunity } from '../../contexts/CommunityContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -87,16 +86,16 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
   if (!hasSomething) return null;
 
   return (
-    <section className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl border border-neutral-100 dark:border-neutral-700 p-5">
-      <h2 className="font-semibold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 mb-4">
-        <Compass className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+    <section className="bg-surface-container-low backdrop-blur-sm rounded-2xl border border-outline-variant p-5">
+      <h2 className="font-semibold text-on-surface flex items-center gap-2 mb-4">
+        <span className="material-symbols-outlined text-[16px] text-primary" aria-hidden="true">explore</span>
         Discover
       </h2>
 
       {/* Lost Pet Alerts */}
       {lostPets.length > 0 && (
         <div className="mb-5">
-          <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
+          <h3 className="text-xs font-medium text-on-surface-variant uppercase tracking-wide mb-2">
             Lost Pet Alerts
           </h3>
           {lostPets.map(pet => (
@@ -113,7 +112,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
             <button
               onClick={() => setCategoryFilter(null)}
               className={`px-2.5 py-1 min-h-[44px] text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
-                !categoryFilter ? 'bg-emerald-500 text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
+                !categoryFilter ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'
               }`}
             >All</button>
             {CATEGORY_FILTERS.map(cat => (
@@ -121,30 +120,30 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                 key={cat}
                 onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
                 className={`px-2.5 py-1 min-h-[44px] text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
-                  categoryFilter === cat ? 'bg-emerald-500 text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
+                  categoryFilter === cat ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'
                 }`}
               >{cat}</button>
             ))}
           </div>
 
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide flex-1">
+            <h3 className="text-xs font-medium text-on-surface-variant uppercase tracking-wide flex-1">
               {categoryFilter ? `${categoryFilter} Groups` : 'Groups to Join'}
             </h3>
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-neutral-400" />
+              <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[12px] text-on-surface-variant">search</span>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search groups…"
-                className="pl-7 pr-3 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-40"
+                className="pl-7 pr-3 py-1.5 text-xs rounded-lg border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary w-40"
               />
             </div>
           </div>
           {filteredGroups.length === 0 ? (
             <EmptyState
-              icon={<Search className="w-10 h-10" />}
+              icon={<span className="material-symbols-outlined text-[40px]">search</span>}
               title="No matches found"
               description="Try a different search term or broaden your filters."
             />
@@ -156,29 +155,29 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                 return (
                   <div
                     key={group.id}
-                    className="rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 p-4"
+                    className="rounded-xl border border-outline-variant bg-surface-container p-4"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-neutral-800 dark:text-neutral-100 truncate">{group.name}</p>
+                        <p className="text-sm font-medium text-on-surface truncate">{group.name}</p>
                         {!isExpanded && group.description && (
-                          <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{group.description}</p>
+                          <p className="text-xs text-on-surface-variant truncate mt-0.5">{group.description}</p>
                         )}
                         <div className="flex gap-1 mt-1 flex-wrap">
                           {group.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                            <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                               {tag}
                             </span>
                           ))}
                         </div>
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                        <p className="text-xs text-on-surface-variant mt-1">
                           {memberCount} member{memberCount !== 1 ? 's' : ''}
                         </p>
                       </div>
                       {!isExpanded && (
                         <button
                           onClick={() => { setExpandedId(group.id); setJoinError(null); }}
-                          className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                          className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                           aria-label={`Preview ${group.name}`}
                         >
                           Join
@@ -186,27 +185,27 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                       )}
                     </div>
                     {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-600">
+                      <div className="mt-3 pt-3 border-t border-outline-variant">
                         {group.description && (
-                          <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-2">{group.description}</p>
+                          <p className="text-xs text-on-surface-variant mb-2">{group.description}</p>
                         )}
-                        <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mb-3">
+                        <p className="text-[10px] text-on-surface-variant mb-3">
                           {group.posts.length} post{group.posts.length !== 1 ? 's' : ''} · {group.events.length} event{group.events.length !== 1 ? 's' : ''}
                         </p>
                         {joinError && expandedId === group.id && (
-                          <p className="text-xs text-rose-500 mb-2" role="alert">{joinError}</p>
+                          <p className="text-xs text-error mb-2" role="alert">{joinError}</p>
                         )}
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleJoin(group.id)}
                             disabled={joiningId === group.id}
-                            className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                            className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 disabled:opacity-50 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                           >
                             {joiningId === group.id ? 'Joining…' : 'Join'}
                           </button>
                           <button
                             onClick={() => setExpandedId(null)}
-                            className="text-xs px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                            className="text-xs px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                           >
                             Cancel
                           </button>
@@ -219,7 +218,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
             </div>
           )}
           {!searchQuery && discoverGroups.length > 8 && (
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 text-center">
+            <p className="text-xs text-primary mt-2 text-center">
               {discoverGroups.length - 8} more — search to find them
             </p>
           )}
@@ -227,8 +226,8 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
       )}
 
       {discoverGroups.length === 0 && lostPets.length === 0 && (
-        <div className="text-center py-6 text-neutral-400 dark:text-neutral-500">
-          <PawPrint className="w-10 h-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
+        <div className="text-center py-6 text-on-surface-variant">
+          <span className="material-symbols-outlined text-[40px] mx-auto mb-2 opacity-40" aria-hidden="true">pets</span>
           <p className="text-sm">You've joined all available groups!</p>
         </div>
       )}

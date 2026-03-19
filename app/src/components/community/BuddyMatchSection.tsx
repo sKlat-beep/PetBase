@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Heart, MapPin } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocial, type PublicProfile } from '../../contexts/SocialContext';
 import { usePets } from '../../contexts/PetContext';
@@ -43,11 +42,11 @@ export default function BuddyMatchSection() {
 
   if (!profile?.publicStatus || profile.publicStatus === 'None') {
     return (
-      <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-3">
-          <Heart className="w-5 h-5 text-rose-500" /> Find a Buddy
+      <div className="bg-surface-container-low backdrop-blur-xl rounded-2xl border border-outline-variant p-6">
+        <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2 mb-3">
+          <span className="material-symbols-outlined text-[20px] text-error">favorite</span> Find a Buddy
         </h2>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        <p className="text-sm text-on-surface-variant">
           Set your status to "Open to Playdates" or "Looking for Walking Buddies" in your profile to find matches nearby.
         </p>
       </div>
@@ -55,9 +54,9 @@ export default function BuddyMatchSection() {
   }
 
   return (
-    <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 p-6">
-      <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
-        <Heart className="w-5 h-5 text-rose-500" /> Find a Buddy
+    <div className="bg-surface-container-low backdrop-blur-xl rounded-2xl border border-outline-variant p-6">
+      <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2 mb-4">
+        <span className="material-symbols-outlined text-[20px] text-error">favorite</span> Find a Buddy
       </h2>
 
       {/* Filter tabs */}
@@ -68,8 +67,8 @@ export default function BuddyMatchSection() {
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 min-h-[44px] text-xs font-medium rounded-full transition-colors ${
               filter === f
-                ? 'bg-rose-500 text-white'
-                : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
+                ? 'bg-error text-on-error'
+                : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
             }`}
           >
             {f === 'all' ? 'All' : f === 'playdates' ? '🐾 Playdates' : '🚶 Walking'}
@@ -79,7 +78,7 @@ export default function BuddyMatchSection() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          icon={<Heart className="w-10 h-10" />}
+          icon={<span className="material-symbols-outlined text-[40px]">favorite</span>}
           title="No buddies found yet"
           description="Check back later as more pet parents join your area!"
         />
@@ -91,22 +90,22 @@ export default function BuddyMatchSection() {
               userPetTypes.has(p.type?.toLowerCase() ?? '')
             );
             return (
-              <div key={buddy.uid} className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-700/30">
-                <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center text-sm font-bold text-neutral-600 dark:text-neutral-300 shrink-0">
+              <div key={buddy.uid} className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low">
+                <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-sm font-bold text-on-surface-variant shrink-0">
                   {(buddy.displayName || '?').charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">
+                  <p className="text-sm font-medium text-on-surface truncate">
                     {buddy.displayName}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {statusInfo && (
-                      <span className="text-xs text-rose-600 dark:text-rose-400">
+                      <span className="text-xs text-error">
                         {statusInfo.emoji} {statusInfo.label}
                       </span>
                     )}
                     {hasPetOverlap && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                         Similar pets
                       </span>
                     )}
@@ -118,7 +117,7 @@ export default function BuddyMatchSection() {
                     setSentRequests(prev => new Set([...prev, buddy.uid]));
                   }}
                   disabled={sentRequests.has(buddy.uid) || (profile?.friends ?? []).includes(buddy.uid)}
-                  className="px-3 py-1.5 min-h-[44px] text-xs font-medium rounded-lg bg-rose-500 text-white hover:bg-rose-600 disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 min-h-[44px] text-xs font-medium rounded-lg bg-error text-on-error hover:bg-error/90 disabled:opacity-40 transition-colors"
                 >
                   {(profile?.friends ?? []).includes(buddy.uid) ? 'Friends' : sentRequests.has(buddy.uid) ? 'Sent' : 'Connect'}
                 </button>

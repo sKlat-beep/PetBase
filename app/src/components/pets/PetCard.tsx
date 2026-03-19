@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Eye, Pencil, Syringe, Cake, Lock, Zap } from 'lucide-react';
 import type { Pet } from '../../contexts/PetContext';
 import { overallVaccineStatus } from '../../components/MedicalRecordsModal';
 import { formatPetAge } from '../../lib/petAge';
@@ -64,18 +63,18 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
   const showVaccineDot = vaccineStatus !== 'unknown';
 
   const vaccineDotClass =
-    vaccineStatus === 'overdue'  ? 'bg-rose-500'  :
+    vaccineStatus === 'overdue'  ? 'bg-error'  :
     vaccineStatus === 'due-soon' ? 'bg-amber-500' :
-    'bg-emerald-500';
+    'bg-primary';
 
   const shapeClass = avatarShapeClass(pet.avatarShape);
   const lostRing = pet.lostStatus?.isLost
-    ? 'ring-2 ring-rose-500 ring-offset-2 animate-pulse'
+    ? 'ring-2 ring-error ring-offset-2 animate-pulse'
     : '';
 
   return (
     <motion.div
-      className={`bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-4 flex flex-col gap-3 shadow-sm${isBirthdayToday ? ' ring-2 ring-amber-400 ring-offset-2' : ''}`}
+      className={`bg-surface-container-low/80 backdrop-blur-sm rounded-2xl p-4 flex flex-col gap-3 shadow-sm${isBirthdayToday ? ' ring-2 ring-amber-400 ring-offset-2' : ''}`}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -91,7 +90,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
             />
           ) : (
             <div
-              className={`w-14 h-14 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-2xl ${shapeClass} ${lostRing}`}
+              className={`w-14 h-14 bg-surface-container flex items-center justify-center text-2xl ${shapeClass} ${lostRing}`}
             >
               🐾
             </div>
@@ -99,7 +98,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
           {/* Vaccine status dot */}
           {showVaccineDot && (
             <span
-              className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white dark:border-neutral-800 ${vaccineDotClass}`}
+              className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-surface ${vaccineDotClass}`}
             />
           )}
         </StoryRing>
@@ -107,34 +106,34 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
         {/* Name + badges */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+            <span className="font-semibold text-on-surface truncate">
               {pet.name}
             </span>
             {isBirthdayToday && (
               <span title="Happy Birthday!" className="flex-shrink-0" aria-label="birthday">🎂</span>
             )}
             {pet.isPrivate && (
-              <Lock className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span className="material-symbols-outlined text-sm text-on-surface-variant flex-shrink-0">lock</span>
             )}
             {isBirthdayNear && !isBirthdayToday && (
               <span title="Birthday coming up!" className="flex-shrink-0">
-                <Cake className="w-3.5 h-3.5 text-rose-400" />
+                <span className="material-symbols-outlined text-sm text-error">cake</span>
               </span>
             )}
           </div>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+          <p className="text-xs text-on-surface-variant truncate">
             {pet.breed}{pet.type ? ` · ${pet.type}` : ''}
           </p>
           {liveAge && (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">{liveAge}</p>
+            <p className="text-xs text-on-surface-variant">{liveAge}</p>
           )}
         </div>
       </div>
 
       {/* Ephemeral Status */}
       {pet.ephemeralStatus && (!pet.ephemeralStatusExpiresAt || pet.ephemeralStatusExpiresAt > Date.now()) && (
-        <div className="mt-2 px-2.5 py-1 rounded-lg bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700">
-          <p className="text-xs text-violet-700 dark:text-violet-300">{pet.ephemeralStatus}</p>
+        <div className="mt-2 px-2.5 py-1 rounded-lg bg-tertiary-container border border-outline-variant">
+          <p className="text-xs text-on-tertiary-container">{pet.ephemeralStatus}</p>
         </div>
       )}
 
@@ -142,7 +141,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
       {pet.statusTags && pet.statusTags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-2">
           {pet.statusTags.map(tag => (
-            <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-700">
+            <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-secondary-container text-on-secondary-container border border-outline-variant">
               {tag}
             </span>
           ))}
@@ -150,15 +149,15 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
       )}
 
       {/* Action buttons */}
-      <div className="flex justify-end gap-1 border-t border-neutral-100 dark:border-neutral-700 pt-2 relative">
+      <div className="flex justify-end gap-1 border-t border-outline-variant pt-2 relative">
         {onSetStatus && (
           <div className="relative">
             <button
               onClick={() => setStatusMenuOpen(v => !v)}
-              className="p-2 rounded-xl text-neutral-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:text-violet-400 dark:hover:bg-violet-900/20 transition-colors"
+              className="p-2 rounded-xl text-on-surface-variant hover:text-tertiary hover:bg-tertiary-container transition-colors"
               aria-label={`Set status for ${pet.name}`}
             >
-              <Zap className="w-4 h-4" />
+              <span className="material-symbols-outlined text-base">bolt</span>
             </button>
             <AnimatePresence>
               {statusMenuOpen && (
@@ -166,12 +165,12 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="absolute bottom-full right-0 mb-1 w-44 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600 rounded-xl shadow-lg z-20 py-1 overflow-hidden"
+                  className="absolute bottom-full right-0 mb-1 w-44 bg-surface-container-low border border-outline-variant rounded-xl shadow-lg z-20 py-1 overflow-hidden"
                 >
                   {pet.ephemeralStatus && (
                     <button
                       onClick={() => { onSetStatus(pet, undefined); setStatusMenuOpen(false); }}
-                      className="w-full px-3 py-2 text-left text-xs text-rose-600 dark:text-rose-400 hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
+                      className="w-full px-3 py-2 text-left text-xs text-error hover:bg-surface-container"
                     >
                       Clear status
                     </button>
@@ -180,7 +179,7 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
                     <button
                       key={s}
                       onClick={() => { onSetStatus(pet, s); setStatusMenuOpen(false); }}
-                      className="w-full px-3 py-2 text-left text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/50"
+                      className="w-full px-3 py-2 text-left text-xs text-on-surface hover:bg-surface-container"
                     >
                       {s}
                     </button>
@@ -192,27 +191,27 @@ export const PetCard = React.memo(function PetCard({ pet, onViewDetail, onEdit, 
         )}
         <button
           onClick={() => onViewDetail(pet)}
-          className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+          className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
           aria-label={`View ${pet.name}`}
         >
-          <Eye className="w-4 h-4" />
+          <span className="material-symbols-outlined text-base">visibility</span>
         </button>
         {onEdit && (
           <button
             onClick={() => onEdit(pet)}
-            className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+            className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
             aria-label={`Edit ${pet.name}`}
           >
-            <Pencil className="w-4 h-4" />
+            <span className="material-symbols-outlined text-base">edit</span>
           </button>
         )}
         {onMedical && (
           <button
             onClick={() => onMedical(pet)}
-            className="p-2 rounded-xl text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-900/20 transition-colors"
+            className="p-2 rounded-xl text-on-surface-variant hover:text-error hover:bg-error-container transition-colors"
             aria-label={`Medical records for ${pet.name}`}
           >
-            <Syringe className="w-4 h-4" />
+            <span className="material-symbols-outlined text-base">syringe</span>
           </button>
         )}
       </div>

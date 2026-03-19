@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { MessageSquare, Trash2, CornerDownRight, Send, Flag } from 'lucide-react';
 import { subscribePostComments, createNotification, type GroupComment } from '../../lib/firestoreService';
 import { useCommunity, type CommunityRole } from '../../contexts/CommunityContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -77,7 +76,7 @@ function CommentRow({
       {/* Avatar */}
       <button
         onClick={() => onViewProfile(comment.authorId)}
-        className="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-sky-700 dark:text-sky-400 hover:ring-2 hover:ring-sky-400 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
+        className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-sky-700 hover:ring-2 hover:ring-sky-400 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
         aria-label={`View ${comment.authorName}'s profile`}
       >
         {authorInitials(comment.authorName)}
@@ -85,24 +84,24 @@ function CommentRow({
 
       {/* Bubble */}
       <div className="flex-1 min-w-0">
-        <div className="bg-neutral-100 dark:bg-neutral-700/60 rounded-xl px-3 py-2">
+        <div className="bg-surface-container-high rounded-xl px-3 py-2">
           <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
             <button
               onClick={() => onViewProfile(comment.authorId)}
-              className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+              className="text-[11px] font-semibold text-on-surface hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
             >
               {comment.authorName}
             </button>
-            <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+            <span className="text-[10px] text-on-surface-variant">
               {relativeTime(comment.createdAt)}
             </span>
             {comment.isFlagged && isModerator && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
                 ⚠️ Under review
               </span>
             )}
           </div>
-          <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed break-words">
+          <p className="text-xs text-on-surface-variant leading-relaxed break-words">
             {/* TODO: open UserProfileModal when onMentionClick is wired from parent */}
             {renderMentions(comment.content, onMentionClick ?? (() => {}))}
           </p>
@@ -120,8 +119,8 @@ function CommentRow({
                 onClick={() => onReact(comment.id, key)}
                 className={`flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500
                   ${isActive
-                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                    : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600'
+                    ? 'bg-primary-container text-on-primary-container'
+                    : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
                   }`}
                 aria-pressed={isActive}
                 aria-label={`${key} reaction${count > 0 ? `, ${count}` : ''}`}
@@ -137,7 +136,7 @@ function CommentRow({
           {!isReply && (
             <button
               onClick={() => onReply(comment.id)}
-              className="text-[10px] text-neutral-400 dark:text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+              className="text-[10px] text-on-surface-variant hover:text-primary transition-colors font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
             >
               Reply
             </button>
@@ -147,11 +146,11 @@ function CommentRow({
           {canDelete && (
             <button
               onClick={() => onDelete(comment.id, comment.authorId)}
-              className="text-[10px] text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
+              className="text-[10px] text-on-surface-variant hover:text-error transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
               aria-label="Delete comment"
               title="Delete comment"
             >
-              <Trash2 className="w-3 h-3" aria-hidden="true" />
+              <span className="material-symbols-outlined text-[12px]" aria-hidden="true">delete</span>
             </button>
           )}
 
@@ -159,11 +158,11 @@ function CommentRow({
           {!isOwnComment && (
             <button
               onClick={() => onReport(comment.id)}
-              className="text-[10px] text-neutral-400 dark:text-neutral-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded flex items-center gap-0.5"
+              className="text-[10px] text-on-surface-variant hover:text-orange-500 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded flex items-center gap-0.5"
               aria-label="Report comment"
               title="Report comment"
             >
-              <Flag className="w-3 h-3" aria-hidden="true" />
+              <span className="material-symbols-outlined text-[12px]" aria-hidden="true">flag</span>
             </button>
           )}
         </div>
@@ -348,15 +347,15 @@ export default function PostComments({
   // -------------------------------------------------------------------------
 
   return (
-    <div className="mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-700/60">
+    <div className="mt-3 pt-3 border-t border-outline-variant">
       {/* Toggle button */}
       <button
         onClick={handleToggle}
-        className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+        className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
         aria-expanded={expanded}
         aria-controls={`comments-${postId}`}
       >
-        <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+        <span className="material-symbols-outlined text-[14px]" aria-hidden="true">chat</span>
         <span>
           {totalCount === 0
             ? (expanded ? 'Hide comments' : '0 comments')
@@ -380,7 +379,7 @@ export default function PostComments({
               {/* Loading spinner */}
               {loadingComments && (
                 <div className="flex items-center justify-center py-4">
-                  <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" aria-label="Loading comments" />
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-label="Loading comments" />
                 </div>
               )}
 
@@ -422,7 +421,7 @@ export default function PostComments({
                     {replyingToId === comment.id && (
                       <div className="pl-8">
                         <div className="flex items-start gap-2">
-                          <CornerDownRight className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0 mt-2" aria-hidden="true" />
+                          <span className="material-symbols-outlined text-[14px] text-on-surface-variant flex-shrink-0 mt-2" aria-hidden="true">subdirectory_arrow_right</span>
                           <div className="flex-1 flex items-start gap-2">
                             <MentionInput
                               groupId={groupId}
@@ -431,22 +430,22 @@ export default function PostComments({
                               onSubmit={() => handleSubmitReply(comment.id)}
                               placeholder="Write a reply…"
                               rows={1}
-                              className="flex-1 text-xs rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                              className="flex-1 text-xs rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder-on-surface-variant px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                               disabled={submittingReply}
                             />
                             <button
                               onClick={() => handleSubmitReply(comment.id)}
                               disabled={!replyText.trim() || submittingReply}
-                              className="p-1.5 rounded-full bg-emerald-500 text-white disabled:opacity-40 hover:bg-emerald-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
+                              className="p-1.5 rounded-full bg-primary text-on-primary disabled:opacity-40 hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
                               aria-label="Send reply"
                               title="Send reply"
                             >
-                              <Send className="w-3 h-3" aria-hidden="true" />
+                              <span className="material-symbols-outlined text-[12px]" aria-hidden="true">send</span>
                             </button>
                           </div>
                         </div>
                         {replyError && (
-                          <p className="text-red-500 text-xs mt-1 pl-5">{replyError}</p>
+                          <p className="text-error text-xs mt-1 pl-5">{replyError}</p>
                         )}
                       </div>
                     )}
@@ -456,7 +455,7 @@ export default function PostComments({
 
               {/* Empty state */}
               {!loadingComments && topLevel.length === 0 && (
-                <p className="text-center text-xs text-neutral-400 dark:text-neutral-500 py-2">
+                <p className="text-center text-xs text-on-surface-variant py-2">
                   No comments yet. Be the first!
                 </p>
               )}
@@ -475,21 +474,21 @@ export default function PostComments({
                     onSubmit={handleSubmitComment}
                     placeholder="Add a comment…"
                     rows={1}
-                    className="flex-1 text-xs rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                    className="flex-1 text-xs rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder-on-surface-variant px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                     disabled={submittingComment}
                   />
                   <button
                     onClick={handleSubmitComment}
                     disabled={!newCommentText.trim() || submittingComment}
-                    className="p-1.5 rounded-full bg-emerald-500 text-white disabled:opacity-40 hover:bg-emerald-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5 shrink-0"
+                    className="p-1.5 rounded-full bg-primary text-on-primary disabled:opacity-40 hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5 shrink-0"
                     aria-label="Post comment"
                     title="Post comment"
                   >
-                    <Send className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span className="material-symbols-outlined text-[14px]" aria-hidden="true">send</span>
                   </button>
                 </div>
                 {submitError && (
-                  <p className="text-red-500 text-xs mt-1">{submitError}</p>
+                  <p className="text-error text-xs mt-1">{submitError}</p>
                 )}
               </div>
             )}

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Settings2, Star, LogOut, BellRing } from 'lucide-react';
 import { useCommunity } from '../contexts/CommunityContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -31,28 +30,28 @@ export function ManageGroupsModal({ isOpen, onClose }: ManageGroupsModalProps) {
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="manage-groups-modal-title"
-                    className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-2xl z-10 flex flex-col max-h-[80vh]"
+                    className="relative bg-surface-container rounded-2xl shadow-2xl border border-outline-variant w-full max-w-2xl z-10 flex flex-col max-h-[80vh]"
                 >
-                    <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700 shrink-0">
+                    <div className="flex items-center justify-between p-6 border-b border-outline-variant shrink-0">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center">
-                                <Settings2 className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
+                            <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[20px] text-on-surface-variant">tune</span>
                             </div>
                             <div>
-                                <h2 id="manage-groups-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Your Groups</h2>
-                                <p className="text-sm text-neutral-500 dark:text-neutral-400">{userGroups.length} community group{userGroups.length !== 1 ? 's' : ''}</p>
+                                <h2 id="manage-groups-modal-title" className="text-xl font-bold text-on-surface">Your Groups</h2>
+                                <p className="text-sm text-on-surface-variant">{userGroups.length} community group{userGroups.length !== 1 ? 's' : ''}</p>
                             </div>
                         </div>
-                        <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                            <X className="w-5 h-5" />
+                        <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-lg hover:bg-surface-container-high">
+                            <span className="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
 
                     <div className="overflow-y-auto p-6 space-y-4">
                         {userGroups.length === 0 ? (
                             <div className="text-center py-10">
-                                <p className="text-neutral-500 dark:text-neutral-400">You haven't joined any groups yet.</p>
-                                <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-2">Discover groups from the Community Hub.</p>
+                                <p className="text-on-surface-variant">You haven't joined any groups yet.</p>
+                                <p className="text-sm text-on-surface-variant mt-2">Discover groups from the Community Hub.</p>
                             </div>
                         ) : (
                             userGroups.map(group => {
@@ -62,27 +61,27 @@ export function ManageGroupsModal({ isOpen, onClose }: ManageGroupsModalProps) {
                                 const hasNew = group.posts.length > 0 && group.posts[0].createdAt > (userPreferences[group.id]?.lastVisitedAt || 0);
 
                                 return (
-                                    <div key={group.id} className="flex items-center justify-between p-4 rounded-xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50">
+                                    <div key={group.id} className="flex items-center justify-between p-4 rounded-xl border border-outline-variant bg-surface-container">
                                         <div className="flex items-center gap-4">
-                                            <img src={group.image} alt={group.name} className="w-12 h-12 rounded-lg object-cover bg-neutral-200" referrerPolicy="no-referrer" />
+                                            <img src={group.image} alt={group.name} className="w-12 h-12 rounded-lg object-cover bg-surface-container-high" referrerPolicy="no-referrer" />
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">{group.name}</h3>
-                                                    {hasNew && <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center"><BellRing className="w-3 h-3 mr-1" /> New</span>}
+                                                    <h3 className="font-semibold text-on-surface">{group.name}</h3>
+                                                    {hasNew && <span className="bg-primary-container text-on-primary-container text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center"><span className="material-symbols-outlined text-[12px] mr-1">notifications_active</span> New</span>}
                                                 </div>
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{Object.keys(group.members).length} members {isOwner && '• Owner'}</p>
+                                                <p className="text-xs text-on-surface-variant mt-1">{Object.keys(group.members).length} members {isOwner && '• Owner'}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => toggleFavorite(group.id)}
                                                 className={`p-2 rounded-lg border transition-colors ${isFavorite
-                                                    ? 'bg-amber-50 border-amber-200 text-amber-500 dark:bg-amber-900/20 dark:border-amber-800'
-                                                    : 'bg-white border-neutral-200 text-neutral-400 hover:text-amber-500 dark:bg-neutral-800 dark:border-neutral-600'
+                                                    ? 'bg-amber-50 border-amber-200 text-amber-500'
+                                                    : 'bg-surface-container-low border-outline-variant text-on-surface-variant hover:text-amber-500'
                                                     }`}
                                                 title="Favorite"
                                             >
-                                                <Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+                                                <span className={`material-symbols-outlined text-[16px] ${isFavorite ? 'fill-1' : ''}`}>star</span>
                                             </button>
                                             <button
                                                 onClick={async () => {
@@ -97,10 +96,10 @@ export function ManageGroupsModal({ isOpen, onClose }: ManageGroupsModalProps) {
                                                         }
                                                     }
                                                 }}
-                                                className="p-2 rounded-lg border bg-white border-neutral-200 text-neutral-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:bg-neutral-800 dark:border-neutral-600 dark:hover:bg-rose-900/20 dark:hover:border-rose-800 transition-colors"
+                                                className="p-2 rounded-lg border bg-surface-container-low border-outline-variant text-on-surface-variant hover:text-error hover:border-error/30 hover:bg-error-container transition-colors"
                                                 title="Leave Group"
                                             >
-                                                <LogOut className="w-4 h-4" />
+                                                <span className="material-symbols-outlined text-[16px]">logout</span>
                                             </button>
                                         </div>
                                     </div>

@@ -1,4 +1,3 @@
-import { Heart, Smile, Zap } from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import { MoodLog } from './MoodLog';
 
@@ -18,13 +17,13 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
 
   if (isEmpty) {
     return (
-      <div className="text-center py-6 text-neutral-500 dark:text-neutral-400">
+      <div className="text-center py-6 text-on-surface-variant">
         <p className="text-sm mb-3">No activities added yet.</p>
         {/* Fix 4: Guard onEdit call */}
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-sm text-neutral-900 dark:text-neutral-100 font-semibold underline underline-offset-2"
+            className="text-sm text-on-surface font-semibold underline underline-offset-2"
           >
             Add activities →
           </button>
@@ -42,8 +41,8 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
       {hasLikes && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Heart className="w-4 h-4 text-rose-500 dark:text-rose-400" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
+            <span className="material-symbols-outlined text-base text-error">favorite</span>
+            <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
               Likes
             </p>
           </div>
@@ -52,7 +51,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
             {pet.likes!.map((like) => (
               <span
                 key={like}
-                className="text-xs px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300"
+                className="text-xs px-2.5 py-1 rounded-full bg-error-container text-on-error-container"
               >
                 {like}
               </span>
@@ -65,8 +64,8 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
       {hasDislikes && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Heart className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
+            <span className="material-symbols-outlined text-base text-on-surface-variant">heart_broken</span>
+            <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
               Dislikes
             </p>
           </div>
@@ -75,7 +74,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
             {pet.dislikes!.map((dislike) => (
               <span
                 key={dislike}
-                className="text-xs px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300"
+                className="text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant"
               >
                 {dislike}
               </span>
@@ -88,8 +87,8 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
       {hasActivities && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Smile className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
+            <span className="material-symbols-outlined text-base text-amber-500">mood</span>
+            <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
               Activities
             </p>
           </div>
@@ -98,7 +97,7 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
             {pet.favoriteActivities!.map((activity) => (
               <span
                 key={activity}
-                className="text-xs px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300"
+                className="text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700"
               >
                 {activity}
               </span>
@@ -111,13 +110,13 @@ export function PetActivitiesPanel({ pet, onEdit, onUpdatePet }: PetActivitiesPa
       {hasPlay && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Zap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
+            <span className="material-symbols-outlined text-base text-secondary">bolt</span>
+            <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
               Play Style
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300">
+            <span className="text-xs px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container">
               {pet.typeOfPlay}
             </span>
           </div>

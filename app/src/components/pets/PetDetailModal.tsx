@@ -1,16 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  X,
-  Pencil,
-  AlertTriangle,
-  Lock,
-  LayoutList,
-  Stethoscope,
-  Utensils,
-  Activity,
-  FolderOpen,
-} from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import { formatPetAge } from '../../lib/petAge';
 import { isPetFieldPublic } from '../../types/pet';
@@ -136,7 +125,7 @@ export function PetDetailModal({
 
   const shapeClass = avatarShapeClass(activePet.avatarShape);
   const lostRing = activePet.lostStatus?.isLost
-    ? 'ring-2 ring-rose-500 ring-offset-2'
+    ? 'ring-2 ring-error ring-offset-2'
     : '';
 
   const showField = (key: string) => isOwner !== false || isPetFieldPublic(activePet, key);
@@ -160,14 +149,14 @@ export function PetDetailModal({
         aria-modal="true"
         aria-labelledby="pet-detail-modal-title"
         tabIndex={-1}
-        className="relative bg-white dark:bg-neutral-900 w-full sm:rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 flex flex-col max-h-screen sm:max-h-[90vh] sm:max-w-2xl sm:mx-auto outline-none"
+        className="relative bg-surface-container-low w-full sm:rounded-2xl shadow-2xl border border-outline-variant flex flex-col max-h-screen sm:max-h-[90vh] sm:max-w-2xl sm:mx-auto outline-none"
         initial={{ opacity: 0, scale: 0.96, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 20 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       >
         {/* ── Sticky header ──────────────────────────────────────────────── */}
-        <div className="sticky top-0 z-10 bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-700">
+        <div className="sticky top-0 z-10 bg-surface-container-low border-b border-outline-variant">
           {/* Pet switcher strip — Fix 7: role="group" + aria-label */}
           {showSwitcher && (
             <div
@@ -187,7 +176,7 @@ export function PetDetailModal({
                     aria-pressed={isActive}
                     className={`flex-shrink-0 w-9 h-9 overflow-hidden transition-all ${pShapeClass} ${
                       isActive
-                        ? 'ring-2 ring-neutral-900 dark:ring-neutral-100 ring-offset-1'
+                        ? 'ring-2 ring-on-surface ring-offset-1'
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   >
@@ -200,7 +189,7 @@ export function PetDetailModal({
                       />
                     ) : (
                       <div
-                        className={`w-full h-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-base ${pShapeClass}`}
+                        className={`w-full h-full bg-surface-container flex items-center justify-center text-base ${pShapeClass}`}
                       >
                         🐾
                       </div>
@@ -224,7 +213,7 @@ export function PetDetailModal({
                 />
               ) : (
                 <div
-                  className={`w-16 h-16 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-3xl ${shapeClass} ${lostRing}`}
+                  className={`w-16 h-16 bg-surface-container flex items-center justify-center text-3xl ${shapeClass} ${lostRing}`}
                 >
                   🐾
                 </div>
@@ -237,23 +226,23 @@ export function PetDetailModal({
                 {/* Fix 4: id for aria-labelledby */}
                 <h2
                   id="pet-detail-modal-title"
-                  className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 truncate"
+                  className="text-2xl font-bold text-on-surface truncate"
                 >
                   {activePet.name}
                 </h2>
                 {activePet.lostStatus?.isLost && (
-                  <span className="text-xs font-semibold bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-semibold bg-error-container text-on-error-container px-2 py-0.5 rounded-full">
                     Lost
                   </span>
                 )}
                 {activePet.isPrivate && (
-                  <span className="flex items-center gap-1 text-xs font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 px-2 py-0.5 rounded-full">
-                    <Lock className="w-3 h-3" />
+                  <span className="flex items-center gap-1 text-xs font-semibold bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full">
+                    <span className="material-symbols-outlined text-xs">lock</span>
                     Private
                   </span>
                 )}
               </div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate mt-0.5">
+              <p className="text-sm text-on-surface-variant truncate mt-0.5">
                 {activePet.breed}
                 {activePet.type ? ` · ${activePet.type}` : ''}
                 {liveAge ? ` · ${liveAge}` : ''}
@@ -266,10 +255,10 @@ export function PetDetailModal({
                 <button
                   type="button"
                   onClick={() => onEdit(activePet)}
-                  className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                  className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
                   aria-label={`Edit ${activePet.name}`}
                 >
-                  <Pencil className="w-4 h-4" />
+                  <span className="material-symbols-outlined text-base">edit</span>
                 </button>
               )}
               <button
@@ -277,8 +266,8 @@ export function PetDetailModal({
                 onClick={() => onToggleLost(activePet)}
                 className={`p-2 rounded-xl transition-colors ${
                   activePet.lostStatus?.isLost
-                    ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20'
-                    : 'text-neutral-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:text-amber-400 dark:hover:bg-amber-900/20'
+                    ? 'text-error hover:bg-error-container'
+                    : 'text-on-surface-variant hover:text-amber-600 hover:bg-amber-50'
                 }`}
                 aria-label={
                   activePet.lostStatus?.isLost
@@ -286,23 +275,23 @@ export function PetDetailModal({
                     : `Report ${activePet.name} as lost`
                 }
               >
-                <AlertTriangle className="w-4 h-4" />
+                <span className="material-symbols-outlined text-base">warning</span>
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
                 aria-label="Close"
               >
-                <X className="w-4 h-4" />
+                <span className="material-symbols-outlined text-base">close</span>
               </button>
             </div>
           </div>
         </div>
 
         {isOwner === false && hasHiddenFields && (
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 px-4 py-1">
-            <Lock className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 text-xs text-on-surface-variant px-4 py-1">
+            <span className="material-symbols-outlined text-xs">lock</span>
             <span>Some fields are private</span>
           </div>
         )}
@@ -320,7 +309,7 @@ export function PetDetailModal({
               {/* Overview */}
               <PetDetailSection
                 title="Overview"
-                icon={<LayoutList className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />}
+                icon={<span className="material-symbols-outlined text-base text-on-surface-variant">list_alt</span>}
                 defaultOpen={true}
                 storageKey={`petbase-detail-sections-${ns}-overview`}
               >
@@ -333,7 +322,7 @@ export function PetDetailModal({
               {/* Health */}
               <PetDetailSection
                 title="Health"
-                icon={<Stethoscope className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />}
+                icon={<span className="material-symbols-outlined text-base text-on-surface-variant">stethoscope</span>}
                 defaultOpen={false}
                 storageKey={`petbase-detail-sections-${ns}-health`}
               >
@@ -346,7 +335,7 @@ export function PetDetailModal({
               {/* Diet */}
               <PetDetailSection
                 title="Diet"
-                icon={<Utensils className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />}
+                icon={<span className="material-symbols-outlined text-base text-on-surface-variant">restaurant</span>}
                 defaultOpen={false}
                 storageKey={`petbase-detail-sections-${ns}-diet`}
               >
@@ -359,7 +348,7 @@ export function PetDetailModal({
               {/* Activities */}
               <PetDetailSection
                 title="Activities"
-                icon={<Activity className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />}
+                icon={<span className="material-symbols-outlined text-base text-on-surface-variant">monitoring</span>}
                 defaultOpen={false}
                 storageKey={`petbase-detail-sections-${ns}-activities`}
               >
@@ -372,7 +361,7 @@ export function PetDetailModal({
               {/* Documents */}
               <PetDetailSection
                 title="Documents"
-                icon={<FolderOpen className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />}
+                icon={<span className="material-symbols-outlined text-base text-on-surface-variant">folder_open</span>}
                 defaultOpen={false}
                 storageKey={`petbase-detail-sections-${ns}-documents`}
               >
@@ -386,20 +375,20 @@ export function PetDetailModal({
         </div>
 
         {/* ── Sticky footer ───────────────────────────────────────────────── */}
-        <div className="sticky bottom-0 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-700 p-4 flex items-center justify-between">
+        <div className="sticky bottom-0 bg-surface-container-low border-t border-outline-variant p-4 flex items-center justify-between">
           {/* Fix 6: aria-label includes pet name */}
           <button
             type="button"
             onClick={() => onDelete(activePet)}
             aria-label={`Delete ${activePet.name}`}
-            className="text-rose-600 dark:text-rose-400 text-sm font-medium hover:underline"
+            className="text-error text-sm font-medium hover:underline"
           >
             Delete Pet
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            className="bg-surface-container text-on-surface px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface-container-high transition-colors"
           >
             Close
           </button>

@@ -1,5 +1,4 @@
 import { useRef, useCallback, useState } from 'react';
-import { Download, Share2 } from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import { formatPetAge } from '../../lib/petAge';
 import { canShare } from '../../utils/platform';
@@ -35,7 +34,7 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
         {/* Preview card (1:1 ratio for Instagram) */}
         <div
           ref={cardRef}
-          className="w-[540px] h-[540px] mx-auto rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-500 to-sky-500 p-8 flex flex-col items-center justify-center text-center text-white relative"
+          className="w-[540px] h-[540px] mx-auto rounded-3xl overflow-hidden bg-gradient-to-br from-primary via-primary-container to-secondary p-8 flex flex-col items-center justify-center text-center text-on-primary relative"
           style={{ fontFamily: 'system-ui, sans-serif' }}
         >
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_80%,white,transparent)]" />
@@ -44,28 +43,28 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
               <img
                 src={pet.image}
                 alt={pet.name}
-                className="w-32 h-32 rounded-full object-cover border-4 border-white/30 shadow-xl"
+                className="w-32 h-32 rounded-full object-cover border-4 border-on-primary/30 shadow-xl"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center text-5xl border-4 border-white/30">
+              <div className="w-32 h-32 rounded-full bg-on-primary/20 flex items-center justify-center text-5xl border-4 border-on-primary/30">
                 🐾
               </div>
             )}
             <h2 className="text-4xl font-extrabold tracking-tight drop-shadow-lg">{pet.name}</h2>
-            {pet.breed && <p className="text-lg text-white/80 font-medium">{pet.breed}</p>}
-            {age && <p className="text-sm text-white/60">{age}</p>}
+            {pet.breed && <p className="text-lg text-on-primary/80 font-medium">{pet.breed}</p>}
+            {age && <p className="text-sm text-on-primary/60">{age}</p>}
 
             <div className="flex flex-wrap gap-2 justify-center mt-2">
               {pet.favoriteActivities?.slice(0, 3).map(a => (
-                <span key={a} className="px-3 py-1 rounded-full bg-white/20 text-sm font-medium">
+                <span key={a} className="px-3 py-1 rounded-full bg-on-primary/20 text-sm font-medium">
                   {a}
                 </span>
               ))}
             </div>
 
-            <div className="mt-6 flex items-center gap-2 text-white/50 text-xs">
+            <div className="mt-6 flex items-center gap-2 text-on-primary/50 text-xs">
               <span>🐾</span>
               <span>PetBase</span>
             </div>
@@ -77,14 +76,14 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
           <button
             onClick={exportAsImage}
             disabled={exporting}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-800 rounded-xl font-medium text-sm hover:bg-neutral-100 disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-surface text-on-surface rounded-xl font-medium text-sm hover:bg-surface-container-low disabled:opacity-50 transition-colors"
           >
-            {canShare() ? <Share2 className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+            {canShare() ? <span className="material-symbols-outlined text-[16px]">share</span> : <span className="material-symbols-outlined text-[16px]">download</span>}
             {exporting ? 'Exporting...' : canShare() ? 'Share' : 'Download'}
           </button>
           <button
             onClick={onClose}
-            className="px-5 py-2.5 text-white/70 hover:text-white text-sm transition-colors"
+            className="px-5 py-2.5 text-on-primary/70 hover:text-on-primary text-sm transition-colors"
           >
             Close
           </button>

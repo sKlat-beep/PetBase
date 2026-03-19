@@ -1,0 +1,27 @@
+{
+  "theme": "DARK",
+  "primaryColor": "#FF6B6B",
+  "font": "DM_SANS",
+  "roundness": "Medium",
+  "density": "COMFORTABLE",
+  "designMode": "HIGH_FIDELITY",
+  "styleKeywords": ["Bold", "High-contrast", "Social", "Immersive", "Modern", "Playful"],
+  "deviceType": "MOBILE",
+  "extended": {
+    "secondaryColor": "#4ECDC4",
+    "tertiaryColor": "#7C5CFC",
+    "background": "#121212",
+    "surfaceColor": "#1A1A2E",
+    "textPrimary": "#FFFFFF",
+    "textSecondary": "#9CA3AF",
+    "cornerRadius": "12px",
+    "projectTitle": "PetBase Redesign — Social-First Feed",
+    "screenCount": 4,
+    "screens": [
+      "Social Feed",
+      "Explore / Discover",
+      "Pet Profile",
+      "Create Action Sheet"
+    ]
+  }
+}

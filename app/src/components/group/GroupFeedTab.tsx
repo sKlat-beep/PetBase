@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { MessageSquare, Pin, Trash2, Image as ImageIcon, X, LogIn } from 'lucide-react';
 import EmptyState from '../ui/EmptyState';
 import MentionInput, { renderMentions, extractMentionUids } from '../community/MentionInput';
 import PostComments from '../community/PostComments';
@@ -133,23 +132,23 @@ export function GroupFeedTab({
     <div className="lg:col-span-2 space-y-6">
       {/* Join banner for non-members */}
       {!userRole && (
-        <div className="relative bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-700">
+        <div className="relative bg-surface-container-low rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
           <div className="h-24 w-full">
             {group.image ? (
               <img src={group.image} alt="" className="w-full h-full object-cover opacity-60" />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-600 opacity-60" />
+              <div className="w-full h-full bg-gradient-to-br from-primary to-teal-600 opacity-60" />
             )}
           </div>
           <div className="p-5 -mt-6 relative">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{group.name}</h3>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-2">{group.description}</p>
+            <h3 className="text-lg font-bold text-on-surface">{group.name}</h3>
+            <p className="text-sm text-on-surface-variant mt-1 line-clamp-2">{group.description}</p>
             <div className="flex items-center gap-3 mt-2">
-              <span className="text-xs text-neutral-400 dark:text-neutral-500">{Object.keys(group.members).length} members</span>
+              <span className="text-xs text-on-surface-variant">{Object.keys(group.members).length} members</span>
               {group.tags.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
                   {group.tags.slice(0, 4).map(tag => (
-                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                       {tag}
                     </span>
                   ))}
@@ -173,21 +172,21 @@ export function GroupFeedTab({
                 }
               }}
               disabled={isJoining}
-              className="mt-3 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-5 py-2.5 rounded-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
+              className="mt-3 w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 disabled:bg-primary/40 text-on-primary px-5 py-2.5 rounded-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
             >
-              <LogIn className="w-4 h-4" />
+              <span className="material-symbols-outlined text-[18px]">login</span>
               {isJoining ? 'Joining...' : 'Join Group'}
             </button>
-            {joinError && <p className="text-xs text-rose-500 mt-2 text-center" role="alert">{joinError}</p>}
-            <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2 text-center">You can browse posts below</p>
+            {joinError && <p className="text-xs text-error mt-2 text-center" role="alert">{joinError}</p>}
+            <p className="text-xs text-on-surface-variant mt-2 text-center">You can browse posts below</p>
           </div>
         </div>
       )}
 
       {userRole && (
-        <div className="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm border border-neutral-100 dark:border-neutral-700">
+        <div className="bg-surface-container-low rounded-2xl p-4 shadow-sm border border-outline-variant">
           <form onSubmit={handlePost} className="flex gap-3">
-            <img src={user?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.uid}`} alt="You" className="w-10 h-10 rounded-full bg-neutral-100" />
+            <img src={user?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.uid}`} alt="You" className="w-10 h-10 rounded-full bg-surface-container" />
             <div className="flex-1">
               <MentionInput
                 value={newPostContent}
@@ -195,7 +194,7 @@ export function GroupFeedTab({
                 onSubmit={submitPost}
                 placeholder="Share something with the group..."
                 rows={2}
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none"
                 groupId={group.id}
                 disabled={isPosting}
               />
@@ -206,7 +205,7 @@ export function GroupFeedTab({
                   <img
                     src={postImagePreview}
                     alt="Attachment preview"
-                    className="rounded-xl max-h-40 max-w-full object-cover border border-neutral-200 dark:border-neutral-700"
+                    className="rounded-xl max-h-40 max-w-full object-cover border border-outline-variant"
                   />
                   <button
                     type="button"
@@ -214,7 +213,7 @@ export function GroupFeedTab({
                     className="absolute top-1 right-1 bg-neutral-900/60 hover:bg-neutral-900/80 text-white rounded-full p-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     aria-label="Remove image attachment"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <span className="material-symbols-outlined text-[14px]">close</span>
                   </button>
                 </div>
               )}
@@ -224,10 +223,10 @@ export function GroupFeedTab({
                   type="button"
                   onClick={() => postImageInputRef.current?.click()}
                   disabled={isPosting}
-                  className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded px-1 py-1 min-h-[36px]"
+                  className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-primary disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded px-1 py-1 min-h-[36px]"
                   aria-label="Attach image"
                 >
-                  <ImageIcon className="w-4 h-4" aria-hidden="true" />
+                  <span className="material-symbols-outlined text-[16px]" aria-hidden="true">image</span>
                   <span>Photo</span>
                 </button>
                 <input
@@ -240,7 +239,7 @@ export function GroupFeedTab({
                 <button
                   type="submit"
                   disabled={isPosting || !newPostContent.trim()}
-                  className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-600 text-white px-5 py-2 rounded-lg font-medium text-sm transition-colors min-h-[44px]"
+                  className="bg-primary hover:bg-primary/90 disabled:bg-on-surface/12 text-on-primary px-5 py-2 rounded-lg font-medium text-sm transition-colors min-h-[44px]"
                 >
                   Post
                 </button>
@@ -254,19 +253,19 @@ export function GroupFeedTab({
       <div className="flex gap-2 mb-3">
         <button
           onClick={() => setFeedTab('recent')}
-          className={`px-3 py-1 rounded-full text-sm ${feedTab === 'recent' ? 'bg-emerald-600 text-white' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}
+          className={`px-3 py-1 rounded-full text-sm ${feedTab === 'recent' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'}`}
         >Recent</button>
         <button
           onClick={() => setFeedTab('trending')}
-          className={`px-3 py-1 rounded-full text-sm ${feedTab === 'trending' ? 'bg-emerald-600 text-white' : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'}`}
+          className={`px-3 py-1 rounded-full text-sm ${feedTab === 'trending' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'}`}
         >Trending</button>
       </div>
 
       {/* Pinned Posts */}
       {pinnedPosts.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-            <Pin className="w-4 h-4" /> Pinned
+          <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+            <span className="material-symbols-outlined text-[16px]">push_pin</span> Pinned
           </h3>
           {pinnedPosts.map(post => (
             <PostCard
@@ -291,14 +290,14 @@ export function GroupFeedTab({
       {/* Regular Feed */}
       <div className="space-y-4">
         {pinnedPosts.length > 0 && displayPosts.length > 0 && (
-          <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mt-8">
+          <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider mt-8">
             {feedTab === 'trending' ? 'Trending Discussions' : 'Recent Discussions'}
           </h3>
         )}
         {displayPosts.length === 0 && pinnedPosts.length === 0 ? (
-          <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700">
+          <div className="bg-surface-container-low rounded-2xl border border-dashed border-outline-variant">
             <EmptyState
-              icon={<MessageSquare className="w-12 h-12" />}
+              icon={<span className="material-symbols-outlined text-[48px]">chat</span>}
               title="Be the first!"
               description="Start a conversation -- share something with the group!"
             />
@@ -325,7 +324,7 @@ export function GroupFeedTab({
         {hasMorePosts[group.id] && (
           <button
             onClick={() => loadMorePosts(group.id)}
-            className="w-full py-2 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 border border-neutral-200 dark:border-neutral-700 rounded-xl transition-colors"
+            className="w-full py-2 text-sm text-on-surface-variant hover:text-on-surface border border-outline-variant rounded-xl transition-colors"
           >
             Load more posts
           </button>
@@ -354,15 +353,15 @@ function PostCard({ post, groupId, canPin, canDelete, pinPost, deletePost, isAut
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   return (
-    <div className={`bg-white dark:bg-neutral-800 rounded-2xl p-5 shadow-sm border ${post.isPinned ? 'border-amber-200 dark:border-amber-900/50 outline outline-2 outline-amber-100 dark:outline-amber-900/30' : 'border-neutral-100 dark:border-neutral-700'}`}>
+    <div className={`bg-surface-container-low rounded-2xl p-5 shadow-sm border ${post.isPinned ? 'border-amber-200 outline outline-2 outline-amber-100' : 'border-outline-variant'}`}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3 mb-3">
-          <img src={post.authorImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`} alt={post.authorName} className="w-10 h-10 rounded-full bg-neutral-100" />
+          <img src={post.authorImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`} alt={post.authorName} className="w-10 h-10 rounded-full bg-surface-container" />
           <div>
-            <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-              {post.authorName} {isAuthor && <span className="text-[10px] bg-neutral-100 dark:bg-neutral-700 px-1.5 py-0.5 rounded text-neutral-500 font-normal">You</span>}
+            <h4 className="font-semibold text-on-surface flex items-center gap-2">
+              {post.authorName} {isAuthor && <span className="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant font-normal">You</span>}
             </h4>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">{new Date(post.createdAt).toLocaleString()}</p>
+            <p className="text-xs text-on-surface-variant">{new Date(post.createdAt).toLocaleString()}</p>
           </div>
         </div>
 
@@ -370,26 +369,26 @@ function PostCard({ post, groupId, canPin, canDelete, pinPost, deletePost, isAut
           {canPin && (
             <button
               onClick={() => pinPost(groupId, post.id, !post.isPinned)}
-              className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${post.isPinned ? 'text-amber-500' : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200'}`}
+              className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded hover:bg-surface-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${post.isPinned ? 'text-amber-500' : 'text-on-surface-variant hover:text-on-surface'}`}
               aria-label={post.isPinned ? "Unpin Post" : "Pin Post"}
               title={post.isPinned ? "Unpin Post" : "Pin Post"}
             >
-              <Pin className={`w-4 h-4 ${post.isPinned ? 'fill-current' : ''}`} />
+              <span className={`material-symbols-outlined text-[16px] ${post.isPinned ? 'fill-1' : ''}`}>push_pin</span>
             </button>
           )}
           {(canDelete || isAuthor) && (
             <button
               onClick={() => setDeleteConfirm(true)}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 text-neutral-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded hover:bg-error-container hover:text-error text-on-surface-variant transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
               aria-label="Delete Post"
               title="Delete Post"
             >
-              <Trash2 className="w-4 h-4" />
+              <span className="material-symbols-outlined text-[16px]">delete</span>
             </button>
           )}
         </div>
       </div>
-      <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap leading-relaxed">{renderMentions(post.content, onProfileClick)}</p>
+      <p className="text-on-surface-variant whitespace-pre-wrap leading-relaxed">{renderMentions(post.content, onProfileClick)}</p>
       {post.imageUrl && (
         <img
           src={post.imageUrl}
@@ -398,7 +397,7 @@ function PostCard({ post, groupId, canPin, canDelete, pinPost, deletePost, isAut
           onClick={() => onImageClick?.(post.imageUrl!)}
         />
       )}
-      <div className="mt-4 border-t border-neutral-100 dark:border-neutral-700 pt-3">
+      <div className="mt-4 border-t border-outline-variant pt-3">
         <PostComments
           groupId={groupId}
           postId={post.id}

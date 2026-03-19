@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Images, PlusCircle, Loader2 } from 'lucide-react';
 import {
   subscribePetAlbums,
   createPetAlbum,
@@ -76,14 +75,14 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />
+        <span className="material-symbols-outlined text-xl animate-spin text-on-surface-variant">progress_activity</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <p className="text-sm text-rose-500 dark:text-rose-400 py-4">Failed to load albums.</p>
+      <p className="text-sm text-error py-4">Failed to load albums.</p>
     );
   }
 
@@ -91,19 +90,19 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
     <div className="space-y-4">
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+        <h3 className="text-sm font-semibold text-on-surface">
           Albums
           {albums.length > 0 && (
-            <span className="ml-2 text-xs font-normal text-neutral-400">({albums.length})</span>
+            <span className="ml-2 text-xs font-normal text-on-surface-variant">({albums.length})</span>
           )}
         </h3>
         {isOwner && !isCreating && (
           <button
             type="button"
             onClick={() => setIsCreating(true)}
-            className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
-            <PlusCircle className="w-3.5 h-3.5" />
+            <span className="material-symbols-outlined text-sm">add_circle</span>
             New Album
           </button>
         )}
@@ -122,20 +121,20 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
             }}
             placeholder="Album name..."
             autoFocus
-            className="flex-1 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 px-3 py-1.5 rounded-lg border border-outline-variant bg-surface-container-low text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             type="button"
             onClick={handleCreate}
             disabled={!newAlbumName.trim() || creating}
-            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-50 text-on-primary text-xs font-semibold transition-colors"
           >
-            {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Create'}
+            {creating ? <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span> : 'Create'}
           </button>
           <button
             type="button"
             onClick={() => { setIsCreating(false); setNewAlbumName(''); }}
-            className="px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-neutral-500 text-xs font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant text-xs font-medium hover:bg-surface-container transition-colors"
           >
             Cancel
           </button>
@@ -145,13 +144,13 @@ export function PhotoAlbums({ petId, ownerUid, isOwner, petVisibility }: PhotoAl
       {/* Empty state */}
       {albums.length === 0 && !isCreating && (
         <div className="text-center py-8 space-y-2">
-          <Images className="w-8 h-8 text-neutral-300 dark:text-neutral-600 mx-auto" />
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">No albums yet.</p>
+          <span className="material-symbols-outlined text-3xl text-outline mx-auto block">photo_library</span>
+          <p className="text-sm text-on-surface-variant">No albums yet.</p>
           {isOwner && (
             <button
               type="button"
               onClick={() => setIsCreating(true)}
-              className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               Create your first album
             </button>
@@ -196,7 +195,7 @@ function AlbumCard({ album, onClick }: { album: PetAlbum; onClick: () => void })
     <button
       type="button"
       onClick={onClick}
-      className="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 aspect-square relative cursor-pointer hover:ring-2 hover:ring-emerald-400 transition-shadow"
+      className="rounded-2xl overflow-hidden border border-outline-variant aspect-square relative cursor-pointer hover:ring-2 hover:ring-primary transition-shadow"
     >
       {cover ? (
         <img
@@ -207,8 +206,8 @@ function AlbumCard({ album, onClick }: { album: PetAlbum; onClick: () => void })
           referrerPolicy="no-referrer"
         />
       ) : (
-        <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-          <Images className="w-8 h-8 text-neutral-300 dark:text-neutral-600" />
+        <div className="w-full h-full bg-surface-container flex items-center justify-center">
+          <span className="material-symbols-outlined text-3xl text-outline">photo_library</span>
         </div>
       )}
       {/* Bottom gradient overlay */}

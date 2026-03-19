@@ -8,10 +8,6 @@ import { deleteGroupComment, fetchPublicProfileById } from '../../lib/firestoreS
 import { useCommunity } from '../../contexts/CommunityContext';
 import { useSocial } from '../../contexts/SocialContext';
 import type { Report } from '../../lib/reportService';
-import {
-  AlertTriangle, Flag, BarChart2, ShieldOff, Loader2,
-  CheckCircle, Trash2, XCircle, RefreshCw,
-} from 'lucide-react';
 
 interface ModerationPanelProps {
   groupId: string;
@@ -297,8 +293,8 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-neutral-400">
-        <Loader2 className="w-6 h-6 animate-spin mr-3" />
+      <div className="flex items-center justify-center py-16 text-on-surface-variant">
+        <span className="material-symbols-outlined text-[24px] animate-spin mr-3">progress_activity</span>
         <span className="text-sm">Loading moderation data…</span>
       </div>
     );
@@ -311,28 +307,28 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
       <div className="flex justify-end">
         <button
           onClick={loadData}
-          className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors px-3 py-2 rounded-lg hover:bg-surface-container-high focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
+          <span className="material-symbols-outlined text-[14px]">refresh</span>
           Refresh
         </button>
       </div>
 
       {/* ── Section 1: Pending Reports ──────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
-          <AlertTriangle className="w-4 h-4 text-amber-500" />
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">
+          <span className="material-symbols-outlined text-[16px] text-amber-500">warning</span>
           Pending Reports
           {pendingReports.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 rounded text-xs font-semibold">
+            <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-semibold">
               {pendingReports.length}
             </span>
           )}
         </h3>
 
         {pendingReports.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
-            <CheckCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
+          <div className="text-center py-8 bg-surface-container rounded-2xl border border-dashed border-outline-variant text-on-surface-variant">
+            <span className="material-symbols-outlined text-[24px] mx-auto mb-2 opacity-50">check_circle</span>
             <p className="text-sm">No pending reports.</p>
           </div>
         ) : (
@@ -340,25 +336,25 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
             {pendingReports.map(report => (
               <div
                 key={report.id}
-                className="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-neutral-100 dark:border-neutral-700 shadow-sm"
+                className="bg-surface-container rounded-2xl p-4 border border-outline-variant shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-semibold px-2 py-0.5 bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 rounded-full uppercase tracking-wide">
+                      <span className="text-xs font-semibold px-2 py-0.5 bg-error-container text-error rounded-full uppercase tracking-wide">
                         {report.targetType}
                       </span>
-                      <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                      <span className="text-xs font-medium text-on-surface-variant">
                         {report.reason}
                       </span>
                     </div>
                     {report.detail && (
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 italic">
+                      <p className="text-xs text-on-surface-variant line-clamp-2 italic">
                         "{report.detail}"
                       </p>
                     )}
-                    <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                      Reported by <span className="font-medium text-neutral-600 dark:text-neutral-300">{report.reporterName}</span>
+                    <p className="text-xs text-on-surface-variant">
+                      Reported by <span className="font-medium text-on-surface">{report.reporterName}</span>
                       {' · '}
                       {new Date(report.createdAt).toLocaleDateString([], { dateStyle: 'medium' })}
                     </p>
@@ -369,12 +365,12 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                   <button
                     onClick={() => handleDismissReport(report.id)}
                     disabled={actionState[report.id] === 'loading'}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                   >
                     {actionState[report.id] === 'loading' ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
                     ) : (
-                      <XCircle className="w-3.5 h-3.5" />
+                      <span className="material-symbols-outlined text-[14px]">cancel</span>
                     )}
                     Dismiss
                   </button>
@@ -383,12 +379,12 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                     <button
                       onClick={() => handleDeleteContent(report)}
                       disabled={actionState[`del-${report.id}`] === 'loading'}
-                      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-error-container text-error hover:bg-error-container/80 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                     >
                       {actionState[`del-${report.id}`] === 'loading' ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
                       ) : (
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <span className="material-symbols-outlined text-[14px]">delete</span>
                       )}
                       Delete Content
                     </button>
@@ -398,12 +394,12 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                     <button
                       onClick={() => handleBanFromReport(report)}
                       disabled={actionState[`ban-${report.id}`] === 'loading'}
-                      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                     >
                       {actionState[`ban-${report.id}`] === 'loading' ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
                       ) : (
-                        <ShieldOff className="w-3.5 h-3.5" />
+                        <span className="material-symbols-outlined text-[14px]">shield</span>
                       )}
                       Ban Author
                     </button>
@@ -417,22 +413,22 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 2: Flagged Content ──────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
-          <Flag className="w-4 h-4 text-rose-500" />
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">
+          <span className="material-symbols-outlined text-[16px] text-error">flag</span>
           Flagged Content
           {flaggedPosts.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 rounded text-xs font-semibold">
+            <span className="ml-1 px-1.5 py-0.5 bg-error-container text-error rounded text-xs font-semibold">
               {flaggedPosts.length}
             </span>
           )}
         </h3>
-        <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-3">
+        <p className="text-xs text-on-surface-variant mb-3">
           Posts with active flags. Comment flagging review is a future enhancement.
         </p>
 
         {flaggedPosts.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
-            <CheckCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
+          <div className="text-center py-8 bg-surface-container rounded-2xl border border-dashed border-outline-variant text-on-surface-variant">
+            <span className="material-symbols-outlined text-[24px] mx-auto mb-2 opacity-50">check_circle</span>
             <p className="text-sm">No flagged posts.</p>
           </div>
         ) : (
@@ -440,18 +436,18 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
             {flaggedPosts.map(post => (
               <div
                 key={post.id}
-                className="bg-white dark:bg-neutral-800 rounded-2xl p-4 border border-rose-100 dark:border-rose-900/40 shadow-sm"
+                className="bg-surface-container rounded-2xl p-4 border border-error-container shadow-sm"
               >
                 <div className="mb-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
+                    <span className="text-xs font-medium text-on-surface-variant">
                       {post.authorName}
                     </span>
-                    <span className="text-xs text-rose-500 dark:text-rose-400 font-semibold">
+                    <span className="text-xs text-error font-semibold">
                       {post.flagCount} flag{post.flagCount !== 1 ? 's' : ''}
                     </span>
                   </div>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
+                  <p className="text-sm text-on-surface-variant line-clamp-3">
                     {post.content}
                   </p>
                 </div>
@@ -460,12 +456,12 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                   <button
                     onClick={() => handleClearFlag(post.id)}
                     disabled={actionState[`flag-${post.id}`] === 'loading'}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                   >
                     {actionState[`flag-${post.id}`] === 'loading' ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
                     ) : (
-                      <CheckCircle className="w-3.5 h-3.5" />
+                      <span className="material-symbols-outlined text-[14px]">check_circle</span>
                     )}
                     Clear Flag
                   </button>
@@ -473,12 +469,12 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                   <button
                     onClick={() => handleDeleteFlaggedPost(post.id)}
                     disabled={actionState[`delflag-${post.id}`] === 'loading'}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-error-container text-error hover:bg-error-container/80 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                   >
                     {actionState[`delflag-${post.id}`] === 'loading' ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
                     ) : (
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <span className="material-symbols-outlined text-[14px]">delete</span>
                     )}
                     Delete Content
                   </button>
@@ -491,28 +487,28 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 3: Reporter Activity ────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
-          <BarChart2 className="w-4 h-4 text-sky-500" />
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">
+          <span className="material-symbols-outlined text-[16px] text-sky-500">bar_chart</span>
           Reporter Activity
-          <span className="text-xs font-normal normal-case text-neutral-400">(last 90 days)</span>
+          <span className="text-xs font-normal normal-case text-on-surface-variant">(last 90 days)</span>
         </h3>
 
         {reporterActivity.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
+          <div className="text-center py-8 bg-surface-container rounded-2xl border border-dashed border-outline-variant text-on-surface-variant">
             <p className="text-sm">No report activity in the last 90 days.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden">
-            <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
+          <div className="bg-surface-container rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+            <ul className="divide-y divide-outline-variant">
               {reporterActivity.map((entry, i) => (
                 <li key={entry.uid} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="w-5 text-xs font-bold text-neutral-400 text-right">{i + 1}.</span>
-                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <span className="w-5 text-xs font-bold text-on-surface-variant text-right">{i + 1}.</span>
+                    <span className="text-sm font-medium text-on-surface-variant">
                       {entry.displayName}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-1 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full">
+                  <span className="text-xs font-semibold px-2 py-1 bg-sky-50 text-sky-600 rounded-full">
                     {entry.count} report{entry.count !== 1 ? 's' : ''}
                   </span>
                 </li>
@@ -524,40 +520,40 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
 
       {/* ── Section 4: Banned Members ───────────────────────────────── */}
       <section>
-        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
-          <ShieldOff className="w-4 h-4 text-orange-500" />
+        <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">
+          <span className="material-symbols-outlined text-[16px] text-orange-500">shield</span>
           Banned Members
           {bannedMembers.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 rounded text-xs font-semibold">
+            <span className="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">
               {bannedMembers.length}
             </span>
           )}
         </h3>
 
         {bannedMembers.length === 0 ? (
-          <div className="text-center py-8 bg-white dark:bg-neutral-800 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400">
+          <div className="text-center py-8 bg-surface-container rounded-2xl border border-dashed border-outline-variant text-on-surface-variant">
             <p className="text-sm">No banned members.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm overflow-hidden">
-            <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
+          <div className="bg-surface-container rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+            <ul className="divide-y divide-outline-variant">
               {bannedMembers.map(uid => (
                 <li key={uid} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-500 dark:text-neutral-300 shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface-variant shrink-0">
                       {uid.substring(0, 2).toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <span className="text-sm font-medium text-on-surface-variant">
                       {resolveBannedName(uid)}
                     </span>
                   </div>
                   <button
                     onClick={() => handleUnban(uid)}
                     disabled={actionState[`unban-${uid}`] === 'loading'}
-                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                   >
                     {actionState[`unban-${uid}`] === 'loading' ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
                     ) : null}
                     Unban
                   </button>

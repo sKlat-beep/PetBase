@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, Pencil, Trash2, Upload, Loader2, Check, FolderInput } from 'lucide-react';
 import {
   updatePetAlbum,
   deletePetAlbum,
@@ -30,9 +29,9 @@ const VISIBILITY_LABELS: Record<PetAlbum['visibility'], string> = {
 };
 
 const VISIBILITY_COLORS: Record<PetAlbum['visibility'], string> = {
-  public: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
-  friends: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
-  private: 'bg-neutral-100 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-400',
+  public: 'bg-primary-container text-on-primary-container',
+  friends: 'bg-secondary-container text-on-secondary-container',
+  private: 'bg-surface-container text-on-surface-variant',
 };
 
 export function AlbumDetailModal({
@@ -173,9 +172,9 @@ export function AlbumDetailModal({
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
-        <div role="dialog" aria-modal="true" aria-labelledby="album-detail-modal-title" className="relative bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col">
+        <div role="dialog" aria-modal="true" aria-labelledby="album-detail-modal-title" className="relative bg-surface-container-low rounded-2xl shadow-2xl border border-outline-variant w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col">
           {/* Header */}
-          <div className="flex items-start justify-between p-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0 gap-3">
+          <div className="flex items-start justify-between p-4 border-b border-outline-variant shrink-0 gap-3">
             <div className="flex-1 min-w-0">
               {editingName ? (
                 <div className="flex items-center gap-2">
@@ -188,33 +187,33 @@ export function AlbumDetailModal({
                       if (e.key === 'Escape') { setEditingName(false); setNameInput(album.name); }
                     }}
                     autoFocus
-                    className="flex-1 px-2 py-1 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm font-semibold text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="flex-1 px-2 py-1 rounded-lg border border-outline-variant bg-surface-container-low text-sm font-semibold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                   <button
                     type="button"
                     onClick={saveName}
                     disabled={savingName}
-                    className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+                    className="p-1.5 rounded-lg bg-primary hover:bg-primary/90 text-on-primary transition-colors"
                     aria-label="Save album name"
                     title="Save album name"
                   >
-                    {savingName ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                    {savingName ? <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span> : <span className="material-symbols-outlined text-sm">check</span>}
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h2 id="album-detail-modal-title" className="text-base font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                  <h2 id="album-detail-modal-title" className="text-base font-semibold text-on-surface truncate">
                     {album.name}
                   </h2>
                   {isOwner && (
                     <button
                       type="button"
                       onClick={() => setEditingName(true)}
-                      className="p-1 rounded-md text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shrink-0"
+                      className="p-1 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors shrink-0"
                       aria-label="Rename album"
                       title="Rename album"
                     >
-                      <Pencil className="w-3.5 h-3.5" />
+                      <span className="material-symbols-outlined text-sm">edit</span>
                     </button>
                   )}
                 </div>
@@ -223,7 +222,7 @@ export function AlbumDetailModal({
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${VISIBILITY_COLORS[album.visibility]}`}>
                   {VISIBILITY_LABELS[album.visibility]}
                 </span>
-                <span className="text-xs text-neutral-400">
+                <span className="text-xs text-on-surface-variant">
                   {album.photos.length} photo{album.photos.length !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -231,11 +230,11 @@ export function AlbumDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shrink-0"
+              className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors shrink-0"
               aria-label="Close"
               title="Close"
             >
-              <X className="w-4 h-4" />
+              <span className="material-symbols-outlined text-base">close</span>
             </button>
           </div>
 
@@ -251,8 +250,8 @@ export function AlbumDetailModal({
                     onClick={() => handleVisibilityChange(v)}
                     className={`flex-1 py-1.5 rounded-full text-xs font-medium transition-colors border ${
                       album.visibility === v
-                        ? 'bg-emerald-600 text-white border-emerald-600'
-                        : 'border-neutral-200 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-emerald-400'
+                        ? 'bg-primary text-on-primary border-primary'
+                        : 'border-outline-variant text-on-surface-variant hover:border-primary'
                     }`}
                   >
                     {VISIBILITY_LABELS[v]}
@@ -263,7 +262,7 @@ export function AlbumDetailModal({
 
             {/* Photo grid */}
             {album.photos.length === 0 ? (
-              <div className="text-center py-8 text-neutral-400 dark:text-neutral-500 text-sm">
+              <div className="text-center py-8 text-on-surface-variant text-sm">
                 No photos yet. Add some below.
               </div>
             ) : (
@@ -283,11 +282,11 @@ export function AlbumDetailModal({
                         <button
                           type="button"
                           onClick={() => handleDeletePhoto(i)}
-                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 motion-safe:transition-opacity hover:bg-rose-600"
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 motion-safe:transition-opacity hover:bg-error"
                           aria-label={`Delete photo ${i + 1}`}
                           title="Delete photo"
                         >
-                          <X className="w-3 h-3" />
+                          <span className="material-symbols-outlined text-xs">close</span>
                         </button>
                         <button
                           type="button"
@@ -296,12 +295,12 @@ export function AlbumDetailModal({
                           aria-label="Move photo to another album"
                           title="Move to album"
                         >
-                          <FolderInput className="w-3 h-3" />
+                          <span className="material-symbols-outlined text-xs">drive_file_move</span>
                         </button>
                         {movingPhotoIdx === i && (
-                          <div className="absolute bottom-8 right-1 z-10 bg-white dark:bg-neutral-800 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden min-w-[160px]">
+                          <div className="absolute bottom-8 right-1 z-10 bg-surface-container-low rounded-xl shadow-lg border border-outline-variant overflow-hidden min-w-[160px]">
                             {siblingAlbums.filter(a => a.id !== album.id).length === 0 ? (
-                              <p className="px-3 py-2 text-xs text-neutral-400 dark:text-neutral-500">No other albums</p>
+                              <p className="px-3 py-2 text-xs text-on-surface-variant">No other albums</p>
                             ) : (
                               siblingAlbums
                                 .filter(a => a.id !== album.id)
@@ -310,7 +309,7 @@ export function AlbumDetailModal({
                                     key={a.id}
                                     type="button"
                                     onClick={() => handleMovePhoto(i, a.id!)}
-                                    className="w-full text-left px-3 py-2 text-xs hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-neutral-700 dark:text-neutral-200 motion-safe:transition-colors"
+                                    className="w-full text-left px-3 py-2 text-xs hover:bg-primary-container text-on-surface motion-safe:transition-colors"
                                   >
                                     {a.name}
                                   </button>
@@ -325,7 +324,7 @@ export function AlbumDetailModal({
               </div>
             )}
 
-            {moveError && <p className="text-xs text-red-500 mt-1">{moveError}</p>}
+            {moveError && <p className="text-xs text-error mt-1">{moveError}</p>}
 
             {/* Add photos (owner only) */}
             {isOwner && (
@@ -333,9 +332,9 @@ export function AlbumDetailModal({
                 <button
                   type="button"
                   onClick={() => setShowPhotoPicker(true)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 text-neutral-500 dark:text-neutral-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary transition-colors text-sm font-medium"
                 >
-                  <Upload className="w-4 h-4" />
+                  <span className="material-symbols-outlined text-base">upload</span>
                   Add Photos
                 </button>
               </div>
@@ -343,16 +342,16 @@ export function AlbumDetailModal({
 
             {/* Delete album (owner only) */}
             {isOwner && (
-              <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800">
+              <div className="pt-2 border-t border-outline-variant">
                 {confirmDelete ? (
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-neutral-600 dark:text-neutral-300 flex-1">
+                    <span className="text-sm text-on-surface-variant flex-1">
                       Delete this album permanently?
                     </span>
                     <button
                       type="button"
                       onClick={() => setConfirmDelete(false)}
-                      className="px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-600 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                      className="px-3 py-1.5 rounded-lg border border-outline-variant text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors"
                     >
                       Cancel
                     </button>
@@ -360,18 +359,18 @@ export function AlbumDetailModal({
                       type="button"
                       onClick={handleDeleteAlbum}
                       disabled={deleting}
-                      className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                      className="px-3 py-1.5 rounded-lg bg-error hover:bg-error/90 text-on-error text-xs font-semibold transition-colors disabled:opacity-50"
                     >
-                      {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Delete'}
+                      {deleting ? <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span> : 'Delete'}
                     </button>
                   </div>
                 ) : (
                   <button
                     type="button"
                     onClick={() => setConfirmDelete(true)}
-                    className="flex items-center gap-1.5 text-xs font-medium text-rose-500 hover:text-rose-600 dark:text-rose-400 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-error transition-colors"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <span className="material-symbols-outlined text-sm">delete</span>
                     Delete Album
                   </button>
                 )}

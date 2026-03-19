@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Upload, Trash2, Crop, Plus, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Pet } from '../../types/pet';
 import type { PetAlbum, UserAlbum, PhotoEntry, UserDefaultAlbum } from '../../lib/firestoreService';
@@ -202,27 +201,27 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div role="dialog" aria-modal="true" aria-labelledby="photo-manager-modal-title" className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div role="dialog" aria-modal="true" aria-labelledby="photo-manager-modal-title" className="bg-surface-container rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-outline-variant shrink-0">
             <div className="flex items-center gap-3">
-              <h2 id="photo-manager-modal-title" className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Photo Library</h2>
+              <h2 id="photo-manager-modal-title" className="text-base font-semibold text-on-surface">Photo Library</h2>
               {allPhotos.length > 0 && (
-                <span className="text-xs text-neutral-400 dark:text-neutral-500">{allPhotos.length} photos</span>
+                <span className="text-xs text-on-surface-variant">{allPhotos.length} photos</span>
               )}
             </div>
             <div className="flex items-center gap-2">
               {selectMode && selectedPhotos.size > 0 && (
                 <button
                   onClick={handleDeleteSelected}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-error-container text-on-error-container hover:bg-error-container/80 transition-colors"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Delete {selectedPhotos.size}
+                  <span className="material-symbols-outlined text-sm">delete</span> Delete {selectedPhotos.size}
                 </button>
               )}
               <button
                 onClick={() => { setSelectMode(v => !v); setSelectedPhotos(new Set()); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectMode ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectMode ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
               >
                 {selectMode ? 'Done' : 'Select'}
               </button>
@@ -234,7 +233,7 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                     setUploadTargetPetId(opt?.petId ?? null);
                     setUploadTargetAlbumId(e.target.value || null);
                   }}
-                  className="px-2 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs text-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 max-w-[160px]"
+                  className="px-2 py-1.5 rounded-lg border border-outline-variant bg-surface-container-low text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary max-w-[160px]"
                   aria-label="Select album for upload"
                 >
                   <option value="">General (no pet)</option>
@@ -245,23 +244,23 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500 hover:bg-emerald-600 text-white transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary hover:bg-primary/90 text-on-primary transition-colors disabled:opacity-50"
                 >
-                  {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                  {uploading ? <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span> : <span className="material-symbols-outlined text-sm">upload</span>}
                   Upload
                 </button>
               </div>
-              <button onClick={onClose} aria-label="Close" title="Close" className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors">
-                <X className="w-4 h-4" />
+              <button onClick={onClose} aria-label="Close" title="Close" className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+                <span className="material-symbols-outlined text-base">close</span>
               </button>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-neutral-200 dark:border-neutral-700 shrink-0">
+          <div className="flex border-b border-outline-variant shrink-0">
             {(['library', 'albums'] as const).map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2.5 text-xs font-medium capitalize transition-colors focus-visible:outline-none ${activeTab === tab ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'}`}>
+                className={`flex-1 py-2.5 text-xs font-medium capitalize transition-colors focus-visible:outline-none ${activeTab === tab ? 'text-primary border-b-2 border-primary' : 'text-on-surface-variant hover:text-on-surface'}`}>
                 {tab === 'library' ? 'All Photos' : 'Albums'}
               </button>
             ))}
@@ -281,8 +280,8 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                 >
                   {petGroups.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-                      <p className="text-sm text-neutral-500 dark:text-neutral-400">No photos yet.</p>
-                      <button onClick={() => fileInputRef.current?.click()} className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Upload your first photo</button>
+                      <p className="text-sm text-on-surface-variant">No photos yet.</p>
+                      <button onClick={() => fileInputRef.current?.click()} className="text-sm text-primary hover:underline">Upload your first photo</button>
                     </div>
                   ) : (
                     petGroups.map(({ pet, timeGroups }) => (
@@ -291,13 +290,13 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                           {pet.image ? (
                             <img src={pet.image} alt={pet.name} className="w-6 h-6 rounded-full object-cover" />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400">{pet.name[0]}</div>
+                            <div className="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-xs font-bold text-on-primary-container">{pet.name[0]}</div>
                           )}
-                          <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{pet.name}</span>
+                          <span className="text-sm font-semibold text-on-surface">{pet.name}</span>
                         </div>
                         {timeGroups.map(({ label, urls }) => (
                           <div key={label} className="mb-4">
-                            <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500 mb-2">{label}</p>
+                            <p className="text-xs font-medium text-on-surface-variant mb-2">{label}</p>
                             <div className="grid grid-cols-4 gap-1.5">
                               {urls.map((url, i) => {
                                 const photo = allPhotos.find(p => p.url === url && p.petId === pet.id);
@@ -306,12 +305,12 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                                   <div key={`${url}-${i}`} className="relative aspect-square group">
                                     <button
                                       onClick={() => selectMode ? toggleSelect(url) : undefined}
-                                      className={`w-full h-full rounded-lg overflow-hidden ${selectMode ? 'cursor-pointer' : 'cursor-default'} focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none`}
+                                      className={`w-full h-full rounded-lg overflow-hidden ${selectMode ? 'cursor-pointer' : 'cursor-default'} focus-visible:ring-2 focus-visible:ring-primary outline-none`}
                                     >
                                       <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
                                       {selectMode && (
-                                        <div className={`absolute inset-0 flex items-center justify-center rounded-lg transition-colors ${isSelected ? 'bg-emerald-500/50' : 'bg-black/0 group-hover:bg-black/20'}`}>
-                                          {isSelected && <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white" />}
+                                        <div className={`absolute inset-0 flex items-center justify-center rounded-lg transition-colors ${isSelected ? 'bg-primary/50' : 'bg-black/0 group-hover:bg-black/20'}`}>
+                                          {isSelected && <div className="w-5 h-5 rounded-full bg-primary border-2 border-white" />}
                                         </div>
                                       )}
                                     </button>
@@ -323,15 +322,15 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                                           aria-label="Crop photo"
                                           title="Crop photo"
                                         >
-                                          <Crop className="w-3 h-3" />
+                                          <span className="material-symbols-outlined text-xs">crop</span>
                                         </button>
                                         <button
                                           onClick={() => handleDelete(url, photo.petId, photo.albumId, photo.entry)}
-                                          className="p-1 rounded-md bg-black/50 text-white hover:bg-rose-500/80 transition-colors"
+                                          className="p-1 rounded-md bg-black/50 text-white hover:bg-error/80 transition-colors"
                                           aria-label="Delete photo"
                                           title="Delete photo"
                                         >
-                                          <Trash2 className="w-3 h-3" />
+                                          <span className="material-symbols-outlined text-xs">delete</span>
                                         </button>
                                       </div>
                                     )}
@@ -347,17 +346,17 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                   {/* General Photos (user Default album) */}
                   {userDefaultAlbum.photos.length > 0 && (
                     <div className="mb-4">
-                      <h3 className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2">General Photos</h3>
+                      <h3 className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2">General Photos</h3>
                       <div className="grid grid-cols-3 gap-2">
                         {userDefaultAlbum.photos.map((photo, i) => (
-                          <div key={i} className="aspect-square rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                          <div key={i} className="aspect-square rounded-xl overflow-hidden bg-surface-container">
                             <img src={photoEntryUrl(photo)} alt={`General photo ${i + 1}`} className="w-full h-full object-cover" />
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  {uploadError && <p className="text-xs text-rose-500 dark:text-rose-400 text-center">{uploadError}</p>}
+                  {uploadError && <p className="text-xs text-error text-center">{uploadError}</p>}
                 </motion.div>
               ) : (
                 <motion.div
@@ -370,11 +369,11 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                 >
                   <div className="grid grid-cols-2 gap-3">
                     {userAlbums.map(album => (
-                      <div key={album.id} className="group relative rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-700 aspect-video">
+                      <div key={album.id} className="group relative rounded-xl overflow-hidden bg-surface-container aspect-video">
                         {album.coverPhoto ? (
                           <img src={album.coverPhoto} alt={album.name} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-neutral-400 dark:text-neutral-500 text-xs">No cover</div>
+                          <div className="w-full h-full flex items-center justify-center text-on-surface-variant text-xs">No cover</div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
                           <div>
@@ -385,7 +384,7 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                       </div>
                     ))}
                     {showNewAlbumInput ? (
-                      <div className="rounded-xl border-2 border-emerald-400 dark:border-emerald-500 p-3 flex flex-col gap-2 aspect-video justify-center">
+                      <div className="rounded-xl border-2 border-primary p-3 flex flex-col gap-2 aspect-video justify-center">
                         <input
                           autoFocus
                           type="text"
@@ -404,7 +403,7 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                             }
                           }}
                           placeholder="Album name"
-                          className="w-full px-2 py-1.5 text-xs rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-full px-2 py-1.5 text-xs rounded-lg border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         <div className="flex gap-1.5">
                           <button
@@ -417,13 +416,13 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                               setShowNewAlbumInput(false);
                               setSavingAlbum(false);
                             }}
-                            className="flex-1 py-1 rounded-lg text-[10px] font-medium bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-40 transition-colors"
+                            className="flex-1 py-1 rounded-lg text-[10px] font-medium bg-primary hover:bg-primary/90 text-on-primary disabled:opacity-40 transition-colors"
                           >
                             {savingAlbum ? '...' : 'Create'}
                           </button>
                           <button
                             onClick={() => { setNewAlbumName(''); setShowNewAlbumInput(false); }}
-                            className="flex-1 py-1 rounded-lg text-[10px] text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                            className="flex-1 py-1 rounded-lg text-[10px] text-on-surface-variant hover:bg-surface-container-high transition-colors"
                           >
                             Cancel
                           </button>
@@ -432,9 +431,9 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                     ) : (
                       <button
                         onClick={() => setShowNewAlbumInput(true)}
-                        className="rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors flex flex-col items-center justify-center gap-2 text-neutral-400 dark:text-neutral-500 aspect-video"
+                        className="rounded-xl border-2 border-dashed border-outline-variant hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-on-surface-variant aspect-video"
                       >
-                        <Plus className="w-6 h-6" />
+                        <span className="material-symbols-outlined text-2xl">add</span>
                         <span className="text-xs">New Album</span>
                       </button>
                     )}

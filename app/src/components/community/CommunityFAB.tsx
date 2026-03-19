@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Users, UserPlus, MessagesSquare, X } from 'lucide-react';
 import { CreateGroupModal } from '../CreateGroupModal';
 
 function scrollToSection(sectionId: string) {
@@ -34,19 +33,19 @@ export default function CommunityFAB() {
   const actions = [
     {
       label: 'Create Group',
-      icon: Users,
-      color: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+      icon: 'group',
+      color: 'bg-primary hover:bg-primary/90 text-on-primary',
       onClick: () => { setOpen(false); setShowCreateGroup(true); },
     },
     {
       label: 'Find Friends',
-      icon: UserPlus,
-      color: 'bg-violet-600 hover:bg-violet-700 text-white',
+      icon: 'person_add',
+      color: 'bg-tertiary hover:bg-tertiary/90 text-on-tertiary',
       onClick: handleFindFriends,
     },
     {
       label: 'Post in a Group',
-      icon: MessagesSquare,
+      icon: 'forum',
       color: 'bg-sky-600 hover:bg-sky-700 text-white',
       onClick: () => {
         setOpen(false);
@@ -60,7 +59,6 @@ export default function CommunityFAB() {
       <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 flex flex-col items-end gap-2">
         <AnimatePresence>
           {open && actions.map((action, i) => {
-            const Icon = action.icon;
             return (
               <motion.button
                 key={action.label}
@@ -71,7 +69,7 @@ export default function CommunityFAB() {
                 onClick={action.onClick}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg text-sm font-medium min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${action.color}`}
               >
-                <Icon className="w-4 h-4" aria-hidden="true" />
+                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">{action.icon}</span>
                 {action.label}
               </motion.button>
             );
@@ -83,12 +81,12 @@ export default function CommunityFAB() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="w-14 h-14 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 shadow-xl flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+          className="w-14 h-14 rounded-full bg-on-surface text-surface shadow-xl flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           aria-label={open ? 'Close community actions' : 'Open community actions'}
           aria-expanded={open}
         >
           <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.2 }}>
-            {open ? <X className="w-6 h-6" aria-hidden="true" /> : <Plus className="w-6 h-6" aria-hidden="true" />}
+            {open ? <span className="material-symbols-outlined text-[24px]" aria-hidden="true">close</span> : <span className="material-symbols-outlined text-[24px]" aria-hidden="true">add</span>}
           </motion.div>
         </motion.button>
       </div>

@@ -1,0 +1,28 @@
+{
+  "theme": "LIGHT",
+  "primaryColor": "#C4654A",
+  "font": "NUNITO_SANS",
+  "roundness": "High",
+  "density": "COMFORTABLE",
+  "designMode": "HIGH_FIDELITY",
+  "styleKeywords": ["Warm", "Organic", "Friendly", "Approachable", "Pet-Centric"],
+  "deviceType": "MOBILE",
+  "extendedPalette": {
+    "terracotta": "#C4654A",
+    "sage": "#8B9E7E",
+    "warmSand": "#E8D5B7",
+    "cream": "#FFF8F0",
+    "charcoal": "#2D2926",
+    "terracottaLight": "#D4876F",
+    "sageLight": "#A8B89E",
+    "warmSandLight": "#F2E6D4"
+  },
+  "screens": [
+    "Pet Overview",
+    "Health Dashboard",
+    "Pet Switcher + Home",
+    "Mobile Pet Profile"
+  ],
+  "concept": "Pet-Centric Hub",
+  "description": "Privacy-first pet health and community platform redesign. Each pet is a 'world' with its own health dashboard, social feed, cards, and community connections. Pet switcher is the primary navigation paradigm."
+}

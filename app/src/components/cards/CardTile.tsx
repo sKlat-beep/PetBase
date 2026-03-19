@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Share2, QrCode, ShieldOff, RotateCcw, RefreshCw, Pencil, Download, Check } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import type { Pet } from '../../types/pet';
 import type { PetCard } from '../../types/cardExtensions';
@@ -74,38 +73,38 @@ export function CardTile({
           onClick={onSelect}
           className={`flex-1 flex items-center gap-3 p-3 rounded-xl transition-all border-2 text-left ${
             selected
-              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20'
-              : 'border-transparent hover:border-neutral-200 dark:hover:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700/40'
+              ? 'border-primary bg-primary-container'
+              : 'border-transparent hover:border-outline-variant hover:bg-surface-container-low'
           }`}
         >
           {pet.image ? (
             <img src={pet.image} alt={pet.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" referrerPolicy="no-referrer" />
           ) : (
-            <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold text-white/80" style={{ backgroundColor: pet.backgroundColor || '#a8a29e' }}>
+            <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold text-on-primary/80" style={{ backgroundColor: pet.backgroundColor || '#a8a29e' }}>
               {pet.name?.[0]?.toUpperCase()}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+            <p className="text-sm font-semibold text-on-surface truncate">
               {pet.name} — {isPermanentlyRevoked ? 'Access Log' : TEMPLATE_LABELS[card.template]}
             </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+            <p className="text-xs text-on-surface-variant truncate">
               {status === 'active'
                 ? timeUntilExpiry(card.expiresAt)
                 : status === 'expired' ? 'Expired'
                 : isPermanentlyRevoked ? 'Permanently Logged' : '⛔ Revoked'}
             </p>
           </div>
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status === 'active' ? 'bg-emerald-500' : status === 'expired' ? 'bg-neutral-300' : 'bg-rose-500'}`} />
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status === 'active' ? 'bg-primary' : status === 'expired' ? 'bg-outline-variant' : 'bg-error'}`} />
         </button>
 
         {isStale && onUpdate && (
           <button
             onClick={e => { e.stopPropagation(); onUpdate(); }}
             title="Pet info has changed — click to update this card"
-            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 min-h-[44px] rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors text-xs font-medium border border-amber-200 dark:border-amber-800"
+            className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-2 min-h-[44px] rounded-xl bg-tertiary-container text-on-tertiary-container hover:bg-tertiary-container/80 transition-colors text-xs font-medium border border-tertiary/30"
           >
-            <RefreshCw className="w-3.5 h-3.5" /> Update
+            <span className="material-symbols-outlined text-[14px]">sync</span> Update
           </button>
         )}
       </div>
@@ -114,31 +113,31 @@ export function CardTile({
         <div className="flex items-center gap-1.5 pl-3 pt-1 pb-1 flex-wrap">
           {status === 'active' && (
             <>
-              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg transition-colors text-xs font-medium ${showCopied ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50'}`}>
-                {showCopied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+              <button onClick={handleShare} className={`flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg transition-colors text-xs font-medium ${showCopied ? 'bg-primary-container text-on-primary-container' : 'bg-primary-container/60 text-on-primary-container hover:bg-primary-container'}`}>
+                {showCopied ? <span className="material-symbols-outlined text-[14px]">check</span> : <span className="material-symbols-outlined text-[14px]">share</span>}
                 {showCopied ? 'Copied!' : 'Share'}
               </button>
-              <button onClick={() => setShowQrOverlay(true)} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium">
-                <QrCode className="w-3.5 h-3.5" /> QR
+              <button onClick={() => setShowQrOverlay(true)} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors text-xs font-medium">
+                <span className="material-symbols-outlined text-[14px]">qr_code_2</span> QR
               </button>
-              <button onClick={handleDownloadCard} disabled={downloading} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium disabled:opacity-50">
-                <Download className="w-3.5 h-3.5" /> {downloading ? 'Saving...' : 'Download'}
+              <button onClick={handleDownloadCard} disabled={downloading} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors text-xs font-medium disabled:opacity-50">
+                <span className="material-symbols-outlined text-[14px]">download</span> {downloading ? 'Saving...' : 'Download'}
               </button>
               {onEdit && (
-                <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors text-xs font-medium">
-                  <Pencil className="w-3.5 h-3.5" /> Edit
+                <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80 transition-colors text-xs font-medium">
+                  <span className="material-symbols-outlined text-[14px]">edit</span> Edit
                 </button>
               )}
             </>
           )}
           {status === 'active' && onRevoke && (
-            <button onClick={onRevoke} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-colors text-xs font-medium">
-              <ShieldOff className="w-3.5 h-3.5" /> Revoke
+            <button onClick={onRevoke} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-error-container text-on-error-container hover:bg-error-container/80 transition-colors text-xs font-medium">
+              <span className="material-symbols-outlined text-[14px]">shield_off</span> Revoke
             </button>
           )}
           {status === 'revoked' && timeLeft > 0 && onUndoRevoke && (
-            <button onClick={onUndoRevoke} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors text-xs font-medium">
-              <RotateCcw className="w-3.5 h-3.5" /> Undo ({formatTimeLeft(timeLeft)})
+            <button onClick={onUndoRevoke} className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg bg-tertiary-container text-on-tertiary-container hover:bg-tertiary-container/80 transition-colors text-xs font-medium">
+              <span className="material-symbols-outlined text-[14px]">undo</span> Undo ({formatTimeLeft(timeLeft)})
             </button>
           )}
         </div>

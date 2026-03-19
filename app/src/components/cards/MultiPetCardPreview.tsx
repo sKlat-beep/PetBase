@@ -1,5 +1,4 @@
 import React from 'react';
-import { Layers } from 'lucide-react';
 import type { Pet } from '../../types/pet';
 import type { PetCard } from '../../types/cardExtensions';
 import { getCardStatus, formatExpiry, petAsSnapshot } from '../../types/cardExtensions';
@@ -19,20 +18,20 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
     .filter((x): x is { cfg: typeof config[0]; pet: Pet } => !!x.pet);
 
   return (
-    <div id={`card-preview-${card.id}`} className="bg-white rounded-[2rem] shadow-xl border border-neutral-100 overflow-hidden max-w-md mx-auto w-full print:shadow-none">
+    <div id={`card-preview-${card.id}`} className="bg-surface-container rounded-[2rem] shadow-xl border border-outline-variant overflow-hidden max-w-md mx-auto w-full print:shadow-none">
       {status !== 'active' && (
-        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-white ${status === 'revoked' ? 'bg-rose-600' : 'bg-neutral-400'}`}>
+        <div className={`w-full text-center py-2 text-sm font-bold tracking-wide text-on-error ${status === 'revoked' ? 'bg-error' : 'bg-on-surface-variant'}`}>
           {status === 'revoked' ? '⛔ REVOKED' : '⏱ EXPIRED'}
         </div>
       )}
 
-      {/* Header — violet/indigo gradient */}
-      <div className="h-20 bg-gradient-to-r from-violet-600 to-indigo-600 relative overflow-hidden">
+      {/* Header — tertiary gradient */}
+      <div className="h-20 bg-gradient-to-r from-tertiary to-secondary relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '20px 20px' }} />
-        <div className="absolute top-2 right-3 text-white text-xs font-semibold uppercase tracking-wider drop-shadow-sm flex items-center gap-1">
-          <Layers className="w-3.5 h-3.5" /> Multi-pet Card
+        <div className="absolute top-2 right-3 text-on-tertiary text-xs font-semibold uppercase tracking-wider drop-shadow-sm flex items-center gap-1">
+          <span className="material-symbols-outlined text-[14px]">layers</span> Multi-pet Card
         </div>
-        <div className="absolute bottom-3 left-5 text-white font-bold text-lg">
+        <div className="absolute bottom-3 left-5 text-on-tertiary font-bold text-lg">
           {includedPets.length} Pet{includedPets.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -40,24 +39,24 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
       {/* Scrollable pet sections */}
       <div className="max-h-[60vh] overflow-y-auto">
         {includedPets.length === 0 ? (
-          <p className="text-center text-neutral-400 text-sm py-8">No pets selected.</p>
+          <p className="text-center text-on-surface-variant text-sm py-8">No pets selected.</p>
         ) : (
           includedPets.map(({ cfg, pet }) => {
             // Single coercion per pet: snapshot if available, else petAsSnapshot(pet)
             const data = cfg.petSnapshot ?? petAsSnapshot(pet);
             return (
-              <div key={cfg.petId} className="border-b border-neutral-100 last:border-b-0">
+              <div key={cfg.petId} className="border-b border-outline-variant last:border-b-0">
                 {/* Per-pet avatar + name strip */}
                 <div className="flex items-center gap-3 px-5 pt-5 pb-3">
                   {pet.image ? (
-                    <img src={pet.image} alt={pet.name} className={`w-14 h-14 object-cover border-2 border-white shadow-md ${pet.avatarShape === 'square' ? 'rounded-xl' : 'rounded-full'}`} referrerPolicy="no-referrer" />
+                    <img src={pet.image} alt={pet.name} className={`w-14 h-14 object-cover border-2 border-surface-container shadow-md ${pet.avatarShape === 'square' ? 'rounded-xl' : 'rounded-full'}`} referrerPolicy="no-referrer" />
                   ) : (
-                    <div className={`w-14 h-14 border-2 border-white shadow-md flex items-center justify-center text-xl font-bold text-white drop-shadow-sm ${pet.avatarShape === 'square' ? 'rounded-xl' : 'rounded-full'}`} style={{ backgroundColor: pet.backgroundColor || '#a8a29e' }}>
+                    <div className={`w-14 h-14 border-2 border-surface-container shadow-md flex items-center justify-center text-xl font-bold text-on-primary drop-shadow-sm ${pet.avatarShape === 'square' ? 'rounded-xl' : 'rounded-full'}`} style={{ backgroundColor: pet.backgroundColor || '#a8a29e' }}>
                       {pet.name?.[0]?.toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <p className="font-bold text-neutral-900 text-lg leading-tight">{pet.name}</p>
+                    <p className="font-bold text-on-surface text-lg leading-tight">{pet.name}</p>
                   </div>
                 </div>
 
@@ -77,7 +76,7 @@ export function MultiPetCardPreview({ pets, card }: MultiPetCardPreviewProps) {
       </div>
 
       {status === 'active' && (
-        <p className="text-xs text-neutral-400 text-center py-3 border-t border-neutral-100">Expires {formatExpiry(card.expiresAt)}</p>
+        <p className="text-xs text-on-surface-variant text-center py-3 border-t border-outline-variant">Expires {formatExpiry(card.expiresAt)}</p>
       )}
     </div>
   );

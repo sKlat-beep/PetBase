@@ -25,7 +25,7 @@ const SharedCardPage = lazy(() => import('./pages/SharedCardPage').then(m => ({ 
 function PageSpinner() {
   return (
     <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-primary-container border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }
@@ -54,9 +54,9 @@ function LegacyVaultMigrationModal({ vaultDoc, uid, onMigrated }: { vaultDoc: Va
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div role="dialog" aria-modal="true" className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl p-6 w-full max-w-md border border-neutral-100 dark:border-neutral-700 space-y-5">
-        <h2 className="font-semibold text-neutral-900 dark:text-neutral-100">One-Time Sync Migration</h2>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+      <div role="dialog" aria-modal="true" className="glass-card p-6 w-full max-w-md space-y-5">
+        <h2 className="font-semibold text-on-surface">One-Time Sync Migration</h2>
+        <p className="text-sm text-on-surface-variant leading-relaxed">
           We've upgraded cross-device sync to be automatic. Enter your old sync password one last time to migrate your encryption key.
         </p>
         <input
@@ -65,14 +65,14 @@ function LegacyVaultMigrationModal({ vaultDoc, uid, onMigrated }: { vaultDoc: Va
           onChange={e => setPassword(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleMigrate()}
           placeholder="Old sync password"
-          className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full px-4 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-tertiary"
           autoFocus
         />
-        {error && <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p>}
+        {error && <p className="text-sm text-error">{error}</p>}
         <button
           onClick={handleMigrate}
           disabled={!password || working}
-          className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-medium transition-colors"
+          className="w-full py-2.5 rounded-xl bg-tertiary hover:opacity-90 disabled:opacity-50 text-on-tertiary font-medium transition-colors"
         >
           {working ? 'Migrating…' : 'Migrate & Unlock'}
         </button>

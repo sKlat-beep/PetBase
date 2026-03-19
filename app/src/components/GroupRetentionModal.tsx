@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, Check } from 'lucide-react';
 
 interface GroupRetentionModalProps {
   currentDays: number;
@@ -38,36 +37,36 @@ export function GroupRetentionModal({ currentDays, onSave, onClose }: GroupReten
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="relative w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-2xl shadow-xl shadow-black/10 dark:shadow-black/30 overflow-hidden"
+        className="relative w-full sm:max-w-md bg-surface rounded-t-3xl sm:rounded-2xl shadow-xl shadow-black/10 overflow-hidden"
       >
         {/* Handle (mobile) */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-9 h-1 bg-neutral-300 dark:bg-neutral-600 rounded-full" />
+          <div className="w-9 h-1 bg-outline-variant rounded-full" />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
-          <h2 id="retention-modal-title" className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+          <h2 id="retention-modal-title" className="text-xl font-semibold text-on-surface">
             Group Settings
           </h2>
           <button
             onClick={onClose}
             aria-label="Close settings"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
-            <X className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">close</span>
           </button>
         </div>
 
-        <div className="h-px bg-neutral-100 dark:bg-neutral-800" />
+        <div className="h-px bg-outline-variant" />
 
         {/* Body */}
         <div className="px-6 py-5 space-y-4">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-neutral-400 dark:text-neutral-500 uppercase mb-1">
+            <p className="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1">
               Message Retention
             </p>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm text-on-surface-variant">
               Posts older than the selected period are automatically deleted.
             </p>
           </div>
@@ -83,18 +82,18 @@ export function GroupRetentionModal({ currentDays, onSave, onClose }: GroupReten
                   onClick={() => setSelected(days)}
                   className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                     isSelected
-                      ? 'bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-500 dark:border-emerald-600'
-                      : 'bg-neutral-50 dark:bg-neutral-800/50 border border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                      ? 'bg-primary-container border border-primary'
+                      : 'bg-surface-container border border-transparent hover:bg-surface-container-high'
                   }`}
                 >
-                  <span className={`text-sm font-medium ${isSelected ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-800 dark:text-neutral-200'}`}>
+                  <span className={`text-sm font-medium ${isSelected ? 'text-on-primary-container' : 'text-on-surface'}`}>
                     {label}
                   </span>
                   <span className="flex items-center gap-2">
-                    <span className={`text-xs ${isSelected ? 'text-emerald-600 dark:text-emerald-500' : 'text-neutral-400 dark:text-neutral-500'}`}>
+                    <span className={`text-xs ${isSelected ? 'text-on-primary-container' : 'text-on-surface-variant'}`}>
                       {sublabel}
                     </span>
-                    {isSelected && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />}
+                    {isSelected && <span className="material-symbols-outlined text-[16px] text-primary">check</span>}
                   </span>
                 </button>
               );
@@ -103,7 +102,7 @@ export function GroupRetentionModal({ currentDays, onSave, onClose }: GroupReten
 
           <button
             onClick={handleSave}
-            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
+            className="w-full py-3.5 bg-primary hover:bg-primary/90 text-on-primary font-semibold rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
           >
             Save Settings
           </button>

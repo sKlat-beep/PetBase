@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Search, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import type { PublicProfile } from '../../contexts/SocialContext';
 
@@ -37,38 +36,38 @@ export function FriendListModal({ friends, onClose }: FriendListModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-700/60 shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]"
+        className="bg-surface rounded-2xl border border-outline-variant shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]"
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Friends List"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200/60 dark:border-neutral-700/60 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant shrink-0">
           <div>
-            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">My Friends</h2>
-            <p className="text-[10px] text-neutral-400 dark:text-neutral-500">{friends.length} friend{friends.length !== 1 ? 's' : ''}</p>
+            <h2 className="text-sm font-semibold text-on-surface">My Friends</h2>
+            <p className="text-[10px] text-on-surface-variant">{friends.length} friend{friends.length !== 1 ? 's' : ''}</p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1.5 rounded-lg text-neutral-400 dark:text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
 
         {/* Search */}
         <div className="px-4 pt-3 pb-3 shrink-0">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+            <span className="material-symbols-outlined text-[14px] absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
             <input
               ref={searchRef}
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search friends…"
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-surface-container border border-outline-variant text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
         </div>
@@ -76,15 +75,15 @@ export function FriendListModal({ friends, onClose }: FriendListModalProps) {
         {/* Friend list */}
         <div className="overflow-y-auto flex-1 px-4 pb-4 space-y-2">
           {friends.length === 0 ? (
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 py-4 text-center">No friends yet.</p>
+            <p className="text-xs text-on-surface-variant py-4 text-center">No friends yet.</p>
           ) : filtered.length === 0 ? (
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 py-4 text-center">No friends match your search.</p>
+            <p className="text-xs text-on-surface-variant py-4 text-center">No friends match your search.</p>
           ) : (
             filtered.map(friend => {
               const initial = friend.displayName.charAt(0).toUpperCase();
               return (
                 <div key={friend.uid} className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center shrink-0 overflow-hidden">
                     {friend.avatarUrl ? (
                       <img
                         src={friend.avatarUrl}
@@ -93,20 +92,20 @@ export function FriendListModal({ friends, onClose }: FriendListModalProps) {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
+                      <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                         {initial}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate flex-1 min-w-0">
+                  <p className="text-xs font-medium text-on-surface truncate flex-1 min-w-0">
                     {friend.displayName}
                   </p>
                   <button
                     onClick={() => { navigate('/messages'); onClose(); }}
                     aria-label={`Message ${friend.displayName}`}
-                    className="p-1 rounded-lg bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="p-1 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   >
-                    <MessageSquare className="w-3 h-3" />
+                    <span className="material-symbols-outlined text-[12px]">chat</span>
                   </button>
                 </div>
               );

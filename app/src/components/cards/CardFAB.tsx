@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { Layers, QrCode } from 'lucide-react';
 
 interface CardFABProps {
   onCreateSingle: () => void;
@@ -18,26 +17,26 @@ export function CardFAB({ onCreateSingle, onCreateMulti, showMulti }: CardFABPro
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             onClick={onCreateMulti}
-            className="flex items-center gap-2 bg-violet-600 text-white shadow-xl rounded-full px-4 py-3 font-medium text-sm"
+            className="flex items-center gap-2 bg-tertiary text-on-tertiary shadow-xl rounded-full px-4 py-3 font-medium text-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             aria-label="Create multi-pet card"
           >
-            <Layers className="w-5 h-5 motion-safe:block" /> Multi-pet
+            <span className="material-symbols-outlined text-[20px] motion-safe:block">layers</span> Multi-pet
           </motion.button>
         )}
       </AnimatePresence>
 
       <motion.button
         onClick={onCreateSingle}
-        className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 shadow-2xl rounded-full p-4"
+        className="bg-on-surface text-surface shadow-2xl rounded-full p-4"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         aria-label="Create new card"
       >
-        <QrCode className="w-6 h-6 motion-safe:block" />
+        <span className="material-symbols-outlined text-[24px] motion-safe:block">qr_code_2</span>
       </motion.button>
     </div>
   );

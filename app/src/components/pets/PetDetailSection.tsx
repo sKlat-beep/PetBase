@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
-import { ChevronDown } from 'lucide-react';
 
 const TRANSITION = { duration: 0.2, ease: 'easeInOut' } as const;
 
@@ -39,24 +38,24 @@ export function PetDetailSection({
   }
 
   return (
-    <div className="border-b border-neutral-100 dark:border-neutral-700 last:border-0">
+    <div className="border-b border-outline-variant last:border-0">
       <button
         type="button"
         id={`${storageKey}-trigger`}
         onClick={toggle}
         aria-expanded={isOpen}
         aria-controls={`${storageKey}-panel`}
-        className="w-full flex items-center gap-3 px-6 py-4 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors"
+        className="w-full flex items-center gap-3 px-6 py-4 text-left hover:bg-surface-container transition-colors"
       >
         {icon}
-        <span className="flex-1 font-semibold text-neutral-900 dark:text-neutral-100">
+        <span className="flex-1 font-semibold text-on-surface">
           {title}
         </span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={TRANSITION}
         >
-          <ChevronDown className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+          <span className="material-symbols-outlined text-base text-on-surface-variant">expand_more</span>
         </motion.span>
       </button>
 

@@ -15,10 +15,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
-import {
-  X, User, MessageSquare, UserPlus, UserCheck, UserMinus,
-  ShieldOff, Shield, Users, ChevronDown, Loader2, Flag, Award,
-} from 'lucide-react';
 import { getBadgeById } from '../../utils/badges';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocial } from '../../contexts/SocialContext';
@@ -227,13 +223,13 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 40, scale: 0.97 }}
         transition={{ duration: 0.15, ease: 'easeOut' }}
-        className="relative w-full sm:max-w-sm bg-white dark:bg-neutral-900
-                   border border-neutral-200 dark:border-neutral-700 shadow-2xl
+        className="relative w-full sm:max-w-sm bg-surface
+                   border border-outline-variant shadow-2xl
                    rounded-t-2xl sm:rounded-2xl overflow-hidden z-10 flex flex-col"
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
-          <h2 id="user-profile-modal-title" className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-outline-variant shrink-0">
+          <h2 id="user-profile-modal-title" className="text-lg font-bold text-on-surface">
             Profile
           </h2>
           <button
@@ -241,11 +237,11 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
             onClick={onClose}
             aria-label="Close profile"
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg
-                       text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200
-                       hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors
+                       text-on-surface-variant hover:text-on-surface
+                       hover:bg-surface-container transition-colors
                        focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
           >
-            <X className="w-5 h-5" />
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
@@ -255,13 +251,13 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
           {/* Loading state */}
           {loading && !targetProfile && (
             <div className="flex items-center justify-center py-10">
-              <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
+              <span className="material-symbols-outlined text-[24px] animate-spin text-on-surface-variant">progress_activity</span>
             </div>
           )}
 
           {/* Not found */}
           {!loading && !targetProfile && (
-            <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 py-8">
+            <p className="text-center text-sm text-on-surface-variant py-8">
               Profile not found.
             </p>
           )}
@@ -273,18 +269,18 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
               {isBlockedBy(uid) ? (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                      <User className="w-7 h-7 text-neutral-400" />
+                    <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[28px] text-on-surface-variant">person</span>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-base">
+                      <p className="font-bold text-on-surface truncate text-base">
                         User
                       </p>
                     </div>
                   </div>
-                  <div className="rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-4 text-center">
-                    <Shield className="w-6 h-6 mx-auto mb-2 text-neutral-400" />
-                    <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">This user is not available</p>
+                  <div className="rounded-xl bg-surface-container border border-outline-variant p-4 text-center">
+                    <span className="material-symbols-outlined text-[24px] mx-auto mb-2 text-on-surface-variant block">shield</span>
+                    <p className="text-sm font-medium text-on-surface-variant">This user is not available</p>
                   </div>
                 </>
               ) : (
@@ -297,20 +293,20 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     alt={targetProfile.displayName}
                     width={64}
                     height={64}
-                    className="w-16 h-16 rounded-2xl object-cover bg-neutral-100 dark:bg-neutral-800 shrink-0"
+                    className="w-16 h-16 rounded-2xl object-cover bg-surface-container shrink-0"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                    <User className="w-7 h-7 text-neutral-400" />
+                  <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[28px] text-on-surface-variant">person</span>
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-base">
+                  <p className="font-bold text-on-surface truncate text-base">
                     {targetProfile.displayName}
                   </p>
                   {targetProfile.username && (
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate">
+                    <p className="text-sm text-on-surface-variant truncate">
                       {targetProfile.username.includes('#') ? (
                         <>
                           @{targetProfile.username.split('#')[0]}
@@ -326,9 +322,9 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
 
               {/* Private profile placeholder */}
               {targetProfile.visibility === 'Private' && !isMeViewing && (
-                <div className="rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-4 text-center">
-                  <Shield className="w-6 h-6 mx-auto mb-2 text-neutral-400" />
-                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">This profile is private</p>
+                <div className="rounded-xl bg-surface-container border border-outline-variant p-4 text-center">
+                  <span className="material-symbols-outlined text-[24px] mx-auto mb-2 text-on-surface-variant block">shield</span>
+                  <p className="text-sm font-medium text-on-surface-variant">This profile is private</p>
                 </div>
               )}
 
@@ -338,8 +334,8 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                   {/* Public status badge */}
                   {targetProfile.publicStatus && targetProfile.publicStatus !== 'None' && (
                     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
-                                    bg-emerald-50 dark:bg-emerald-900/30
-                                    text-emerald-700 dark:text-emerald-400 text-sm font-medium">
+                                    bg-primary-container
+                                    text-on-primary-container text-sm font-medium">
                       {STATUS_LABELS[targetProfile.publicStatus] ?? targetProfile.publicStatus}
                     </div>
                   )}
@@ -351,7 +347,7 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                         const def = getBadgeById(b.id);
                         if (!def) return null;
                         return (
-                          <span key={b.id} title={def.description} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-medium">
+                          <span key={b.id} title={def.description} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-tertiary-container text-on-tertiary-container text-xs font-medium">
                             <span>{def.emoji}</span> {def.title}
                           </span>
                         );
@@ -363,12 +359,12 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
 
               {/* Feedback messages */}
               {inviteError && (
-                <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 rounded-lg px-3 py-2">
+                <p className="text-sm text-error bg-error-container rounded-lg px-3 py-2">
                   {inviteError}
                 </p>
               )}
               {inviteSuccess && (
-                <p className="text-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg px-3 py-2">
+                <p className="text-sm text-on-primary-container bg-primary-container rounded-lg px-3 py-2">
                   {inviteSuccess}
                 </p>
               )}
@@ -382,12 +378,12 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     <button
                       onClick={handleMessage}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                 bg-emerald-50 dark:bg-emerald-900/30
-                                 text-emerald-700 dark:text-emerald-400
-                                 hover:bg-emerald-100 dark:hover:bg-emerald-900/50
+                                 bg-primary-container
+                                 text-on-primary-container
+                                 hover:bg-primary-container/80
                                  transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                     >
-                      <MessageSquare className="w-4 h-4" />
+                      <span className="material-symbols-outlined text-[16px]">chat</span>
                       Message
                     </button>
                   )}
@@ -397,11 +393,11 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     <button
                       onClick={() => sendFriendRequest(uid)}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900
-                                 hover:bg-neutral-800 dark:hover:bg-neutral-200
+                                 bg-on-surface text-surface
+                                 hover:bg-on-surface/90
                                  transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                     >
-                      <UserPlus className="w-4 h-4" />
+                      <span className="material-symbols-outlined text-[16px]">person_add</span>
                       Add Friend
                     </button>
                   )}
@@ -410,12 +406,12 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     <button
                       onClick={() => cancelFriendRequest(sentByMe.id)}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                 bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400
-                                 hover:bg-neutral-200 dark:hover:bg-neutral-600
+                                 bg-surface-container text-on-surface-variant
+                                 hover:bg-surface-container-high
                                  transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       title="Cancel friend request"
                     >
-                      <UserCheck className="w-4 h-4" />
+                      <span className="material-symbols-outlined text-[16px]">how_to_reg</span>
                       Pending
                     </button>
                   )}
@@ -425,17 +421,17 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                       <button
                         onClick={() => acceptFriendRequest(sentByThem.id)}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                   bg-emerald-500 text-white hover:bg-emerald-600
+                                   bg-primary text-on-primary hover:bg-primary/90
                                    transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       >
-                        <UserCheck className="w-4 h-4" />
+                        <span className="material-symbols-outlined text-[16px]">how_to_reg</span>
                         Accept
                       </button>
                       <button
                         onClick={() => rejectFriendRequest(sentByThem.id)}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                   bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300
-                                   hover:bg-neutral-200 dark:hover:bg-neutral-600
+                                   bg-surface-container text-on-surface-variant
+                                   hover:bg-surface-container-high
                                    transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       >
                         Decline
@@ -448,24 +444,24 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                       <button
                         onClick={() => setRemoveFriendDropdownOpen(v => !v)}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                   bg-emerald-50 dark:bg-emerald-900/30
-                                   text-emerald-700 dark:text-emerald-400
-                                   hover:bg-emerald-100 dark:hover:bg-emerald-900/50
+                                   bg-primary-container
+                                   text-on-primary-container
+                                   hover:bg-primary-container/80
                                    transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       >
-                        <UserCheck className="w-4 h-4" />
+                        <span className="material-symbols-outlined text-[16px]">how_to_reg</span>
                         Friends
-                        <ChevronDown className="w-3 h-3" />
+                        <span className="material-symbols-outlined text-[12px]">expand_more</span>
                       </button>
                       {removeFriendDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-neutral-800
-                                        border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg min-w-[150px]">
+                        <div className="absolute top-full left-0 mt-1 z-20 bg-surface-container-low
+                                        border border-outline-variant rounded-xl shadow-lg min-w-[150px]">
                           <button
                             onClick={() => { removeFriend(uid); setRemoveFriendDropdownOpen(false); }}
-                            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-rose-600 dark:text-rose-400
-                                       hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors"
+                            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-error
+                                       hover:bg-error-container rounded-xl transition-colors"
                           >
-                            <UserMinus className="w-4 h-4" />
+                            <span className="material-symbols-outlined text-[16px]">person_remove</span>
                             Remove Friend
                           </button>
                         </div>
@@ -479,29 +475,29 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                       <button
                         onClick={() => { setInviteGroupDropdownOpen(v => !v); setInviteError(''); setInviteSuccess(''); }}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                                   bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300
-                                   hover:bg-neutral-200 dark:hover:bg-neutral-600
+                                   bg-surface-container text-on-surface-variant
+                                   hover:bg-surface-container-high
                                    transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                       >
-                        <Users className="w-4 h-4" />
+                        <span className="material-symbols-outlined text-[16px]">group</span>
                         Invite to Group
-                        <ChevronDown className="w-3 h-3" />
+                        <span className="material-symbols-outlined text-[12px]">expand_more</span>
                       </button>
                       {inviteGroupDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-neutral-800
-                                        border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg min-w-[180px]">
+                        <div className="absolute top-full left-0 mt-1 z-20 bg-surface-container-low
+                                        border border-outline-variant rounded-xl shadow-lg min-w-[180px]">
                           {myAdminGroups.map(g => (
                             <button
                               key={g.id}
                               onClick={() => handleInviteToGroup(g.id)}
                               disabled={!!g.members[uid]}
-                              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-neutral-700 dark:text-neutral-300
-                                         hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xl transition-colors
+                              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-on-surface-variant
+                                         hover:bg-surface-container rounded-xl transition-colors
                                          disabled:opacity-40 disabled:cursor-not-allowed first:rounded-t-xl last:rounded-b-xl"
                             >
                               {g.name}
                               {g.members[uid] && (
-                                <span className="ml-auto text-[10px] text-neutral-400">Already member</span>
+                                <span className="ml-auto text-[10px] text-on-surface-variant">Already member</span>
                               )}
                             </button>
                           ))}
@@ -516,11 +512,11 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
                                ${isBlockedByMe
-                                 ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40'
-                                 : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400'
+                                 ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                                 : 'bg-surface-container text-on-surface-variant hover:bg-error-container hover:text-error'
                                }`}
                   >
-                    <ShieldOff className="w-4 h-4" />
+                    <span className="material-symbols-outlined text-[16px]">shield</span>
                     {isBlockedByMe ? 'Unblock' : 'Block'}
                   </button>
 
@@ -528,11 +524,11 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                   <button
                     onClick={handleReport}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                               bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400
-                               hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400
+                               bg-surface-container text-on-surface-variant
+                               hover:bg-orange-50 hover:text-orange-600
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >
-                    <Flag className="w-4 h-4" />
+                    <span className="material-symbols-outlined text-[16px]">flag</span>
                     Report
                   </button>
                 </div>

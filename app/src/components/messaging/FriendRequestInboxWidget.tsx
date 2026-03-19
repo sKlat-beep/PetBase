@@ -1,6 +1,5 @@
 import { useSocial } from '../../contexts/SocialContext';
 import { useNavigate } from 'react-router';
-import { UserPlus } from 'lucide-react';
 
 export function FriendRequestInboxWidget() {
   const { pendingRequests, acceptFriendRequest, rejectFriendRequest, acceptFriendRequestAndGreet, directory } = useSocial();
@@ -12,15 +11,15 @@ export function FriendRequestInboxWidget() {
   const dirMap = Object.fromEntries(directory.map(u => [u.uid, u]));
 
   return (
-    <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20 overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-amber-200 dark:border-amber-800">
+    <div className="rounded-xl border border-outline-variant bg-tertiary-container overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-outline-variant">
         <div className="flex items-center gap-1.5">
-          <UserPlus className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-          <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">Friend Requests</span>
+          <span className="material-symbols-outlined text-on-tertiary-container text-[14px]">person_add</span>
+          <span className="text-xs font-semibold text-on-tertiary-container">Friend Requests</span>
         </div>
-        <span className="text-[10px] font-bold text-white bg-amber-500 rounded-full w-4 h-4 flex items-center justify-center">{pendingRequests.length}</span>
+        <span className="text-[10px] font-bold text-on-primary bg-primary rounded-full w-4 h-4 flex items-center justify-center">{pendingRequests.length}</span>
       </div>
-      <div className="divide-y divide-amber-100 dark:divide-amber-900">
+      <div className="divide-y divide-outline-variant">
         {pendingRequests.slice(0, 5).map((req) => {
           const user = dirMap[req.fromUid];
           const name = user?.displayName ?? 'Someone';
@@ -30,19 +29,19 @@ export function FriendRequestInboxWidget() {
               {avatar ? (
                 <img src={avatar} alt={name} className="w-8 h-8 rounded-full object-cover shrink-0" referrerPolicy="no-referrer" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-amber-200 dark:bg-amber-800 flex items-center justify-center text-xs font-bold text-amber-700 dark:text-amber-300 shrink-0">{name[0]}</div>
+                <div className="w-8 h-8 rounded-full bg-tertiary flex items-center justify-center text-xs font-bold text-on-tertiary shrink-0">{name[0]}</div>
               )}
-              <p className="flex-1 text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{name}</p>
+              <p className="flex-1 text-xs font-medium text-on-surface truncate">{name}</p>
               <div className="flex gap-1 shrink-0">
                 <button
                   onClick={() => (acceptFriendRequestAndGreet as any)(req.id, navigate)}
-                  className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
+                  className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-primary hover:bg-primary/90 text-on-primary transition-colors"
                 >
                   Accept
                 </button>
                 <button
                   onClick={() => rejectFriendRequest(req.id)}
-                  className="text-[10px] font-medium px-2 py-1 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"
+                  className="text-[10px] font-medium px-2 py-1 rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-container transition-colors"
                 >
                   Decline
                 </button>

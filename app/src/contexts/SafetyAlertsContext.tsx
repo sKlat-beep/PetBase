@@ -68,12 +68,12 @@ export const CATEGORY_LABELS: Record<AlertCategory, string> = {
 };
 
 export const CATEGORY_COLORS: Record<AlertCategory, string> = {
-  hazard:   'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
-  wildlife: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300',
-  toxic:    'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300',
-  missing:  'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
-  weather:  'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300',
-  other:    'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300',
+  hazard:   'bg-error-container text-on-error-container',
+  wildlife: 'bg-secondary-container text-on-secondary-container',
+  toxic:    'bg-tertiary-container text-on-tertiary-container',
+  missing:  'bg-primary-container/20 text-primary-container',
+  weather:  'bg-secondary-container text-on-secondary-container',
+  other:    'bg-surface-container-high text-on-surface-variant',
 };
 
 const ALERT_TTL_MS = 3 * 24 * 60 * 60 * 1000; // 3 days

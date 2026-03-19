@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ImageLightboxProps {
   images: string[];
@@ -52,7 +51,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
           className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           aria-label="Close lightbox"
         >
-          <X className="w-5 h-5" />
+          <span className="material-symbols-outlined text-[20px]">close</span>
         </button>
 
         {/* Prev */}
@@ -63,7 +62,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
             className="absolute left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
             aria-label="Previous photo"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <span className="material-symbols-outlined text-[24px]">chevron_left</span>
           </button>
         )}
 
@@ -75,7 +74,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
             className="absolute right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
             aria-label="Next photo"
           >
-            <ChevronRight className="w-6 h-6" />
+            <span className="material-symbols-outlined text-[24px]">chevron_right</span>
           </button>
         )}
 

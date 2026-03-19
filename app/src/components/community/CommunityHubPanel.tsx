@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router';
-import { Calendar, Users, UserCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePets } from '../../contexts/PetContext';
 import { useCommunity } from '../../contexts/CommunityContext';
@@ -111,14 +110,14 @@ export function CommunityHubPanel() {
       <CollapsiblePanelWidget
         id="comm-suggested"
         title="Suggested Groups"
-        icon={<Users className="w-3 h-3" />}
+        icon={<span className="material-symbols-outlined text-[12px]">group</span>}
       >
         {allGroupsJoined ? (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs text-on-surface-variant">
             You&apos;re in all available groups! 🎉
           </p>
         ) : suggestedGroups.length === 0 ? (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">No groups to suggest yet</p>
+          <p className="text-xs text-on-surface-variant">No groups to suggest yet</p>
         ) : (
           <div className="space-y-2.5">
             {suggestedGroups.map(g => {
@@ -130,25 +129,25 @@ export function CommunityHubPanel() {
                     <img
                       src={g.image}
                       alt={g.name}
-                      className="w-8 h-8 rounded-lg object-cover shrink-0 bg-neutral-100 dark:bg-neutral-700"
+                      className="w-8 h-8 rounded-lg object-cover shrink-0 bg-surface-container-high"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                    <div className="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-on-primary-container uppercase">
                         {g.name.charAt(0)}
                       </span>
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">{g.name}</p>
-                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                    <p className="text-xs font-semibold text-on-surface truncate">{g.name}</p>
+                    <p className="text-[10px] text-on-surface-variant">
                       {memberCount} member{memberCount !== 1 ? 's' : ''}
-                      {firstTag && <> · <span className="text-emerald-600 dark:text-emerald-400">{firstTag}</span></>}
+                      {firstTag && <> · <span className="text-primary">{firstTag}</span></>}
                     </p>
                   </div>
                   <Link
                     to="/community"
-                    className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                    className="text-[10px] font-semibold text-primary hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                   >
                     Join
                   </Link>
@@ -163,18 +162,18 @@ export function CommunityHubPanel() {
       <CollapsiblePanelWidget
         id="comm-events"
         title="Upcoming Events"
-        icon={<Calendar className="w-3 h-3" />}
+        icon={<span className="material-symbols-outlined text-[12px]">event</span>}
       >
         {upcomingEvents.length === 0 ? (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">No upcoming events in your groups</p>
+          <p className="text-xs text-on-surface-variant">No upcoming events in your groups</p>
         ) : (
           <div className="space-y-2">
             {upcomingEvents.map(e => (
-              <div key={e.id} className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
+              <div key={e.id} className="flex items-start gap-1.5 text-xs text-on-surface-variant">
                 <span className="mt-0.5 shrink-0" aria-hidden="true">📅</span>
                 <div className="min-w-0">
                   <p className="font-medium truncate">{e.title}</p>
-                  <p className="text-[10px] text-neutral-400 dark:text-neutral-500 truncate">
+                  <p className="text-[10px] text-on-surface-variant truncate">
                     {e.groupName} · {new Date(e.date).toLocaleDateString()}
                   </p>
                 </div>
@@ -188,30 +187,30 @@ export function CommunityHubPanel() {
       <CollapsiblePanelWidget
         id="comm-people"
         title="People You May Know"
-        icon={<UserCheck className="w-3 h-3" />}
+        icon={<span className="material-symbols-outlined text-[12px]">person_check</span>}
       >
         {peopleSuggestions.length === 0 ? (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">No suggestions right now</p>
+          <p className="text-xs text-on-surface-variant">No suggestions right now</p>
         ) : (
           <div className="space-y-2.5">
             {peopleSuggestions.map(({ uid, count, profile: p }) => (
               <div key={uid} className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase">
+                <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0">
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                     {(p?.displayName ?? uid).charAt(0)}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">
+                  <p className="text-xs font-semibold text-on-surface truncate">
                     {p?.displayName ?? 'Member'}
                   </p>
-                  <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                  <p className="text-[10px] text-on-surface-variant">
                     in {count} of your group{count !== 1 ? 's' : ''}
                   </p>
                 </div>
                 <Link
                   to={`/community/people?uid=${uid}`}
-                  className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                  className="text-[10px] font-semibold text-sky-600 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                 >
                   View
                 </Link>

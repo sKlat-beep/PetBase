@@ -24,7 +24,7 @@ export function OnlineContactsStrip({ profileCache }: OnlineContactsStripProps) 
 
   return (
     <div>
-      <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wide mb-1.5">Recent</p>
+      <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">Recent</p>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {recent.map(contact => (
           <button
@@ -34,17 +34,17 @@ export function OnlineContactsStrip({ profileCache }: OnlineContactsStripProps) 
           >
             <div className="relative">
               {contact.avatarUrl ? (
-                <img src={contact.avatarUrl} alt={contact.displayName} className="w-10 h-10 rounded-full object-cover group-hover:ring-2 group-hover:ring-emerald-400 transition-all" referrerPolicy="no-referrer" />
+                <img src={contact.avatarUrl} alt={contact.displayName} className="w-10 h-10 rounded-full object-cover group-hover:ring-2 group-hover:ring-primary transition-all" referrerPolicy="no-referrer" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-sm font-bold text-emerald-600 dark:text-emerald-400 group-hover:ring-2 group-hover:ring-emerald-400 transition-all">
+                <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-on-primary-container group-hover:ring-2 group-hover:ring-primary transition-all">
                   {contact.displayName?.[0]?.toUpperCase()}
                 </div>
               )}
               {isOnline(contact.lastSeen) && (
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white dark:border-neutral-800" />
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-surface" />
               )}
             </div>
-            <span className="text-[9px] text-neutral-500 dark:text-neutral-400 w-10 truncate text-center">{contact.displayName?.split(' ')[0]}</span>
+            <span className="text-[9px] text-on-surface-variant w-10 truncate text-center">{contact.displayName?.split(' ')[0]}</span>
           </button>
         ))}
       </div>

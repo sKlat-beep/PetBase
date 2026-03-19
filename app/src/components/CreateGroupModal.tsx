@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Users, ImagePlus, Loader2 } from 'lucide-react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -120,26 +119,26 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="create-group-modal-title"
-                    className="relative bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700 w-full max-w-md z-10 flex flex-col"
+                    className="relative bg-surface-container rounded-2xl shadow-2xl border border-outline-variant w-full max-w-md z-10 flex flex-col"
                 >
-                    <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-700">
+                    <div className="flex items-center justify-between p-6 border-b border-outline-variant">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[20px] text-primary">group</span>
                             </div>
                             <div>
-                                <h2 id="create-group-modal-title" className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Create Group</h2>
-                                <p className="text-sm text-neutral-500 dark:text-neutral-400">{ownedGroups.length}/3 groups owned</p>
+                                <h2 id="create-group-modal-title" className="text-xl font-bold text-on-surface">Create Group</h2>
+                                <p className="text-sm text-on-surface-variant">{ownedGroups.length}/3 groups owned</p>
                             </div>
                         </div>
-                        <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                            <X className="w-5 h-5" />
+                        <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-lg hover:bg-surface-container-high">
+                            <span className="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Group Name</label>
+                            <label className="block text-sm font-medium text-on-surface-variant mb-1">Group Name</label>
                             <input
                                 type="text"
                                 required
@@ -147,29 +146,29 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 value={name}
                                 onChange={(e) => { setName(e.target.value); setNameError(''); }}
                                 placeholder="e.g. Local Husky Walkers"
-                                className={`w-full px-4 py-2 rounded-xl border bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 transition-colors ${nameError ? 'border-rose-400 focus:ring-rose-400' : 'border-neutral-200 dark:border-neutral-600 focus:ring-emerald-500'}`}
+                                className={`w-full px-4 py-2 rounded-xl border bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 transition-colors ${nameError ? 'border-error focus:ring-error' : 'border-outline-variant focus:ring-primary'}`}
                             />
                             {name.length > 40 && (
-                                <p className="text-xs text-neutral-400 mt-1">{name.length}/60 characters</p>
+                                <p className="text-xs text-on-surface-variant mt-1">{name.length}/60 characters</p>
                             )}
-                            {nameError && <p className="text-xs text-rose-500 mt-1">{nameError}</p>}
+                            {nameError && <p className="text-xs text-error mt-1">{nameError}</p>}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Description</label>
+                            <label className="block text-sm font-medium text-on-surface-variant mb-1">Description</label>
                             <textarea
                                 required
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="What is this group about?"
                                 rows={3}
-                                className="w-full px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
+                                className="w-full px-4 py-2 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none"
                             />
                         </div>
 
                         {/* Cover Photo Upload */}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Cover Photo <span className="text-neutral-400 font-normal">(Optional)</span>
+                            <label className="block text-sm font-medium text-on-surface-variant mb-1">
+                                Cover Photo <span className="text-on-surface-variant font-normal">(Optional)</span>
                             </label>
                             <input
                                 ref={fileInputRef}
@@ -179,7 +178,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 onChange={handleFileChange}
                             />
                             {imagePreview ? (
-                                <div className="relative rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-600">
+                                <div className="relative rounded-xl overflow-hidden border border-outline-variant">
                                     <img
                                         src={imagePreview}
                                         alt="Cover preview"
@@ -187,7 +186,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                     />
                                     {uploading && (
                                         <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2">
-                                            <Loader2 className="w-6 h-6 text-white animate-spin" />
+                                            <span className="material-symbols-outlined text-[24px] text-white animate-spin">progress_activity</span>
                                             <span className="text-white text-sm font-medium">{uploadProgress}%</span>
                                         </div>
                                     )}
@@ -205,26 +204,26 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700/50 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-colors group"
+                                    className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container hover:border-primary hover:bg-primary-container/20 transition-colors group"
                                 >
-                                    <ImagePlus className="w-6 h-6 text-neutral-400 group-hover:text-emerald-500 transition-colors" />
-                                    <span className="text-sm text-neutral-500 dark:text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                    <span className="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary transition-colors">add_photo_alternate</span>
+                                    <span className="text-sm text-on-surface-variant group-hover:text-primary transition-colors">
                                         Upload cover photo
                                     </span>
                                 </button>
                             )}
-                            {uploadError && <p className="text-xs text-rose-500 mt-1">{uploadError}</p>}
+                            {uploadError && <p className="text-xs text-error mt-1">{uploadError}</p>}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                                Search Tags <span className="text-neutral-400 font-normal">({tags.length}/10)</span>
+                            <label className="block text-sm font-medium text-on-surface-variant mb-1">
+                                Search Tags <span className="text-on-surface-variant font-normal">({tags.length}/10)</span>
                             </label>
-                            <div className="flex flex-wrap gap-1.5 p-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 min-h-[2.75rem] focus-within:ring-2 focus-within:ring-emerald-500">
+                            <div className="flex flex-wrap gap-1.5 p-2 rounded-xl border border-outline-variant bg-surface-container-low min-h-[2.75rem] focus-within:ring-2 focus-within:ring-primary">
                                 {tags.map(tag => (
-                                    <span key={tag} className="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-medium px-2 py-0.5 rounded-full">
+                                    <span key={tag} className="inline-flex items-center gap-1 bg-primary-container text-on-primary-container text-xs font-medium px-2 py-0.5 rounded-full">
                                         #{tag}
-                                        <button type="button" onClick={() => setTags(prev => prev.filter(t => t !== tag))} className="hover:text-rose-600 transition-colors leading-none">&times;</button>
+                                        <button type="button" onClick={() => setTags(prev => prev.filter(t => t !== tag))} className="hover:text-error transition-colors leading-none">&times;</button>
                                     </span>
                                 ))}
                                 {tags.length < 10 && (
@@ -235,22 +234,22 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                         onKeyDown={handleTagKeyDown}
                                         onBlur={addTag}
                                         placeholder={tags.length === 0 ? 'e.g. dogs, local, hiking...' : ''}
-                                        className="flex-1 min-w-[120px] text-sm text-neutral-900 dark:text-neutral-100 bg-transparent outline-none placeholder:text-neutral-400"
+                                        className="flex-1 min-w-[120px] text-sm text-on-surface bg-transparent outline-none placeholder:text-on-surface-variant"
                                     />
                                 )}
                             </div>
-                            <p className="text-xs text-neutral-400 mt-1">Press Enter or comma to add a tag</p>
+                            <p className="text-xs text-on-surface-variant mt-1">Press Enter or comma to add a tag</p>
                         </div>
 
                         <button
                             type="submit"
                             disabled={ownedGroups.length >= 3 || !name || !description || submitting || uploading}
-                            className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-600 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl font-medium transition-colors"
+                            className="w-full mt-4 bg-primary hover:bg-primary/90 disabled:bg-on-surface/12 disabled:cursor-not-allowed text-on-primary px-5 py-2.5 rounded-xl font-medium transition-colors"
                         >
                             {uploading ? 'Uploading photo...' : submitting ? 'Checking...' : 'Create Group'}
                         </button>
                         {ownedGroups.length >= 3 && (
-                            <p className="text-center text-xs text-rose-500 mt-2">You have reached the maximum number of owned groups (3).</p>
+                            <p className="text-center text-xs text-error mt-2">You have reached the maximum number of owned groups (3).</p>
                         )}
                     </form>
                 </motion.div>

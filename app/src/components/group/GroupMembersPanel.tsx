@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Settings2, Users, Search, Mail } from 'lucide-react';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import type { GroupMember, CommunityRole } from '../../contexts/CommunityContext';
 import type { PublicProfile } from '../../contexts/SocialContext';
@@ -31,10 +30,10 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
   );
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-sm border border-neutral-100 dark:border-neutral-700">
+    <div className="bg-surface-container-low rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
       <div className="p-5">
-        <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3 flex items-center gap-2">
-          <Settings2 className="w-4 h-4 text-neutral-400" /> Leadership Team
+        <h4 className="font-semibold text-on-surface mb-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[16px] text-on-surface-variant">tune</span> Leadership Team
         </h4>
         <div className="space-y-3">
           {ownersAndMods.map(m => {
@@ -48,22 +47,22 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300">
+                    <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
                       {initial}
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="text-neutral-700 dark:text-neutral-300 font-medium text-xs">{displayName}</span>
-                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{m.role}</span>
+                    <span className="text-on-surface-variant font-medium text-xs">{displayName}</span>
+                    <span className="text-[10px] text-on-surface-variant">{m.role}</span>
                   </div>
                 </div>
                 <button
                   onClick={() => navigate('/messages', { state: { recipientId: m.userId } })}
-                  className="text-emerald-600 hover:text-emerald-700 transition-colors p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                  className="text-primary hover:text-primary/80 transition-colors p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   aria-label={`Message ${displayName}`}
                   title={`Message ${displayName}`}
                 >
-                  <Mail className="w-4 h-4" />
+                  <span className="material-symbols-outlined text-[16px]">mail</span>
                 </button>
               </div>
             );
@@ -71,18 +70,18 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
         </div>
 
         {userRole === 'Owner' && (
-          <div className="mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700">
-            <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3 flex items-center gap-2">
-              <Users className="w-4 h-4 text-neutral-400" /> Assign Roles
+          <div className="mt-6 pt-6 border-t border-outline-variant">
+            <h4 className="font-semibold text-on-surface mb-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px] text-on-surface-variant">group</span> Assign Roles
             </h4>
             <div className="relative mb-3">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+              <span className="material-symbols-outlined text-[16px] absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
               <input
                 type="text"
                 placeholder="Search members..."
                 value={roleSearchQuery}
                 onChange={(e) => setRoleSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 transition-shadow outline-none min-h-[44px]"
+                className="w-full pl-9 pr-4 py-3 bg-surface-container border border-outline-variant rounded-xl text-sm focus:ring-2 focus:ring-primary transition-shadow outline-none min-h-[44px]"
               />
             </div>
             {roleSearchQuery.length > 0 && (
@@ -98,16 +97,16 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                     const displayName = entry?.displayName ?? 'Member';
                     const avatarUrl = entry?.avatarUrl;
                     return (
-                      <div key={m.userId} className="flex items-center justify-between text-sm py-2 px-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
+                      <div key={m.userId} className="flex items-center justify-between text-sm py-2 px-3 bg-surface-container rounded-lg">
                         <div className="flex items-center gap-2">
                           {avatarUrl ? (
                             <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-600 dark:text-neutral-300">
+                            <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
                               {displayName.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <span className="font-medium text-neutral-700 dark:text-neutral-300 truncate w-24">
+                          <span className="font-medium text-on-surface-variant truncate w-24">
                             {displayName}
                           </span>
                         </div>
@@ -127,7 +126,7 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                             // Reset select visually until confirmed
                             e.target.value = currentRole;
                           }}
-                          className="py-1 px-2 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 text-xs font-semibold focus:ring-emerald-500 cursor-pointer text-neutral-700 dark:text-neutral-300"
+                          className="py-1 px-2 border border-outline-variant rounded-lg bg-surface-container-low text-xs font-semibold focus:ring-primary cursor-pointer text-on-surface-variant"
                         >
                           <option value="User">User</option>
                           <option value="Event Coordinator">Coordinator</option>
@@ -143,7 +142,7 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                     const name = entry?.displayName ?? '';
                     return name.toLowerCase().includes(roleSearchQuery.toLowerCase());
                   }).length === 0 && (
-                  <p className="text-xs text-neutral-500 text-center py-2">No matching group members found.</p>
+                  <p className="text-xs text-on-surface-variant text-center py-2">No matching group members found.</p>
                 )}
               </div>
             )}
@@ -151,7 +150,7 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
         )}
 
         {userRole && (
-          <div className="mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700">
+          <div className="mt-6 pt-6 border-t border-outline-variant">
             <button
               onClick={() => {
                 setConfirmDialog({
@@ -192,7 +191,7 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                   },
                 });
               }}
-              className="w-full py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg text-sm font-medium transition-colors border border-rose-200 dark:border-rose-800"
+              className="w-full py-2 text-error hover:bg-error-container rounded-lg text-sm font-medium transition-colors border border-error/30"
             >
               Leave Group
             </button>

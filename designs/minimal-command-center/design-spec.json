@@ -1,0 +1,25 @@
+{
+  "theme": "LIGHT",
+  "primaryColor": "#4F46E5",
+  "font": "INTER",
+  "roundness": "Low",
+  "density": "COMPACT",
+  "designMode": "HIGH_FIDELITY",
+  "styleKeywords": ["Minimal", "Precise", "Information-dense", "Professional", "Data-forward", "Command-center"],
+  "deviceType": "DESKTOP",
+  "_meta": {
+    "concept": "PetBase Redesign Concept 3 — Minimal Command Center",
+    "description": "Privacy-first pet health and community platform. Stripped back to clarity and efficiency. Clean, information-dense dashboard. Every pixel earns its place. Premium feel through restraint. Apple Health meets Linear.",
+    "colorSystem": {
+      "background": "#FFFFFF",
+      "surface": "#F7F7F8",
+      "border": "#E5E5E7",
+      "textSecondary": "#6B7280",
+      "textPrimary": "#1D1D1F",
+      "accent": "#4F46E5",
+      "danger": "#EF4444",
+      "warning": "#F59E0B",
+      "success": "#10B981"
+    }
+  }
+}

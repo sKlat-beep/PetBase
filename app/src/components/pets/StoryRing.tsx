@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Plus, Camera } from 'lucide-react';
 import type { Pet } from '../../types/pet';
 
 interface StoryEntry {
@@ -65,16 +64,16 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
       >
         {/* Gradient ring */}
         <div
-          className={`rounded-full p-[3px] ${hasStories ? 'bg-gradient-to-br from-rose-500 via-violet-500 to-amber-500' : 'bg-transparent'}`}
+          className={`rounded-full p-[3px] ${hasStories ? 'bg-gradient-to-br from-error via-tertiary to-amber-500' : 'bg-transparent'}`}
           style={{ width: ringSize, height: ringSize }}
         >
-          <div className="rounded-full bg-white dark:bg-neutral-800 p-[2px] w-full h-full">
+          <div className="rounded-full bg-surface-container-low p-[2px] w-full h-full">
             {children}
           </div>
         </div>
         {!hasStories && (
-          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-800 flex items-center justify-center">
-            <Plus className="w-3 h-3 text-white" />
+          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary border-2 border-surface flex items-center justify-center">
+            <span className="material-symbols-outlined text-xs text-on-primary">add</span>
           </div>
         )}
       </button>
@@ -94,7 +93,7 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
               onClick={e => e.stopPropagation()}
             >
               <button onClick={() => setViewing(false)} className="absolute top-4 right-4 text-white/60 hover:text-white">
-                <X className="w-5 h-5" />
+                <span className="material-symbols-outlined text-xl">close</span>
               </button>
               <p className="text-white font-bold text-lg mb-1">{pet.name}</p>
               {stories.map(s => (
@@ -107,7 +106,7 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
               ))}
               <button
                 onClick={() => { setViewing(false); setCreating(true); }}
-                className="mt-2 text-xs text-emerald-400 hover:text-emerald-300"
+                className="mt-2 text-xs text-primary hover:text-primary/80"
               >
                 Add a story
               </button>
@@ -127,10 +126,10 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="max-w-sm w-full bg-white dark:bg-neutral-800 rounded-2xl p-5"
+              className="max-w-sm w-full bg-surface-container-low rounded-2xl p-5"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
+              <h3 className="font-semibold text-on-surface mb-3">
                 What's {pet.name} up to?
               </h3>
               <input
@@ -140,16 +139,16 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
                 placeholder="Share a quick update..."
                 maxLength={140}
                 autoFocus
-                className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 mb-3"
+                className="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface-container-low text-sm text-on-surface placeholder:text-on-surface-variant mb-3"
               />
               <div className="flex gap-2">
-                <button onClick={() => setCreating(false)} className="flex-1 py-2 text-sm text-neutral-500 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <button onClick={() => setCreating(false)} className="flex-1 py-2 text-sm text-on-surface-variant rounded-lg hover:bg-surface-container">
                   Cancel
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={!caption.trim()}
-                  className="flex-1 py-2 text-sm font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-40 transition-colors"
+                  className="flex-1 py-2 text-sm font-medium bg-tertiary text-on-tertiary rounded-lg hover:bg-tertiary/90 disabled:opacity-40 transition-colors"
                 >
                   Share (24h)
                 </button>

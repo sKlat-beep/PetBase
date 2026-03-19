@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Upload, Loader2, ImagePlus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import type { UserProfile } from '../../types/user';
 import { uploadMessagePhoto } from '../../lib/storageService';
@@ -58,29 +57,29 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
+      <div className="bg-surface-container rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
-          <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Attach Photo</h2>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant shrink-0">
+          <h2 className="text-sm font-semibold text-on-surface">Attach Photo</h2>
           <button
             onClick={onClose}
             aria-label="Close photo picker"
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+            className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-neutral-200 dark:border-neutral-700 shrink-0">
+        <div className="flex border-b border-outline-variant shrink-0">
           {(['library', 'upload'] as Tab[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+              className={`flex-1 py-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
                 ${tab === t
-                  ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500'
-                  : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'}`}
+                  ? 'text-primary border-b-2 border-primary'
+                  : 'text-on-surface-variant hover:text-on-surface'}`}
             >
               {t === 'library' ? 'Your Photos' : 'Upload New'}
             </button>
@@ -92,13 +91,13 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
           {tab === 'library' ? (
             allPhotos.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 gap-2 text-center">
-                <ImagePlus className="w-8 h-8 text-neutral-300 dark:text-neutral-600" />
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                <span className="material-symbols-outlined text-[32px] text-outline">add_photo_alternate</span>
+                <p className="text-xs text-on-surface-variant">
                   No photos in your library yet.
                 </p>
                 <button
                   onClick={() => setTab('upload')}
-                  className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+                  className="text-xs text-primary hover:underline"
                 >
                   Upload a photo instead
                 </button>
@@ -109,7 +108,7 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
                   <button
                     key={`${url}-${i}`}
                     onClick={() => { onSelect(url); onClose(); }}
-                    className="rounded-xl overflow-hidden focus-visible:ring-2 focus-visible:ring-sky-500 outline-none hover:opacity-80 transition-opacity aspect-square"
+                    className="rounded-xl overflow-hidden focus-visible:ring-2 focus-visible:ring-primary outline-none hover:opacity-80 transition-opacity aspect-square"
                     aria-label={`Attach photo ${i + 1}`}
                   >
                     <img
@@ -126,24 +125,24 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
           ) : (
             <div className="flex flex-col items-center justify-center py-6 gap-4">
               {uploading ? (
-                <div className="flex flex-col items-center gap-2 text-neutral-500 dark:text-neutral-400">
-                  <Loader2 className="w-6 h-6 animate-spin" />
+                <div className="flex flex-col items-center gap-2 text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[24px] animate-spin">progress_activity</span>
                   <p className="text-xs">Uploading…</p>
                 </div>
               ) : (
                 <>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center gap-3 w-full py-8 rounded-2xl border-2 border-dashed border-neutral-200 dark:border-neutral-600 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors group focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+                    className="flex flex-col items-center gap-3 w-full py-8 rounded-2xl border-2 border-dashed border-outline-variant hover:border-primary transition-colors group focus-visible:ring-2 focus-visible:ring-primary outline-none"
                   >
-                    <Upload className="w-7 h-7 text-neutral-300 dark:text-neutral-600 group-hover:text-emerald-500 transition-colors" />
+                    <span className="material-symbols-outlined text-[28px] text-outline group-hover:text-primary transition-colors">upload</span>
                     <div className="text-center">
-                      <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">Choose a photo</p>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">JPG, PNG, GIF, WebP</p>
+                      <p className="text-sm font-medium text-on-surface-variant">Choose a photo</p>
+                      <p className="text-xs text-on-surface-variant mt-0.5">JPG, PNG, GIF, WebP</p>
                     </div>
                   </button>
                   {uploadError && (
-                    <p className="text-xs text-rose-500 dark:text-rose-400">{uploadError}</p>
+                    <p className="text-xs text-error">{uploadError}</p>
                   )}
                 </>
               )}

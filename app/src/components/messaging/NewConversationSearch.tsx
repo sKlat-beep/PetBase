@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
 import { useSocial } from '../../contexts/SocialContext';
 import { useMessaging } from '../../contexts/MessagingContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -87,7 +86,7 @@ export function NewConversationSearch() {
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[14px]">search</span>
         <input
           ref={inputRef}
           type="text"
@@ -95,16 +94,16 @@ export function NewConversationSearch() {
           onChange={e => { setQuery(e.target.value); handleSearch(e.target.value); setHighlightIndex(-1); }}
           onKeyDown={handleKeyDown}
           placeholder="Search people…"
-          className="w-full pl-8 pr-8 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full pl-8 pr-8 py-2 text-sm rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
         />
         {query && (
-          <button onClick={() => { setQuery(''); setHighlightIndex(-1); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">
-            <X className="w-3.5 h-3.5" />
+          <button onClick={() => { setQuery(''); setHighlightIndex(-1); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface">
+            <span className="material-symbols-outlined text-[14px]">close</span>
           </button>
         )}
       </div>
       {loading && !results.length && (
-        <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-500 px-1">Searching…</p>
+        <p className="mt-1 text-xs text-on-surface-variant px-1">Searching…</p>
       )}
       {results.length > 0 && (
         <div className="mt-1 space-y-0.5">
@@ -112,25 +111,25 @@ export function NewConversationSearch() {
             <button
               key={r.uid}
               onClick={() => handleSelect(r.uid)}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left transition-colors ${i === highlightIndex ? 'bg-emerald-50 dark:bg-emerald-900/30' : 'hover:bg-neutral-50 dark:hover:bg-neutral-700/50'}`}
+              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left transition-colors ${i === highlightIndex ? 'bg-primary-container' : 'hover:bg-surface-container-highest'}`}
             >
               <div className="relative shrink-0">
                 {r.avatarUrl ? (
                   <img src={r.avatarUrl} alt={r.displayName} className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-xs font-bold text-on-primary-container">
                     {r.displayName[0]?.toUpperCase()}
                   </div>
                 )}
                 {isOnline(r.lastSeen) && (
-                  <div className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-white dark:border-neutral-800" />
+                  <div className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-primary border border-surface" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{r.displayName}</p>
+                <p className="text-sm font-medium text-on-surface truncate">{r.displayName}</p>
               </div>
               {r.isFriend && (
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-full shrink-0">Friend</span>
+                <span className="text-[10px] text-on-primary-container bg-primary-container px-1.5 py-0.5 rounded-full shrink-0">Friend</span>
               )}
             </button>
           ))}

@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCommunity } from '../contexts/CommunityContext';
 import { useSocial } from '../contexts/SocialContext';
-import { MessageSquare, Users, ArrowLeft, Settings2, ShieldAlert } from 'lucide-react';
 import { useRightPanel } from '../contexts/RightPanelContext';
 import { GroupHubPanel } from '../components/community/GroupHubPanel';
 import { UserProfileModal } from '../components/social/UserProfileModal';
@@ -72,8 +71,8 @@ export function GroupHub() {
     if (!group) {
         return (
             <div className="text-center py-20">
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Group not found</h2>
-                <Link to="/community" className="text-emerald-600 hover:underline mt-4 inline-block">Return to Community</Link>
+                <h2 className="text-2xl font-bold text-on-surface">Group not found</h2>
+                <Link to="/community" className="text-primary hover:underline mt-4 inline-block">Return to Community</Link>
             </div>
         );
     }
@@ -94,25 +93,25 @@ export function GroupHub() {
             className="space-y-8 max-w-5xl mx-auto"
         >
             <header className="flex items-center gap-4">
-                <button onClick={() => navigate('/community')} aria-label="Back to Community" className="p-2 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
-                    <ArrowLeft className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
+                <button onClick={() => navigate('/community')} aria-label="Back to Community" className="p-2 bg-surface-container-low rounded-xl border border-outline-variant hover:bg-surface-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+                    <span className="material-symbols-outlined text-[20px] text-on-surface-variant">arrow_back</span>
                 </button>
                 <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+                    <h1 className="text-3xl font-bold text-on-surface tracking-tight">
                         {group.name}
                     </h1>
-                    <p className="text-neutral-500 dark:text-neutral-400 mt-1 flex items-center gap-2">
-                        <Users className="w-4 h-4" /> {Object.keys(group.members).length} members
-                        {userRole && <span className="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 rounded-md text-xs font-semibold">{userRole}</span>}
+                    <p className="text-on-surface-variant mt-1 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px]">group</span> {Object.keys(group.members).length} members
+                        {userRole && <span className="ml-2 px-2 py-0.5 bg-primary-container text-on-primary-container rounded-md text-xs font-semibold">{userRole}</span>}
                     </p>
                 </div>
                 {userRole === 'Owner' && (
                     <button
                         onClick={() => setShowRetentionModal(true)}
                         aria-label="Group settings"
-                        className="p-2 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                        className="p-2 bg-surface-container-low rounded-xl border border-outline-variant hover:bg-surface-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
-                        <Settings2 className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+                        <span className="material-symbols-outlined text-[20px] text-on-surface-variant">tune</span>
                     </button>
                 )}
             </header>
@@ -121,19 +120,19 @@ export function GroupHub() {
 
             {/* Tab Bar -- Moderation tab only visible to Owner/Moderator */}
             {(userRole === 'Owner' || userRole === 'Moderator') && (
-                <div className="flex gap-1 bg-neutral-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
+                <div className="flex gap-1 bg-surface-container rounded-xl p-1 w-fit">
                     <button
                         onClick={() => setActiveTab('feed')}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'feed' ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'}`}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'feed' ? 'bg-surface-container-low text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
                     >
-                        <MessageSquare className="w-4 h-4" />
+                        <span className="material-symbols-outlined text-[16px]">chat</span>
                         Feed
                     </button>
                     <button
                         onClick={() => setActiveTab('moderation')}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'moderation' ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'}`}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'moderation' ? 'bg-surface-container-low text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
                     >
-                        <ShieldAlert className="w-4 h-4" />
+                        <span className="material-symbols-outlined text-[16px]">shield</span>
                         Moderation
                     </button>
                 </div>
@@ -142,7 +141,7 @@ export function GroupHub() {
             {/* Moderation Panel */}
             {activeTab === 'moderation' && (userRole === 'Owner' || userRole === 'Moderator') && (
                 <Suspense fallback={
-                    <div className="flex items-center justify-center py-16 text-neutral-400 text-sm">
+                    <div className="flex items-center justify-center py-16 text-on-surface-variant text-sm">
                         Loading moderation panel...
                     </div>
                 }>

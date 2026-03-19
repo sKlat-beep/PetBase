@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, MapPin, Phone, Star, ExternalLink, Heart, ShieldCheck, Globe, MessageSquare } from 'lucide-react';
 import type { ServiceResult } from '../../utils/serviceApi';
 import { getPlaceDetails, getPlaceReviews, type PlaceDetails, type PlaceAtmosphere } from '../../utils/serviceApi';
 import { useAuth } from '../../contexts/AuthContext';
@@ -56,35 +55,35 @@ export function ServiceDetailModal({ service, onClose, cachedDetails }: ServiceD
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <div role="dialog" aria-modal="true" aria-labelledby="service-detail-modal-title" className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden">
+        <div role="dialog" aria-modal="true" aria-labelledby="service-detail-modal-title" className="bg-surface-container rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden">
           {/* Header */}
-          <div className="flex items-start justify-between px-5 py-4 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
+          <div className="flex items-start justify-between px-5 py-4 border-b border-outline-variant shrink-0">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 id="service-detail-modal-title" className="text-base font-semibold text-neutral-900 dark:text-neutral-100 truncate">{service.name}</h2>
+                <h2 id="service-detail-modal-title" className="text-base font-semibold text-on-surface truncate">{service.name}</h2>
                 {service.isPetBaseVerified && (
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-full shrink-0">
-                    <ShieldCheck className="w-3 h-3" /> Verified
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-on-primary-container bg-primary-container px-1.5 py-0.5 rounded-full shrink-0">
+                    <span className="material-symbols-outlined text-[12px]">verified_user</span> Verified
                   </span>
                 )}
                 {service.isSponsored && (
-                  <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-full shrink-0">Sponsored</span>
+                  <span className="text-[10px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full shrink-0">Sponsored</span>
                 )}
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">{service.type}</span>
+                <span className="text-xs text-on-surface-variant">{service.type}</span>
                 <span className="flex items-center gap-0.5 text-xs text-amber-500">
-                  {Array.from({ length: starRating }).map((_, i) => <Star key={i} className="w-3 h-3 fill-current" />)}
-                  <span className="text-neutral-500 dark:text-neutral-400 ml-1">{service.rating?.toFixed(1)} ({service.reviews})</span>
+                  {Array.from({ length: starRating }).map((_, i) => <span key={i} className="material-symbols-outlined text-[12px] fill-1">star</span>)}
+                  <span className="text-on-surface-variant ml-1">{service.rating?.toFixed(1)} ({service.reviews})</span>
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-1 shrink-0 ml-2">
-              <button onClick={() => void handleSave()} className={`p-1.5 rounded-lg transition-colors ${isSaved ? 'text-rose-500 bg-rose-50 dark:bg-rose-900/20' : 'text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20'}`}>
-                <Heart className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+              <button onClick={() => void handleSave()} className={`p-1.5 rounded-lg transition-colors ${isSaved ? 'text-error bg-error-container' : 'text-on-surface-variant hover:text-error hover:bg-error-container'}`}>
+                <span className={`material-symbols-outlined text-[16px] ${isSaved ? 'fill-1' : ''}`}>favorite</span>
               </button>
-              <button onClick={onClose} className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors">
-                <X className="w-4 h-4" />
+              <button onClick={onClose} className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+                <span className="material-symbols-outlined text-[16px]">close</span>
               </button>
             </div>
           </div>
@@ -93,23 +92,23 @@ export function ServiceDetailModal({ service, onClose, cachedDetails }: ServiceD
           <div className="flex-1 overflow-y-auto">
             {/* Verified banner */}
             {service.isPetBaseVerified && (service as any).bio && (
-              <div className="px-5 py-3 bg-emerald-50 dark:bg-emerald-950/30 border-b border-emerald-100 dark:border-emerald-900">
-                <p className="text-xs text-emerald-800 dark:text-emerald-300">{(service as any).bio}</p>
+              <div className="px-5 py-3 bg-primary-container border-b border-primary/20">
+                <p className="text-xs text-on-primary-container">{(service as any).bio}</p>
               </div>
             )}
 
             {/* Photo loading skeleton */}
             {placeDetailsLoading && photos.length === 0 && (
-              <div className="flex gap-2 overflow-x-auto px-5 py-3 border-b border-neutral-100 dark:border-neutral-700">
+              <div className="flex gap-2 overflow-x-auto px-5 py-3 border-b border-outline-variant">
                 {[1,2,3].map(i => (
-                  <div key={i} className="w-24 h-24 rounded-xl bg-neutral-100 dark:bg-neutral-700 shrink-0 animate-pulse" />
+                  <div key={i} className="w-24 h-24 rounded-xl bg-surface-container shrink-0 animate-pulse" />
                 ))}
               </div>
             )}
 
             {/* Photos */}
             {photos.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto px-5 py-3 border-b border-neutral-100 dark:border-neutral-700">
+              <div className="flex gap-2 overflow-x-auto px-5 py-3 border-b border-outline-variant">
                 {photos.slice(0, 5).map((url, i) => (
                   <img key={i} src={url} alt="" className="w-24 h-24 rounded-xl object-cover shrink-0" loading="lazy" />
                 ))}
@@ -117,110 +116,110 @@ export function ServiceDetailModal({ service, onClose, cachedDetails }: ServiceD
             )}
 
             {/* Info */}
-            <div className="px-5 py-3 space-y-2 border-b border-neutral-100 dark:border-neutral-700">
+            <div className="px-5 py-3 space-y-2 border-b border-outline-variant">
               {service.address && (
-                <div className="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-                  <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-neutral-400" />
+                <div className="flex items-start gap-2 text-sm text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[16px] shrink-0 mt-0.5 text-on-surface-variant">location_on</span>
                   <span>{service.address}</span>
                 </div>
               )}
               {displayPhone && (
-                <a href={`tel:${displayPhone}`} className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 hover:underline">
-                  <Phone className="w-4 h-4" />
+                <a href={`tel:${displayPhone}`} className="flex items-center gap-2 text-sm text-primary hover:underline">
+                  <span className="material-symbols-outlined text-[16px]">phone</span>
                   <span>{displayPhone}</span>
                 </a>
               )}
               {placeDetails?.website && (
                 <a href={placeDetails.website} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                  <Globe className="w-4 h-4" />
+                  className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                  <span className="material-symbols-outlined text-[16px]">language</span>
                   <span className="truncate">{new URL(placeDetails.website).hostname}</span>
                 </a>
               )}
               {service.distance && (
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">{service.distance} away</p>
+                <p className="text-xs text-on-surface-variant">{service.distance} away</p>
               )}
             </div>
 
             {/* Specialties */}
             {service.specialties && service.specialties.length > 0 && (
-              <div className="px-5 py-3 border-b border-neutral-100 dark:border-neutral-700">
+              <div className="px-5 py-3 border-b border-outline-variant">
                 <div className="flex flex-wrap gap-1.5">
                   {service.specialties.map(s => (
-                    <span key={s} className="text-[10px] font-medium px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">{s}</span>
+                    <span key={s} className="text-[10px] font-medium px-2 py-1 rounded-full bg-surface-container text-on-surface-variant">{s}</span>
                   ))}
                 </div>
               </div>
             )}
 
             {/* Action links */}
-            <div className="px-5 py-3 flex gap-2 flex-wrap border-b border-neutral-100 dark:border-neutral-700">
+            <div className="px-5 py-3 flex gap-2 flex-wrap border-b border-outline-variant">
               {service.yelpUrl && (
                 <a href={service.yelpUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
-                  <ExternalLink className="w-3.5 h-3.5" /> View on Yelp
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                  <span className="material-symbols-outlined text-[14px]">open_in_new</span> View on Yelp
                 </a>
               )}
               {placeDetails?.googleMapsUri ? (
                 <a href={placeDetails.googleMapsUri} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                  <ExternalLink className="w-3.5 h-3.5" /> Google Maps
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                  <span className="material-symbols-outlined text-[14px]">open_in_new</span> Google Maps
                 </a>
               ) : (
                 <a href={`https://www.google.com/search?q=${encodeURIComponent(service.name + ' ' + service.address)}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                  <ExternalLink className="w-3.5 h-3.5" /> Google
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                  <span className="material-symbols-outlined text-[14px]">open_in_new</span> Google
                 </a>
               )}
             </div>
 
             {/* Google Reviews — lazy loaded */}
             {!placeDetailsLoading && placeDetails && (
-              <div className="px-5 py-3 border-b border-neutral-100 dark:border-neutral-700">
+              <div className="px-5 py-3 border-b border-outline-variant">
                 {!atmosphere && !atmosphereLoading && (
                   <button
                     onClick={handleLoadReviews}
-                    className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors"
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span className="material-symbols-outlined text-[14px]">chat</span>
                     See Google Reviews
                   </button>
                 )}
                 {atmosphereLoading && (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">Loading reviews…</p>
+                  <p className="text-xs text-on-surface-variant">Loading reviews…</p>
                 )}
                 {atmosphere && atmosphere.reviews.length > 0 && (
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Google Reviews</p>
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Google Reviews</p>
                     {atmosphere.reviews.slice(0, 3).map((review, i) => (
                       <div key={i} className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">{review.authorName}</span>
+                          <span className="text-xs font-medium text-on-surface-variant">{review.authorName}</span>
                           <span className="flex items-center gap-0.5 text-amber-500">
                             {Array.from({ length: review.rating }).map((_, j) => (
-                              <Star key={j} className="w-2.5 h-2.5 fill-current" />
+                              <span key={j} className="material-symbols-outlined text-[10px] fill-1">star</span>
                             ))}
                           </span>
-                          <span className="text-[10px] text-neutral-400 dark:text-neutral-500 ml-auto">{review.relativePublishTimeDescription}</span>
+                          <span className="text-[10px] text-on-surface-variant ml-auto">{review.relativePublishTimeDescription}</span>
                         </div>
-                        <p className="text-xs text-neutral-600 dark:text-neutral-300 line-clamp-3">{review.text}</p>
+                        <p className="text-xs text-on-surface-variant line-clamp-3">{review.text}</p>
                       </div>
                     ))}
                   </div>
                 )}
                 {atmosphere && atmosphere.reviews.length === 0 && (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">No reviews available.</p>
+                  <p className="text-xs text-on-surface-variant">No reviews available.</p>
                 )}
               </div>
             )}
 
             {/* Social links */}
             {service.socialLinks && Object.keys(service.socialLinks).length > 0 && (
-              <div className="px-5 py-3 flex gap-2 flex-wrap border-b border-neutral-100 dark:border-neutral-700">
+              <div className="px-5 py-3 flex gap-2 flex-wrap border-b border-outline-variant">
                 {Object.entries(service.socialLinks).filter(([, v]) => v).map(([platform, url]) => (
                   <a key={platform} href={url} target="_blank" rel="noopener noreferrer"
-                    className="text-xs font-medium px-3 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 capitalize transition-colors">
+                    className="text-xs font-medium px-3 py-1.5 rounded-xl bg-surface-container text-on-surface-variant hover:bg-surface-container-high capitalize transition-colors">
                     {platform}
                   </a>
                 ))}
@@ -230,9 +229,9 @@ export function ServiceDetailModal({ service, onClose, cachedDetails }: ServiceD
             {/* Claim listing */}
             {service.status === 'seeded' && (
               <div className="px-5 py-4 text-center">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">Is this your business?</p>
+                <p className="text-xs text-on-surface-variant mb-2">Is this your business?</p>
                 <button onClick={() => setShowClaim(true)}
-                  className="text-xs font-medium px-4 py-2 rounded-xl border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors">
+                  className="text-xs font-medium px-4 py-2 rounded-xl border border-primary/30 text-primary hover:bg-primary-container transition-colors">
                   Claim this listing
                 </button>
               </div>

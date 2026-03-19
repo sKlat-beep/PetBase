@@ -9,3 +9,31 @@ Status: done
 Completed: 2026-03-17
 Description: 8 dev snapshots from 2026-03-14 moved to external storage and deleted from repo.
 All acceptance criteria met: ZIPs moved, `backups/` directory removed, no active code references.
+
+---
+
+## 2026-03-17 Session
+
+## [2026-03-17] Planning Consolidation — COMPLETE
+Archived 8 files to planning/archive/. TODO.md now 66 lines (4 open tasks). All 10+ reference files updated. MEMORY.md updated.
+
+## [2026-03-17] Worktree Cleanup — COMPLETE
+Pruned 2 stale worktrees (feature/ui-ux-polish, feature/phase1-2-improvements) — both 0 commits ahead of master. UI/UX polish plan (12 tasks) confirmed all complete on master via Phases 15-21. Branches deleted.
+
+## [2026-03-17] Git Consolidation — COMPLETE
+Committed security hardening (firestore.rules, functions/src). Gitignored settings.local.json + functions/lib/. Converted app/ from broken submodule to regular tracked directory (167 files). Added remote, force-pushed master→origin/main. Deleted stale remote branch. Single unified repo now.
+
+## [2026-03-17] TASK-87: Upgrade vulnerable dependencies — COMPLETE
+Addressed npm audit vulnerabilities in app/ and functions/.
+
+## [2026-03-17] TASK-88: Un-export buildErrorBlock — COMPLETE
+Removed export from slackService.ts, reducing public API surface.
+
+## [2026-03-17] TASK-89: Add guard to getNearbyStores() — COMPLETE
+Added dev-mode guard to unimplemented getNearbyStores() in storeApi.ts.
+
+## [2026-03-17] TASK-90: Remove functions/node_modules from git — COMPLETE
+Updated .gitignore to `**/node_modules/`, removed functions/node_modules/ from index.
+
+## [2026-03-17] TASK-92: Dashboard full review — UI/UX/Performance overhaul — COMPLETE
+Extracted EmergencyModal + 4 widgets to memoized components. Added persistent Emergency FAB. Removed Quick Actions widget with layout migration. Created shared useWeather hook with debounce. Throttled ResizeObserver. Fixed focus rings, touch targets, expenses surface. Dashboard.tsx reduced by ~450 lines. Verified (commit 90276ad) and deployed to petbase-ddfd7.

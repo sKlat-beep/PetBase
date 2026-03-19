@@ -122,7 +122,7 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
     if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
   }, []);
 
-  const sendMessage = useCallback(async (toUid: string, content: string, media?: { url: string; type: 'image' | 'gif' }, replyTo?: { id: string; content: string; fromUid: string }) => {
+  const sendMessage = useCallback(async (toUid: string, content: string, media?: { url: string; type: 'image' | 'gif' | 'audio' }, replyTo?: { id: string; content: string; fromUid: string }) => {
     if (!user) return;
     if (isBlockedRef.current(toUid)) throw new Error('Cannot send message to a blocked user');
     await sendDm(user.uid, toUid, content, media, replyTo);

@@ -44,7 +44,10 @@ export function WeightTrendChart({ pet }: WeightTrendChartProps) {
             <YAxis tick={{ fontSize: 10 }} domain={['auto', 'auto']} className="text-neutral-400" />
             <Tooltip
               contentStyle={{ fontSize: 12, borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)' }}
-              formatter={(value: number) => [`${value} ${unit}`, 'Weight']}
+              formatter={(value) => {
+                const n = Number(value ?? 0);
+                return [`${n} ${unit}`, 'Weight'];
+              }}
             />
             <Line type="monotone" dataKey="weight" stroke={CHART_EMERALD} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
           </LineChart>

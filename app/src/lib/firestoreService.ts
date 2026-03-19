@@ -852,7 +852,7 @@ export async function sendDm(
   fromUid: string,
   toUid: string,
   content: string,
-  media?: { url: string; type: 'image' | 'gif' },
+  media?: { url: string; type: 'image' | 'gif' | 'audio' },
   replyTo?: { id: string; content: string; fromUid: string },
 ): Promise<string> {
   const now = Date.now();

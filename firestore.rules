@@ -197,6 +197,21 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ─── Safety Alerts ────────────────────────────────────────────────────────
+    // Community safety alerts — authenticated users can read; authors can create
+    // with valid expiry; authors or admins can delete; no updates allowed.
+
+    match /safetyAlerts/{alertId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.expiresAt > request.time.toMillis();
+      allow delete: if isSignedIn()
+        && (resource.data.authorId == request.auth.uid
+            || request.auth.token.admin == true);
+      allow update: if false;
+    }
+
     // ─── Direct Messages ──────────────────────────────────────────────────────
     // participants array contains [fromUid, toUid] — used for array-contains queries.
     // Soft-delete: only deletedBySender, deletedByRecipient, and read may be updated

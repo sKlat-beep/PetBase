@@ -184,9 +184,7 @@ export function ProfileSettings() {
   const [deleteError, setDeleteError] = useState('');
   const [deleting, setDeleting] = useState(false);
 
-  // PII Visibility Toggles
-  const [showEmail, setShowEmail] = useState(false);
-  const [showAddress, setShowAddress] = useState(false);
+  // PII Visibility Toggle (emergency contacts only — email & address are always visible)
   const [showEmergencyPII, setShowEmergencyPII] = useState(false);
 
   // Notification preferences
@@ -633,19 +631,11 @@ export function ProfileSettings() {
             <div className="relative">
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">mail</span>
               <input
-                type={showEmail ? "email" : "password"}
+                type="email"
                 value={user?.email || ''}
                 readOnly
-                className="w-full pl-11 pr-12 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface-variant/60 cursor-not-allowed font-mono text-sm"
+                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface-variant/60 cursor-not-allowed font-mono text-sm"
               />
-              <button
-                type="button"
-                onClick={() => setShowEmail(!showEmail)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-on-surface-variant hover:text-on-surface transition-colors"
-                title={showEmail ? "Hide Email" : "Show Email"}
-              >
-                <span className="material-symbols-outlined text-lg">{showEmail ? 'visibility_off' : 'visibility'}</span>
-              </button>
             </div>
             <p className="text-xs text-on-surface-variant/60 mt-1.5">
               Email changes require re-authentication. Contact support to update your email.
@@ -667,20 +657,12 @@ export function ProfileSettings() {
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">location_on</span>
               <input
                 id="address"
-                type={showAddress ? "text" : "password"}
+                type="text"
                 value={address}
                 onChange={(e) => { setAddress(e.target.value); setIsDirty(true); }}
-                className="w-full pl-11 pr-12 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary-container text-sm transition-all font-mono"
+                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary-container text-sm transition-all font-mono"
                 placeholder="123 Main St, City, State"
               />
-              <button
-                type="button"
-                onClick={() => setShowAddress(!showAddress)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-on-surface-variant hover:text-on-surface transition-colors"
-                title={showAddress ? "Hide Address" : "Show Address"}
-              >
-                <span className="material-symbols-outlined text-lg">{showAddress ? 'visibility_off' : 'visibility'}</span>
-              </button>
             </div>
             <p className="text-xs text-on-surface-variant/60 mt-1.5">
               AES-256-GCM encrypted client-side before being stored. The server never sees plaintext.

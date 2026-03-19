@@ -58,7 +58,7 @@ async function deriveWrapKey(password: string, salt: Uint8Array): Promise<Crypto
     baseKey,
     ALGO,
     false,
-    ['wrapKey', 'unwrapKey'],
+    ['encrypt', 'decrypt'],
   );
 }
 

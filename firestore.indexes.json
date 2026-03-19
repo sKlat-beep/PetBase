@@ -15,6 +15,22 @@
         { "fieldPath": "threadId", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "safetyAlerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "zipCode", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "safetyAlerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "h3Index", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

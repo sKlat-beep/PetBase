@@ -36,7 +36,7 @@ export const STEPS: OnboardingStep[] = [
     description: 'Generate an emergency or sitter card for your pet.',
     auto: false,
     skippable: true,
-    path: '/cards',
+    path: '/pets?openCards=true',
   },
   {
     id: 'find-services',

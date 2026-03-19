@@ -326,6 +326,17 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
     return [...urgent, ...normal];
   }, [vaccines]);
 
+  const petAge = React.useMemo(() => {
+    if (!pet?.birthday) return null;
+    const born = new Date(pet.birthday);
+    const now = new Date();
+    let years = now.getFullYear() - born.getFullYear();
+    let months = now.getMonth() - born.getMonth();
+    if (months < 0) { years--; months += 12; }
+    if (years > 0) return `${years}y ${months}m`;
+    return `${months}m`;
+  }, [pet?.birthday]);
+
   // ── Visit handlers ────────────────────────────────────────────────────────
 
   const addVisit = () => {
@@ -438,18 +449,6 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
       : overall === 'due-soon' ? 'text-primary'
         : overall === 'overdue' ? 'text-error'
           : 'text-on-surface-variant';
-
-  // Compute pet age for sidebar display
-  const petAge = React.useMemo(() => {
-    if (!pet?.birthday) return null;
-    const born = new Date(pet.birthday);
-    const now = new Date();
-    let years = now.getFullYear() - born.getFullYear();
-    let months = now.getMonth() - born.getMonth();
-    if (months < 0) { years--; months += 12; }
-    if (years > 0) return `${years}y ${months}m`;
-    return `${months}m`;
-  }, [pet?.birthday]);
 
   // Status icon helper for vaccine cards
   const vaccineStatusIcon = (status: VaccineStatus) => {

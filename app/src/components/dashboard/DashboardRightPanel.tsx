@@ -19,7 +19,7 @@ function MIcon({ name, className = '' }: { name: string; className?: string }) {
 
 const QUICK_ACTIONS: { label: string; icon: string; to: string; colorClass: string }[] = [
   { label: 'Add Pet', icon: 'pets', to: '/pets', colorClass: 'bg-primary-container text-on-primary-container' },
-  { label: 'Create Card', icon: 'qr_code_2', to: '/cards', colorClass: 'bg-tertiary-container text-on-tertiary-container' },
+  { label: 'Create Card', icon: 'qr_code_2', to: '/pets?openCards=true', colorClass: 'bg-tertiary-container text-on-tertiary-container' },
   { label: 'Find Vet', icon: 'local_hospital', to: '/services', colorClass: 'bg-secondary-container text-on-secondary-container' },
   { label: 'Report Lost', icon: 'emergency', to: '/lost-pets', colorClass: 'bg-error-container text-on-error-container' },
 ];
@@ -86,6 +86,17 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const firstDow = new Date(calYear, calMonth, 1).getDay();
   const today = new Date();
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  const selectedDayEvents = useMemo(() => {
+    if (selectedDay === null) return [];
+    return groups
+      .flatMap(g => g.events.map(e => ({ ...e, groupName: g.name })))
+      .filter(e => {
+        const d = new Date(e.date);
+        return d.getFullYear() === calYear && d.getMonth() === calMonth && d.getDate() === selectedDay;
+      });
+  }, [selectedDay, groups, calYear, calMonth]);
 
   // Events this month (for dots)
   const monthEvents = useMemo(() => {
@@ -104,8 +115,8 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
     return evMap;
   }, [user, groups, calYear, calMonth]);
 
-  const prevMonth = () => setCalDate(new Date(calYear, calMonth - 1, 1));
-  const nextMonth = () => setCalDate(new Date(calYear, calMonth + 1, 1));
+  const prevMonth = () => { setCalDate(new Date(calYear, calMonth - 1, 1)); setSelectedDay(null); };
+  const nextMonth = () => { setCalDate(new Date(calYear, calMonth + 1, 1)); setSelectedDay(null); };
 
   const monthLabel = calDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
@@ -214,12 +225,18 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
             const day = i + 1;
             const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === day;
             const hasEvent = monthEvents.has(day);
+            const isSelected = selectedDay === day;
             return (
-              <div
+              <button
                 key={day}
-                className={`relative flex items-center justify-center h-8 rounded-lg text-xs font-medium motion-safe:transition-colors ${
+                onClick={() => setSelectedDay(isSelected ? null : day)}
+                aria-label={`${calDate.toLocaleDateString(undefined, { month: 'long' })} ${day}${hasEvent ? `, ${monthEvents.get(day)} event${(monthEvents.get(day) ?? 0) > 1 ? 's' : ''}` : ''}`}
+                aria-pressed={isSelected}
+                className={`relative flex items-center justify-center h-8 rounded-lg text-xs font-medium motion-safe:transition-colors cursor-pointer ${
                   isToday
                     ? 'bg-primary text-on-primary'
+                    : isSelected
+                    ? 'bg-secondary-container text-on-secondary-container ring-1 ring-secondary'
                     : 'text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
@@ -227,13 +244,38 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
                 {hasEvent && (
                   <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-secondary" />
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
 
-        {/* Event list for this month */}
-        {upcomingEvents.length > 0 && (
+        {/* Selected day events */}
+        {selectedDay !== null && selectedDayEvents.length > 0 && (
+          <div className="mt-3 space-y-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-on-surface-variant/60 mb-1">
+              {calDate.toLocaleDateString(undefined, { month: 'long' })} {selectedDay}
+            </p>
+            {selectedDayEvents.map(event => (
+              <div key={event.id} className="flex items-start gap-1.5 text-xs text-on-surface-variant">
+                <MIcon name="event" className="text-[14px] mt-0.5 shrink-0 text-tertiary" />
+                <span className="font-medium truncate">{event.title}</span>
+                <span className="text-on-surface-variant/50 shrink-0 ml-auto pl-1">
+                  {new Date(event.date).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Selected day — no events */}
+        {selectedDay !== null && selectedDayEvents.length === 0 && (
+          <p className="mt-2 text-[10px] text-on-surface-variant/50 text-center">
+            No events on {calDate.toLocaleDateString(undefined, { month: 'long' })} {selectedDay}
+          </p>
+        )}
+
+        {/* Upcoming events (unfiltered, when no day selected) */}
+        {selectedDay === null && upcomingEvents.length > 0 && (
           <div className="mt-3 space-y-1.5">
             {upcomingEvents.map(event => (
               <div key={event.id} className="flex items-start gap-1.5 text-xs text-on-surface-variant">

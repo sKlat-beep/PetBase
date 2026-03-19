@@ -261,7 +261,10 @@ export function Search() {
             <div className="relative flex-1">
               <span className="material-symbols-outlined text-[20px] absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
               <input
+                id="search-query"
+                name="q"
                 type="text"
+                aria-label="Search services"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); triggerSearchAction(); }}
                 placeholder={`Search ${activeTab.toLowerCase()}...`}
@@ -271,7 +274,10 @@ export function Search() {
             <div className="relative w-32 md:w-48">
               <span className="material-symbols-outlined text-[20px] absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">pin_drop</span>
               <input
+                id="zip-code"
+                name="zip"
                 type="text"
+                aria-label="ZIP code"
                 value={location}
                 onChange={(e) => { setLocation(e.target.value); triggerSearchAction(); }}
                 placeholder="ZIP Code"

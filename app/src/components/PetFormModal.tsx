@@ -236,6 +236,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
 
   // Visibility field toggles (Task 2b)
   const [publicFields, setPublicFields] = useState<string[]>([]);
+  const [nameError, setNameError] = useState(false);
+  const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
 
   const mark = () => setIsDirty(true);
 
@@ -305,6 +307,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
     setEmergencyContacts(pet?.emergencyContacts);
     setStatusTags(pet?.statusTags ?? []);
     setPublicFields(pet ? (pet.publicFields ?? []) : ['name', 'type', 'breed', 'age', 'image']);
+    setNameError(false);
+    setShowBirthdayPicker(false);
   }, [isOpen, pet]);
 
   const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -314,8 +318,10 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
   const handleSubmit = (action: 'save' | 'finish') => {
     if (!name.trim()) {
       setActiveTab('basic');
+      setNameError(true);
       return;
     }
+    setNameError(false);
 
     const finalImage = image.trim() || '';
 
@@ -521,23 +527,30 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     className="grid grid-cols-1 sm:grid-cols-2 gap-5"
                   >
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                      <label htmlFor="pet-name" className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Name <span className="text-error">*</span>
                       </label>
                       <input
+                        id="pet-name"
+                        name="petName"
                         type="text"
                         required
                         value={name}
-                        onChange={(e) => { setName(e.target.value); mark(); }}
+                        onChange={(e) => { setName(e.target.value); setNameError(false); mark(); }}
                         placeholder="e.g. Max"
-                        className={inputClass}
+                        className={`${inputClass} ${nameError ? 'ring-2 ring-error border-error' : ''}`}
                       />
+                      {nameError && (
+                        <p className="text-xs text-error mt-1">Pet name is required</p>
+                      )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                      <label htmlFor="pet-type" className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Pet Type
                       </label>
                       <select
+                        id="pet-type"
+                        name="petType"
                         value={petType}
                         onChange={(e) => { setPetType(e.target.value); if (e.target.value !== 'Other') setCustomPetType(''); mark(); }}
                         className={inputClass}
@@ -547,6 +560,8 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       </select>
                       {petType === 'Other' && (
                         <input
+                          id="pet-custom-type"
+                          name="customPetType"
                           type="text"
                           value={customPetType}
                           onChange={(e) => { setCustomPetType(e.target.value); mark(); }}
@@ -556,10 +571,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                      <label htmlFor="pet-breed" className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Breed
                       </label>
                       <input
+                        id="pet-breed"
+                        name="breed"
                         type="text"
                         value={breed}
                         onChange={(e) => { setBreed(e.target.value); mark(); }}
@@ -571,12 +588,44 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Birthday
                       </label>
-                      <DateWheelPicker
-                        value={birthday}
-                        onChange={(d) => { setBirthday(d); mark(); }}
-                        maxDate={new Date().toISOString().split('T')[0]}
-                      />
-                      {birthday && (
+                      {!showBirthdayPicker && !birthday ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowBirthdayPicker(true)}
+                          className="w-full py-2.5 px-4 rounded-xl border border-dashed border-outline-variant text-on-surface-variant text-sm hover:bg-surface-container transition-colors flex items-center gap-2"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">cake</span>
+                          Set Birthday
+                        </button>
+                      ) : showBirthdayPicker ? (
+                        <div>
+                          <DateWheelPicker
+                            value={birthday}
+                            onChange={(d) => { setBirthday(d); mark(); }}
+                            maxDate={new Date().toISOString().split('T')[0]}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowBirthdayPicker(false)}
+                            className="mt-2 text-xs text-primary font-medium hover:underline"
+                          >
+                            Done
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowBirthdayPicker(true)}
+                          className="w-full py-2.5 px-4 rounded-xl bg-surface-container border border-outline-variant text-on-surface text-sm flex items-center justify-between hover:bg-surface-container-high transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant">cake</span>
+                            {new Date(birthday + 'T00:00:00').toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+                          </span>
+                          <span className="material-symbols-outlined text-[16px] text-on-surface-variant">edit</span>
+                        </button>
+                      )}
+                      {birthday && !showBirthdayPicker && (
                         <p className="text-xs text-on-surface-variant mt-1">Age: {calcAgeFromBirthday(birthday)}</p>
                       )}
                     </div>
@@ -757,10 +806,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        <label htmlFor="pet-type-of-play" className="block text-sm font-medium text-on-surface-variant mb-1.5">
                           Type of Play
                         </label>
                         <input
+                          id="pet-type-of-play"
+                          name="typeOfPlay"
                           type="text"
                           value={typeOfPlay}
                           onChange={(e) => { setTypeOfPlay(e.target.value); mark(); }}
@@ -769,10 +820,12 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        <label htmlFor="pet-activity-level" className="block text-sm font-medium text-on-surface-variant mb-1.5">
                           Activity Level
                         </label>
                         <select
+                          id="pet-activity-level"
+                          name="activityLevel"
                           value={activity}
                           onChange={(e) => { setActivity(e.target.value); mark(); }}
                           className={inputClass}

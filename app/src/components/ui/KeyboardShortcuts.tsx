@@ -67,7 +67,7 @@ export function useKeyboardShortcuts() {
         case 'p': navigate('/pets'); break;
         case 'c': navigate('/community'); break;
         case 'm': navigate('/messages'); break;
-        case 'k': navigate('/cards'); break;
+        case 'k': navigate('/pets?openCards=true'); break;
         case 's': navigate('/search'); break;
       }
     }

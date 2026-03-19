@@ -5,6 +5,7 @@ import { useSocial, type PublicProfile } from '../contexts/SocialContext';
 import { useMessaging } from '../contexts/MessagingContext';
 import { HelpModal } from './HelpModal';
 import { FeedbackModal } from './FeedbackModal';
+import { UserSettingsModal } from './UserSettingsModal';
 import { useHouseholdPermissions } from '../hooks/useHouseholdPermissions';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { AnimatePresence } from 'motion/react';
@@ -25,7 +26,8 @@ export function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const { user, profile, signOut } = useAuth();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { user, profile } = useAuth();
   const { communityAccessDisabled } = useHouseholdPermissions();
   const { toast: hhToast, clearToast: clearHhToast } = useHousehold();
   // Theme is managed via CSS custom properties (data-theme attribute on <html>)
@@ -74,9 +76,7 @@ export function Layout() {
     !communityAccessDisabled && { to: '/community', icon: 'groups', label: 'Community Hub' },
     !communityAccessDisabled && { to: '/messages', icon: 'chat', label: 'Messages', badge: totalUnreadMessages > 0 ? totalUnreadMessages : undefined },
     { to: '/search', icon: 'search', label: 'Find Services' },
-    { to: '/cards', icon: 'id_card', label: 'Pet Cards' },
     { to: '/people', icon: 'people', label: 'People' },
-    { to: '/settings', icon: 'settings', label: 'Settings' },
   ].filter(Boolean) as { to: string; icon: string; label: string; badge?: number }[];
 
   const mobileNavItems = [
@@ -277,11 +277,10 @@ export function Layout() {
 
         {/* Bottom: user profile section */}
         <div className="p-4 border-t border-outline-variant">
-          <div className="flex items-center justify-between px-2 py-2">
-            <Link
-              to="/settings"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-3 min-w-0 hover:opacity-80 motion-safe:transition-opacity"
+          <div className="flex items-center px-2 py-2">
+            <button
+              onClick={() => { setSettingsOpen(true); setIsMobileMenuOpen(false); }}
+              className="flex items-center gap-3 min-w-0 hover:opacity-80 motion-safe:transition-opacity text-left"
             >
               <div className="w-10 h-10 rounded-full bg-surface-container overflow-hidden shrink-0">
                 {profile?.avatarUrl || user?.photoURL ? (
@@ -315,17 +314,7 @@ export function Layout() {
                   {user?.email}
                 </p>
               </div>
-            </Link>
-            <div className="flex items-center gap-1 shrink-0">
-              <button
-                onClick={signOut}
-                className="text-on-surface-variant hover:text-error motion-safe:transition-colors p-2 shrink-0"
-                title="Sign Out"
-                aria-label="Sign Out"
-              >
-                <MIcon name="logout" className="text-xl" />
-              </button>
-            </div>
+            </button>
           </div>
 
           {/* Need Help? */}
@@ -343,6 +332,7 @@ export function Layout() {
         {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} onFeedback={() => setFeedbackOpen(true)} />}
         {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} userEmail={user?.email ?? undefined} />}
       </AnimatePresence>
+      <UserSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* ═══ Mobile Bottom Nav (fixed, h-20) ═══ */}
       <nav

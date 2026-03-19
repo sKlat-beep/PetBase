@@ -164,7 +164,7 @@ export function Auth() {
             {/* Display Name (signup only) */}
             {!isLogin && (
               <div>
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1.5">
+                <label htmlFor="display-name" className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1.5">
                   Display Name
                 </label>
                 <div className="relative">
@@ -172,8 +172,11 @@ export function Auth() {
                     person
                   </span>
                   <input
+                    id="display-name"
+                    name="displayName"
                     type="text"
                     required
+                    autoComplete="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary-container text-sm transition-all"
@@ -185,7 +188,7 @@ export function Auth() {
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1.5">
+              <label htmlFor="email" className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1.5">
                 Email
               </label>
               <div className="relative">
@@ -193,8 +196,11 @@ export function Auth() {
                   mail
                 </span>
                 <input
+                  id="email"
+                  name="email"
                   type="email"
                   required
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary-container text-sm transition-all"
@@ -206,7 +212,7 @@ export function Auth() {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider">
+                <label htmlFor="password" className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider">
                   Password
                 </label>
                 {isLogin && (
@@ -224,8 +230,11 @@ export function Auth() {
                   lock
                 </span>
                 <input
+                  id="password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   required
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-11 pr-11 py-3 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary-container text-sm transition-all"

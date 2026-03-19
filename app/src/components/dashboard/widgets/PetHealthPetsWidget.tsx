@@ -52,7 +52,7 @@ function PetHealthPetsWidgetInner({ pets, onAddPet }: Props) {
                 <Link to="/pets" state={{ openMedical: true, tab: 'meds', petId: pet.id }} aria-label={`Medications for ${pet.name}`} title="Meds" className="flex items-center justify-center p-2 rounded-lg bg-secondary-container/30 hover:bg-secondary-container/50 text-secondary motion-safe:transition-colors min-h-[36px]">
                   <span className="material-symbols-outlined text-[14px]" aria-hidden="true">vaccines</span>
                 </Link>
-                <Link to="/cards" state={{ openCreateModal: true, petId: pet.id }} aria-label={`Pet card for ${pet.name}`} title="Card" className="flex items-center justify-center p-2 rounded-lg bg-tertiary-container/30 hover:bg-tertiary-container/50 text-tertiary motion-safe:transition-colors min-h-[36px]">
+                <Link to="/pets?openCards=true" aria-label={`Pet card for ${pet.name}`} title="Card" className="flex items-center justify-center p-2 rounded-lg bg-tertiary-container/30 hover:bg-tertiary-container/50 text-tertiary motion-safe:transition-colors min-h-[36px]">
                   <span className="material-symbols-outlined text-[14px]" aria-hidden="true">favorite</span>
                 </Link>
               </div>

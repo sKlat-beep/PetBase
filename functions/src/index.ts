@@ -5,9 +5,9 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
-import * as https from 'https';
 import { latLngToCell } from 'h3-js';
 import { findServicesYelp, type YelpBusiness } from './yelpService';
+import { resolveZipCoordinates } from './geoService';
 import { exportUserData as _exportUserData } from './exportService';
 import { findPlaceId, getPlaceDetailsAndContact, getPlaceAtmosphere } from './placesService';
 import { fetchOgMetadata } from './ogService';
@@ -15,37 +15,6 @@ import { incrementPlacesUsage, checkAndAlertIfOverThreshold, updateFeatureFlags 
 import { postSlackBlocks, buildAlertBlock } from './slackService';
 
 admin.initializeApp();
-
-// ─── ZIP → lat/lng lookup (mirrors app/src/lib/h3Service.ts) ─────────────────
-// Covers major US metro ZIPs so the backend can resolve coordinates without
-// calling the Google Geocoding API. Unknown ZIPs fall through to Firestore
-// cache, then Google Geocoding as a last resort.
-const ZIP_LATLNG: Record<string, [number, number]> = {
-  '10001': [40.7484, -73.9967], '10451': [40.8448, -73.9285],
-  '11201': [40.6928, -73.9903], '11101': [40.7477, -73.9375],
-  '10301': [40.6295, -74.0938], '02101': [42.3601, -71.0589],
-  '19101': [39.9526, -75.1652], '21201': [39.2904, -76.6122],
-  '30301': [33.7490, -84.3880], '27601': [35.7796, -78.6382],
-  '28201': [35.2271, -80.8431], '37201': [36.1627, -86.7816],
-  '33101': [25.7617, -80.1918], '33602': [27.9506, -82.4572],
-  '32801': [28.5383, -81.3792], '70112': [29.9511, -90.0715],
-  '60601': [41.8858, -87.6181], '53201': [43.0389, -87.9065],
-  '46201': [39.7684, -86.1581], '43201': [39.9612, -82.9988],
-  '45201': [39.1031, -84.5120], '44101': [41.4993, -81.6944],
-  '49201': [42.2459, -84.4013], '55401': [44.9778, -93.2650],
-  '63101': [38.6270, -90.1994], '64101': [39.0997, -94.5786],
-  '35201': [33.5186, -86.8104], '77001': [29.7543, -95.3677],
-  '78201': [29.4241, -98.4936], '78701': [30.2672, -97.7431],
-  '75201': [32.7767, -96.7970], '73101': [35.4676, -97.5164],
-  '85001': [33.4484, -112.0740], '85701': [32.2226, -110.9747],
-  '80201': [39.7392, -104.9903], '84101': [40.7608, -111.8910],
-  '89101': [36.1699, -115.1398], '97201': [45.5051, -122.6750],
-  '98101': [47.6062, -122.3321], '99501': [61.2181, -149.9003],
-  '94102': [37.7749, -122.4194], '95101': [37.3382, -121.8863],
-  '92101': [32.7157, -117.1611], '92801': [33.8353, -117.9145],
-  '90001': [33.9731, -118.2479], '90210': [34.0901, -118.4065],
-  '15201': [40.4406, -79.9959],
-};
 
 export { onNotificationCreated, sendWeeklyDigest, checkPetBirthdays, onPostReaction, onPostComment, onPetLostStatusChange } from './notifications';
 export { cardMetaProxy } from './cardMetaProxy';
@@ -280,25 +249,6 @@ interface ServiceDoc {
   cachedAt: number;
 }
 
-function fetchJson(url: string, headers?: Record<string, string>): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const options = headers ? { headers } : {};
-    https.get(url, options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (res.statusCode && res.statusCode !== 200) {
-            reject(new Error(`HTTP ${res.statusCode}: ${JSON.stringify(parsed).slice(0, 500)}`));
-            return;
-          }
-          resolve(parsed);
-        } catch (e) { reject(e); }
-      });
-    }).on('error', reject);
-  });
-}
 
 function mapYelpToServiceDoc(biz: YelpBusiness, category: string, h3Index: string): ServiceDoc & { distanceMeters?: number } {
   return {
@@ -432,50 +382,23 @@ export const findServices = onCall(
     const currentCount = (globalUsageSnap.data()?.count ?? 0) as number;
     console.log(`[findServices] Yelp daily usage: ${currentCount}/${HARD_LIMIT}`);
 
-    // ── Resolve coordinates: local table → zipGeo cache → Google Geocoding ──
+    // ── Resolve coordinates ──────────────────────────────────────────────
     const isZip = /^\d{5}$/.test(location);
+    let resolvedSource = 'client';
+
     if (lat == null || lng == null) {
-      // 1. Check local ZIP_LATLNG table (instant, free, no API call)
-      if (isZip && ZIP_LATLNG[location]) {
-        const [zlat, zlng] = ZIP_LATLNG[location];
-        lat = zlat;
-        lng = zlng;
-        console.log(`[findServices] ZIP_LATLNG local hit for ${location}`);
-      }
-      // 2. Check zipGeo Firestore cache
-      if ((lat == null || lng == null) && isZip) {
-        const zipGeoSnap = await db.doc(`zipGeo/${location}`).get();
-        if (zipGeoSnap.exists) {
-          const cached = zipGeoSnap.data()!;
-          lat = cached.lat as number;
-          lng = cached.lng as number;
-          console.log(`[findServices] zipGeo cache hit for ${location}`);
-        }
-      }
-      // 3. Last resort: Google Geocoding API
-      if (lat == null || lng == null) {
-        const googleKey = process.env.GOOGLE_PLACES_KEY;
-        if (!googleKey) throw new HttpsError('failed-precondition', 'Google key not configured.');
-        console.log(`[findServices] Geocoding location: "${location}"`);
-        const geoData = await fetchJson(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleKey}`,
-        ) as { status: string; error_message?: string; results: { geometry: { location: { lat: number; lng: number } } }[] };
-        console.log(`[findServices] Geocode status: ${geoData.status} — result count: ${geoData.results?.length ?? 0}${geoData.error_message ? ` — error: ${geoData.error_message}` : ''}`);
-        const loc = geoData.results?.[0]?.geometry?.location;
-        if (!loc) {
-          console.error(`[findServices] Geocoding FAILED for "${location}" — status: ${geoData.status}, error_message: ${geoData.error_message ?? 'none'}`);
-          return { results: [], error: { code: 'location-not-found', message: 'Could not find that location. Check your ZIP code.' } };
-        }
-        lat = loc.lat;
-        lng = loc.lng;
-        // Store in zipGeo cache for future lookups
-        if (isZip) {
-          await db.doc(`zipGeo/${location}`).set({ lat, lng, resolvedAt: Date.now() });
-          console.log(`[findServices] zipGeo cache stored for ${location}`);
-        }
+      const resolved = await resolveZipCoordinates(db, location);
+      if (resolved) {
+        lat = resolved.lat;
+        lng = resolved.lng;
+        resolvedSource = resolved.source;
+        console.log(`[findServices] Resolved ${location} via ${resolvedSource}`);
+      } else {
+        console.error(`[findServices] Failed to resolve "${location}" via any provider`);
+        return { results: [], error: { code: 'location-not-found', message: 'Could not find that location. Check your ZIP code.' } };
       }
     }
-    console.log(`[findServices] Resolved coords — lat=${lat} lng=${lng}`);
+    console.log(`[findServices] Resolved coords — lat=${lat} lng=${lng} source=${resolvedSource}`);
 
     // H3 index at resolution 7 (~5km)
     const h3Index = latLngToCell(lat, lng, 7);

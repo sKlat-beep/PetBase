@@ -6,6 +6,7 @@ import { usePets } from '../contexts/PetContext';
 import type { Pet } from '../contexts/PetContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PetFormModal } from '../components/PetFormModal';
+import { PetCardsModal } from '../components/PetCardsModal';
 import { MedicalRecordsModal, getVaccineStatus } from '../components/MedicalRecordsModal';
 import { LostPetBanner } from '../components/LostPetBanner';
 import { writeLostPets, type LostPetAlert } from '../utils/lostPetsApi';
@@ -282,6 +283,7 @@ export function Pets() {
   const [lostConfirmMode, setLostConfirmMode] = useState<'markLost' | 'markFound'>('markLost');
 
   const [showPhotoManager, setShowPhotoManager] = useState(false);
+  const [cardsModalOpen, setCardsModalOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -413,6 +415,15 @@ export function Pets() {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, location.pathname, navigate, pets, loading]);
+
+  // Auto-open cards modal via query param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('openCards') === 'true') {
+      setCardsModalOpen(true);
+      navigate('/pets', { replace: true });
+    }
+  }, [location.search, navigate]);
 
   const openAddModal = () => {
     setEditingPet(undefined);
@@ -573,6 +584,21 @@ export function Pets() {
           <PhotoManagerModal pets={pets} onClose={() => setShowPhotoManager(false)} />
         )}
 
+        {/* ── Identity Cards hero button ─────────────────────────────────── */}
+        {pets.length > 0 && (
+          <button
+            onClick={() => setCardsModalOpen(true)}
+            className="w-full p-4 rounded-2xl bg-gradient-to-r from-primary-container to-tertiary-container flex items-center gap-4 hover:brightness-105 transition-all group"
+          >
+            <span className="material-symbols-outlined text-[32px] text-on-primary-container">id_card</span>
+            <div className="text-left flex-1">
+              <p className="text-base font-bold text-on-primary-container">Identity Cards</p>
+              <p className="text-xs text-on-primary-container/70">Create, share &amp; manage digital pet ID cards</p>
+            </div>
+            <span className="material-symbols-outlined text-on-primary-container/60 group-hover:translate-x-1 transition-transform">chevron_right</span>
+          </button>
+        )}
+
         {/* ── Empty state ────────────────────────────────────────────────── */}
         {pets.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
@@ -705,6 +731,8 @@ export function Pets() {
         targetVaccineName={targetVaccineName}
         initialTab={medicalInitialTab}
       />
+
+      <PetCardsModal isOpen={cardsModalOpen} onClose={() => setCardsModalOpen(false)} />
 
       {/* ── Delete confirmation modal ────────────────────────────────────── */}
       {petToDelete && (

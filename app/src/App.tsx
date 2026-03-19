@@ -16,8 +16,6 @@ const Community = lazy(() => import('./pages/Community').then(m => ({ default: m
 const CommunityHub = lazy(() => import('./pages/CommunityHub'));
 const GroupHub = lazy(() => import('./pages/GroupHub').then(m => ({ default: m.GroupHub })));
 const Search = lazy(() => import('./pages/Search').then(m => ({ default: m.Search })));
-const Cards = lazy(() => import('./pages/Cards').then(m => ({ default: m.Cards })));
-const ProfileSettings = lazy(() => import('./pages/ProfileSettings').then(m => ({ default: m.ProfileSettings })));
 const People = lazy(() => import('./pages/People').then(m => ({ default: m.People })));
 const Messages = lazy(() => import('./pages/Messages').then(m => ({ default: m.Messages })));
 const SharedCardPage = lazy(() => import('./pages/SharedCardPage').then(m => ({ default: m.SharedCardPage })));
@@ -162,8 +160,7 @@ export default function App() {
               <Route path="community" element={<Suspense fallback={<PageSpinner />}><CommunityHub /></Suspense>} />
               <Route path="community/:groupId" element={<Suspense fallback={<PageSpinner />}><GroupHub /></Suspense>} />
               <Route path="search" element={<Suspense fallback={<PageSpinner />}><Search /></Suspense>} />
-              <Route path="cards" element={<Suspense fallback={<PageSpinner />}><Cards /></Suspense>} />
-              <Route path="settings" element={<Suspense fallback={<PageSpinner />}><ProfileSettings /></Suspense>} />
+              <Route path="cards" element={<Navigate to="/pets?openCards=true" replace />} />
               <Route path="people" element={<Suspense fallback={<PageSpinner />}><People /></Suspense>} />
               <Route path="messages" element={<Suspense fallback={<PageSpinner />}><Messages /></Suspense>} />
             </Route>

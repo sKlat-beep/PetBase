@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Calendar } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import GridLayout, { type Layout, type LayoutItem, type ResizeHandleAxis } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -42,8 +42,8 @@ import LevelProgressCard from '../components/gamification/LevelProgressCard';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const LAYOUT_KEY = 'petbase-dashboard-layout-v3';
-const HIDDEN_KEY = 'petbase-dashboard-hidden-v3';
+const LAYOUT_KEY = 'petbase-dashboard-layout-v4';
+const HIDDEN_KEY = 'petbase-dashboard-hidden-v4';
 
 type WidgetKey =
   | 'expenses'
@@ -55,12 +55,12 @@ type WidgetKey =
   | 'level_progress';
 
 const WIDGET_LABELS: Record<WidgetKey, string> = {
-  expenses: 'Monthly Expenses',
-  pet_health_pets: 'Health Status',
+  expenses: 'Expenses',
+  pet_health_pets: 'Pets & Health',
   groups_activity: 'Groups Activity',
   friends_activity: 'Friends Activity',
-  today_reminders: 'Today\'s Reminders',
-  streak_counter: 'Health Streak',
+  today_reminders: 'Upcoming Events',
+  streak_counter: 'Start your Streak',
   level_progress: 'Level Progress',
 };
 
@@ -85,13 +85,13 @@ const WIDGET_MIN_SIZES: Record<WidgetKey, { minW: number; minH: number }> = {
 };
 
 const DEFAULT_LAYOUT: LayoutItem[] = [
-  { i: 'expenses',         x: 0,  y: 0,  w: 8,  h: 4 },
+  { i: 'pet_health_pets',  x: 0,  y: 0,  w: 8,  h: 4 },
   { i: 'today_reminders',  x: 8,  y: 0,  w: 4,  h: 4 },
-  { i: 'pet_health_pets',  x: 0,  y: 4,  w: 4,  h: 4 },
-  { i: 'groups_activity',  x: 4,  y: 4,  w: 4,  h: 4 },
-  { i: 'friends_activity', x: 8,  y: 4,  w: 4,  h: 4 },
-  { i: 'streak_counter',   x: 0,  y: 8,  w: 6,  h: 3 },
-  { i: 'level_progress',   x: 6,  y: 8,  w: 6,  h: 3 },
+  { i: 'groups_activity',  x: 0,  y: 4,  w: 6,  h: 4 },
+  { i: 'friends_activity', x: 6,  y: 4,  w: 6,  h: 4 },
+  { i: 'streak_counter',   x: 0,  y: 8,  w: 8,  h: 3 },
+  { i: 'expenses',         x: 8,  y: 8,  w: 4,  h: 3 },
+  { i: 'level_progress',   x: 0,  y: 11, w: 12, h: 3 },
 ];
 
 interface WidgetSnapConfig {
@@ -689,9 +689,9 @@ export function Dashboard() {
                 </div>
               ))}
               {expenses.filter(e => !e.recurring).length > 5 && (
-                <Link to="/settings" className="block text-xs text-primary-container font-medium hover:underline pt-1 rounded">
-                  View all {expenses.filter(e => !e.recurring).length} expenses
-                </Link>
+                <p className="text-xs text-on-surface-variant pt-1">
+                  + {expenses.filter(e => !e.recurring).length - 5} more expenses
+                </p>
               )}
               {expenses.length === 0 && !showExpenseForm && (
                 <p className="text-sm text-center text-on-surface-variant/70 py-2">No expenses yet</p>

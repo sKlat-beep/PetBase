@@ -59,7 +59,7 @@ export default function EventsSection() {
                 key={event.id}
                 className="flex-shrink-0 w-64 rounded-xl border border-outline-variant bg-surface-container p-4"
               >
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-medium">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-medium">
                   {event.groupName}
                 </span>
                 <h3 className="font-medium text-on-surface mt-2 text-sm leading-snug">{event.title}</h3>

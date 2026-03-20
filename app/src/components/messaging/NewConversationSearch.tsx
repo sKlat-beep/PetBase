@@ -129,7 +129,7 @@ export function NewConversationSearch() {
                 <p className="text-sm font-medium text-on-surface truncate">{r.displayName}</p>
               </div>
               {r.isFriend && (
-                <span className="text-[10px] text-on-primary-container bg-primary-container px-1.5 py-0.5 rounded-full shrink-0">Friend</span>
+                <span className="text-xs text-on-primary-container bg-primary-container px-1.5 py-0.5 rounded-full shrink-0">Friend</span>
               )}
             </button>
           ))}

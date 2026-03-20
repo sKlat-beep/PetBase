@@ -36,7 +36,7 @@ interface WheelColumnProps {
 function WheelColumn({ items, selectedIndex, onSelect, width = 'flex-1' }: WheelColumnProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
-  const scrollTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Scroll to the selected index on mount and when it changes externally
   useEffect(() => {

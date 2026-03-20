@@ -179,13 +179,13 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
                       {(pet.weight || pet.activity || pet.likes?.length || pet.food) && (
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {pet.weight && (
-                            <span className="inline-flex px-1.5 py-0.5 rounded-md bg-surface-container-high text-[10px] text-on-surface-variant">{pet.weight}</span>
+                            <span className="inline-flex px-1.5 py-0.5 rounded-md bg-surface-container-high text-xs text-on-surface-variant">{pet.weight}</span>
                           )}
                           {pet.activity && (
-                            <span className="inline-flex px-1.5 py-0.5 rounded-md bg-tertiary-container text-[10px] text-on-tertiary-container">{pet.activity}</span>
+                            <span className="inline-flex px-1.5 py-0.5 rounded-md bg-tertiary-container text-xs text-on-tertiary-container">{pet.activity}</span>
                           )}
                           {pet.likes?.slice(0, 3).map(l => (
-                            <span key={l} className="inline-flex px-1.5 py-0.5 rounded-md bg-primary-container text-[10px] text-on-primary-container">{l}</span>
+                            <span key={l} className="inline-flex px-1.5 py-0.5 rounded-md bg-primary-container text-xs text-on-primary-container">{l}</span>
                           ))}
                         </div>
                       )}

@@ -47,13 +47,13 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
+                    <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface-variant">
                       {initial}
                     </div>
                   )}
                   <div className="flex flex-col">
                     <span className="text-on-surface-variant font-medium text-xs">{displayName}</span>
-                    <span className="text-[10px] text-on-surface-variant">{m.role}</span>
+                    <span className="text-xs text-on-surface-variant">{m.role}</span>
                   </div>
                 </div>
                 <button
@@ -102,7 +102,7 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
                           {avatarUrl ? (
                             <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
+                            <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface-variant">
                               {displayName.charAt(0).toUpperCase()}
                             </div>
                           )}

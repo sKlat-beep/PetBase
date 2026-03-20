@@ -28,7 +28,7 @@ export function GroupsWidget() {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">Your Groups</p>
+      <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">Your Groups</p>
       <div className="space-y-0.5">
         {joinedGroups.map(g => (
           <button

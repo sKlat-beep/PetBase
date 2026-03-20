@@ -616,7 +616,7 @@ export function Pets() {
             </p>
             <button
               onClick={openAddModal}
-              className="px-6 py-3 min-h-[44px] bg-primary text-on-primary rounded-full text-sm font-semibold hover:opacity-90 motion-safe:transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="px-6 py-3 min-h-[44px] bg-primary text-on-primary rounded-full text-sm font-semibold hover:opacity-90 active:scale-[0.97] motion-safe:transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               Add a Pet
             </button>

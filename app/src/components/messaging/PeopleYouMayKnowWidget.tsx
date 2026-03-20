@@ -107,7 +107,7 @@ export function PeopleYouMayKnowWidget() {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">People You May Know</p>
+      <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">People You May Know</p>
       <div className="space-y-1">
         {candidates.map(c => (
           <div key={c.uid} className="flex items-center gap-2 px-1.5 py-1.5 rounded-xl hover:bg-surface-container-highest transition-colors">
@@ -118,11 +118,11 @@ export function PeopleYouMayKnowWidget() {
             )}
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-on-surface truncate">{c.displayName}</p>
-              {c.contextLabel && <p className="text-[10px] text-on-surface-variant truncate">{c.contextLabel}</p>}
+              {c.contextLabel && <p className="text-xs text-on-surface-variant truncate">{c.contextLabel}</p>}
             </div>
             <div className="flex gap-1 shrink-0">
               {alreadySent.has(c.uid) ? (
-                <span className="text-[10px] text-on-surface-variant flex items-center gap-0.5"><span className="material-symbols-outlined text-[12px]">check</span> Pending</span>
+                <span className="text-xs text-on-surface-variant flex items-center gap-0.5"><span className="material-symbols-outlined text-[12px]">check</span> Pending</span>
               ) : (
                 <button onClick={() => handleAdd(c.uid)}
                   className="p-1 rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors"

@@ -378,7 +378,7 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
                           <div>
                             <p className="text-white text-sm font-medium">{album.name}</p>
-                            <span className="bg-white/20 rounded-full px-2 py-0.5 text-[10px] text-white">{album.photoUrls.length} photo{album.photoUrls.length !== 1 ? 's' : ''}</span>
+                            <span className="bg-white/20 rounded-full px-2 py-0.5 text-xs text-white">{album.photoUrls.length} photo{album.photoUrls.length !== 1 ? 's' : ''}</span>
                           </div>
                         </div>
                       </div>
@@ -416,13 +416,13 @@ export function PhotoManagerModal({ pets, onClose }: PhotoManagerModalProps) {
                               setShowNewAlbumInput(false);
                               setSavingAlbum(false);
                             }}
-                            className="flex-1 py-1 rounded-lg text-[10px] font-medium bg-primary hover:bg-primary/90 text-on-primary disabled:opacity-40 transition-colors"
+                            className="flex-1 py-1 rounded-lg text-xs font-medium bg-primary hover:bg-primary/90 text-on-primary disabled:opacity-40 transition-colors"
                           >
                             {savingAlbum ? '...' : 'Create'}
                           </button>
                           <button
                             onClick={() => { setNewAlbumName(''); setShowNewAlbumInput(false); }}
-                            className="flex-1 py-1 rounded-lg text-[10px] text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                            className="flex-1 py-1 rounded-lg text-xs text-on-surface-variant hover:bg-surface-container-high transition-colors"
                           >
                             Cancel
                           </button>

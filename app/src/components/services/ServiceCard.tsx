@@ -34,7 +34,7 @@ export function ServiceCard({
           referrerPolicy="no-referrer"
         />
         {/* Category badge (top-left) */}
-        <div className="absolute top-3 left-3 bg-background/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-on-surface">
+        <div className="absolute top-3 left-3 bg-background/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-on-surface">
           {result.type}
         </div>
         {/* Rating badge (bottom-right) */}
@@ -51,7 +51,7 @@ export function ServiceCard({
         </button>
         {/* Verification badges */}
         {result.isPetBaseVerified && (
-          <div className="absolute top-3 left-[4.5rem] bg-primary/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 text-[10px] font-bold text-on-primary">
+          <div className="absolute top-3 left-[4.5rem] bg-primary/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 text-xs font-bold text-on-primary">
             <span className="material-symbols-outlined text-[12px]">verified_user</span> Verified
           </div>
         )}
@@ -75,7 +75,7 @@ export function ServiceCard({
         {matchedTags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {matchedTags.map(tag => (
-              <span key={tag} className="px-2 py-0.5 bg-primary-container/15 text-primary text-[10px] font-medium rounded-full border border-primary-container/25">
+              <span key={tag} className="px-2 py-0.5 bg-primary-container/15 text-primary text-xs font-medium rounded-full border border-primary-container/25">
                 {tag}
               </span>
             ))}
@@ -86,7 +86,7 @@ export function ServiceCard({
         {result.tags.length > 0 && matchedTags.length === 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {result.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-medium">
+              <span key={tag} className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-medium">
                 {tag}
               </span>
             ))}

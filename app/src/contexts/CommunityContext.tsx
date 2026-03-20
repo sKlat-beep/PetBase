@@ -31,7 +31,7 @@ import {
 import {
   collection, doc, setDoc, addDoc, updateDoc, deleteDoc,
   onSnapshot, getDocs, writeBatch, arrayUnion, arrayRemove,
-  query, where, limit, type DocumentSnapshot, Timestamp,
+  query, where, limit, orderBy, startAfter, type DocumentSnapshot, Timestamp,
 } from 'firebase/firestore';
 
 /** Convert Firestore Timestamp fields to epoch ms numbers. */
@@ -157,12 +157,28 @@ const CommunityContext = createContext<CommunityContextValue | null>(null);
 const STORAGE_KEY_PREFS = 'petbase_community_prefs';
 
 /** Fetch all subcollections for a single group and assemble a CommunityGroup. */
-async function fetchGroupFull(groupId: string, gData: Record<string, any>): Promise<CommunityGroup> {
+async function fetchGroupFull(
+  groupId: string,
+  gData: Record<string, any>,
+  lastPostDocRef?: React.MutableRefObject<Record<string, DocumentSnapshot | null>>,
+  setHasMorePosts?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>,
+): Promise<CommunityGroup> {
+  const postsQuery = query(
+    collection(db, 'groups', groupId, 'posts'),
+    orderBy('createdAt', 'desc'),
+    limit(20),
+  );
   const [membersSnap, postsSnap, eventsSnap] = await Promise.all([
     getDocs(collection(db, 'groups', groupId, 'members')),
-    getDocs(collection(db, 'groups', groupId, 'posts')),
+    getDocs(postsQuery),
     getDocs(collection(db, 'groups', groupId, 'events')),
   ]);
+  if (lastPostDocRef) {
+    lastPostDocRef.current = { ...lastPostDocRef.current, [groupId]: postsSnap.docs[postsSnap.docs.length - 1] ?? null };
+  }
+  if (setHasMorePosts) {
+    setHasMorePosts(prev => ({ ...prev, [groupId]: postsSnap.docs.length === 20 }));
+  }
 
   const members: Record<string, GroupMember> = {};
   membersSnap.docs.forEach(d => { members[d.id] = coerceTimestamps<GroupMember>({ ...d.data() }); });
@@ -227,7 +243,7 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
 
     const unsub = onSnapshot(collection(db, 'groups'), async (snap) => {
       const assembled = await Promise.all(
-        snap.docs.map(d => fetchGroupFull(d.id, d.data()))
+        snap.docs.map(d => fetchGroupFull(d.id, d.data(), lastPostDocRef, setHasMorePosts))
       );
       // Filter out posts from blocked users before storing in state
       setGroups(assembled.map(g => ({

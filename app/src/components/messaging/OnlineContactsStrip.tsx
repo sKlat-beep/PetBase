@@ -24,7 +24,7 @@ export function OnlineContactsStrip({ profileCache }: OnlineContactsStripProps) 
 
   return (
     <div>
-      <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">Recent</p>
+      <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">Recent</p>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {recent.map(contact => (
           <button
@@ -44,7 +44,7 @@ export function OnlineContactsStrip({ profileCache }: OnlineContactsStripProps) 
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-surface" />
               )}
             </div>
-            <span className="text-[9px] text-on-surface-variant w-10 truncate text-center">{contact.displayName?.split(' ')[0]}</span>
+            <span className="text-xs text-on-surface-variant w-10 truncate text-center">{contact.displayName?.split(' ')[0]}</span>
           </button>
         ))}
       </div>

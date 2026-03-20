@@ -42,7 +42,7 @@ export default function BuddyMatchSection() {
 
   if (!profile?.publicStatus || profile.publicStatus === 'None') {
     return (
-      <div className="bg-surface-container-low backdrop-blur-xl rounded-2xl border border-outline-variant p-6">
+      <div className="bg-surface-container-low backdrop-blur-md rounded-2xl border border-outline-variant p-6">
         <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2 mb-3">
           <span className="material-symbols-outlined text-[20px] text-error">favorite</span> Find a Buddy
         </h2>
@@ -54,7 +54,7 @@ export default function BuddyMatchSection() {
   }
 
   return (
-    <div className="bg-surface-container-low backdrop-blur-xl rounded-2xl border border-outline-variant p-6">
+    <div className="bg-surface-container-low backdrop-blur-md rounded-2xl border border-outline-variant p-6">
       <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2 mb-4">
         <span className="material-symbols-outlined text-[20px] text-error">favorite</span> Find a Buddy
       </h2>
@@ -105,7 +105,7 @@ export default function BuddyMatchSection() {
                       </span>
                     )}
                     {hasPetOverlap && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
+                      <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                         Similar pets
                       </span>
                     )}

@@ -61,7 +61,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-110 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       role="dialog"
       aria-modal="true"

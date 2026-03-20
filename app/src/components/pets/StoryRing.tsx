@@ -99,7 +99,7 @@ export function StoryRing({ pet, children, size = 56 }: StoryRingProps) {
               {stories.map(s => (
                 <div key={s.id} className="mb-3">
                   <p className="text-white/90 text-sm">{s.caption}</p>
-                  <p className="text-white/40 text-[10px] mt-1">
+                  <p className="text-white/40 text-xs mt-1">
                     {new Date(s.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                   </p>
                 </div>

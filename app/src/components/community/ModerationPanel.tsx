@@ -394,7 +394,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
                     <button
                       onClick={() => handleBanFromReport(report)}
                       disabled={actionState[`ban-${report.id}`] === 'loading'}
-                      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                      className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
                     >
                       {actionState[`ban-${report.id}`] === 'loading' ? (
                         <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
@@ -521,10 +521,10 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
       {/* ── Section 4: Banned Members ───────────────────────────────── */}
       <section>
         <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">
-          <span className="material-symbols-outlined text-[16px] text-orange-500">shield</span>
+          <span className="material-symbols-outlined text-[16px] text-amber-500">shield</span>
           Banned Members
           {bannedMembers.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">
+            <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-semibold">
               {bannedMembers.length}
             </span>
           )}
@@ -540,7 +540,7 @@ export default function ModerationPanel({ groupId }: ModerationPanelProps) {
               {bannedMembers.map(uid => (
                 <li key={uid} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface-variant shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
                       {uid.substring(0, 2).toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-on-surface-variant">

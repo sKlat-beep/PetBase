@@ -423,7 +423,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-60 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6"
           onMouseDown={handleBackdropClick}
         >
           {/* Backdrop */}
@@ -479,7 +479,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     : 'border-transparent text-on-surface-variant hover:text-on-surface'
                     }`}
                 >
-                  <span className="w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
+                  <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
                     {i + 1}
                   </span>
                   <span className="material-symbols-outlined text-[18px]">{TAB_ICONS[tab]}</span>

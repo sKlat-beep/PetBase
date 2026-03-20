@@ -137,7 +137,7 @@ export function GroupFeedTab({
             {group.image ? (
               <img src={group.image} alt="" className="w-full h-full object-cover opacity-60" />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-primary to-teal-600 opacity-60" />
+              <div className="w-full h-full bg-gradient-to-br from-primary to-emerald-600 opacity-60" />
             )}
           </div>
           <div className="p-5 -mt-6 relative">
@@ -148,7 +148,7 @@ export function GroupFeedTab({
               {group.tags.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
                   {group.tags.slice(0, 4).map(tag => (
-                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
+                    <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                       {tag}
                     </span>
                   ))}
@@ -172,7 +172,7 @@ export function GroupFeedTab({
                 }
               }}
               disabled={isJoining}
-              className="mt-3 w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 disabled:bg-primary/40 text-on-primary px-5 py-2.5 rounded-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
+              className="mt-3 w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 active:scale-[0.97] disabled:bg-primary/40 text-on-primary px-5 py-2.5 rounded-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
             >
               <span className="material-symbols-outlined text-[18px]">login</span>
               {isJoining ? 'Joining...' : 'Join Group'}
@@ -239,7 +239,7 @@ export function GroupFeedTab({
                 <button
                   type="submit"
                   disabled={isPosting || !newPostContent.trim()}
-                  className="bg-primary hover:bg-primary/90 disabled:bg-on-surface/12 text-on-primary px-5 py-2 rounded-lg font-medium text-sm transition-colors min-h-[44px]"
+                  className="bg-primary hover:bg-primary/90 active:scale-[0.97] disabled:bg-on-surface/12 text-on-primary px-5 py-2 rounded-lg font-medium text-sm transition-all min-h-[44px]"
                 >
                   Post
                 </button>
@@ -359,7 +359,7 @@ function PostCard({ post, groupId, canPin, canDelete, pinPost, deletePost, isAut
           <img src={post.authorImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`} alt={post.authorName} className="w-10 h-10 rounded-full bg-surface-container" />
           <div>
             <h4 className="font-semibold text-on-surface flex items-center gap-2">
-              {post.authorName} {isAuthor && <span className="text-[10px] bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant font-normal">You</span>}
+              {post.authorName} {isAuthor && <span className="text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant font-normal">You</span>}
             </h4>
             <p className="text-xs text-on-surface-variant">{new Date(post.createdAt).toLocaleString()}</p>
           </div>

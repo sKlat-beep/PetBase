@@ -80,7 +80,7 @@ export function HealthInsights({ pet }: HealthInsightsProps) {
           <p className="text-xs text-amber-800 leading-relaxed">{insight}</p>
         </div>
       ))}
-      <p className="text-[10px] text-on-surface-variant italic">These are general suggestions — always consult your licensed veterinarian.</p>
+      <p className="text-xs text-on-surface-variant italic">These are general suggestions — always consult your licensed veterinarian.</p>
     </div>
   );
 }

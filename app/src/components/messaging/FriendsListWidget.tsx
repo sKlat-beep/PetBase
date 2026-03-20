@@ -49,11 +49,11 @@ export function FriendsListWidget({ profileCache }: FriendsListWidgetProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide">Friends</p>
+        <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Friends</p>
         <div className="flex gap-1">
           {(['recent', 'az'] as const).map(s => (
             <button key={s} onClick={() => handleSort(s)}
-              className={`text-[10px] px-1.5 py-0.5 rounded transition-colors ${sort === s ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}>
+              className={`text-xs px-1.5 py-0.5 rounded transition-colors ${sort === s ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}>
               {s === 'recent' ? 'Recent' : 'A–Z'}
             </button>
           ))}

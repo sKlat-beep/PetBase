@@ -760,7 +760,7 @@ export function Dashboard() {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-3xl font-black text-primary-container tabular-nums">{streakCount}</span>
-                <span className="text-[10px] font-medium text-on-surface-variant uppercase tracking-wider">days</span>
+                <span className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">days</span>
               </div>
             </div>
             <div className="text-center sm:text-left">

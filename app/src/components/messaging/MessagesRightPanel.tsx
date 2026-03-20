@@ -91,7 +91,7 @@ export function MessagesRightPanel({
     <div className="space-y-4">
       {/* Search */}
       <div>
-        <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">New Message</p>
+        <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">New Message</p>
         <NewConversationSearch />
       </div>
 

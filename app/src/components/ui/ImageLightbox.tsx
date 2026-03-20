@@ -37,6 +37,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: ImageLightboxPr
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center"
+        role="dialog" aria-modal="true" aria-label="Image viewer"
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
         {/* Counter */}

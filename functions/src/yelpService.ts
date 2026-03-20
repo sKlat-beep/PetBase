@@ -1,4 +1,7 @@
 import * as https from 'https';
+import { createLogger } from './logger';
+
+const log = createLogger('fetchYelp');
 
 export const YELP_CATEGORY_MAP: Record<string, string> = {
   Vets: 'vets',
@@ -34,7 +37,7 @@ function fetchYelp(url: string, apiKey: string): Promise<{ businesses: YelpBusin
         try {
           const parsed = JSON.parse(data);
           if (res.statusCode && res.statusCode !== 200) {
-            console.error(`[fetchYelp] HTTP ${res.statusCode}:`, JSON.stringify(parsed).slice(0, 500));
+            log.error(`HTTP ${res.statusCode}`, new Error(JSON.stringify(parsed).slice(0, 500)));
             reject(new Error(`Yelp API error: HTTP ${res.statusCode}`));
             return;
           }

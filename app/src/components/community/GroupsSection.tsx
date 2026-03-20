@@ -149,13 +149,13 @@ export default function GroupsSection({ groupSearch = '' }: GroupsSectionProps) 
                   </div>
                   <div className="p-2.5 bg-surface-container">
                     <p className="text-xs font-semibold text-on-surface truncate">{group.name}</p>
-                    <p className="text-[11px] text-on-surface-variant mt-0.5">
+                    <p className="text-xs text-on-surface-variant mt-0.5">
                       {memberCount} member{memberCount !== 1 ? 's' : ''}
                     </p>
                     {group.tags.length > 0 && (
                       <div className="flex gap-1 mt-1.5 flex-wrap">
                         {group.tags.slice(0, 2).map(tag => (
-                          <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
+                          <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                             {tag}
                           </span>
                         ))}

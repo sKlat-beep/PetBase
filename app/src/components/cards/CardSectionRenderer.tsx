@@ -235,14 +235,14 @@ export function CardSectionRenderer({
                 </div>
                 {m.dosage && <p className="text-on-secondary-container mt-0.5">Dosage: {m.dosage}</p>}
                 {(m.startDate || m.endDate) && (
-                  <p className="text-secondary text-[9px] mt-0.5 uppercase tracking-tight">
+                  <p className="text-secondary text-xs mt-0.5 uppercase tracking-tight">
                     {m.startDate && `Start: ${m.startDate}`}
                     {m.startDate && m.endDate && ' • '}
                     {m.endDate && `End: ${m.endDate}`}
                   </p>
                 )}
                 {m.notes && (
-                  <p className="text-secondary mt-1 italic leading-snug text-[10px]">
+                  <p className="text-secondary mt-1 italic leading-snug text-xs">
                     {m.notes}
                   </p>
                 )}
@@ -296,7 +296,7 @@ export function CardSectionRenderer({
                 </span>
               </div>
               {(v.lastDate || v.nextDueDate) && (
-                <p className="text-[10px] text-on-surface-variant mt-0.5">
+                <p className="text-xs text-on-surface-variant mt-0.5">
                   {v.lastDate && `Last: ${v.lastDate}`}
                   {v.lastDate && v.nextDueDate && ' · '}
                   {v.nextDueDate && `Next: ${v.nextDueDate}`}

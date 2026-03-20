@@ -33,7 +33,7 @@ export default function EmergencyModal({ onClose, onFindVet, onReportLost }: Eme
       role="dialog"
       aria-modal="true"
       aria-labelledby="emergency-modal-title"
-      className="fixed inset-0 z-100 flex items-end sm:items-center justify-center p-4 bg-black/95 backdrop-blur-lg"
+      className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center p-4 bg-black/95 backdrop-blur-lg"
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
       onKeyDown={handleKeyDown}
       ref={dialogRef}

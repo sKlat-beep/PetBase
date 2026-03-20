@@ -279,13 +279,17 @@
   --color-on-error: var(--on-error);
   --color-on-error-container: var(--on-error-container);
 
-  /* M3 outline */
+  /* M3 outline / border */
   --color-outline: var(--outline);
   --color-outline-variant: var(--outline-variant);
+  --color-border: var(--outline-variant);
 
   /* M3 inverse */
   --color-inverse-surface: var(--inverse-surface);
   --color-inverse-on-surface: var(--inverse-on-surface);
+
+  /* Scrim */
+  --color-scrim: rgba(0, 0, 0, 0.5);
 }
 
 /* ─── Base Styles ────────────────────────────────────────────────────────── */

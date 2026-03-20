@@ -89,7 +89,7 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
         <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant shrink-0">
           <div>
             <h2 className="text-sm font-semibold text-on-surface">Members</h2>
-            <p className="text-[10px] text-on-surface-variant">{allMembers.length} member{allMembers.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-on-surface-variant">{allMembers.length} member{allMembers.length !== 1 ? 's' : ''}</p>
           </div>
           <button
             onClick={onClose}
@@ -121,7 +121,7 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
             <button
               key={f}
               onClick={() => setRoleFilter(f)}
-              className={`text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+              className={`text-xs font-semibold px-2.5 py-1 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                 roleFilter === f
                   ? 'bg-sky-500 text-white'
                   : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
@@ -143,17 +143,17 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
               const initial = displayName.charAt(0).toUpperCase();
               return (
                 <div key={m.userId} className="flex items-center gap-2.5">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${roleCircleClass(m.role)}`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${roleCircleClass(m.role)}`}>
                     {initial}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-on-surface truncate">{displayName}</p>
-                    <p className="text-[10px] text-on-surface-variant">
+                    <p className="text-xs text-on-surface-variant">
                       Joined {new Date(m.joinedAt).toLocaleDateString([], { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${roleBgClass(m.role)}`}>
+                    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${roleBgClass(m.role)}`}>
                       {roleLabel(m.role)}
                     </span>
                     {/* Owner can change roles of non-owners */}
@@ -180,7 +180,7 @@ export function GroupMemberModal({ members, onClose, userRole, groupId }: GroupM
                                     }
                                     setRoleChangeTarget(null);
                                   }}
-                                  className="w-full text-left px-3 py-1.5 text-[10px] font-medium text-on-surface hover:bg-surface-container-high transition-colors"
+                                  className="w-full text-left px-3 py-1.5 text-xs font-medium text-on-surface hover:bg-surface-container-high transition-colors"
                                 >
                                   {r === 'User' ? 'Member' : r}
                                 </button>

@@ -66,7 +66,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
               Feedback
             </h2>
             {/* Live Beta badge */}
-            <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-gradient-to-r from-tertiary to-primary text-on-primary">
+            <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full bg-gradient-to-r from-tertiary to-primary text-on-primary">
               Live Beta
             </span>
           </div>

@@ -53,7 +53,7 @@ function MessageModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Add member" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -152,12 +152,12 @@ function UserCard({
               </span>
             )}
             {isFriend && (
-              <span className="text-[10px] font-bold bg-primary-container/20 text-primary-container px-2 py-0.5 rounded-full uppercase tracking-wide">
+              <span className="text-xs font-bold bg-primary-container/20 text-primary-container px-2 py-0.5 rounded-full uppercase tracking-wide">
                 Friend
               </span>
             )}
             {person.visibility === 'Friends Only' && !isFriend && (
-              <span className="text-[10px] font-medium bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full">
+              <span className="text-xs font-medium bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full">
                 Friends Only
               </span>
             )}
@@ -187,7 +187,7 @@ function UserCard({
               <span className="material-symbols-outlined text-lg">chat</span>
               Message
               {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-error text-on-error text-xs font-bold rounded-full flex items-center justify-center px-1">
                   {unreadCount}
                 </span>
               )}
@@ -459,7 +459,7 @@ export function People() {
                     {suggestion.displayName}
                   </p>
                   {suggestion.mutualFriends > 0 && (
-                    <p className="text-[11px] text-on-surface-variant text-center -mt-1">
+                    <p className="text-xs text-on-surface-variant text-center -mt-1">
                       {suggestion.mutualFriends} mutual {suggestion.mutualFriends === 1 ? 'friend' : 'friends'}
                     </p>
                   )}
@@ -581,7 +581,7 @@ export function People() {
           />
         )}
         {familyInvite && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && setFamilyInvite(null)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Family invitation" onMouseDown={(e) => e.target === e.currentTarget && setFamilyInvite(null)}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

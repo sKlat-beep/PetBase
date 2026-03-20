@@ -17,7 +17,7 @@ export function FriendRequestInboxWidget() {
           <span className="material-symbols-outlined text-on-tertiary-container text-[14px]">person_add</span>
           <span className="text-xs font-semibold text-on-tertiary-container">Friend Requests</span>
         </div>
-        <span className="text-[10px] font-bold text-on-primary bg-primary rounded-full w-4 h-4 flex items-center justify-center">{pendingRequests.length}</span>
+        <span className="text-xs font-bold text-on-primary bg-primary rounded-full w-4 h-4 flex items-center justify-center">{pendingRequests.length}</span>
       </div>
       <div className="divide-y divide-outline-variant">
         {pendingRequests.slice(0, 5).map((req) => {
@@ -35,13 +35,13 @@ export function FriendRequestInboxWidget() {
               <div className="flex gap-1 shrink-0">
                 <button
                   onClick={() => (acceptFriendRequestAndGreet as any)(req.id, navigate)}
-                  className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-primary hover:bg-primary/90 text-on-primary transition-colors"
+                  className="text-xs font-semibold px-2 py-1 rounded-lg bg-primary hover:bg-primary/90 text-on-primary transition-colors"
                 >
                   Accept
                 </button>
                 <button
                   onClick={() => rejectFriendRequest(req.id)}
-                  className="text-[10px] font-medium px-2 py-1 rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-container transition-colors"
+                  className="text-xs font-medium px-2 py-1 rounded-lg bg-surface-container-highest text-on-surface-variant hover:bg-surface-container transition-colors"
                 >
                   Decline
                 </button>

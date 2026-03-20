@@ -115,7 +115,7 @@ export function ImageCropperModal({ isOpen, onClose, imageSrc, onCropComplete, s
                             <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition">
                                 Cancel
                             </button>
-                            <button onClick={handleSave} className="flex-1 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl font-medium transition hover:brightness-110 flex items-center justify-center gap-2">
+                            <button onClick={handleSave} className="flex-1 px-4 py-3 bg-primary-container text-on-primary-container rounded-xl font-medium transition hover:brightness-110 active:scale-[0.97] flex items-center justify-center gap-2">
                                 <span className="material-symbols-outlined text-[18px]">check</span>
                                 Apply Changes
                             </button>

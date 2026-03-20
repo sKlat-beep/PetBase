@@ -540,7 +540,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`material-symbols-outlined text-[18px] ${overallColor}`}>{overallIcon}</span>
                   <span className="text-xs font-semibold text-on-surface">Health Status</span>
-                  <span className="ml-auto flex items-center gap-1 text-[10px] text-on-surface-variant/60">
+                  <span className="ml-auto flex items-center gap-1 text-xs text-on-surface-variant/60">
                     <span className="material-symbols-outlined text-[12px]">sync</span>
                     Synced
                   </span>
@@ -698,7 +698,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                               )}
                             </div>
                             {vaccine.lastDate && (
-                              <p className="text-[11px] text-on-surface-variant/70 mt-0.5 ml-2">
+                              <p className="text-xs text-on-surface-variant/70 mt-0.5 ml-2">
                                 Administered: {new Date(vaccine.lastDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                               </p>
                             )}

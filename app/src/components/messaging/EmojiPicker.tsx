@@ -192,7 +192,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
                   key={cat.label}
                   ref={el => { sectionRefs.current[i] = el; }}
                 >
-                  <p className="sticky top-0 bg-surface-container text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide py-1.5 z-10">
+                  <p className="sticky top-0 bg-surface-container text-xs font-semibold text-on-surface-variant uppercase tracking-wide py-1.5 z-10">
                     {cat.label}
                   </p>
                   <div className="grid grid-cols-7 gap-0.5">

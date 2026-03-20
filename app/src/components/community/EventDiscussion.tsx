@@ -63,7 +63,7 @@ function PostRow({
       {/* Avatar */}
       <button
         onClick={() => onViewProfile(post.authorId)}
-        className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-sky-700 hover:ring-2 hover:ring-sky-400 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
+        className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 text-xs font-medium text-sky-700 hover:ring-2 hover:ring-sky-400 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
         aria-label={`View ${post.authorName}'s profile`}
       >
         {authorInitials(post.authorName)}
@@ -75,11 +75,11 @@ function PostRow({
           <div className="flex items-center gap-1.5 mb-0.5">
             <button
               onClick={() => onViewProfile(post.authorId)}
-              className="text-[11px] font-semibold text-on-surface hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+              className="text-xs font-semibold text-on-surface hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
             >
               {post.authorName}
             </button>
-            <span className="text-[10px] text-on-surface-variant">
+            <span className="text-xs text-on-surface-variant">
               {relativeTime(post.createdAt)}
             </span>
           </div>
@@ -98,7 +98,7 @@ function PostRow({
               <button
                 key={key}
                 onClick={() => onReact(post.id, key)}
-                className={`flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500
+                className={`flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500
                   ${isActive
                     ? 'bg-primary-container text-on-primary-container'
                     : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
@@ -116,7 +116,7 @@ function PostRow({
           {canDelete && (
             <button
               onClick={() => onDelete(post.id, post.authorId)}
-              className="text-[10px] text-on-surface-variant hover:text-error transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
+              className="text-xs text-on-surface-variant hover:text-error transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
               aria-label="Delete post"
             >
               <span className="material-symbols-outlined text-[12px]" aria-hidden="true">delete</span>

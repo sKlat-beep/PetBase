@@ -103,7 +103,7 @@ export function SearchHeader({
           >
             <span className="material-symbols-outlined text-[20px]">filter_list</span>
             {activeFilterCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-on-primary text-[10px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-on-primary text-xs font-bold rounded-full flex items-center justify-center">
                 {activeFilterCount}
               </span>
             )}

@@ -37,20 +37,21 @@ export function PetDietPanel({ pet, onEdit }: PetDietPanelProps) {
             Feeding Schedule
           </p>
           <div className="space-y-3">
-            {/* Fix 5: stable key using time+portion */}
-            {pet.dietSchedule!.map((entry) => (
-              <div key={entry.time + '-' + entry.portion} className="flex items-start gap-3">
-                <span className="text-xs font-mono bg-surface-container px-2 py-1 rounded text-on-surface-variant shrink-0">
-                  {entry.time}
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-on-surface">{entry.portion}</p>
-                  {entry.brand && (
-                    <p className="text-xs text-on-surface-variant">{entry.brand}</p>
-                  )}
+            {pet.dietSchedule!.map((schedule) =>
+              schedule.entries.map((entry) => (
+                <div key={entry.time + '-' + entry.amount} className="flex items-start gap-3">
+                  <span className="text-xs font-mono bg-surface-container px-2 py-1 rounded text-on-surface-variant shrink-0">
+                    {entry.time}
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-on-surface">{entry.amount} {entry.unit}</p>
+                    {schedule.foodType && (
+                      <p className="text-xs text-on-surface-variant">{schedule.foodType}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       )}

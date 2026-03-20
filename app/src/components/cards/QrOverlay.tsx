@@ -133,7 +133,7 @@ export function QrOverlay({ cardId, pet, expiresLabel, onClose }: QrOverlayProps
           <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-10">
             <div className="glass-morphism flex items-center gap-1.5 px-3 py-1 rounded-full">
               <span className="material-symbols-outlined text-primary-container text-sm">verified</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface">
+              <span className="text-xs font-bold uppercase tracking-wider text-on-surface">
                 Verified Pet
               </span>
             </div>

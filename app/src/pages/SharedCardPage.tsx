@@ -242,7 +242,7 @@ export function SharedCardPage() {
               const phone = ec?.ownerPhone ?? ec?.additionalContacts?.[0]?.phone;
               if (phone) window.location.href = `tel:${phone}`;
             }}
-            className="flex items-center gap-2 bg-primary text-on-primary px-6 py-3.5 rounded-full shadow-lg font-bold text-sm tracking-wide hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 bg-primary text-on-primary px-6 py-3.5 rounded-full shadow-lg font-bold text-sm tracking-wide hover:opacity-90 active:scale-[0.97] transition-all"
             style={{ fontFamily: 'var(--font-headline)' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>call</span>

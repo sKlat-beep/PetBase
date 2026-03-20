@@ -99,7 +99,7 @@ export function ServiceFilters({
                   <button
                     key={breed}
                     onClick={() => onBreedsChange(activeBreeds.includes(breed) ? activeBreeds.filter(b => b !== breed) : [...activeBreeds, breed])}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors border ${activeBreeds.includes(breed) ? 'bg-indigo-100 border-indigo-200 text-indigo-700' : 'bg-surface-container border-outline-variant text-on-surface-variant line-through hover:bg-surface-container-high'}`}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors border ${activeBreeds.includes(breed) ? 'bg-sky-100 border-sky-200 text-sky-700' : 'bg-surface-container border-outline-variant text-on-surface-variant line-through hover:bg-surface-container-high'}`}
                   >
                     {breed}
                   </button>
@@ -134,7 +134,7 @@ export function ServiceFilters({
                 <button
                   key={filter}
                   onClick={() => onServiceFiltersChange(activeServiceFilters.includes(filter) ? activeServiceFilters.filter(f => f !== filter) : [...activeServiceFilters, filter])}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${activeServiceFilters.includes(filter) ? 'bg-indigo-100 border-indigo-200 text-indigo-700' : 'bg-surface-container border-outline-variant text-on-surface-variant hover:bg-surface-container-high'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${activeServiceFilters.includes(filter) ? 'bg-sky-100 border-sky-200 text-sky-700' : 'bg-surface-container border-outline-variant text-on-surface-variant hover:bg-surface-container-high'}`}
                 >
                   {filter}
                 </button>

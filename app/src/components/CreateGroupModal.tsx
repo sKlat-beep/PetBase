@@ -244,7 +244,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                         <button
                             type="submit"
                             disabled={ownedGroups.length >= 3 || !name || !description || submitting || uploading}
-                            className="w-full mt-4 bg-primary hover:bg-primary/90 disabled:bg-on-surface/12 disabled:cursor-not-allowed text-on-primary px-5 py-2.5 rounded-xl font-medium transition-colors"
+                            className="w-full mt-4 bg-primary hover:bg-primary/90 active:scale-[0.97] disabled:bg-on-surface/12 disabled:cursor-not-allowed text-on-primary px-5 py-2.5 rounded-xl font-medium transition-all"
                         >
                             {uploading ? 'Uploading photo...' : submitting ? 'Checking...' : 'Create Group'}
                         </button>

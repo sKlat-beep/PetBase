@@ -140,14 +140,14 @@ export function CommunityHubPanel() {
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-on-surface truncate">{g.name}</p>
-                    <p className="text-[10px] text-on-surface-variant">
+                    <p className="text-xs text-on-surface-variant">
                       {memberCount} member{memberCount !== 1 ? 's' : ''}
                       {firstTag && <> · <span className="text-primary">{firstTag}</span></>}
                     </p>
                   </div>
                   <Link
                     to="/community"
-                    className="text-[10px] font-semibold text-primary hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                    className="text-xs font-semibold text-primary hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                   >
                     Join
                   </Link>
@@ -173,7 +173,7 @@ export function CommunityHubPanel() {
                 <span className="mt-0.5 shrink-0" aria-hidden="true">📅</span>
                 <div className="min-w-0">
                   <p className="font-medium truncate">{e.title}</p>
-                  <p className="text-[10px] text-on-surface-variant truncate">
+                  <p className="text-xs text-on-surface-variant truncate">
                     {e.groupName} · {new Date(e.date).toLocaleDateString()}
                   </p>
                 </div>
@@ -196,7 +196,7 @@ export function CommunityHubPanel() {
             {peopleSuggestions.map(({ uid, count, profile: p }) => (
               <div key={uid} className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">
+                  <span className="text-xs font-bold text-on-surface-variant uppercase">
                     {(p?.displayName ?? uid).charAt(0)}
                   </span>
                 </div>
@@ -204,13 +204,13 @@ export function CommunityHubPanel() {
                   <p className="text-xs font-semibold text-on-surface truncate">
                     {p?.displayName ?? 'Member'}
                   </p>
-                  <p className="text-[10px] text-on-surface-variant">
+                  <p className="text-xs text-on-surface-variant">
                     in {count} of your group{count !== 1 ? 's' : ''}
                   </p>
                 </div>
                 <Link
                   to={`/community/people?uid=${uid}`}
-                  className="text-[10px] font-semibold text-sky-600 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                  className="text-xs font-semibold text-sky-600 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                 >
                   View
                 </Link>

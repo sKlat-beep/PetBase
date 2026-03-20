@@ -152,7 +152,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
         icon={<MIcon name="warning" className="text-[14px] text-error" />}
         defaultExpanded={false}
         badge={unseenCount > 0 ? (
-          <span className="ml-auto mr-1 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center">
+          <span className="ml-auto mr-1 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-xs font-bold flex items-center justify-center">
             {unseenCount}
           </span>
         ) : undefined}
@@ -171,7 +171,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-xs font-semibold text-on-surface truncate">{alert.title}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${CATEGORY_COLORS[alert.category]}`}>
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0 ${CATEGORY_COLORS[alert.category]}`}>
                         {CATEGORY_LABELS[alert.category]}
                       </span>
                     </div>
@@ -202,11 +202,11 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
       <CollapsiblePanelWidget id="dash-calendar" title="Calendar" icon={<MIcon name="calendar_month" className="text-[14px]" />}>
         {/* Month navigation */}
         <div className="flex items-center justify-between mb-3">
-          <button onClick={prevMonth} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors" aria-label="Previous month">
+          <button onClick={prevMonth} className="w-8 h-8 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors focus-visible:ring-2 focus-visible:ring-primary" aria-label="Previous month">
             <MIcon name="chevron_left" className="text-[18px] text-on-surface-variant" />
           </button>
           <span className="text-xs font-semibold text-on-surface">{monthLabel}</span>
-          <button onClick={nextMonth} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors" aria-label="Next month">
+          <button onClick={nextMonth} className="w-8 h-8 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors focus-visible:ring-2 focus-visible:ring-primary" aria-label="Next month">
             <MIcon name="chevron_right" className="text-[18px] text-on-surface-variant" />
           </button>
         </div>
@@ -214,7 +214,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-px mb-1">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-            <div key={i} className="text-center text-[10px] font-medium text-on-surface-variant/50 py-1">{d}</div>
+            <div key={i} className="text-center text-xs font-medium text-on-surface-variant/50 py-1">{d}</div>
           ))}
         </div>
 
@@ -252,7 +252,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
         {/* Selected day events */}
         {selectedDay !== null && selectedDayEvents.length > 0 && (
           <div className="mt-3 space-y-1.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-on-surface-variant/60 mb-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant/60 mb-1">
               {calDate.toLocaleDateString(undefined, { month: 'long' })} {selectedDay}
             </p>
             {selectedDayEvents.map(event => (
@@ -269,7 +269,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
 
         {/* Selected day — no events */}
         {selectedDay !== null && selectedDayEvents.length === 0 && (
-          <p className="mt-2 text-[10px] text-on-surface-variant/50 text-center">
+          <p className="mt-2 text-xs text-on-surface-variant/50 text-center">
             No events on {calDate.toLocaleDateString(undefined, { month: 'long' })} {selectedDay}
           </p>
         )}

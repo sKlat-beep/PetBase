@@ -37,7 +37,7 @@ export function CuratedWebsites({ websites, favoriteWebsites, onToggleFavorite, 
               <h4 className="font-bold text-on-surface">{site.name}</h4>
               <p className="text-xs text-on-surface-variant mt-1 line-clamp-2">{site.description}</p>
               {site.category && (
-                <span className="inline-block mt-1.5 px-2 py-0.5 bg-surface-container text-on-surface-variant rounded text-[10px] font-medium">
+                <span className="inline-block mt-1.5 px-2 py-0.5 bg-surface-container text-on-surface-variant rounded text-xs font-medium">
                   {site.category}
                 </span>
               )}

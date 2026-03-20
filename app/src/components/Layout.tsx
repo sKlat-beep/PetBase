@@ -110,7 +110,7 @@ export function Layout() {
       </a>
 
       {/* ═══ Top Nav Bar (fixed h-16, mobile + desktop) ═══ */}
-      <header className="md:hidden fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 bg-background/80 backdrop-blur-xl border-b border-outline-variant">
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 bg-background/80 backdrop-blur-md border-b border-outline-variant">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 motion-safe:transition-opacity">
           <span className="text-primary-container font-black text-xl" style={{ fontFamily: 'var(--font-headline)' }}>
             <MIcon name="pets" className="text-primary-container text-2xl align-middle mr-1" />
@@ -138,7 +138,7 @@ export function Layout() {
 
       {/* Mobile Search Panel */}
       {mobileSearchOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-b border-outline-variant px-4 py-3">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md border-b border-outline-variant px-4 py-3">
           <div className="relative">
             <MIcon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-lg text-on-surface-variant pointer-events-none" />
             <input
@@ -265,7 +265,7 @@ export function Layout() {
               <div className="relative">
                 <MIcon name={item.icon} className="text-xl" />
                 {'badge' in item && item.badge != null && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[1rem] h-4 bg-error rounded-full text-on-error text-[10px] font-bold flex items-center justify-center px-0.5">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[1rem] h-4 bg-error rounded-full text-on-error text-xs font-bold flex items-center justify-center px-0.5">
                     {item.badge > 9 ? '9+' : item.badge}
                   </span>
                 )}
@@ -361,7 +361,7 @@ export function Layout() {
               <button
                 key="menu"
                 onClick={() => setIsMobileMenuOpen(prev => !prev)}
-                className="flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium motion-safe:transition-colors text-on-surface-variant"
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium motion-safe:transition-colors text-on-surface-variant"
               >
                 <MIcon name={isMobileMenuOpen ? 'close' : 'menu'} className="text-xl" />
                 Menu
@@ -376,7 +376,7 @@ export function Layout() {
               end={item.to === '/'}
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium motion-safe:transition-colors ${isActive
+                `flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium motion-safe:transition-colors ${isActive
                   ? 'text-primary'
                   : 'text-on-surface-variant hover:text-on-surface'
                 }`

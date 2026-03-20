@@ -116,7 +116,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
           <div className="flex gap-1.5 overflow-x-auto scrollbar-hide mb-3">
             <button
               onClick={() => setCategoryFilter(null)}
-              className={`px-2.5 py-1 min-h-[44px] text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
+              className={`px-2.5 py-1 min-h-[44px] text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                 !categoryFilter ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'
               }`}
             >All</button>
@@ -124,7 +124,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
-                className={`px-2.5 py-1 min-h-[44px] text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
+                className={`px-2.5 py-1 min-h-[44px] text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                   categoryFilter === cat ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'
                 }`}
               >{cat}</button>
@@ -170,7 +170,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                         )}
                         <div className="flex gap-1 mt-1 flex-wrap">
                           {group.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
+                            <span key={tag} className="text-xs px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                               {tag}
                             </span>
                           ))}
@@ -194,7 +194,7 @@ export default function DiscoverSection({ externalSearch = '' }: DiscoverSection
                         {group.description && (
                           <p className="text-xs text-on-surface-variant mb-2">{group.description}</p>
                         )}
-                        <p className="text-[10px] text-on-surface-variant mb-3">
+                        <p className="text-xs text-on-surface-variant mb-3">
                           {group.posts.length} post{group.posts.length !== 1 ? 's' : ''} · {group.events.length} event{group.events.length !== 1 ? 's' : ''}
                         </p>
                         {joinError && expandedId === group.id && (

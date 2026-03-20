@@ -1,6 +1,9 @@
 import { GoogleGeocoder } from './googleGeocoder';
 import { AzureGeocoder } from './azureGeocoder';
 import type { GeocodingProvider, GeocodingResult } from './types';
+import { createLogger } from '../logger';
+
+const log = createLogger('geocodeWithFallback');
 
 export type { GeocodingProvider, GeocodingResult };
 
@@ -23,7 +26,7 @@ export async function geocodeWithFallback(address: string): Promise<GeocodingRes
       const result = await provider.geocode(address);
       if (result) return result;
     } catch (err) {
-      console.error(`[geocodeWithFallback] ${provider.name} failed:`, err);
+      log.error(`${provider.name} failed`, err);
     }
   }
   return null;

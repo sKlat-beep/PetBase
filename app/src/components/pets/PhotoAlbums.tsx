@@ -213,7 +213,7 @@ function AlbumCard({ album, onClick }: { album: PetAlbum; onClick: () => void })
       {/* Bottom gradient overlay */}
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-2 pt-6">
         <p className="text-white text-xs font-semibold truncate leading-tight">{album.name}</p>
-        <span className="bg-white/20 rounded-full px-2 py-0.5 text-[10px] text-white font-medium">{album.photos.length} photo{album.photos.length !== 1 ? 's' : ''}</span>
+        <span className="bg-white/20 rounded-full px-2 py-0.5 text-xs text-white font-medium">{album.photos.length} photo{album.photos.length !== 1 ? 's' : ''}</span>
       </div>
     </button>
   );

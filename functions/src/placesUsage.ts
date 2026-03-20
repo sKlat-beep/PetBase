@@ -1,6 +1,9 @@
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
 import { postSlackBlocks, buildAlertBlock } from './slackService';
+import { createLogger } from './logger';
+
+const log = createLogger('placesUsage');
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -125,9 +128,9 @@ export async function checkAndAlertIfOverThreshold(
       subject,
       text: body,
     });
-    console.log(`checkAndAlertIfOverThreshold: email sent (${pctDisplay}%)`);
+    log.info(`email sent (${pctDisplay}%)`);
   } catch (err) {
-    console.error('checkAndAlertIfOverThreshold: email send failed', err);
+    log.error('email send failed', err);
   }
 
   // Send Slack if configured
@@ -136,9 +139,9 @@ export async function checkAndAlertIfOverThreshold(
     try {
       const level = crossedThreshold >= 1.0 ? 'error' : crossedThreshold >= 0.75 ? 'warn' : 'info';
       await postSlackBlocks(slackWebhookUrl, buildAlertBlock(subject, body, level));
-      console.log('checkAndAlertIfOverThreshold: Slack notification sent');
+      log.info('Slack notification sent');
     } catch (err) {
-      console.error('checkAndAlertIfOverThreshold: Slack notification failed', err);
+      log.error('Slack notification failed', err);
     }
   }
 
@@ -164,13 +167,13 @@ export async function updateFeatureFlags(
       { contactTierEnabled: false, atmosphereTierEnabled: false },
       { merge: true },
     );
-    console.warn('updateFeatureFlags: budget 100%+ — disabled both Places tiers');
+    log.warn('budget 100%+ — disabled both Places tiers');
   } else if (estimatedCost >= MONTHLY_BUDGET * 0.9) {
     await db.doc('appConfig/places').set(
       { atmosphereTierEnabled: false },
       { merge: true },
     );
-    console.warn('updateFeatureFlags: budget 90%+ — disabled atmosphere tier');
+    log.warn('budget 90%+ — disabled atmosphere tier');
   }
   // No automatic re-enable
 }

@@ -46,7 +46,7 @@ export function FriendListModal({ friends, onClose }: FriendListModalProps) {
         <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant shrink-0">
           <div>
             <h2 className="text-sm font-semibold text-on-surface">My Friends</h2>
-            <p className="text-[10px] text-on-surface-variant">{friends.length} friend{friends.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-on-surface-variant">{friends.length} friend{friends.length !== 1 ? 's' : ''}</p>
           </div>
           <button
             onClick={onClose}
@@ -92,7 +92,7 @@ export function FriendListModal({ friends, onClose }: FriendListModalProps) {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-on-surface-variant uppercase">
+                      <span className="text-xs font-bold text-on-surface-variant uppercase">
                         {initial}
                       </span>
                     )}

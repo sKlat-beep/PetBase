@@ -176,7 +176,7 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
 
             {/* Tenor attribution — required by Tenor API terms */}
             <div className="px-4 py-2 shrink-0 flex justify-end">
-              <span className="text-[10px] text-on-surface-variant tracking-wide">
+              <span className="text-xs text-on-surface-variant tracking-wide">
                 Powered by Tenor
               </span>
             </div>

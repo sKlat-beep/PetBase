@@ -51,7 +51,7 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
               Energy: {'●'.repeat(todayEntry.energy)}{'○'.repeat(5 - todayEntry.energy)}
             </p>
           </div>
-          <span className="text-[10px] text-on-surface-variant">Today</span>
+          <span className="text-xs text-on-surface-variant">Today</span>
         </div>
       ) : (
         <button
@@ -92,7 +92,7 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
                     }`}
                   >
                     <span className="text-xl">{o.emoji}</span>
-                    <span className="text-[10px] text-on-surface-variant">{o.label}</span>
+                    <span className="text-xs text-on-surface-variant">{o.label}</span>
                   </button>
                 ))}
               </div>
@@ -148,7 +148,7 @@ export function MoodLog({ pet, onSave }: MoodLogProps) {
               <span className="capitalize">{entry.mood}</span>
               <span className="text-outline">·</span>
               <span>Energy {entry.energy}/5</span>
-              <span className="ml-auto text-[10px]">
+              <span className="ml-auto text-xs">
                 {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>

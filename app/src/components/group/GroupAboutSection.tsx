@@ -36,7 +36,7 @@ export function GroupAboutSection({ group, userRole, userId, groupId }: GroupAbo
         {group.image ? (
           <img src={group.image} alt={group.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary to-teal-600" />
+          <div className="w-full h-full bg-gradient-to-br from-primary to-emerald-600" />
         )}
         {userRole === 'Owner' && (
           <>
@@ -66,7 +66,7 @@ export function GroupAboutSection({ group, userRole, userId, groupId }: GroupAbo
           {group.image ? (
             <img src={group.image} alt={group.name} className="w-10 h-10 rounded-xl object-cover" />
           ) : (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-teal-600" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-600" />
           )}
           <h3 className="font-bold text-on-surface">About Group</h3>
         </div>

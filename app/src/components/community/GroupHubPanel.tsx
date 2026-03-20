@@ -64,7 +64,7 @@ export function GroupHubPanel() {
             {isLongDesc && (
               <button
                 onClick={() => setDescExpanded(v => !v)}
-                className="text-[10px] text-primary hover:underline mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                className="text-xs text-primary hover:underline mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
               >
                 {descExpanded ? 'Show less' : 'Show more'}
               </button>
@@ -76,7 +76,7 @@ export function GroupHubPanel() {
               {group.tags.map(tag => (
                 <span
                   key={tag}
-                  className="text-[10px] px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant"
+                  className="text-xs px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant"
                 >
                   {tag}
                 </span>
@@ -84,7 +84,7 @@ export function GroupHubPanel() {
             </div>
           )}
 
-          <div className="text-[10px] text-on-surface-variant space-y-0.5">
+          <div className="text-xs text-on-surface-variant space-y-0.5">
             <p>Created {new Date(group.createdAt).toLocaleDateString()}</p>
             <p>{memberCount} member{memberCount !== 1 ? 's' : ''} · {postCount} post{postCount !== 1 ? 's' : ''}</p>
           </div>
@@ -106,14 +106,14 @@ export function GroupHubPanel() {
               return (
                 <div key={e.id} className="space-y-1.5">
                   <p className="text-xs font-semibold text-on-surface leading-tight">{e.title}</p>
-                  <p className="text-[10px] text-on-surface-variant">
+                  <p className="text-xs text-on-surface-variant">
                     {new Date(e.date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                     {' · '}{e.attendeeIds.length} going
                   </p>
                   {user && (
                     <button
                       onClick={() => rsvpEvent(group.id, e.id, !isAttending)}
-                      className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+                      className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                         isAttending
                           ? 'bg-primary-container text-on-primary-container hover:bg-primary-container/80'
                           : 'border border-outline-variant text-on-surface-variant hover:bg-surface-container-high'
@@ -137,11 +137,11 @@ export function GroupHubPanel() {
       >
         <div className="space-y-2.5">
           {roleBreakdown && (
-            <p className="text-[10px] text-on-surface-variant">{roleBreakdown}</p>
+            <p className="text-xs text-on-surface-variant">{roleBreakdown}</p>
           )}
           <button
             onClick={() => setShowMemberModal(true)}
-            className="text-[10px] font-semibold text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+            className="text-xs font-semibold text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
           >
             View all {memberCount} member{memberCount !== 1 ? 's' : ''} →
           </button>

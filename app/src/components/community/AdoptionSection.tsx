@@ -119,13 +119,13 @@ export default function AdoptionSection() {
                   <p className="text-xs text-on-surface-variant">{listing.petType}{listing.breed ? ` · ${listing.breed}` : ''}{listing.age ? ` · ${listing.age}` : ''}</p>
                 </div>
                 {listing.listedBy === user?.uid && (
-                  <button onClick={() => markAdopted(listing.id)} className="text-[10px] px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container">
+                  <button onClick={() => markAdopted(listing.id)} className="text-xs px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container">
                     Mark Adopted
                   </button>
                 )}
               </div>
               {listing.description && <p className="text-xs text-on-surface-variant mt-1 line-clamp-2">{listing.description}</p>}
-              <div className="flex items-center gap-3 mt-2 text-[10px] text-on-surface-variant">
+              <div className="flex items-center gap-3 mt-2 text-xs text-on-surface-variant">
                 {listing.location && <span className="flex items-center gap-0.5"><span className="material-symbols-outlined text-[12px]">location_on</span>{listing.location}</span>}
                 <span>Contact: {listing.contactName || listing.contactInfo}</span>
               </div>

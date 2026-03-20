@@ -140,12 +140,12 @@ function UserCard({
               </span>
             )}
             {isFriend && (
-              <span className="text-[10px] font-bold bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full uppercase tracking-wide">
+              <span className="text-xs font-bold bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full uppercase tracking-wide">
                 Friend
               </span>
             )}
             {person.visibility === 'Friends Only' && !isFriend && (
-              <span className="text-[10px] font-medium bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-medium bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">
                 Friends Only
               </span>
             )}
@@ -174,7 +174,7 @@ function UserCard({
               <span className="material-symbols-outlined text-[16px]">chat</span>
               Message
               {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-error text-on-error text-xs font-bold rounded-full flex items-center justify-center px-1">
                   {unreadCount}
                 </span>
               )}
@@ -391,13 +391,13 @@ export default function PeopleSection() {
                     {suggestion.displayName}
                   </p>
                   {suggestion.mutualFriends > 0 && (
-                    <p className="text-[10px] text-on-surface-variant text-center leading-tight">
+                    <p className="text-xs text-on-surface-variant text-center leading-tight">
                       {suggestion.mutualFriends} mutual
                     </p>
                   )}
                   <button
                     onClick={() => sendFriendRequest(suggestion.uid)}
-                    className="w-full flex items-center justify-center gap-1 py-1 px-2 rounded-lg bg-on-surface text-surface hover:bg-on-surface/90 font-medium text-[11px] transition-colors"
+                    className="w-full flex items-center justify-center gap-1 py-1 px-2 rounded-lg bg-on-surface text-surface hover:bg-on-surface/90 font-medium text-xs transition-colors"
                   >
                     <span className="material-symbols-outlined text-[12px]">person_add</span>
                     Add

@@ -56,11 +56,11 @@ export function PhotoPicker({ onSelect, onClose }: PhotoPickerProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="photo-picker-title">
       <div className="bg-surface-container rounded-2xl shadow-xl w-full max-w-sm flex flex-col max-h-[80vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant shrink-0">
-          <h2 className="text-sm font-semibold text-on-surface">Attach Photo</h2>
+          <h2 id="photo-picker-title" className="text-sm font-semibold text-on-surface">Attach Photo</h2>
           <button
             onClick={onClose}
             aria-label="Close photo picker"

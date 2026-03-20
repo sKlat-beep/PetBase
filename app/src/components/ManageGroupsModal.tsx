@@ -67,7 +67,7 @@ export function ManageGroupsModal({ isOpen, onClose }: ManageGroupsModalProps) {
                                             <div>
                                                 <div className="flex items-center gap-2">
                                                     <h3 className="font-semibold text-on-surface">{group.name}</h3>
-                                                    {hasNew && <span className="bg-primary-container text-on-primary-container text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center"><span className="material-symbols-outlined text-[12px] mr-1">notifications_active</span> New</span>}
+                                                    {hasNew && <span className="bg-primary-container text-on-primary-container text-xs font-bold px-1.5 py-0.5 rounded-full flex items-center"><span className="material-symbols-outlined text-[12px] mr-1">notifications_active</span> New</span>}
                                                 </div>
                                                 <p className="text-xs text-on-surface-variant mt-1">{Object.keys(group.members).length} members {isOwner && '• Owner'}</p>
                                             </div>

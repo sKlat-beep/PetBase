@@ -41,21 +41,21 @@ export function GroupAnalytics({ group }: Props) {
         <div className="bg-sky-50 rounded-xl p-3 text-center">
           <span className="material-symbols-outlined text-[16px] text-sky-500 mx-auto mb-1">group</span>
           <p className="text-lg font-bold text-sky-700">{stats.memberCount}</p>
-          <p className="text-[10px] text-sky-500">Members</p>
+          <p className="text-xs text-sky-500">Members</p>
         </div>
         <div className="bg-primary-container rounded-xl p-3 text-center">
           <span className="material-symbols-outlined text-[16px] text-primary mx-auto mb-1">chat</span>
           <p className="text-lg font-bold text-on-primary-container">{stats.postCount}</p>
-          <p className="text-[10px] text-primary">Posts</p>
+          <p className="text-xs text-primary">Posts</p>
         </div>
         <div className="bg-error-container rounded-xl p-3 text-center">
           <span className="material-symbols-outlined text-[16px] text-error mx-auto mb-1">favorite</span>
           <p className="text-lg font-bold text-error">{stats.totalReactions}</p>
-          <p className="text-[10px] text-error">Reactions</p>
+          <p className="text-xs text-error">Reactions</p>
         </div>
         <div className="bg-amber-50 rounded-xl p-3 text-center">
           <p className="text-lg font-bold text-amber-700">{stats.engagementRate}</p>
-          <p className="text-[10px] text-amber-500">Avg Reactions/Post</p>
+          <p className="text-xs text-amber-500">Avg Reactions/Post</p>
         </div>
       </div>
 
@@ -65,7 +65,7 @@ export function GroupAnalytics({ group }: Props) {
 
       {stats.topMembers.length > 0 && (
         <div>
-          <p className="text-[10px] font-medium text-on-surface-variant uppercase tracking-wide mb-1.5">Most Active</p>
+          <p className="text-xs font-medium text-on-surface-variant uppercase tracking-wide mb-1.5">Most Active</p>
           <div className="space-y-1">
             {stats.topMembers.map((m, i) => (
               <div key={i} className="flex items-center justify-between text-xs">

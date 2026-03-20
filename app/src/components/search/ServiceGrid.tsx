@@ -178,7 +178,7 @@ export function ServiceGrid({
                     className="shrink-0 w-48 rounded-xl bg-secondary-container/20 border border-secondary-container/30 p-3 text-left hover:bg-secondary-container/30 transition-colors">
                     {r.image && <img src={r.image} alt={r.name} className="w-full h-20 object-cover rounded-lg mb-2" referrerPolicy="no-referrer" />}
                     <p className="text-xs font-semibold text-on-surface truncate">{r.name}</p>
-                    <p className="text-[10px] text-on-surface-variant truncate">{r.address}</p>
+                    <p className="text-xs text-on-surface-variant truncate">{r.address}</p>
                   </button>
                 ))}
               </div>

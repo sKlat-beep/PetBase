@@ -184,7 +184,7 @@ const PostCard = React.memo(function PostCard({
                 <span className="material-symbols-outlined text-[12px] text-amber-500 flex-shrink-0" aria-label="Pinned post">push_pin</span>
               )}
             </div>
-            <span className="text-[10px] text-on-surface-variant">
+            <span className="text-xs text-on-surface-variant">
               in{' '}
               <button
                 onClick={() => onNavigateGroup(post.groupId)}
@@ -202,7 +202,7 @@ const PostCard = React.memo(function PostCard({
           {uid && post.authorId !== uid && (
             <button
               onClick={() => onReport(post.id, post.groupId)}
-              className="text-on-surface-variant hover:text-orange-500 p-1 min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded transition-colors"
+              className="text-on-surface-variant hover:text-amber-500 p-1 min-w-[28px] min-h-[28px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded transition-colors"
               aria-label="Report post"
             >
               <span className="material-symbols-outlined text-[14px]" aria-hidden="true">flag</span>

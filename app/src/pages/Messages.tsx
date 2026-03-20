@@ -171,8 +171,8 @@ function EditInline({ initialContent, onSave, onCancel }: { initialContent: stri
         className="w-full px-2 py-1 text-sm rounded-lg border border-outline bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <div className="flex gap-1 justify-end">
-        <button onClick={onCancel} className="text-[10px] px-2 py-0.5 rounded text-on-surface-variant hover:bg-surface-container-high">Cancel</button>
-        <button onClick={() => value.trim() && onSave(value.trim())} className="text-[10px] px-2 py-0.5 rounded bg-primary-container text-on-primary-container hover:opacity-90">Save</button>
+        <button onClick={onCancel} className="text-xs px-2 py-0.5 rounded text-on-surface-variant hover:bg-surface-container-high">Cancel</button>
+        <button onClick={() => value.trim() && onSave(value.trim())} className="text-xs px-2 py-0.5 rounded bg-primary-container text-on-primary-container hover:opacity-90">Save</button>
       </div>
     </div>
   );
@@ -348,9 +348,9 @@ const MessageBubble = React.memo(function MessageBubble({
               <img src={linkPreview.image} alt="" className="w-full h-[120px] object-cover" loading="lazy" referrerPolicy="no-referrer" />
             )}
             <div className="px-3 py-2">
-              {linkPreview.siteName && <p className="text-[10px] text-on-surface-variant uppercase tracking-wide">{linkPreview.siteName}</p>}
+              {linkPreview.siteName && <p className="text-xs text-on-surface-variant uppercase tracking-wide">{linkPreview.siteName}</p>}
               <p className="text-xs font-medium text-on-surface line-clamp-1">{linkPreview.title}</p>
-              {linkPreview.description && <p className="text-[10px] text-on-surface-variant line-clamp-2 mt-0.5">{linkPreview.description}</p>}
+              {linkPreview.description && <p className="text-xs text-on-surface-variant line-clamp-2 mt-0.5">{linkPreview.description}</p>}
             </div>
           </a>
         )}
@@ -385,15 +385,15 @@ const MessageBubble = React.memo(function MessageBubble({
         )}
 
         <div className={`flex items-center gap-1 mt-0.5 ${isMine ? 'justify-end' : 'justify-start'}`}>
-          <span className="text-[10px] text-on-surface-variant/60">{ts}</span>
+          <span className="text-xs text-on-surface-variant/60">{ts}</span>
           {message.editedAt && (
-            <span className="text-[10px] text-on-surface-variant/60 italic">
+            <span className="text-xs text-on-surface-variant/60 italic">
               (edited)
             </span>
           )}
           {/* Read receipt: show below last sent message */}
           {isMine && isLastMine && message.read && (
-            <span className="text-[10px] text-secondary flex items-center gap-0.5">
+            <span className="text-xs text-secondary flex items-center gap-0.5">
               <MSIcon name="done_all" className="!text-[12px]" /> Seen
             </span>
           )}
@@ -770,7 +770,7 @@ function ThreadPane({
                 />
               </div>
               {searchQuery.trim() && (
-                <p className="text-[10px] text-on-surface-variant mt-1">
+                <p className="text-xs text-on-surface-variant mt-1">
                   {matchCount} result{matchCount !== 1 ? 's' : ''}
                 </p>
               )}
@@ -1134,7 +1134,7 @@ export function Messages() {
 
   // Handle recipientId from navigation state (e.g. from GroupHub Contact button)
   useEffect(() => {
-    const recipientId = (location.state as any)?.recipientId;
+    const recipientId = (location.state as { recipientId?: string } | null)?.recipientId;
     if (recipientId) {
       setActiveUid(recipientId);
       setMobileView('thread');
@@ -1256,8 +1256,8 @@ export function Messages() {
                 return (
                   <button key={uid} onClick={() => setActiveUid(uid)}
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors">
-                    {(p as any).avatarUrl ? (
-                      <img src={(p as any).avatarUrl} alt={p.displayName} className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
+                    {p.avatarUrl ? (
+                      <img src={p.avatarUrl} alt={p.displayName} className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-xs font-bold text-primary">{p.displayName?.[0]}</div>
                     )}
@@ -1271,7 +1271,7 @@ export function Messages() {
           {requestConvos.length > 0 && (
             <>
               <div className="px-4 py-2 bg-surface-container-low">
-                <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide">
+                <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
                   Message Requests ({requestConvos.length})
                 </p>
               </div>
@@ -1294,7 +1294,7 @@ export function Messages() {
               })}
               {mainConvos.length > 0 && (
                 <div className="px-4 py-2 bg-surface-container-low">
-                  <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide">
+                  <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
                     Messages
                   </p>
                 </div>

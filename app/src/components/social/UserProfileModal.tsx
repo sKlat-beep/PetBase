@@ -497,7 +497,7 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                             >
                               {g.name}
                               {g.members[uid] && (
-                                <span className="ml-auto text-[10px] text-on-surface-variant">Already member</span>
+                                <span className="ml-auto text-xs text-on-surface-variant">Already member</span>
                               )}
                             </button>
                           ))}
@@ -525,7 +525,7 @@ export function UserProfileModal({ uid, onClose }: UserProfileModalProps) {
                     onClick={handleReport}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
                                bg-surface-container text-on-surface-variant
-                               hover:bg-orange-50 hover:text-orange-600
+                               hover:bg-amber-50 hover:text-amber-600
                                transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >
                     <span className="material-symbols-outlined text-[16px]">flag</span>

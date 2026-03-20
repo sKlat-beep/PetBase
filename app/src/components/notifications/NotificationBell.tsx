@@ -20,7 +20,7 @@ export function NotificationBell({ side = 'right' }: Props) {
       >
         <span className="material-symbols-outlined text-[20px]">notifications</span>
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] bg-error rounded-full text-on-error text-[10px] font-bold flex items-center justify-center px-0.5">
+          <span className="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] bg-error rounded-full text-on-error text-xs font-bold flex items-center justify-center px-0.5">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}

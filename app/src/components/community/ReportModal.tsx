@@ -136,7 +136,7 @@ export default function ReportModal({
                 id="report-modal-title"
                 className="text-base font-bold text-on-surface flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[16px] text-orange-500" aria-hidden="true">flag</span>
+                <span className="material-symbols-outlined text-[16px] text-amber-500" aria-hidden="true">flag</span>
                 Report {targetType === 'user' ? 'User' : targetType === 'post' ? 'Post' : targetType === 'comment' ? 'Comment' : 'Content'}
               </h2>
               <button
@@ -192,7 +192,7 @@ export default function ReportModal({
                         className={`w-full text-left px-4 py-2.5 rounded-xl border text-sm transition-colors
                                     focus-visible:ring-2 focus-visible:ring-sky-500 outline-none
                                     ${reason === r
-                                      ? 'border-orange-400 bg-orange-50 text-orange-700 font-medium'
+                                      ? 'border-amber-400 bg-amber-50 text-amber-700 font-medium'
                                       : 'border-outline-variant bg-surface-container-low text-on-surface-variant hover:border-outline'
                                     }`}
                       >
@@ -219,10 +219,10 @@ export default function ReportModal({
                       className="w-full text-sm rounded-xl border border-outline-variant
                                  bg-surface-container-low text-on-surface
                                  placeholder-on-surface-variant px-3 py-2.5 resize-none
-                                 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                 focus:outline-none focus:ring-2 focus:ring-amber-400"
                       disabled={submitting}
                     />
-                    <p className="text-right text-[10px] text-on-surface-variant mt-0.5">{detail.length}/500</p>
+                    <p className="text-right text-xs text-on-surface-variant mt-0.5">{detail.length}/500</p>
                   </div>
 
                   {/* Error */}
@@ -237,9 +237,9 @@ export default function ReportModal({
                     onClick={handleSubmit}
                     disabled={!reason || submitting}
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium
-                               bg-orange-500 text-white hover:bg-orange-600
+                               bg-amber-500 text-white hover:bg-amber-600 active:scale-[0.97]
                                disabled:opacity-40 disabled:cursor-not-allowed
-                               transition-colors focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
+                               transition-all focus-visible:ring-2 focus-visible:ring-sky-500 outline-none"
                   >
                     {submitting && <span className="material-symbols-outlined text-[16px] animate-spin" aria-hidden="true">progress_activity</span>}
                     Submit Report

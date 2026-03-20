@@ -89,7 +89,7 @@ export default function CommunityHub() {
       transition={{ duration: 0.3 }}
     >
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br from-primary-container to-teal-50 border border-primary/20 p-6">
+      <div className="relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br from-primary-container to-emerald-50 border border-primary/20 p-6">
         {/* Paw-pattern background */}
         <div
           className="absolute inset-0 opacity-5"

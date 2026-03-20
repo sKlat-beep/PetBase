@@ -13,6 +13,7 @@ import { findPlaceId, getPlaceDetailsAndContact, getPlaceAtmosphere } from './pl
 import { fetchOgMetadata } from './ogService';
 import { incrementPlacesUsage, checkAndAlertIfOverThreshold, updateFeatureFlags } from './placesUsage';
 import { postSlackBlocks, buildAlertBlock } from './slackService';
+import { createLogger } from './logger';
 
 admin.initializeApp();
 
@@ -335,15 +336,17 @@ async function refreshCache(
     batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
   }
   await batch.commit();
-  console.log(`[refreshCache] Background refresh complete for ${zipCacheId ?? h3CacheId}`);
+  const rcLog = createLogger('refreshCache');
+  rcLog.info(`Background refresh complete for ${zipCacheId ?? h3CacheId}`);
   if (currentCount != null && WARN_THRESHOLD != null && currentCount + 1 > WARN_THRESHOLD) {
-    console.warn(`[refreshCache] Yelp API warning: ${(currentCount ?? 0) + 1}/${HARD_LIMIT} calls today.`);
+    rcLog.warn(`Yelp API warning: ${(currentCount ?? 0) + 1}/${HARD_LIMIT} calls today.`);
   }
 }
 
 export const findServices = onCall(
   { secrets: ['GOOGLE_PLACES_KEY', 'YELP_API_KEY'] },
   async (request) => {
+    const fsLog = createLogger('findServices');
     const uid = request.auth?.uid;
     if (!uid) {
       logSecurityEvent('findServices', 'unauthenticated');
@@ -371,7 +374,7 @@ export const findServices = onCall(
       throw new HttpsError('invalid-argument', 'Invalid longitude (must be between -180 and 180).');
     }
 
-    console.log(`[findServices] invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query ?? ''} uid=${uid}`);
+    fsLog.info(`invoked — type=${type} location=${location} lat=${lat} lng=${lng} query=${query ?? ''} uid=${uid}`);
 
     const HARD_LIMIT = 450;
     const WARN_THRESHOLD = 400;
@@ -380,7 +383,7 @@ export const findServices = onCall(
     const globalUsageRef = db.doc(`apiUsage/yelp_${today}`);
     const globalUsageSnap = await globalUsageRef.get();
     const currentCount = (globalUsageSnap.data()?.count ?? 0) as number;
-    console.log(`[findServices] Yelp daily usage: ${currentCount}/${HARD_LIMIT}`);
+    fsLog.info(`Yelp daily usage: ${currentCount}/${HARD_LIMIT}`);
 
     // ── Resolve coordinates ──────────────────────────────────────────────
     const isZip = /^\d{5}$/.test(location);
@@ -392,13 +395,13 @@ export const findServices = onCall(
         lat = resolved.lat;
         lng = resolved.lng;
         resolvedSource = resolved.source;
-        console.log(`[findServices] Resolved ${location} via ${resolvedSource}`);
+        fsLog.info(`Resolved ${location} via ${resolvedSource}`);
       } else {
-        console.error(`[findServices] Failed to resolve "${location}" via any provider`);
+        fsLog.error(`Failed to resolve "${location}" via any provider`);
         return { results: [], error: { code: 'location-not-found', message: 'Could not find that location. Check your ZIP code.' } };
       }
     }
-    console.log(`[findServices] Resolved coords — lat=${lat} lng=${lng} source=${resolvedSource}`);
+    fsLog.info(`Resolved coords — lat=${lat} lng=${lng} source=${resolvedSource}`);
 
     // H3 index at resolution 7 (~5km)
     const h3Index = latLngToCell(lat, lng, 7);
@@ -426,12 +429,12 @@ export const findServices = onCall(
         if (ageMs < SEVEN_DAYS_MS) {
           const serviceIds: string[] = zipData.serviceIds ?? [];
           const results = await resolveServiceIds(serviceIds);
-          console.log(`[findServices] zipCache hit for ${zipCacheId} (age: ${Math.round(ageMs / 3600000)}h)`);
+          fsLog.info(`zipCache hit for ${zipCacheId} (age: ${Math.round(ageMs / 3600000)}h)`);
           // Stale-while-revalidate: if 2-7 days old, serve stale + refresh in background
           if (ageMs >= TWO_DAYS_MS) {
-            console.log(`[findServices] zipCache stale (${Math.round(ageMs / 86400000)}d) — background refresh`);
+            fsLog.info(`zipCache stale (${Math.round(ageMs / 86400000)}d) — background refresh`);
             // Fire-and-forget background refresh (don't await)
-            refreshCache(db, lat, lng, type, h3Index, zipCacheId, h3CacheId, query, radius, globalUsageRef, currentCount, HARD_LIMIT, WARN_THRESHOLD).catch(e => console.error('[findServices] background refresh failed:', e));
+            refreshCache(db, lat, lng, type, h3Index, zipCacheId, h3CacheId, query, radius, globalUsageRef, currentCount, HARD_LIMIT, WARN_THRESHOLD).catch(e => fsLog.error('background refresh failed', e));
           }
           return { results: mapToServiceResult(results) };
         }
@@ -441,7 +444,7 @@ export const findServices = onCall(
     // 2. Check H3 serviceCache (backward compat / fallback)
     const cacheRef = db.doc(`serviceCache/${h3CacheId}`);
     const cacheSnap = await cacheRef.get();
-    console.log(`[findServices] H3 cache key: ${h3CacheId} — exists: ${cacheSnap.exists}`);
+    fsLog.info(`H3 cache key: ${h3CacheId} — exists: ${cacheSnap.exists}`);
     if (cacheSnap.exists) {
       const cacheData = cacheSnap.data()!;
       const ageMs = Date.now() - ((cacheData.cachedAt as number) ?? 0);
@@ -454,17 +457,17 @@ export const findServices = onCall(
 
     // Hard limit — return empty rather than error
     if (currentCount >= HARD_LIMIT) {
-      console.warn(`Yelp daily limit reached (${currentCount}/${HARD_LIMIT}). Returning empty.`);
+      fsLog.warn(`Yelp daily limit reached (${currentCount}/${HARD_LIMIT}). Returning empty.`);
       return { results: [], error: { code: 'api-unavailable', message: 'Service temporarily unavailable. Try again later.' } };
     }
 
     // ── Fetch from Yelp ───────────────────────────────────────────────────
     const yelpApiKey = process.env.YELP_API_KEY;
     if (!yelpApiKey) throw new HttpsError('failed-precondition', 'Yelp API key not configured.');
-    console.log(`[findServices] Calling Yelp API — category=${type} lat=${lat} lng=${lng}`);
+    fsLog.info(`Calling Yelp API — category=${type} lat=${lat} lng=${lng}`);
     const searchRadius = (radius && Number.isFinite(radius) && radius > 0 && radius <= 40000) ? radius : 8000;
     const businesses = await findServicesYelp(lat, lng, type, yelpApiKey, query, searchRadius);
-    console.log(`[findServices] Yelp returned ${businesses.length} businesses`);
+    fsLog.info(`Yelp returned ${businesses.length} businesses`);
 
     // Persist services and write to both caches
     const serviceIds: string[] = [];
@@ -490,7 +493,7 @@ export const findServices = onCall(
     await batch.commit();
 
     if (currentCount + 1 > WARN_THRESHOLD) {
-      console.warn(`Yelp API warning: ${currentCount + 1}/${HARD_LIMIT} calls today.`);
+      fsLog.warn(`Yelp API warning: ${currentCount + 1}/${HARD_LIMIT} calls today.`);
     }
 
     const allDocs = businesses.map(biz => ({
@@ -508,6 +511,7 @@ export const findServices = onCall(
 export const getPlaceDetails = onCall(
   { secrets: ['GOOGLE_PLACES_KEY', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_CRASH', 'SLACK_WEBHOOK_URL'] },
   async (request) => {
+    const pdLog = createLogger('getPlaceDetails');
     if (!request.auth) {
       logSecurityEvent('getPlaceDetails', 'unauthenticated');
       throw new HttpsError('unauthenticated', 'Login required.');
@@ -581,8 +585,8 @@ export const getPlaceDetails = onCall(
     const smtpPass = process.env.SMTP_PASS;
     const alertEmail = process.env.EMAIL_CRASH; // reuse crash email for admin alerts
     if (smtpUser && smtpPass && alertEmail) {
-      checkAndAlertIfOverThreshold(db, smtpUser, smtpPass, alertEmail).catch(console.error);
-      updateFeatureFlags(db, 0).catch(console.error); // will re-read usage internally
+      checkAndAlertIfOverThreshold(db, smtpUser, smtpPass, alertEmail).catch(e => pdLog.error('threshold check failed', e));
+      updateFeatureFlags(db, 0).catch(e => pdLog.error('feature flag update failed', e)); // will re-read usage internally
     }
 
     // Cache result
@@ -715,6 +719,7 @@ async function searchAndCacheYelp(
   yelpApiKey: string,
   db: admin.firestore.Firestore,
 ): Promise<void> {
+  const sacLog = createLogger('searchAndCacheYelp');
   const h3Index = latLngToCell(lat, lng, 7);
   const cacheId = `${h3Index}_${type}`;
   const cacheRef = db.doc(`serviceCache/${cacheId}`);
@@ -723,12 +728,12 @@ async function searchAndCacheYelp(
   if (cacheSnap.exists) {
     const ageMs = Date.now() - ((cacheSnap.data()!.cachedAt as number) ?? 0);
     if (ageMs < 30 * 24 * 60 * 60 * 1000) {
-      console.log(`[searchAndCacheYelp] Cache hit for ${cacheId}, skipping Yelp call.`);
+      sacLog.info(`Cache hit for ${cacheId}, skipping Yelp call.`);
       return;
     }
   }
 
-  console.log(`[searchAndCacheYelp] Fetching Yelp — lat=${lat} lng=${lng} type=${type}`);
+  sacLog.info(`Fetching Yelp — lat=${lat} lng=${lng} type=${type}`);
   const businesses = await findServicesYelp(lat, lng, type, yelpApiKey);
 
   const serviceIds: string[] = [];
@@ -747,7 +752,7 @@ async function searchAndCacheYelp(
   batch.set(globalUsageRef, { count: admin.firestore.FieldValue.increment(1) }, { merge: true });
 
   await batch.commit();
-  console.log(`[searchAndCacheYelp] Cached ${businesses.length} businesses for ${cacheId}.`);
+  sacLog.info(`Cached ${businesses.length} businesses for ${cacheId}.`);
 }
 
 // ─── Nightly Yelp Cache Warming ───────────────────────────────────────────────
@@ -765,21 +770,22 @@ async function searchAndCacheYelp(
 export const warmYelpCache = onSchedule(
   { schedule: '0 2 * * *', secrets: ['YELP_API_KEY'] },
   async () => {
+    const wycLog = createLogger('warmYelpCache');
     const db = admin.firestore();
 
     const targetsSnap = await db.collection('serviceCache').doc('warmingTargets').get();
     if (!targetsSnap.exists) {
-      console.log('[warmYelpCache] No warmingTargets document found — nothing to do.');
+      wycLog.info('No warmingTargets document found — nothing to do.');
       return;
     }
 
     const targets = (targetsSnap.data()?.targets ?? []) as Array<{ lat: number; lng: number; type: string }>;
     const slice = targets.slice(0, 10); // cap at 10 to control API costs
-    console.log(`[warmYelpCache] Starting cache warming for ${slice.length} target(s).`);
+    wycLog.info(`Starting cache warming for ${slice.length} target(s).`);
 
     const yelpApiKey = process.env.YELP_API_KEY;
     if (!yelpApiKey) {
-      console.error('[warmYelpCache] YELP_API_KEY not configured — aborting.');
+      wycLog.error('YELP_API_KEY not configured — aborting.');
       return;
     }
 
@@ -790,7 +796,7 @@ export const warmYelpCache = onSchedule(
     const currentCount = (globalUsageSnap.data()?.count ?? 0) as number;
     const HARD_LIMIT = 450;
     if (currentCount >= HARD_LIMIT) {
-      console.warn(`[warmYelpCache] Daily Yelp limit already reached (${currentCount}/${HARD_LIMIT}). Aborting.`);
+      wycLog.warn(`Daily Yelp limit already reached (${currentCount}/${HARD_LIMIT}). Aborting.`);
       return;
     }
 
@@ -801,12 +807,12 @@ export const warmYelpCache = onSchedule(
         await searchAndCacheYelp(target.lat, target.lng, target.type, yelpApiKey, db);
         warmed++;
       } catch (err) {
-        console.error(`[warmYelpCache] Failed for target lat=${target.lat} lng=${target.lng} type=${target.type}:`, err);
+        wycLog.error(`Failed for target lat=${target.lat} lng=${target.lng} type=${target.type}`, err);
         skipped++;
       }
     }
 
-    console.log(`[warmYelpCache] Done. warmed=${warmed} skipped=${skipped}`);
+    wycLog.info(`Done. warmed=${warmed} skipped=${skipped}`);
   },
 );
 
@@ -895,6 +901,7 @@ export const exportUserData = onCall(async (request) => {
 //   }
 
 export const checkVaccineReminders = onSchedule('every day 09:00', async () => {
+  const cvrLog = createLogger('checkVaccineReminders');
   const db = admin.firestore();
 
   // Compute target dates: today + 7 days and today + 1 day (UTC, YYYY-MM-DD)
@@ -905,11 +912,11 @@ export const checkVaccineReminders = onSchedule('every day 09:00', async () => {
   const in7Days = toDateString(now + 7 * msPerDay);
   const targetDays: Record<string, number> = { [in1Day]: 1, [in7Days]: 7 };
 
-  console.log(`[checkVaccineReminders] Checking due dates for ${in1Day} (1 day) and ${in7Days} (7 days).`);
+  cvrLog.info(`Checking due dates for ${in1Day} (1 day) and ${in7Days} (7 days).`);
 
   const petsSnap = await db.collection('pets').get();
   if (petsSnap.empty) {
-    console.log('[checkVaccineReminders] No pets found — nothing to do.');
+    cvrLog.info('No pets found — nothing to do.');
     return;
   }
 
@@ -935,12 +942,12 @@ export const checkVaccineReminders = onSchedule('every day 09:00', async () => {
         await sendVaccineReminder(uid, petName, item.name ?? 'health item', daysUntilDue);
         reminderCount++;
       } catch (err) {
-        console.error(`[checkVaccineReminders] Failed to send reminder for pet=${petDoc.id} uid=${uid}:`, err);
+        cvrLog.error(`Failed to send reminder for pet=${petDoc.id} uid=${uid}`, err);
       }
     }));
   }));
 
-  console.log(`[checkVaccineReminders] Done. Sent ${reminderCount} reminder(s).`);
+  cvrLog.info(`Done. Sent ${reminderCount} reminder(s).`);
 });
 
 // ─── Link Preview ────────────────────────────────────────────────────────────

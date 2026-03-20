@@ -70,12 +70,12 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 id="service-detail-modal-title" className="text-base font-semibold text-on-surface truncate">{service.name}</h2>
                 {service.isPetBaseVerified && (
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-on-primary-container bg-primary-container px-1.5 py-0.5 rounded-full shrink-0">
+                  <span className="flex items-center gap-1 text-xs font-semibold text-on-primary-container bg-primary-container px-1.5 py-0.5 rounded-full shrink-0">
                     <span className="material-symbols-outlined text-[12px]">verified_user</span> Verified
                   </span>
                 )}
                 {service.isSponsored && (
-                  <span className="text-[10px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full shrink-0">Sponsored</span>
+                  <span className="text-xs font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full shrink-0">Sponsored</span>
                 )}
               </div>
               <div className="flex items-center gap-2 mt-1">
@@ -139,7 +139,7 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
               )}
               {placeDetails?.website && (
                 <a href={placeDetails.website} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                  className="flex items-center gap-2 text-sm text-sky-600 hover:underline">
                   <span className="material-symbols-outlined text-[16px]">language</span>
                   <span className="truncate">{new URL(placeDetails.website).hostname}</span>
                 </a>
@@ -154,7 +154,7 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
               <div className="px-5 py-3 border-b border-outline-variant">
                 <div className="flex flex-wrap gap-1.5">
                   {service.specialties.map(s => (
-                    <span key={s} className="text-[10px] font-medium px-2 py-1 rounded-full bg-surface-container text-on-surface-variant">{s}</span>
+                    <span key={s} className="text-xs font-medium px-2 py-1 rounded-full bg-surface-container text-on-surface-variant">{s}</span>
                   ))}
                 </div>
               </div>
@@ -170,13 +170,13 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
               )}
               {placeDetails?.googleMapsUri ? (
                 <a href={placeDetails.googleMapsUri} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors">
                   <span className="material-symbols-outlined text-[14px]">open_in_new</span> Google Maps
                 </a>
               ) : (
                 <a href={`https://www.google.com/search?q=${encodeURIComponent(service.name + ' ' + service.address)}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors">
                   <span className="material-symbols-outlined text-[14px]">open_in_new</span> Google
                 </a>
               )}
@@ -206,10 +206,10 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
                           <span className="text-xs font-medium text-on-surface-variant">{review.authorName}</span>
                           <span className="flex items-center gap-0.5 text-amber-500">
                             {Array.from({ length: review.rating }).map((_, j) => (
-                              <span key={j} className="material-symbols-outlined text-[10px] fill-1">star</span>
+                              <span key={j} className="material-symbols-outlined text-xs fill-1">star</span>
                             ))}
                           </span>
-                          <span className="text-[10px] text-on-surface-variant ml-auto">{review.relativePublishTimeDescription}</span>
+                          <span className="text-xs text-on-surface-variant ml-auto">{review.relativePublishTimeDescription}</span>
                         </div>
                         <p className="text-xs text-on-surface-variant line-clamp-3">{review.text}</p>
                       </div>
@@ -263,13 +263,13 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
                               <button
                                 onClick={() => onUpvoteTip(idx)}
                                 disabled={(tip.upvoters ?? []).includes(user?.uid ?? '')}
-                                className="flex items-center gap-0.5 text-[10px] text-on-surface-variant hover:text-primary disabled:opacity-40 disabled:cursor-default transition-colors"
+                                className="flex items-center gap-0.5 text-xs text-on-surface-variant hover:text-primary disabled:opacity-40 disabled:cursor-default transition-colors"
                                 aria-label="Upvote tip"
                               >
                                 &#9650; {tip.upvotes ?? 0}
                               </button>
                             )}
-                            <span className="text-[10px] text-on-surface-variant">{new Date(tip.date).toLocaleDateString()}</span>
+                            <span className="text-xs text-on-surface-variant">{new Date(tip.date).toLocaleDateString()}</span>
                           </div>
                         </div>
                       </div>
@@ -301,7 +301,7 @@ export function ServiceDetailModal({ service, onClose, cachedDetails, localTips 
                           &#9733;
                         </button>
                       ))}
-                      <span className="text-[10px] text-on-surface-variant ml-1">
+                      <span className="text-xs text-on-surface-variant ml-1">
                         {tipRating ? `${tipRating}/5` : 'Rate (optional)'}
                       </span>
                     </div>

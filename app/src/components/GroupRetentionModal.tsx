@@ -102,7 +102,7 @@ export function GroupRetentionModal({ currentDays, onSave, onClose }: GroupReten
 
           <button
             onClick={handleSave}
-            className="w-full py-3.5 bg-primary hover:bg-primary/90 text-on-primary font-semibold rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
+            className="w-full py-3.5 bg-primary hover:bg-primary/90 active:scale-[0.97] text-on-primary font-semibold rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[44px]"
           >
             Save Settings
           </button>

@@ -18,6 +18,34 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Server-side household permission check (TASK-108).
+    // Verifies requesting user is in the same household as ownerUid
+    // AND has the specified permission enabled in their member doc.
+    // Defaults to true (allowed) for legacy members without permissions field.
+    // Uses 3 get() calls when household member path is evaluated.
+    function inSameHouseholdWithPermission(ownerUid, permission) {
+      let rDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)/profile/data);
+      let oDoc = get(/databases/$(database)/documents/users/$(ownerUid)/profile/data);
+      let rHH = rDoc.data.get('householdId', null);
+      let oHH = oDoc.data.get('householdId', null);
+      return rHH != null && rHH == oHH &&
+        get(/databases/$(database)/documents/households/$(rHH)/members/$(request.auth.uid))
+          .data.get('permissions', {}).get(permission, true) == true;
+    }
+
+    // Server-side parental control check (TASK-109).
+    // Returns true (allowed) when user has no household, no member doc,
+    // or the specified control is false/absent. Returns false when control is true.
+    // Uses 1-3 get()/exists() calls via short-circuit evaluation.
+    function parentalControlAllows(control) {
+      let hhId = get(/databases/$(database)/documents/users/$(request.auth.uid)/profile/data)
+        .data.get('householdId', null);
+      return hhId == null ||
+        !exists(/databases/$(database)/documents/households/$(hhId)/members/$(request.auth.uid)) ||
+        get(/databases/$(database)/documents/households/$(hhId)/members/$(request.auth.uid))
+          .data.get('parentalControls', {}).get(control, false) == false;
+    }
+
     // ─── Users ────────────────────────────────────────────────────────────────
 
     // General catch-all: full access to own subtree (profile, config, etc.)
@@ -30,20 +58,24 @@ service cloud.firestore {
     // DESIGN DECISION (2026-03-17 audit): breed/weight/species metadata is intentionally
     // readable by any auth'd user. PII fields (notes) are AES-256-GCM encrypted client-side.
     // See contracts/privacy-contract.md for full rationale.
-    // Writes restricted to owner or household co-manager.
+    // Writes restricted to owner or household co-manager with editPetInfo permission.
     match /users/{userId}/pets/{petId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && (
         request.auth.uid == userId ||
-        inSameHousehold(userId)
+        inSameHouseholdWithPermission(userId, 'editPetInfo')
       );
     }
 
     // Public profile lookup — used by SocialContext directory & People page.
     // Anyone authenticated can read another user's profile/data document.
-    // Write is restricted to the owner by the catch-all above.
+    // Write: owner only. If parental control forcePrivateProfile is set,
+    // isPrivate must remain true (TASK-109).
     match /users/{userId}/profile/data {
       allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == userId &&
+        (parentalControlAllows('forcePrivateProfile') ||
+         request.resource.data.get('isPrivate', true) == true);
     }
 
     // CollectionGroup rule required for collectionGroup('profile') queries in searchPublicProfiles.
@@ -73,8 +105,16 @@ service cloud.firestore {
 
       match /members/{userId} {
         allow read: if isSignedIn();
-        // Users can write their own membership (join/leave), or Owner can manage any member
-        allow write: if isSignedIn() && (
+        // Join: user creates own doc, parental control disableCommunityAccess checked (TASK-109)
+        allow create: if isSignedIn() && request.auth.uid == userId &&
+          parentalControlAllows('disableCommunityAccess');
+        // Leave: user deletes own doc; Owner can remove any member
+        allow delete: if isSignedIn() && (
+          request.auth.uid == userId ||
+          get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role == 'Owner'
+        );
+        // Owner can update member roles
+        allow update: if isSignedIn() && (
           request.auth.uid == userId ||
           get(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)).data.role == 'Owner'
         );

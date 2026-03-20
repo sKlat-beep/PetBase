@@ -293,13 +293,13 @@ export default function MentionInput({
                   ? 'bg-surface-container-highest'
                   : 'hover:bg-surface-container-high'}`}
             >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${avatarColor(member.role)}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${avatarColor(member.role)}`}>
                 {(member.displayName[0] ?? '?').toUpperCase()}
               </div>
               <span className="flex-1 text-sm text-on-surface truncate">
                 {member.displayName}
               </span>
-              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${roleColor(member.role)}`}>
+              <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${roleColor(member.role)}`}>
                 {member.role}
               </span>
             </button>

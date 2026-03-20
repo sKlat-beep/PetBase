@@ -76,7 +76,7 @@ function CommentRow({
       {/* Avatar */}
       <button
         onClick={() => onViewProfile(comment.authorId)}
-        className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-sky-700 hover:ring-2 hover:ring-sky-400 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
+        className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 text-xs font-medium text-sky-700 hover:ring-2 hover:ring-sky-400 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 mt-0.5"
         aria-label={`View ${comment.authorName}'s profile`}
       >
         {authorInitials(comment.authorName)}
@@ -88,15 +88,15 @@ function CommentRow({
           <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
             <button
               onClick={() => onViewProfile(comment.authorId)}
-              className="text-[11px] font-semibold text-on-surface hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+              className="text-xs font-semibold text-on-surface hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
             >
               {comment.authorName}
             </button>
-            <span className="text-[10px] text-on-surface-variant">
+            <span className="text-xs text-on-surface-variant">
               {relativeTime(comment.createdAt)}
             </span>
             {comment.isFlagged && isModerator && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
+              <span className="inline-flex items-center gap-0.5 text-xs font-medium px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
                 ⚠️ Under review
               </span>
             )}
@@ -117,7 +117,7 @@ function CommentRow({
               <button
                 key={key}
                 onClick={() => onReact(comment.id, key)}
-                className={`flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500
+                className={`flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500
                   ${isActive
                     ? 'bg-primary-container text-on-primary-container'
                     : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
@@ -136,7 +136,7 @@ function CommentRow({
           {!isReply && (
             <button
               onClick={() => onReply(comment.id)}
-              className="text-[10px] text-on-surface-variant hover:text-primary transition-colors font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
+              className="text-xs text-on-surface-variant hover:text-primary transition-colors font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded"
             >
               Reply
             </button>
@@ -146,7 +146,7 @@ function CommentRow({
           {canDelete && (
             <button
               onClick={() => onDelete(comment.id, comment.authorId)}
-              className="text-[10px] text-on-surface-variant hover:text-error transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
+              className="text-xs text-on-surface-variant hover:text-error transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded ml-auto"
               aria-label="Delete comment"
               title="Delete comment"
             >
@@ -158,7 +158,7 @@ function CommentRow({
           {!isOwnComment && (
             <button
               onClick={() => onReport(comment.id)}
-              className="text-[10px] text-on-surface-variant hover:text-orange-500 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded flex items-center gap-0.5"
+              className="text-xs text-on-surface-variant hover:text-amber-500 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded flex items-center gap-0.5"
               aria-label="Report comment"
               title="Report comment"
             >

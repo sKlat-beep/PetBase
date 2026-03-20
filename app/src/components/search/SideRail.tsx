@@ -57,12 +57,12 @@ export function SideRail({ recentTips, websiteResults }: SideRailProps) {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-semibold text-on-surface">{tip.author}</span>
-                      <span className="text-[10px] text-on-surface-variant">{timeAgo(tip.date)}</span>
+                      <span className="text-xs text-on-surface-variant">{timeAgo(tip.date)}</span>
                     </div>
                     {tip.rating && tip.rating > 0 && (
                       <div className="flex gap-0.5 mb-1">
                         {[1, 2, 3, 4, 5].map(s => (
-                          <span key={s} className={`text-[10px] ${s <= tip.rating! ? 'text-secondary' : 'text-outline-variant'}`}>
+                          <span key={s} className={`text-xs ${s <= tip.rating! ? 'text-secondary' : 'text-outline-variant'}`}>
                             &#9733;
                           </span>
                         ))}

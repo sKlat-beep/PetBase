@@ -21,7 +21,7 @@ export function RightPanel() {
       {/* Footer: System status */}
       <div className="px-5 py-3 border-t border-outline-variant/20 flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-        <span className="text-[11px] text-on-surface-variant">System online</span>
+        <span className="text-xs text-on-surface-variant">System online</span>
       </div>
     </aside>
   );

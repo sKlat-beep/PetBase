@@ -89,7 +89,7 @@ export function PeoplePanel() {
               return (
                 <div key={req.id} className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                    <span className="text-[10px] font-bold text-amber-700 uppercase">
+                    <span className="text-xs font-bold text-amber-700 uppercase">
                       {initial}
                     </span>
                   </div>
@@ -144,7 +144,7 @@ export function PeoplePanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-on-surface-variant uppercase">
+                      <span className="text-xs font-bold text-on-surface-variant uppercase">
                         {initial}
                       </span>
                     )}
@@ -165,7 +165,7 @@ export function PeoplePanel() {
             {allFriends.length > 0 && (
               <button
                 onClick={() => setShowFriendModal(true)}
-                className="text-[10px] font-semibold text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded pt-0.5"
+                className="text-xs font-semibold text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded pt-0.5"
               >
                 View all {allFriends.length} friend{allFriends.length !== 1 ? 's' : ''} →
               </button>
@@ -197,7 +197,7 @@ export function PeoplePanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-on-surface-variant uppercase">
+                      <span className="text-xs font-bold text-on-surface-variant uppercase">
                         {initial}
                       </span>
                     )}
@@ -208,7 +208,7 @@ export function PeoplePanel() {
                   <button
                     onClick={() => sendFriendRequest(person.uid)}
                     aria-label={`Add ${person.displayName}`}
-                    className="text-[10px] font-semibold px-2 py-1 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="text-xs font-semibold px-2 py-1 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   >
                     Add
                   </button>

@@ -114,7 +114,7 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
             </button>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-on-surface truncate">{t.title}</p>
-              <p className="text-[10px] text-on-surface-variant">
+              <p className="text-xs text-on-surface-variant">
                 {t.assignedName}{t.dueDate ? ` · Due ${new Date(t.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}
               </p>
             </div>
@@ -127,7 +127,7 @@ export function PetCareTaskList({ householdId, members, currentUid }: Props) {
 
       {completedTasks.length > 0 && (
         <div className="space-y-1 pt-2 border-t border-outline-variant">
-          <p className="text-[10px] text-on-surface-variant uppercase tracking-wide">Completed</p>
+          <p className="text-xs text-on-surface-variant uppercase tracking-wide">Completed</p>
           {completedTasks.map(t => (
             <div key={t.id} className="flex items-center gap-2 p-1.5 opacity-60">
               <button onClick={() => toggleTask(t.id)} className="shrink-0 text-primary">

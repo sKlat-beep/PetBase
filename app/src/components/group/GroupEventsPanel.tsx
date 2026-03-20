@@ -115,7 +115,7 @@ export function GroupEventsPanel({
                 <button
                   type="submit"
                   disabled={!eventForm.title.trim() || !eventForm.date || eventSubmitting}
-                  className="w-full bg-primary hover:bg-primary/90 disabled:bg-on-surface/12 text-on-primary text-sm font-medium py-2 rounded-lg transition-colors"
+                  className="w-full bg-primary hover:bg-primary/90 active:scale-[0.97] disabled:bg-on-surface/12 text-on-primary text-sm font-medium py-2 rounded-lg transition-all"
                 >
                   {eventSubmitting ? 'Creating...' : 'Create Event'}
                 </button>
@@ -175,7 +175,7 @@ export function GroupEventsPanel({
                             ))}
                             {event.attendeeIds.length > 5 && (
                               <span
-                                className="w-6 h-6 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center text-[9px] font-semibold text-on-surface-variant"
+                                className="w-6 h-6 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center text-xs font-semibold text-on-surface-variant"
                                 style={{ zIndex: 0 }}
                               >
                                 +{event.attendeeIds.length - 5}

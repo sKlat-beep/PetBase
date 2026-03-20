@@ -4,16 +4,24 @@ import { getPlaceDetails, getPlaceReviews, type PlaceDetails, type PlaceAtmosphe
 import { useAuth } from '../../contexts/AuthContext';
 import { ClaimModal } from './ClaimModal';
 
+type Tip = { text: string; author: string; date: string; upvotes?: number; upvoters?: string[]; rating?: number };
+
 interface ServiceDetailModalProps {
   service: ServiceResult;
   onClose: () => void;
   /** Pre-fetched place details from the search page cache, if available. */
   cachedDetails?: PlaceDetails;
+  /** Community tips for this service */
+  localTips?: Tip[];
+  onAddTip?: (text: string, rating: number) => void;
+  onUpvoteTip?: (tipIdx: number) => void;
 }
 
-export function ServiceDetailModal({ service, onClose, cachedDetails }: ServiceDetailModalProps) {
-  const { profile, updateProfile } = useAuth();
+export function ServiceDetailModal({ service, onClose, cachedDetails, localTips = [], onAddTip, onUpvoteTip }: ServiceDetailModalProps) {
+  const { user, profile, updateProfile } = useAuth();
   const [showClaim, setShowClaim] = useState(false);
+  const [tipInput, setTipInput] = useState('');
+  const [tipRating, setTipRating] = useState(0);
   const [placeDetails, setPlaceDetails] = useState<PlaceDetails | null>(cachedDetails ?? null);
   const [placeDetailsLoading, setPlaceDetailsLoading] = useState(cachedDetails == null);
   const [atmosphere, setAtmosphere] = useState<PlaceAtmosphere | null>(null);
@@ -223,6 +231,99 @@ export function ServiceDetailModal({ service, onClose, cachedDetails }: ServiceD
                     {platform}
                   </a>
                 ))}
+              </div>
+            )}
+
+            {/* Community Tips */}
+            {(localTips.length > 0 || onAddTip) && (
+              <div className="px-5 py-3 border-b border-outline-variant">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className="material-symbols-outlined text-[16px] text-primary">chat</span>
+                  <span className="text-xs font-bold text-on-surface uppercase tracking-wider">Community Tips</span>
+                </div>
+
+                {localTips.length > 0 && (
+                  <div className="space-y-2 mb-3">
+                    {localTips.map((tip, idx) => (
+                      <div key={idx} className="bg-surface-container rounded-lg p-3">
+                        {tip.rating && tip.rating > 0 && (
+                          <div className="flex gap-0.5 mb-1">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <span key={s} className={`text-xs ${s <= tip.rating! ? 'text-secondary' : 'text-outline-variant'}`}>
+                                &#9733;
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <p className="text-sm text-on-surface-variant italic">&ldquo;{tip.text}&rdquo;</p>
+                        <div className="flex justify-between items-center mt-1.5">
+                          <span className="text-xs font-medium text-on-surface-variant">&mdash; {tip.author}</span>
+                          <div className="flex items-center gap-2">
+                            {onUpvoteTip && (
+                              <button
+                                onClick={() => onUpvoteTip(idx)}
+                                disabled={(tip.upvoters ?? []).includes(user?.uid ?? '')}
+                                className="flex items-center gap-0.5 text-[10px] text-on-surface-variant hover:text-primary disabled:opacity-40 disabled:cursor-default transition-colors"
+                                aria-label="Upvote tip"
+                              >
+                                &#9650; {tip.upvotes ?? 0}
+                              </button>
+                            )}
+                            <span className="text-[10px] text-on-surface-variant">{new Date(tip.date).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {onAddTip && (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const t = tipInput.trim();
+                      if (t) {
+                        onAddTip(t, tipRating);
+                        setTipInput('');
+                        setTipRating(0);
+                      }
+                    }}
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map(s => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setTipRating(prev => prev === s ? 0 : s)}
+                          className={`text-sm ${s <= tipRating ? 'text-secondary' : 'text-outline-variant'} hover:text-secondary transition-colors`}
+                        >
+                          &#9733;
+                        </button>
+                      ))}
+                      <span className="text-[10px] text-on-surface-variant ml-1">
+                        {tipRating ? `${tipRating}/5` : 'Rate (optional)'}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        maxLength={200}
+                        value={tipInput}
+                        onChange={(e) => setTipInput(e.target.value)}
+                        placeholder="Share a review or tip..."
+                        className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!tipInput.trim()}
+                        className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-on-primary text-sm font-medium rounded-lg transition-colors"
+                      >
+                        Post
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             )}
 

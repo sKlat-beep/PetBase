@@ -15,6 +15,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { doc, getDoc } from 'firebase/firestore';
 import { get, set } from 'idb-keyval';
 import { app, db } from '../lib/firebase';
+import { buildPetQuery, matchResultTags, isPetRelevant } from './tagMatcher';
 
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 min (reduced for faster shared cache refresh)
 const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
@@ -56,6 +57,8 @@ export interface ServiceResult {
   specialties?: string[];
   socialLinks?: Record<string, string>;
   status?: 'seeded' | 'claimed' | 'verified';
+  /** Pet tags matched from the PetBase taxonomy (populated client-side) */
+  matchedPetTags?: string[];
 }
 
 export interface SearchFilters {
@@ -67,6 +70,8 @@ export interface SearchFilters {
   petSizesQuery?: string[];  // e.g., ['Large']
   serviceFilters?: string[];
   radius?: number;
+  /** Selected pet category IDs from the tag taxonomy, e.g. ['dog', 'cat'] */
+  selectedPetCategories?: string[];
 }
 
 let _functions: ReturnType<typeof getFunctions> | null = null;
@@ -126,8 +131,14 @@ async function readZipCacheFromFirestore(zip: string, type: string): Promise<{ r
 export async function searchServices(filters: SearchFilters): Promise<SearchResponse> {
   if (!filters.location) return { results: [] };
 
+  // Augment query with pet-specific terms when categories are selected
+  const augmentedQuery = filters.selectedPetCategories?.length
+    ? buildPetQuery(filters.query, filters.type, filters.selectedPetCategories)
+    : filters.query;
+  const effectiveFilters = { ...filters, query: augmentedQuery };
+
   // Cache key uses raw ZIP code (no H3 conversion needed)
-  const cacheKey = `petbase_services_${filters.location}_${filters.type}_${filters.query}`;
+  const cacheKey = `petbase_services_${filters.location}_${filters.type}_${augmentedQuery}`;
 
   // 1. Check IndexedDB cache (30 min TTL)
   const cached = await get<CachedResult>(cacheKey);
@@ -144,14 +155,38 @@ export async function searchServices(filters: SearchFilters): Promise<SearchResp
       await set(cacheKey, { data: firestoreResult.results, expiresAt: Date.now() + CACHE_TTL_MS });
       // If stale (2-7 days), fire Cloud Function in background to refresh
       if (firestoreResult.stale) {
-        callFindServices(filters).catch(() => {});
+        callFindServices(effectiveFilters).catch(() => {});
       }
-      return { results: firestoreResult.results };
+      return postProcessResults(firestoreResult.results, filters);
     }
   }
 
   // 3. Fall through to Cloud Function (last resort)
-  return callFindServices(filters);
+  const response = await callFindServices(effectiveFilters);
+  return postProcessResults(response.results, filters, response.error);
+}
+
+/** Annotate results with matched pet tags and filter non-pet results for Stores */
+function postProcessResults(
+  results: ServiceResult[],
+  filters: SearchFilters,
+  error?: SearchResponse['error'],
+): SearchResponse {
+  const categories = filters.selectedPetCategories ?? [];
+
+  let processed = results.map(r => ({
+    ...r,
+    matchedPetTags: matchResultTags(r, categories),
+  }));
+
+  // For Stores tab, filter out non-pet-relevant results
+  if (filters.type === 'Stores') {
+    const filtered = processed.filter(r => isPetRelevant(r));
+    // Only apply filter if it doesn't eliminate all results
+    if (filtered.length > 0) processed = filtered;
+  }
+
+  return { results: processed, error };
 }
 
 /** Call the findServices Cloud Function directly. */

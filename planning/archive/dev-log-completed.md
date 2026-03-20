@@ -87,3 +87,15 @@ Regenerated functions lock file for ts-node dependency. (commit f6530d5)
 
 ## [2026-03-19] Search page overhaul — COMPLETE
 Stitch design integration, pet tags taxonomy, 3-column layout with ServiceGrid + SideRail. (commit 574037a)
+
+## [2026-03-19] Mega-Phase 0 Triage — COMPLETE
+Verified 75 tasks with code-level proof. Closed 66 confirmed-done tasks. Cleaned TODO.md from 134→73.
+
+## [2026-03-19] Phases 23-29 — COMPLETE (commit 0d486a1)
+Structured logger rollout (4 files, ~30 calls). Server-side Firestore rules for editPetInfo + parental controls. TypeScript strict mode enabled. Design system: color normalization, sub-12px text, modal a11y, z-index, active states, blur fix, CSS tokens. Cursor pagination on group feed.
+
+## [2026-03-19] Phases 31-34 + Tooling — COMPLETE (commit 75882a7)
+Verified 24 already-implemented tasks (pet enhancements, onboarding, strategic features, tooling). New: checkEventReminders CF, PDF export via jspdf.
+
+## [2026-03-19] Phase 32 Service Discovery — COMPLETE (commit a12beb3)
+Breed Intelligence Dictionary (30+ breeds). 5-layer Pet-Aware Orchestrator. SearchHistory. VerificationModal. Global search Cmd+K.

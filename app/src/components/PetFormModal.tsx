@@ -141,12 +141,12 @@ function UnitInput<U extends string>({
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder={placeholder ?? '0'}
-        className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+        className="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-outline bg-surface-container-highest text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
       />
       <select
         value={unit}
         onChange={(e) => onUnitChange(e.target.value as U)}
-        className="px-3 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+        className="px-3 py-2.5 rounded-xl border border-outline bg-surface-container-highest text-on-surface focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
       >
         {units.map(u => <option key={u} value={u}>{u}</option>)}
       </select>
@@ -191,7 +191,7 @@ function calcAgeFromBirthday(birthday: string): string {
   return m > 0 ? `${y} yr ${m} mo` : `${y} year${y !== 1 ? 's' : ''}`;
 }
 
-const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors';
+const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-outline bg-surface-container-highest text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleLost, onSwitchPet }: PetFormModalProps) {
@@ -218,7 +218,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
   const [weightUnit, setWeightUnit] = useState<'lbs' | 'kg'>('lbs');
   const [image, setImage] = useState('');
   const [avatarShape, setAvatarShape] = useState<'circle' | 'square' | 'squircle' | 'hexagon'>('circle');
-  const [backgroundColor, setBackgroundColor] = useState('#fbbf24');
   const [isPrivate, setIsPrivate] = useState(false);
 
   // Cropper State
@@ -256,8 +255,21 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
   const [publicFields, setPublicFields] = useState<string[]>([]);
   const [nameError, setNameError] = useState(false);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
+  const birthdayPickerRef = useRef<HTMLDivElement>(null);
 
   const mark = () => setIsDirty(true);
+
+  // Collapse birthday picker on outside click
+  useEffect(() => {
+    if (!showBirthdayPicker) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (birthdayPickerRef.current && !birthdayPickerRef.current.contains(e.target as Node)) {
+        setTimeout(() => setShowBirthdayPicker(false), 100);
+      }
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [showBirthdayPicker]);
 
   // Populate state when modal opens / pet changes
   useEffect(() => {
@@ -276,7 +288,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
     setBirthday(pet?.birthday ?? '');
     setImage(pet?.image ?? '');
     setAvatarShape(pet?.avatarShape ?? 'circle');
-    setBackgroundColor(pet?.backgroundColor ?? '#fbbf24');
     setIsPrivate(pet?.isPrivate ?? false);
     // Weight: prefer weightUnit from pet, else parse from weight string
     const [wNum, wUnit] = pet?.weightUnit
@@ -364,7 +375,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
       image: finalImage,
       avatarShape,
       pageLayout: 'solid-color',
-      backgroundColor,
       isPrivate,
       likes: finalLikes,
       dislikes: finalDislikes,
@@ -585,7 +595,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
 
             {/* Tabs — Desktop (numbered steps) */}
             <div className="hidden sm:flex border-b border-outline-variant px-6 shrink-0">
-              {TAB_ORDER.map((tab, i) => (
+              {TAB_ORDER.map((tab) => (
                 <button
                   key={tab}
                   type="button"
@@ -595,9 +605,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                     : 'border-transparent text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]'
                     }`}
                 >
-                  <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
-                    {i + 1}
-                  </span>
                   <span className="material-symbols-outlined text-[18px]">{TAB_ICONS[tab]}</span>
                   {TAB_LABELS[tab]}
                 </button>
@@ -700,7 +707,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                         className={inputClass}
                       />
                     </div>
-                    <div>
+                    <div ref={birthdayPickerRef}>
                       <label className="block text-sm font-medium text-on-surface-variant mb-1.5">
                         Birthday
                       </label>
@@ -755,8 +762,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                         <div className="flex flex-col items-center justify-center shrink-0">
                           <div className="story-ring p-[3px] rounded-full">
                             <div
-                              className="relative group w-28 h-28 rounded-full overflow-hidden"
-                              style={{ backgroundColor }}
+                              className="relative group w-28 h-28 rounded-full overflow-hidden bg-surface-container-highest"
                             >
                               <div className={`w-full h-full overflow-hidden ${avatarShape === 'circle' ? 'rounded-full' : avatarShape === 'square' ? 'rounded-xl' : avatarShape === 'squircle' ? 'rounded-[2rem]' : 'rounded-full'}`}>
                                 {image ? (
@@ -783,24 +789,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
 
                         <div className="flex-1 space-y-4">
                           <div>
-                            <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Background Color</label>
-                            <div className="flex flex-wrap gap-2">
-                              {['#f87171', '#fb923c', '#fbbf24', '#facc15', '#a3e635',
-                                '#4ade80', '#34d399', '#2dd4bf', '#22d3ee', '#38bdf8',
-                                '#60a5fa', '#818cf8', '#a78bfa', '#c084fc', '#e879f9',
-                                '#f472b6', '#fb7185', '#94a3b8', '#a8a29e', '#1c1917'].map(color => (
-                                  <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() => { setBackgroundColor(color); mark(); }}
-                                    className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${backgroundColor === color ? 'border-on-surface shadow-sm ring-2 ring-primary scale-110' : 'border-transparent shadow-sm'}`}
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                            </div>
-                          </div>
-
-                          <div className="pt-2 border-t border-outline-variant">
                             <label className="flex items-center justify-between cursor-pointer">
                               <div>
                                 <span className="text-sm font-bold text-on-surface">Private Profile</span>
@@ -1171,10 +1159,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                     <div className="pt-2">
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="block text-sm font-medium text-on-surface-variant">
-                          Diet or Medical Notes{' '}
-                          <span className="text-xs font-normal bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full ml-1">
-                            Encrypted
-                          </span>
+                          Diet or Medical Notes
                         </label>
                         <span className={`text-xs tabular-nums ${getNotesCounterColor(notes.length)}`}>
                           {notes.length.toLocaleString()} / {NOTES_MAX.toLocaleString()}
@@ -1190,9 +1175,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                       {notes.length >= NOTES_MAX && (
                         <p className="text-xs text-error mt-1">Character limit reached.</p>
                       )}
-                      <p className="text-xs text-on-surface-variant mt-1">
-                        Health and medical context. Encrypted client-side before storage.
-                      </p>
                     </div>
 
                   </motion.div>

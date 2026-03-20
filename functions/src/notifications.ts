@@ -34,7 +34,7 @@ export const onNotificationCreated = onDocumentCreated(
     const profile = profileSnap.data();
 
     if (!profile) {
-      console.warn(`onNotificationCreated: no profile found for uid=${uid}`);
+      log.warn(`no profile found for uid=${uid}`);
       return;
     }
 
@@ -44,7 +44,7 @@ export const onNotificationCreated = onDocumentCreated(
       const smtpPass = process.env.SMTP_PASS;
 
       if (!smtpUser || !smtpPass) {
-        console.warn('onNotificationCreated: SMTP_USER or SMTP_PASS not set — skipping email');
+        log.warn('SMTP_USER or SMTP_PASS not set — skipping email');
       } else {
         try {
           const userRecord = await admin.auth().getUser(uid);
@@ -76,7 +76,7 @@ export const onNotificationCreated = onDocumentCreated(
               text: body,
             });
 
-            console.log(`onNotificationCreated: email sent to ${recipientEmail} for uid=${uid}`);
+            log.info(`email sent to ${recipientEmail} for uid=${uid}`);
           }
         } catch (err) {
           log.error(`email send failed for uid=${uid}`, err, { uid });
@@ -115,14 +115,14 @@ export const onNotificationCreated = onDocumentCreated(
                 errorCode === 'messaging/invalid-registration-token'
               ) {
                 await tokenDoc.ref.delete();
-                console.log(`onNotificationCreated: removed stale FCM token for uid=${uid}`);
+                log.info(`removed stale FCM token for uid=${uid}`);
               } else {
                 log.error(`FCM send failed for uid=${uid}`, err, { uid });
               }
             }
           });
           await Promise.all(sends);
-          console.log(`onNotificationCreated: FCM push sent to ${tokensSnap.size} token(s) for uid=${uid}`);
+          log.info(`FCM push sent to ${tokensSnap.size} token(s) for uid=${uid}`);
         }
       } catch (err) {
         log.error('Push notification failed', err, { uid });
@@ -153,7 +153,7 @@ export const sendWeeklyDigest = onSchedule(
     const smtpPass = process.env.SMTP_PASS;
 
     if (!smtpUser || !smtpPass) {
-      console.warn('[sendWeeklyDigest] SMTP_USER or SMTP_PASS not set — aborting.');
+      digestLog.warn('SMTP_USER or SMTP_PASS not set — aborting.');
       return;
     }
 
@@ -168,7 +168,7 @@ export const sendWeeklyDigest = onSchedule(
     const in7DaysStr = toDateStr(sevenDaysFromNow);
 
     const usersSnap = await db.collection('users').get();
-    console.log(`[sendWeeklyDigest] Processing ${usersSnap.size} user(s).`);
+    digestLog.info(`Processing ${usersSnap.size} user(s).`);
 
     let sentCount = 0;
     let skippedCount = 0;
@@ -320,22 +320,22 @@ export const sendWeeklyDigest = onSchedule(
           subject: '[PetBase] Your Weekly Digest',
           html,
         });
-        console.log(`[sendWeeklyDigest] Digest sent to ${recipientEmail} (uid=${uid})`);
+        digestLog.info(`Digest sent to ${recipientEmail} (uid=${uid})`);
         sentCount++;
       } catch (err) {
         digestLog.error(`Failed to send digest to uid=${uid}`, err, { uid });
       }
     }));
 
-    console.log(
-      `[sendWeeklyDigest] Done. sent=${sentCount} skipped=${skippedCount} total=${usersSnap.size}`,
-    );
+    digestLog.info(`Done. sent=${sentCount} skipped=${skippedCount} total=${usersSnap.size}`);
   },
 );
 
 // ─── checkPetBirthdays ────────────────────────────────────────────────────────
 // Scheduled daily at 08:00 UTC — queries all pets and sends a birthday
 // notification to each owner whose pet's birth month+day matches today.
+
+const birthdayLog = createLogger('checkPetBirthdays');
 
 export const checkPetBirthdays = onSchedule('every day 08:00', async () => {
   const db = admin.firestore();
@@ -373,14 +373,14 @@ export const checkPetBirthdays = onSchedule('every day 08:00', async () => {
           read: false,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         }).then(() => {
-          console.log(`checkPetBirthdays: birthday notification created for uid=${uid} pet=${petName}`);
+          birthdayLog.info(`birthday notification created for uid=${uid} pet=${petName}`);
         })
       );
     }
   }
 
   await Promise.all(tasks);
-  console.log(`checkPetBirthdays: processed ${usersSnap.size} user(s)`);
+  birthdayLog.info(`processed ${usersSnap.size} user(s)`);
 });
 
 // ─── createNotification ───────────────────────────────────────────────────────
@@ -433,9 +433,7 @@ export const onPostReaction = onDocumentCreated(
       message: 'Someone reacted to your post.',
     });
 
-    console.log(
-      `onPostReaction: notification created for author uid=${authorUid} from uid=${reactionUid}`,
-    );
+    log.info(`onPostReaction: notification created for author uid=${authorUid} from uid=${reactionUid}`);
   },
 );
 
@@ -473,9 +471,7 @@ export const onPostComment = onDocumentCreated(
       message: 'Someone commented on your post.',
     });
 
-    console.log(
-      `onPostComment: notification created for author uid=${authorUid} from uid=${commenterUid}`,
-    );
+    log.info(`onPostComment: notification created for author uid=${authorUid} from uid=${commenterUid}`);
   },
 );
 
@@ -506,7 +502,7 @@ export async function sendVaccineReminder(
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
 
-  console.log(`sendVaccineReminder: created reminder for uid=${uid} pet=${petName} vaccine=${vaccineName} daysUntilDue=${daysUntilDue}`);
+  log.info(`sendVaccineReminder: created reminder for uid=${uid} pet=${petName} vaccine=${vaccineName} daysUntilDue=${daysUntilDue}`);
 }
 
 // ─── Lost Pet Neighborhood Broadcast ──────────────────────────────────────────
@@ -538,7 +534,7 @@ export const onPetLostStatusChange = onDocumentUpdated(
     const ownerProfile = ownerProfileSnap.data();
     const ownerZip = ownerProfile?.zipCode;
     if (!ownerZip) {
-      console.log('onPetLostStatusChange: owner has no zipCode, skipping broadcast');
+      log.info('onPetLostStatusChange: owner has no zipCode, skipping broadcast');
       return;
     }
 
@@ -566,6 +562,52 @@ export const onPetLostStatusChange = onDocumentUpdated(
       notified++;
     }
 
-    console.log(`onPetLostStatusChange: broadcast to ${notified} users in ZIP ${ownerZip}`);
+    eventReminderLog.info(`onPetLostStatusChange: broadcast to ${notified} users in ZIP ${ownerZip}`);
   }
 );
+
+// ─── Event Reminders ─────────────────────────────────────────────────────────
+// Runs hourly. Finds group events starting within the next 24 hours and sends
+// a notification to all RSVP'd attendees who haven't already been reminded.
+
+const eventReminderLog = createLogger('checkEventReminders');
+
+export const checkEventReminders = onSchedule('every 1 hours', async () => {
+  const db = admin.firestore();
+  const now = Date.now();
+  const in24h = now + 24 * 60 * 60 * 1000;
+
+  const groupsSnap = await db.collection('groups').get();
+  let reminderCount = 0;
+
+  for (const groupDoc of groupsSnap.docs) {
+    const eventsSnap = await db.collection(`groups/${groupDoc.id}/events`)
+      .where('date', '>=', now)
+      .where('date', '<=', in24h)
+      .get();
+
+    for (const eventDoc of eventsSnap.docs) {
+      const event = eventDoc.data();
+      const attendees: string[] = event.attendees ?? [];
+      const reminded: string[] = event.reminded ?? [];
+
+      for (const uid of attendees) {
+        if (reminded.includes(uid)) continue;
+        await createNotification(uid, {
+          type: 'event_reminder',
+          message: `Reminder: "${event.title}" starts in less than 24 hours!`,
+          targetId: eventDoc.id,
+          targetType: 'event',
+          groupId: groupDoc.id,
+        });
+        reminderCount++;
+      }
+
+      if (attendees.length > reminded.length) {
+        await eventDoc.ref.update({ reminded: attendees });
+      }
+    }
+  }
+
+  eventReminderLog.info(`Done. Sent ${reminderCount} event reminder(s).`);
+});

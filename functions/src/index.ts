@@ -17,7 +17,7 @@ import { createLogger } from './logger';
 
 admin.initializeApp();
 
-export { onNotificationCreated, sendWeeklyDigest, checkPetBirthdays, onPostReaction, onPostComment, onPetLostStatusChange } from './notifications';
+export { onNotificationCreated, sendWeeklyDigest, checkPetBirthdays, onPostReaction, onPostComment, onPetLostStatusChange, checkEventReminders } from './notifications';
 export { cardMetaProxy } from './cardMetaProxy';
 import { sendVaccineReminder } from './notifications';
 

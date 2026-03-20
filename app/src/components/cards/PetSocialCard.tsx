@@ -2,7 +2,7 @@ import { useRef, useCallback, useState } from 'react';
 import type { Pet } from '../../types/pet';
 import { formatPetAge } from '../../lib/petAge';
 import { canShare } from '../../utils/platform';
-import { downloadElementAsImage } from '../../utils/exportImage';
+import { downloadElementAsImage, downloadElementAsPdf } from '../../utils/exportImage';
 
 interface PetSocialCardProps {
   pet: Pet;
@@ -19,6 +19,18 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
     setExporting(true);
     try {
       await downloadElementAsImage(cardRef.current, `${pet.name}-petbase.png`);
+    } catch {
+      // Export failed silently
+    } finally {
+      setExporting(false);
+    }
+  }, [pet.name]);
+
+  const exportAsPdf = useCallback(async () => {
+    if (!cardRef.current) return;
+    setExporting(true);
+    try {
+      await downloadElementAsPdf(cardRef.current, `${pet.name}-petbase.pdf`);
     } catch {
       // Export failed silently
     } finally {
@@ -81,6 +93,14 @@ export function PetSocialCard({ pet, onClose }: PetSocialCardProps) {
           >
             {canShare() ? <span className="material-symbols-outlined text-[16px]">share</span> : <span className="material-symbols-outlined text-[16px]">download</span>}
             {exporting ? 'Exporting...' : canShare() ? 'Share' : 'Download'}
+          </button>
+          <button
+            onClick={exportAsPdf}
+            disabled={exporting}
+            className="flex items-center gap-2 px-5 py-2.5 bg-surface text-on-surface rounded-xl font-medium text-sm hover:bg-surface-container-low disabled:opacity-50 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+            PDF
           </button>
           <button
             onClick={onClose}

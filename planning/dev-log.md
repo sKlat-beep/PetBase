@@ -266,3 +266,87 @@ No stone-/zinc- references found. Already clean.
 
 ## [2026-03-19] TASK-134: Update index.css tokens — COMPLETE
 Added --color-border and --color-scrim tokens. Existing palette already consistent.
+
+## [2026-03-19] TASK-222: Semgrep pysemgrep PATH — COMPLETE (retroactive)
+PATH already set in settings.local.json env + PostToolUse hook. semgrep 1.155.0 works.
+
+## [2026-03-19] TASK-223: Remove Stitch MCP server entry — COMPLETE (retroactive)
+No Stitch MCP server or STITCH_API_KEY in settings.local.json. Already removed.
+
+## [2026-03-19] TASK-187: Pet photo albums — COMPLETE (retroactive)
+PhotoAlbums.tsx (220 lines) + AlbumDetailModal.tsx (401 lines) + storageService.uploadAlbumPhoto.
+
+## [2026-03-19] TASK-188: Pet profile visibility toggles — COMPLETE (retroactive)
+publicFields array + isPetFieldPublic() in pet.ts, used in PetFormModal + PetDetailModal.
+
+## [2026-03-19] TASK-189: Pet custom status tags — COMPLETE (retroactive)
+statusTags, ephemeralStatus, ephemeralStatusExpiresAt in Pet type. UI in PetCard + PetOverviewPanel.
+
+## [2026-03-19] TASK-190: Pet age display utility — COMPLETE (retroactive)
+petAge.ts with formatPetAge(): weeks/months/years. Used in PetCard, PetDetailModal, cards, dashboard.
+
+## [2026-03-19] TASK-191: Pet daily journal/mood log — COMPLETE (retroactive)
+MoodLog.tsx (160 lines) with mood/energy tracking. moodLog array in Pet type.
+
+## [2026-03-19] TASK-192: Pet birthday celebrations — COMPLETE (retroactive)
+isBirthdayToday ring highlight + emoji in PetCard. checkPetBirthdays Cloud Function for notifications.
+
+## [2026-03-19] TASK-193: Firebase Storage photo upload — COMPLETE (retroactive)
+storageService.ts with uploadPetProfilePhoto, uploadAlbumPhoto, compress. Used in PetFormModal.
+
+## [2026-03-19] TASK-201: Feature hints 4→38 items — COMPLETE (retroactive)
+featureHints.ts with 38 hints across 10 categories (pets, cards, services, community, messaging, social, family, settings, dashboard, safety).
+
+## [2026-03-19] TASK-202: Pet Parent Level gamification — COMPLETE (retroactive)
+PetParentLevel type (curious-kitten→pet-pro), computeLevel(), level display in onboarding.
+
+## [2026-03-19] TASK-203: Milestone badges — COMPLETE (retroactive)
+milestoneBadges array, 25/50/75/100% thresholds, confetti via useCelebration hook.
+
+## [2026-03-19] TASK-204: "Did you know?" + "Surprise me" — COMPLETE (retroactive)
+RecommendationBanner.tsx with "Did you know?" framing, "Surprise me" button, discovery counter.
+
+## [2026-03-19] TASK-205: Vaccine reminders CF — COMPLETE (retroactive)
+checkVaccineReminders scheduled function with 1-day and 7-day alerts.
+
+## [2026-03-19] TASK-206: Post reaction/comment notifications — COMPLETE (retroactive)
+onPostReaction + onPostComment Firestore triggers in notifications.ts.
+
+## [2026-03-19] TASK-207: Email digest — COMPLETE (retroactive)
+sendWeeklyDigest full implementation (334 lines) with HTML template, per-user digest.
+
+## [2026-03-19] TASK-209: GIF picker via Tenor — COMPLETE (retroactive)
+GifPicker.tsx (188 lines) with Tenor API search/featured, integrated in Messages.
+
+## [2026-03-19] TASK-210: Trending posts tab — COMPLETE (retroactive)
+GroupFeedTab with recent/trending toggle, reaction-count sorting.
+
+## [2026-03-19] TASK-211: Lost pet broadcast — COMPLETE (retroactive)
+onPetLostStatusChange CF + LostPetReportModal UI for neighborhood alerts.
+
+## [2026-03-19] TASK-212: Buddy matching — COMPLETE (retroactive)
+BuddyMatchSection with H3 proximity matching in CommunityHub.
+
+## [2026-03-19] TASK-213: Achievement badge system — COMPLETE (retroactive)
+gamificationService.ts with points, levels, badges, streaks engine.
+
+## [2026-03-19] TASK-216: Image lightbox navigation — COMPLETE (retroactive)
+ImageLightbox with arrow keys, prev/next buttons, AnimatePresence transitions.
+
+## [2026-03-19] TASK-217: Notification sound toggle — COMPLETE (retroactive)
+ToggleSwitch in ProfileSettings with localStorage persistence.
+
+## [2026-03-19] TASK-218: Custom group banner upload — COMPLETE (retroactive)
+GroupAboutSection banner upload + storageService.uploadGroupBanner.
+
+## [2026-03-19] TASK-219: Pull-to-refresh — COMPLETE (retroactive)
+usePullToRefresh hook used in Feed, Messages, People pages.
+
+## [2026-03-19] TASK-220: Emoji reaction tooltips — COMPLETE (retroactive)
+formatDmReactors generates "Sarah, Mike and 3 others" tooltip text.
+
+## [2026-03-19] TASK-208: Event reminder Cloud Function — COMPLETE
+checkEventReminders hourly schedule, queries events in next 24h, notifies RSVP'd attendees.
+
+## [2026-03-19] TASK-214: PDF export of pet card — COMPLETE
+downloadElementAsPdf in exportImage.ts using jspdf + html2canvas. PDF button added to PetSocialCard.

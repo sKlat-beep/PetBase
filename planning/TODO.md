@@ -48,16 +48,6 @@ Use `/intake` skill to add new tasks (place under the appropriate phase header).
 
 ---
 
-## Phase 32 — Service Discovery Frontend
-
-- TASK-194: `intake` — Pet-Aware Orchestrator: extend tagMatcher.ts from 2-layer to full 5-layer (breed intelligence, medical augments, query composition, URL builder) (cosmic-percolating-lake)
-- TASK-195: `intake` — SearchPreview + SearchHistory components — FrequentlyVisited exists, need SearchHistory persistence + SearchPreview query explanation (cosmic-percolating-lake)
-- TASK-196: `intake` — Breed Intelligence Dictionary: breed→keyword maps, medical condition augments (cosmic-percolating-lake)
-- TASK-197: `intake` — Verification modal: "Did [Service] accept [Pet]?" post-redirect (cosmic-percolating-lake)
-- TASK-200: `intake` — Global search modal (Cmd+K): cross-entity search for People, Groups, Services (feature-expansion-plan)
-
----
-
 ## Phase 35 — Monetization (Future)
 
 - TASK-221: `intake` — Monetization strategy: Stripe integration + Firebase entitlements + plan state (zesty-hatching-shamir)

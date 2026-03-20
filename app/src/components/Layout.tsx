@@ -16,6 +16,7 @@ import { KeyboardShortcutsProvider } from './ui/KeyboardShortcuts';
 import PointToast from './gamification/PointToast';
 import PointsBadge from './gamification/PointsBadge';
 import { useGamification } from '../hooks/useGamification';
+import { GlobalSearchModal } from './GlobalSearchModal';
 
 /** Material Symbols helper */
 function MIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -40,7 +41,20 @@ export function Layout() {
   const [searchResults, setSearchResults] = useState<PublicProfile[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Cmd+K / Ctrl+K global search shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setGlobalSearchOpen(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   // Debounced search
   useEffect(() => {
@@ -333,6 +347,7 @@ export function Layout() {
         {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} userEmail={user?.email ?? undefined} />}
       </AnimatePresence>
       <UserSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      {globalSearchOpen && <GlobalSearchModal onClose={() => setGlobalSearchOpen(false)} />}
 
       {/* ═══ Mobile Bottom Nav (fixed, h-20) ═══ */}
       <nav

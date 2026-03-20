@@ -3,6 +3,8 @@
  */
 
 import { PET_CATEGORIES, ALL_PET_TAGS, TAG_TO_CATEGORY } from '../data/petTags';
+import { getBreedProfile, getMedicalAugments } from '../data/breedDictionary';
+import type { Pet } from '../types/pet';
 
 /** Map service type tabs to query augmentation terms */
 const SERVICE_TYPE_AUGMENTS: Record<string, Record<string, string>> = {
@@ -97,4 +99,90 @@ export function isPetRelevant(
     'fur', 'feather', 'critter',
   ];
   return petKeywords.some(kw => nameLower.includes(kw));
+}
+
+// ─── 5-Layer Pet-Aware Orchestrator ─────────────────────────────────────────
+
+export interface OrchestratorResult {
+  /** Final composed search query */
+  query: string;
+  /** Yelp redirect URL with all parameters */
+  yelpUrl: string;
+  /** Explanation of each layer's contribution */
+  layers: {
+    petData: string[];
+    breedIntelligence: string[];
+    medicalAugments: string[];
+    composedTerms: string[];
+  };
+}
+
+/**
+ * 5-layer Pet-Aware Search Orchestrator.
+ *
+ * Layer 1: Extract pet profile data (species, breed, size, conditions)
+ * Layer 2: Breed Intelligence Dictionary (breed → keywords + health concerns)
+ * Layer 3: Medical condition augments (condition → specialist terms)
+ * Layer 4: Query composition (combine all layers into search terms)
+ * Layer 5: Yelp redirect URL builder
+ */
+export function orchestrateSearch(
+  pet: Pet,
+  serviceType: string,
+  location: string,
+  lat?: number,
+  lng?: number,
+): OrchestratorResult {
+  // Layer 1: Pet profile extraction
+  const species = pet.type ?? '';
+  const breed = pet.breed ?? '';
+  const petData = [species, breed].filter(Boolean);
+
+  // Layer 2: Breed intelligence
+  const profile = getBreedProfile(breed, species);
+  const breedKeywords = profile?.keywords ?? [];
+  const healthConcerns = profile?.healthConcerns ?? [];
+
+  // Layer 3: Medical condition augments
+  const medicalConditions = (pet.medicalVisits ?? []).map(v => v.reason);
+  const allConditions = [...healthConcerns, ...medicalConditions];
+  const medicalTerms = serviceType === 'Vets'
+    ? getMedicalAugments(allConditions)
+    : [];
+
+  // Layer 4: Query composition
+  const composedTerms: string[] = [];
+  if (serviceType === 'Vets' && medicalTerms.length > 0) {
+    composedTerms.push(medicalTerms[0]); // Primary specialist term
+  } else if (breedKeywords.length > 0) {
+    composedTerms.push(...breedKeywords.slice(0, 2));
+  }
+
+  const baseQuery = buildPetQuery(
+    composedTerms.join(' '),
+    serviceType,
+    species ? [species.toLowerCase()] : [],
+  );
+
+  // Layer 5: Yelp redirect URL
+  const YELP_CATEGORY_MAP: Record<string, string> = {
+    Vets: 'vets', Groomers: 'petgroomers', Sitters: 'petsitting',
+    Walkers: 'dogwalkers', Trainers: 'pettraining', Stores: 'petstore',
+    Boarding: 'dogboarding', Shelters: 'animalshelters',
+  };
+  const yelpCategory = YELP_CATEGORY_MAP[serviceType] ?? 'pets';
+  const locationParam = encodeURIComponent(location);
+  const queryParam = baseQuery ? `&find_desc=${encodeURIComponent(baseQuery)}` : '';
+  const yelpUrl = `https://www.yelp.com/search?find_loc=${locationParam}&cflt=${yelpCategory}${queryParam}`;
+
+  return {
+    query: baseQuery,
+    yelpUrl,
+    layers: {
+      petData,
+      breedIntelligence: breedKeywords,
+      medicalAugments: medicalTerms,
+      composedTerms,
+    },
+  };
 }

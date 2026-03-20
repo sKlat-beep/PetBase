@@ -350,3 +350,18 @@ checkEventReminders hourly schedule, queries events in next 24h, notifies RSVP'd
 
 ## [2026-03-19] TASK-214: PDF export of pet card — COMPLETE
 downloadElementAsPdf in exportImage.ts using jspdf + html2canvas. PDF button added to PetSocialCard.
+
+## [2026-03-19] TASK-194: Pet-Aware Orchestrator 5-layer — COMPLETE
+orchestrateSearch() in tagMatcher.ts: pet data extraction → breed intelligence → medical augments → query composition → Yelp URL builder.
+
+## [2026-03-19] TASK-195: SearchHistory + SearchPreview — COMPLETE
+SearchHistory.tsx with localStorage persistence, add/clear/select. Integrated with search page.
+
+## [2026-03-19] TASK-196: Breed Intelligence Dictionary — COMPLETE
+breedDictionary.ts with 30+ breed profiles + medical condition augments. getBreedProfile + getMedicalAugments.
+
+## [2026-03-19] TASK-197: Verification modal — COMPLETE
+VerificationModal.tsx: "Did [Service] accept [Pet]?" post-redirect prompt with yes/no + optional notes.
+
+## [2026-03-19] TASK-200: Global search modal (Cmd+K) — COMPLETE
+GlobalSearchModal.tsx with cross-entity search (People + Groups). Cmd+K/Ctrl+K shortcut in Layout.

@@ -461,7 +461,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
               <button
                 type="button"
                 onClick={onClose}
-                className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container"
+                className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container motion-safe:active:scale-[0.97]"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
@@ -476,7 +476,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                   onClick={() => setActiveTab(tab)}
                   className={`flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab
                     ? 'border-primary-container text-primary'
-                    : 'border-transparent text-on-surface-variant hover:text-on-surface'
+                    : 'border-transparent text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]'
                     }`}
                 >
                   <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
@@ -494,7 +494,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                 type="button"
                 onClick={goPrev}
                 disabled={isFirst}
-                className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors motion-safe:active:scale-[0.97]"
               >
                 <span className="material-symbols-outlined text-[20px]">chevron_left</span>
               </button>
@@ -506,7 +506,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                 type="button"
                 onClick={goNext}
                 disabled={isLast}
-                className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors motion-safe:active:scale-[0.97]"
               >
                 <span className="material-symbols-outlined text-[20px]">chevron_right</span>
               </button>
@@ -592,7 +592,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         <button
                           type="button"
                           onClick={() => setShowBirthdayPicker(true)}
-                          className="w-full py-2.5 px-4 rounded-xl border border-dashed border-outline-variant text-on-surface-variant text-sm hover:bg-surface-container transition-colors flex items-center gap-2"
+                          className="w-full py-2.5 px-4 rounded-xl border border-dashed border-outline-variant text-on-surface-variant text-sm hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97] flex items-center gap-2"
                         >
                           <span className="material-symbols-outlined text-[18px]">cake</span>
                           Set Birthday
@@ -607,7 +607,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                           <button
                             type="button"
                             onClick={() => setShowBirthdayPicker(false)}
-                            className="mt-2 text-xs text-primary font-medium hover:underline"
+                            className="mt-2 text-xs text-primary font-medium hover:underline motion-safe:active:scale-[0.97]"
                           >
                             Done
                           </button>
@@ -616,7 +616,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                         <button
                           type="button"
                           onClick={() => setShowBirthdayPicker(true)}
-                          className="w-full py-2.5 px-4 rounded-xl bg-surface-container border border-outline-variant text-on-surface text-sm flex items-center justify-between hover:bg-surface-container-high transition-colors"
+                          className="w-full py-2.5 px-4 rounded-xl bg-surface-container border border-outline-variant text-on-surface text-sm flex items-center justify-between hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]"
                         >
                           <span className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-[18px] text-on-surface-variant">cake</span>
@@ -966,7 +966,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                             />
                             {dietSchedules.length > 1 && (
                               <button type="button" onClick={() => { setDietSchedules(dietSchedules.filter((_, i) => i !== si)); mark(); }}
-                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container transition-colors">
+                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container transition-colors motion-safe:active:scale-[0.97]">
                                 <span className="material-symbols-outlined text-[18px]">delete</span>
                               </button>
                             )}
@@ -1023,7 +1023,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                                 updated[si] = { ...updated[si], entries };
                                 setDietSchedules(updated); mark();
                               }}
-                                className="p-1 rounded text-on-surface-variant hover:text-error transition-colors">
+                                className="p-1 rounded text-on-surface-variant hover:text-error transition-colors motion-safe:active:scale-[0.97]">
                                 <span className="material-symbols-outlined text-[16px]">close</span>
                               </button>
                             </div>
@@ -1036,7 +1036,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                               updated[si] = { ...updated[si], entries };
                               setDietSchedules(updated); mark();
                             }}
-                            className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1"
+                            className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 motion-safe:active:scale-[0.97]"
                           >
                             <span className="material-symbols-outlined text-[14px]">add</span> Add feeding time
                           </button>
@@ -1045,7 +1045,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       <button
                         type="button"
                         onClick={() => { setDietSchedules([...dietSchedules, { foodType: '', entries: [{ amount: '', unit: 'cup', time: '08:00' }] }]); mark(); }}
-                        className="w-full py-2 rounded-xl border-2 border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-sm font-medium transition-colors flex items-center justify-center gap-1"
+                        className="w-full py-2 rounded-xl border-2 border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-sm font-medium transition-colors motion-safe:active:scale-[0.97] flex items-center justify-center gap-1"
                       >
                         <span className="material-symbols-outlined text-[16px]">add</span> Add food
                       </button>
@@ -1195,7 +1195,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={onClose}
-                      className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
+                      className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
                     >
                       Cancel
                     </button>
@@ -1203,7 +1203,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={goPrev}
-                      className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97] flex items-center justify-center gap-2"
                     >
                       <span className="material-symbols-outlined text-[18px]">chevron_left</span> Back
                     </button>
@@ -1212,7 +1212,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={() => handleSubmit('finish')}
-                      className="flex-1 py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:brightness-110"
+                      className="flex-1 py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:brightness-110 motion-safe:active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[18px]">check_circle</span> Finish Profile
                     </button>
@@ -1220,7 +1220,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                     <button
                       type="button"
                       onClick={() => { handleSubmit('save'); goNext(); }}
-                      className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-medium transition-colors flex items-center justify-center gap-2 hover:brightness-110"
+                      className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-medium transition-colors flex items-center justify-center gap-2 hover:brightness-110 motion-safe:active:scale-[0.97]"
                     >
                       Save & Continue <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                     </button>
@@ -1236,7 +1236,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
                       exit={{ opacity: 0, height: 0 }}
                       type="button"
                       onClick={() => handleSubmit('save')}
-                      className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-semibold transition-colors flex items-center justify-center gap-2 overflow-hidden hover:brightness-110"
+                      className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-semibold transition-colors flex items-center justify-center gap-2 overflow-hidden hover:brightness-110 motion-safe:active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[18px]">save</span>
                       {isEditMode ? 'Save Changes' : 'Add Pet'}

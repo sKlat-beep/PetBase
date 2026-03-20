@@ -86,7 +86,7 @@ export function OrchestratorPanel({
               <button
                 key={pet.id}
                 onClick={() => onSelectPet(pet.id)}
-                className={`flex flex-col items-center gap-1.5 min-w-[72px] p-2 rounded-2xl transition-all ${
+                className={`flex flex-col items-center gap-1.5 min-w-[72px] p-2 rounded-2xl transition-all motion-safe:active:scale-[0.97] ${
                   selectedPetId === pet.id
                     ? 'bg-primary-container/15 ring-2 ring-primary-container'
                     : 'hover:bg-surface-container-high'
@@ -132,7 +132,7 @@ export function OrchestratorPanel({
             <button
               key={svc.type}
               onClick={() => onSelectService(svc.type)}
-              className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all min-h-[72px] ${
+              className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all motion-safe:active:scale-[0.97] min-h-[72px] ${
                 serviceType === svc.type
                   ? 'bg-primary-container/15 border border-primary-container/30 text-primary-container'
                   : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant border border-transparent'
@@ -168,7 +168,7 @@ export function OrchestratorPanel({
       <div>
         <button
           onClick={() => setShowManual(!showManual)}
-          className="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors flex items-center gap-1"
+          className="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors flex items-center gap-1 motion-safe:active:scale-[0.97]"
         >
           <span className="material-symbols-outlined text-sm">
             {showManual ? 'expand_less' : 'edit'}
@@ -190,7 +190,7 @@ export function OrchestratorPanel({
       <button
         onClick={() => onSearch()}
         disabled={!selectedPet}
-        className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary-container to-tertiary text-on-primary-container font-bold text-base tracking-wide hover:opacity-90 focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg"
+        className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary-container to-tertiary text-on-primary-container font-bold text-base tracking-wide hover:opacity-90 focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg motion-safe:active:scale-95"
       >
         <span className="material-symbols-outlined text-xl">search</span>
         Search on Yelp
@@ -209,7 +209,7 @@ export function OrchestratorPanel({
                 href={entry.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-shrink-0 w-48 p-3 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors border border-outline-variant/30"
+                className="flex-shrink-0 w-48 p-3 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors border border-outline-variant/30 motion-safe:active:scale-[0.97]"
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="material-symbols-outlined text-primary-container text-lg">pets</span>

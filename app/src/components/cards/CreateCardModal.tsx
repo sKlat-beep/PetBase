@@ -211,7 +211,7 @@ export default function CreateCardModal({
               </h2>
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors"
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high motion-safe:transition-colors motion-safe:active:scale-[0.97]"
                 aria-label="Close"
               >
                 <MIcon name="close" className="text-[20px]" />
@@ -259,7 +259,7 @@ export default function CreateCardModal({
                     onClick={() => handleTemplateChange(t)}
                     className={`py-2.5 rounded-xl text-sm font-semibold border-2 motion-safe:transition-all flex items-center justify-center gap-1.5 ${template === t
                       ? 'border-primary bg-primary-container/20 text-on-primary-container'
-                      : 'border-outline-variant text-on-surface-variant hover:border-outline hover:bg-surface-container-high'}`}
+                      : 'border-outline-variant text-on-surface-variant hover:border-outline hover:bg-surface-container-high motion-safe:active:scale-[0.97]'}`}
                   >
                     <MIcon name={TEMPLATE_ICONS[t]} className="text-[18px]" />
                     {TEMPLATE_LABELS[t]}
@@ -351,18 +351,18 @@ export default function CreateCardModal({
 
           {/* Footer actions */}
           <div className="p-5 border-t border-outline-variant/30 flex gap-3">
-            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container-high motion-safe:transition-colors min-h-[44px]">
+            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container-high motion-safe:transition-colors motion-safe:active:scale-[0.97] min-h-[44px]">
               Cancel
             </button>
             {(template === 'custom' || template === 'emergency') && !customTemplateSaved ? (
-              <button onClick={handleSaveCustomTemplate} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-semibold hover:brightness-110 motion-safe:transition-all min-h-[44px] flex items-center justify-center gap-2">
+              <button onClick={handleSaveCustomTemplate} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-semibold hover:brightness-110 motion-safe:transition-all motion-safe:active:scale-[0.97] min-h-[44px] flex items-center justify-center gap-2">
                 <MIcon name="save" className="text-[18px]" /> Save Card Template
               </button>
             ) : (
               <button
                 onClick={handleCreate}
                 disabled={!selectedPetId}
-                className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-semibold hover:brightness-110 motion-safe:transition-all disabled:opacity-50 min-h-[44px] flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-semibold hover:brightness-110 motion-safe:transition-all motion-safe:active:scale-[0.97] disabled:opacity-50 min-h-[44px] flex items-center justify-center gap-2"
               >
                 <MIcon name={editCard ? 'save' : 'add_card'} className="text-[18px]" />
                 {editCard ? 'Save Changes' : 'Create Card'}

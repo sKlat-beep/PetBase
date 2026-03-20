@@ -111,7 +111,7 @@ export function Layout() {
       {hhToast && (
         <div className="fixed top-4 right-4 z-50 bg-tertiary text-on-tertiary px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 animate-in fade-in slide-in-from-top-2" role="alert">
           {hhToast}
-          <button onClick={clearHhToast} className="ml-2 text-on-tertiary/70 hover:text-on-tertiary" aria-label="Dismiss">&times;</button>
+          <button onClick={clearHhToast} className="ml-2 text-on-tertiary/70 hover:text-on-tertiary motion-safe:active:scale-[0.97]" aria-label="Dismiss">&times;</button>
         </div>
       )}
 
@@ -134,7 +134,7 @@ export function Layout() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileSearchOpen(o => !o)}
-            className="text-on-surface-variant hover:text-on-surface motion-safe:transition-colors"
+            className="text-on-surface-variant hover:text-on-surface motion-safe:transition-colors motion-safe:active:scale-[0.97]"
             aria-label="Search users"
           >
             <MIcon name="search" className="text-xl" />
@@ -142,7 +142,7 @@ export function Layout() {
           <NotificationBell side="right" />
           <button
             aria-label="Open menu"
-            className="text-on-surface-variant hover:text-on-surface motion-safe:transition-colors"
+            className="text-on-surface-variant hover:text-on-surface motion-safe:transition-colors motion-safe:active:scale-[0.97]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <MIcon name="menu" className="text-2xl" />
@@ -164,7 +164,7 @@ export function Layout() {
               className="w-full pl-10 pr-8 py-2 text-sm bg-surface-container border border-outline-variant rounded-xl outline-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant"
             />
             {searchQuery && (
-              <button onClick={() => { setSearchQuery(''); setSearchResults([]); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface">
+              <button onClick={() => { setSearchQuery(''); setSearchResults([]); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]">
                 <MIcon name="close" className="text-base" />
               </button>
             )}
@@ -175,7 +175,7 @@ export function Layout() {
                 <button
                   key={u.uid}
                   onClick={() => { handleSearchSelect(u.uid); setMobileSearchOpen(false); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-highest motion-safe:transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-highest motion-safe:transition-colors motion-safe:active:scale-[0.97] text-left"
                 >
                   <img src={u.avatarUrl || ''} alt="" className="w-8 h-8 rounded-full bg-surface-container shrink-0 object-cover" />
                   <div className="min-w-0">
@@ -228,7 +228,7 @@ export function Layout() {
               className="w-full pl-10 pr-8 py-2 text-sm bg-surface-container border border-outline-variant rounded-xl outline-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant"
             />
             {searchQuery && (
-              <button onClick={() => { setSearchQuery(''); setSearchOpen(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface">
+              <button onClick={() => { setSearchQuery(''); setSearchOpen(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]">
                 <MIcon name="close" className="text-base" />
               </button>
             )}
@@ -239,7 +239,7 @@ export function Layout() {
                 <button
                   key={u.uid}
                   onClick={() => handleSearchSelect(u.uid)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-highest motion-safe:transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-highest motion-safe:transition-colors motion-safe:active:scale-[0.97] text-left"
                 >
                   <img src={u.avatarUrl || ''} alt="" className="w-8 h-8 rounded-full bg-surface-container shrink-0 object-cover" />
                   <div className="min-w-0">
@@ -272,7 +272,7 @@ export function Layout() {
                 flex items-center gap-3 px-4 py-3 rounded-xl motion-safe:transition-all font-medium text-sm
                 ${isActive
                   ? 'bg-gradient-to-r from-primary/20 to-transparent border-l-4 border-primary text-primary'
-                  : 'text-on-surface/60 hover:bg-surface-container-high hover:text-primary opacity-70 hover:opacity-100 border-l-4 border-transparent'
+                  : 'text-on-surface/60 hover:bg-surface-container-high hover:text-primary opacity-70 hover:opacity-100 border-l-4 border-transparent motion-safe:active:scale-[0.97]'
                 }
               `}
             >
@@ -294,7 +294,7 @@ export function Layout() {
           <div className="flex items-center px-2 py-2">
             <button
               onClick={() => { setSettingsOpen(true); setIsMobileMenuOpen(false); }}
-              className="flex items-center gap-3 min-w-0 hover:opacity-80 motion-safe:transition-opacity text-left"
+              className="flex items-center gap-3 min-w-0 hover:opacity-80 motion-safe:transition-opacity motion-safe:active:scale-[0.97] text-left"
             >
               <div className="w-10 h-10 rounded-full bg-surface-container overflow-hidden shrink-0">
                 {profile?.avatarUrl || user?.photoURL ? (
@@ -334,7 +334,7 @@ export function Layout() {
           {/* Need Help? */}
           <button
             onClick={() => setHelpOpen(true)}
-            className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-primary motion-safe:transition-colors px-1 py-1 mt-1"
+            className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-primary motion-safe:transition-colors motion-safe:active:scale-[0.97] px-1 py-1 mt-1"
           >
             <MIcon name="help" className="text-base" />
             Need Help?
@@ -361,7 +361,7 @@ export function Layout() {
               <div key="fab" className="flex-1 flex items-center justify-center">
                 <NavLink
                   to="/pets"
-                  className="-mt-8 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-tertiary shadow-xl shadow-primary/30 flex items-center justify-center motion-safe:transition-transform hover:scale-105"
+                  className="-mt-8 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-tertiary shadow-xl shadow-primary/30 flex items-center justify-center motion-safe:transition-transform hover:scale-105 motion-safe:active:scale-95"
                 >
                   <MIcon name="add" className="text-on-primary text-2xl" />
                 </NavLink>
@@ -393,7 +393,7 @@ export function Layout() {
               className={({ isActive }) =>
                 `flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium motion-safe:transition-colors ${isActive
                   ? 'text-primary'
-                  : 'text-on-surface-variant hover:text-on-surface'
+                  : 'text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]'
                 }`
               }
             >

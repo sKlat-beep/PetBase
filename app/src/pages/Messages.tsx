@@ -672,7 +672,7 @@ function ThreadPane({
         <button
           onClick={onBack}
           aria-label="Back to conversations"
-          className="md:hidden p-2 -ml-1 text-on-surface-variant hover:text-on-surface focus-visible:ring-2 focus-visible:ring-primary outline-none rounded-lg"
+          className="md:hidden p-2 -ml-1 text-on-surface-variant hover:text-on-surface focus-visible:ring-2 focus-visible:ring-primary outline-none rounded-lg motion-safe:active:scale-[0.97]"
         >
           <MSIcon name="arrow_back" className="!text-[20px]" />
         </button>
@@ -694,7 +694,7 @@ function ThreadPane({
         <div className="flex-1 min-w-0">
           <button
             onClick={onViewProfile}
-            className="font-semibold text-on-surface truncate hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded block"
+            className="font-semibold text-on-surface truncate hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded block motion-safe:active:scale-[0.97]"
             style={{ fontFamily: 'var(--font-headline)' }}
           >
             {displayName}
@@ -713,20 +713,20 @@ function ThreadPane({
         {/* Call / Video / Info action buttons */}
         <button
           aria-label="Voice call"
-          className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+          className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]"
         >
           <MSIcon name="call" className="!text-[20px]" />
         </button>
         <button
           aria-label="Video call"
-          className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+          className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]"
         >
           <MSIcon name="videocam" className="!text-[20px]" />
         </button>
         <button
           onClick={() => { setSelectMode(v => !v); setSelected(new Set()); }}
           aria-label={selectMode ? 'Cancel selection' : 'Select messages'}
-          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none
+          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none motion-safe:active:scale-[0.97]
             ${selectMode
               ? 'bg-primary-container/20 text-primary'
               : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
@@ -736,7 +736,7 @@ function ThreadPane({
         <button
           onClick={() => { setShowSearch(v => !v); setSearchQuery(''); }}
           aria-label={showSearch ? 'Close search' : 'Search messages'}
-          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none
+          className={`p-2 rounded-lg text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none motion-safe:active:scale-[0.97]
             ${showSearch
               ? 'bg-primary-container/20 text-primary'
               : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
@@ -791,13 +791,13 @@ function ThreadPane({
             <span className="text-xs text-on-surface-variant flex-1">{selected.size} selected</span>
             <button
               onClick={handleBulkMarkRead}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container text-xs font-medium hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container text-xs font-medium hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none motion-safe:active:scale-[0.97]"
             >
               <MSIcon name="done_all" className="!text-[16px]" /> Mark Read
             </button>
             <button
               onClick={handleBulkDelete}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-error-container text-on-error-container text-xs font-medium hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-error-container text-on-error-container text-xs font-medium hover:opacity-90 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none motion-safe:active:scale-[0.97]"
             >
               <MSIcon name="delete" className="!text-[16px]" /> Delete
             </button>
@@ -871,7 +871,7 @@ function ThreadPane({
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
             onClick={scrollToBottom}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container text-xs font-medium px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 hover:opacity-90 transition-colors z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container text-xs font-medium px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 hover:opacity-90 transition-colors z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-safe:active:scale-[0.97]"
             aria-label="Jump to latest messages"
           >
             <MSIcon name="keyboard_arrow_down" className="!text-[16px]" /> New messages
@@ -905,7 +905,7 @@ function ThreadPane({
             </p>
             <p className="text-xs text-on-surface-variant truncate">{replyingTo.content}</p>
           </div>
-          <button onClick={() => setReplyingTo(null)} className="p-1 text-on-surface-variant hover:text-on-surface" aria-label="Cancel reply">
+          <button onClick={() => setReplyingTo(null)} className="p-1 text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]" aria-label="Cancel reply">
             <MSIcon name="close" className="!text-[16px]" />
           </button>
         </div>
@@ -924,7 +924,7 @@ function ThreadPane({
             onClick={() => { setShowPhoto(true); setShowEmoji(false); setShowGif(false); setShowVoice(false); }}
             aria-label="Attach file"
             className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
-              hover:bg-surface-container-high transition-colors
+              hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]
               focus-visible:ring-2 focus-visible:ring-primary outline-none
               disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -964,7 +964,7 @@ function ThreadPane({
             onClick={() => { setShowEmoji(v => !v); setShowGif(false); setShowPhoto(false); }}
             aria-label="Emoji picker"
             className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
-              hover:bg-surface-container-high transition-colors
+              hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]
               focus-visible:ring-2 focus-visible:ring-primary outline-none
               disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -982,7 +982,7 @@ function ThreadPane({
           onClick={() => { setShowPhoto(true); setShowEmoji(false); setShowGif(false); setShowVoice(false); }}
           aria-label="Send image"
           className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
-            hover:bg-surface-container-high transition-colors
+            hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]
             focus-visible:ring-2 focus-visible:ring-primary outline-none
             disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
@@ -996,7 +996,7 @@ function ThreadPane({
           onClick={() => { setShowGif(true); setShowEmoji(false); setShowPhoto(false); }}
           aria-label="GIF picker"
           className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface
-            hover:bg-surface-container-high transition-colors
+            hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]
             focus-visible:ring-2 focus-visible:ring-primary outline-none
             disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
@@ -1009,7 +1009,7 @@ function ThreadPane({
           disabled={isBlocked}
           onClick={() => { setShowVoice(true); setShowEmoji(false); setShowGif(false); setShowPhoto(false); }}
           aria-label="Record voice message"
-          className={`p-2 rounded-xl transition-colors
+          className={`p-2 rounded-xl transition-colors motion-safe:active:scale-[0.97]
             focus-visible:ring-2 focus-visible:ring-primary outline-none
             disabled:opacity-40 disabled:cursor-not-allowed shrink-0
             ${showVoice ? 'text-primary bg-primary-container/20' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'}`}
@@ -1024,7 +1024,7 @@ function ThreadPane({
           aria-label="Send message"
           className="min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0
             bg-primary-container hover:opacity-90 disabled:opacity-40
-            text-on-primary-container rounded-xl transition-colors
+            text-on-primary-container rounded-xl transition-colors motion-safe:active:scale-[0.97]
             focus-visible:ring-2 focus-visible:ring-primary outline-none"
         >
           <MSIcon name="send" className="!text-[20px]" />
@@ -1224,7 +1224,7 @@ export function Messages() {
           </h1>
           <button
             aria-label="New message"
-            className="p-2 rounded-xl bg-primary-container text-on-primary-container hover:opacity-90 transition-colors"
+            className="p-2 rounded-xl bg-primary-container text-on-primary-container hover:opacity-90 transition-colors motion-safe:active:scale-[0.97]"
           >
             <MSIcon name="edit_square" className="!text-[20px]" />
           </button>
@@ -1334,14 +1334,14 @@ export function Messages() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => { if (activeUid) sendFriendRequest(activeUid).catch(() => {}); }}
-                    className="text-xs font-semibold px-3 py-1 rounded-lg bg-primary-container hover:opacity-90 text-on-primary-container transition-colors"
+                    className="text-xs font-semibold px-3 py-1 rounded-lg bg-primary-container hover:opacity-90 text-on-primary-container transition-colors motion-safe:active:scale-[0.97]"
                   >Add Friend</button>
                   <button
                     onClick={() => {
                       if (activeUid) deleteConversation(user?.uid ?? '', activeUid, threadMessages).catch(() => {});
                       setActiveUid(null);
                     }}
-                    className="text-xs font-medium px-3 py-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                    className="text-xs font-medium px-3 py-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors motion-safe:active:scale-[0.97]"
                   >Decline</button>
                 </div>
               </div>

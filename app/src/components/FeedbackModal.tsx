@@ -70,7 +70,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
               Live Beta
             </span>
           </div>
-          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors">
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors motion-safe:active:scale-[0.97]">
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
@@ -80,7 +80,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
             <span className="material-symbols-outlined text-[48px] text-primary">check_circle</span>
             <p className="font-semibold text-on-surface">Thanks for your message!</p>
             <p className="text-sm text-on-surface-variant">Your {type === 'Report Issue/Bug' ? 'bug report' : 'feedback'} has been received.</p>
-            <button onClick={onClose} className="mt-2 px-6 py-2 bg-primary-container text-on-primary-container rounded-xl font-medium text-sm transition hover:brightness-110">
+            <button onClick={onClose} className="mt-2 px-6 py-2 bg-primary-container text-on-primary-container rounded-xl font-medium text-sm transition hover:brightness-110 motion-safe:active:scale-[0.97]">
               Close
             </button>
           </div>
@@ -93,7 +93,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
                   key={t}
                   type="button"
                   onClick={() => setType(t)}
-                  className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
+                  className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border-2 transition-all motion-safe:active:scale-[0.97] ${
                     type === t
                       ? 'border-primary bg-primary-container/30 text-on-primary-container'
                       : 'border-outline-variant text-on-surface-variant hover:border-outline'
@@ -129,7 +129,7 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
             {/* Screenshot attachment hint */}
             <button
               type="button"
-              className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-on-surface transition-colors"
+              className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-on-surface transition-colors motion-safe:active:scale-[0.97]"
             >
               <span className="material-symbols-outlined text-[16px]">attach_file</span>
               Attach screenshot (optional)
@@ -146,13 +146,13 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
             </p>
 
             <div className="flex gap-3 pt-1">
-              <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors">
+              <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]">
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={sending || !message.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-sm font-semibold transition hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-sm font-semibold transition hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2 motion-safe:active:scale-[0.97]"
               >
                 <span className="material-symbols-outlined text-[18px]">send</span>
                 {sending ? 'Sending...' : 'Send Feedback'}

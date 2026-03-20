@@ -904,48 +904,75 @@ export const checkVaccineReminders = onSchedule('every day 09:00', async () => {
   const cvrLog = createLogger('checkVaccineReminders');
   const db = admin.firestore();
 
-  // Compute target dates: today + 7 days and today + 1 day (UTC, YYYY-MM-DD)
+  // Compute target dates and today string (UTC, YYYY-MM-DD)
   const msPerDay = 24 * 60 * 60 * 1000;
   const now = Date.now();
   const toDateString = (ms: number): string => new Date(ms).toISOString().slice(0, 10);
+  const todayStr = toDateString(now);
   const in1Day = toDateString(now + 1 * msPerDay);
   const in7Days = toDateString(now + 7 * msPerDay);
-  const targetDays: Record<string, number> = { [in1Day]: 1, [in7Days]: 7 };
+  const in14Days = toDateString(now + 14 * msPerDay);
+  const targetDays: Record<string, number> = { [in1Day]: 1, [in7Days]: 7, [in14Days]: 14 };
 
-  cvrLog.info(`Checking due dates for ${in1Day} (1 day) and ${in7Days} (7 days).`);
+  cvrLog.info(`Checking due dates for ${in1Day} (1d), ${in7Days} (7d), ${in14Days} (14d), and overdue.`);
 
-  const petsSnap = await db.collection('pets').get();
-  if (petsSnap.empty) {
-    cvrLog.info('No pets found — nothing to do.');
-    return;
-  }
-
+  // Iterate users → users/{uid}/pets (subcollection pattern, same as checkPetBirthdays)
+  const usersSnap = await db.collection('users').get();
   let reminderCount = 0;
 
-  await Promise.all(petsSnap.docs.map(async (petDoc) => {
-    const pet = petDoc.data();
-    const uid: string = pet.ownerId;
-    const petName: string = pet.name ?? 'your pet';
+  for (const userDoc of usersSnap.docs) {
+    const uid = userDoc.id;
+    const petsSnap = await db.collection(`users/${uid}/pets`).get();
 
-    if (!uid) return;
+    for (const petDoc of petsSnap.docs) {
+      const pet = petDoc.data();
+      const petName: string = pet.name ?? 'your pet';
 
-    // Check vaccines and medications in a unified loop
-    const items: Array<{ name: string; nextDueDate?: string }> = [
-      ...(Array.isArray(pet.vaccines) ? pet.vaccines : []),
-      ...(Array.isArray(pet.medications) ? pet.medications : []),
-    ];
+      // Only check vaccines (medications use endDate, not nextDueDate)
+      const vaccines: Array<{ name?: string; nextDueDate?: string }> =
+        Array.isArray(pet.vaccines) ? pet.vaccines : [];
 
-    await Promise.all(items.map(async (item) => {
-      if (!item.nextDueDate || !targetDays[item.nextDueDate]) return;
-      const daysUntilDue = targetDays[item.nextDueDate];
-      try {
-        await sendVaccineReminder(uid, petName, item.name ?? 'health item', daysUntilDue);
-        reminderCount++;
-      } catch (err) {
-        cvrLog.error(`Failed to send reminder for pet=${petDoc.id} uid=${uid}`, err);
+      for (const vaccine of vaccines) {
+        if (!vaccine.nextDueDate) continue;
+
+        let daysUntilDue: number;
+        let bucket: string;
+
+        if (targetDays[vaccine.nextDueDate] !== undefined) {
+          // Upcoming: 1, 7, or 14 days away
+          daysUntilDue = targetDays[vaccine.nextDueDate];
+          bucket = `upcoming_${daysUntilDue}`;
+        } else if (vaccine.nextDueDate < todayStr) {
+          // Overdue
+          const overdueMs = new Date(todayStr).getTime() - new Date(vaccine.nextDueDate).getTime();
+          daysUntilDue = -Math.round(overdueMs / msPerDay);
+          bucket = 'overdue';
+        } else {
+          continue;
+        }
+
+        // Dedup: check if notification with same vaccine + bucket already exists today
+        const vaccineName = vaccine.name ?? 'health item';
+        const existingSnap = await db
+          .collection(`notifications/${uid}/items`)
+          .where('type', '==', 'vaccine_reminder')
+          .where('vaccineName', '==', vaccineName)
+          .where('dedupBucket', '==', bucket)
+          .where('dedupDate', '==', todayStr)
+          .limit(1)
+          .get();
+
+        if (!existingSnap.empty) continue;
+
+        try {
+          await sendVaccineReminder(uid, petName, vaccineName, daysUntilDue);
+          reminderCount++;
+        } catch (err) {
+          cvrLog.error(`Failed to send reminder for pet=${petDoc.id} uid=${uid}`, err);
+        }
       }
-    }));
-  }));
+    }
+  }
 
   cvrLog.info(`Done. Sent ${reminderCount} reminder(s).`);
 });

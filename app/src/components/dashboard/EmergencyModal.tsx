@@ -58,7 +58,7 @@ export default function EmergencyModal({ onClose, onFindVet, onReportLost }: Eme
             <button
               onClick={onClose}
               aria-label="Close emergency assistance"
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-on-error/70 hover:text-on-error rounded-lg motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-error/50"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-on-error/70 hover:text-on-error rounded-lg motion-safe:transition-colors motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-error/50"
             >
               <span className="material-symbols-outlined text-xl" aria-hidden="true">close</span>
             </button>
@@ -71,7 +71,7 @@ export default function EmergencyModal({ onClose, onFindVet, onReportLost }: Eme
           {/* Find Emergency Vet */}
           <button
             onClick={() => { onFindVet(); onClose(); }}
-            className="w-full flex items-center gap-4 bg-error-container/60 hover:bg-error-container/80 border border-error/20 p-4 rounded-2xl motion-safe:transition-colors text-left"
+            className="w-full flex items-center gap-4 bg-error-container/60 hover:bg-error-container/80 border border-error/20 p-4 rounded-2xl motion-safe:transition-colors motion-safe:active:scale-[0.97] text-left"
           >
             <div className="w-10 h-10 bg-error-container rounded-xl flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-xl text-on-error-container" aria-hidden="true">monitor_heart</span>
@@ -85,7 +85,7 @@ export default function EmergencyModal({ onClose, onFindVet, onReportLost }: Eme
           {/* Report Lost Pet */}
           <button
             onClick={() => { onReportLost(); onClose(); }}
-            className="w-full flex items-center gap-4 bg-secondary-container/40 hover:bg-secondary-container/60 border border-secondary/20 p-4 rounded-2xl motion-safe:transition-colors text-left"
+            className="w-full flex items-center gap-4 bg-secondary-container/40 hover:bg-secondary-container/60 border border-secondary/20 p-4 rounded-2xl motion-safe:transition-colors motion-safe:active:scale-[0.97] text-left"
           >
             <div className="w-10 h-10 bg-secondary-container rounded-xl flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-xl text-on-secondary-container" aria-hidden="true">person_search</span>
@@ -101,7 +101,7 @@ export default function EmergencyModal({ onClose, onFindVet, onReportLost }: Eme
             href="https://www.aspca.org/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-surface-container-high/40 hover:bg-surface-container-high/60 border border-outline-variant/30 p-4 rounded-2xl motion-safe:transition-colors text-left block"
+            className="w-full flex items-center gap-4 bg-surface-container-high/40 hover:bg-surface-container-high/60 border border-outline-variant/30 p-4 rounded-2xl motion-safe:transition-colors motion-safe:active:scale-[0.97] text-left block"
           >
             <div className="w-10 h-10 bg-surface-container-high rounded-xl flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-xl text-on-surface-variant" aria-hidden="true">open_in_new</span>
@@ -117,7 +117,7 @@ export default function EmergencyModal({ onClose, onFindVet, onReportLost }: Eme
             href="https://www.petpoisonhelpline.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center gap-4 bg-surface-container-high/40 hover:bg-surface-container-high/60 border border-outline-variant/30 p-4 rounded-2xl motion-safe:transition-colors text-left block"
+            className="w-full flex items-center gap-4 bg-surface-container-high/40 hover:bg-surface-container-high/60 border border-outline-variant/30 p-4 rounded-2xl motion-safe:transition-colors motion-safe:active:scale-[0.97] text-left block"
           >
             <div className="w-10 h-10 bg-surface-container-high rounded-xl flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-xl text-on-surface-variant" aria-hidden="true">open_in_new</span>

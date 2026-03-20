@@ -131,7 +131,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 <p className="text-sm text-on-surface-variant">{ownedGroups.length}/3 groups owned</p>
                             </div>
                         </div>
-                        <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-lg hover:bg-surface-container-high">
+                        <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-lg hover:bg-surface-container-high motion-safe:active:scale-[0.97]">
                             <span className="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     </div>
@@ -194,7 +194,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-2.5 py-1 rounded-lg transition-colors"
+                                            className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-2.5 py-1 rounded-lg transition-colors motion-safe:active:scale-[0.97]"
                                         >
                                             Change
                                         </button>
@@ -204,7 +204,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container hover:border-primary hover:bg-primary-container/20 transition-colors group"
+                                    className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container hover:border-primary hover:bg-primary-container/20 transition-colors motion-safe:active:scale-[0.97] group"
                                 >
                                     <span className="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-primary transition-colors">add_photo_alternate</span>
                                     <span className="text-sm text-on-surface-variant group-hover:text-primary transition-colors">

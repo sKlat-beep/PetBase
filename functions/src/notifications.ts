@@ -254,8 +254,7 @@ export const sendWeeklyDigest = onSchedule(
       let upcomingReminders: string[] = [];
       try {
         const petsSnap = await db
-          .collection('pets')
-          .where('ownerId', '==', uid)
+          .collection(`users/${uid}/pets`)
           .get();
 
         for (const petDoc of petsSnap.docs) {
@@ -487,16 +486,30 @@ export async function sendVaccineReminder(
   daysUntilDue: number,
 ): Promise<void> {
   const db = admin.firestore();
-  const message =
-    daysUntilDue === 1
-      ? `Reminder: ${petName}'s ${vaccineName} is due tomorrow.`
-      : `Reminder: ${petName}'s ${vaccineName} is due in ${daysUntilDue} days.`;
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  let message: string;
+  let dedupBucket: string;
+
+  if (daysUntilDue < 0) {
+    const overdueDays = Math.abs(daysUntilDue);
+    message = `OVERDUE: ${petName}'s ${vaccineName} was due ${overdueDays} day${overdueDays === 1 ? '' : 's'} ago.`;
+    dedupBucket = 'overdue';
+  } else if (daysUntilDue === 1) {
+    message = `Reminder: ${petName}'s ${vaccineName} is due tomorrow.`;
+    dedupBucket = 'upcoming_1';
+  } else {
+    message = `Reminder: ${petName}'s ${vaccineName} is due in ${daysUntilDue} days.`;
+    dedupBucket = `upcoming_${daysUntilDue}`;
+  }
 
   await db.collection(`notifications/${uid}/items`).add({
     type: 'vaccine_reminder',
     petName,
     vaccineName,
     daysUntilDue,
+    dedupBucket,
+    dedupDate: todayStr,
     message,
     read: false,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),

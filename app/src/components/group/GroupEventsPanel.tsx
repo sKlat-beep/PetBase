@@ -45,7 +45,7 @@ export function GroupEventsPanel({
   };
 
   return (
-    <div className="bg-surface-container-low rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
+    <div className="glass-card rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
       <div className="p-5">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold text-on-surface flex items-center gap-2">

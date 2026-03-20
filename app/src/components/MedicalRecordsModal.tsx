@@ -518,7 +518,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                     onClick={() => setActiveTab(tab.key)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-colors ${activeTab === tab.key
                       ? 'bg-primary-container text-on-primary-container'
-                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                      : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface motion-safe:active:scale-[0.97]'
                       }`}
                   >
                     <span className={"material-symbols-outlined text-[20px]"}
@@ -580,7 +580,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                 <button
                   type="button"
                   onClick={onClose}
-                  className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container"
+                  className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container motion-safe:active:scale-[0.97]"
                 >
                   <span className="material-symbols-outlined text-[20px]">close</span>
                 </button>
@@ -595,7 +595,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                     onClick={() => setActiveTab(tab.key)}
                     className={`flex items-center gap-2 py-3 px-2 mr-4 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab.key
                       ? 'border-primary text-primary'
-                      : 'border-transparent text-on-surface-variant hover:text-on-surface'
+                      : 'border-transparent text-on-surface-variant hover:text-on-surface motion-safe:active:scale-[0.97]'
                       }`}
                   >
                     <span className="material-symbols-outlined text-[18px]"
@@ -624,7 +624,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                       else if (activeTab === 'visits') addVisit();
                       else addMedication();
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-medium hover:brightness-110 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-container text-on-primary-container text-xs font-medium hover:brightness-110 transition-colors motion-safe:active:scale-[0.97]"
                   >
                     <span className="material-symbols-outlined text-[16px]">add</span>
                     Add New Record
@@ -632,7 +632,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                   <button
                     type="button"
                     onClick={onClose}
-                    className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container"
+                    className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container motion-safe:active:scale-[0.97]"
                   >
                     <span className="material-symbols-outlined text-[20px]">close</span>
                   </button>
@@ -823,7 +823,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                               type="button"
                               onClick={() => administeredToday(vaccine.originalIndex)}
                               title="Mark as administered today and auto-calculate next due date"
-                              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:brightness-110 transition-colors text-xs font-medium shrink-0"
+                              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:brightness-110 transition-colors text-xs font-medium shrink-0 motion-safe:active:scale-[0.97]"
                             >
                               <span className="material-symbols-outlined text-[14px]">bolt</span> Today
                             </button>
@@ -864,7 +864,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                     <button
                       type="button"
                       onClick={addVisit}
-                      className="w-full py-2.5 rounded-2xl bg-tertiary-container text-on-tertiary-container hover:brightness-110 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                      className="w-full py-2.5 rounded-2xl bg-tertiary-container text-on-tertiary-container hover:brightness-110 transition-colors text-sm font-medium flex items-center justify-center gap-2 motion-safe:active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[18px]">add</span> Log a Vet Visit
                     </button>
@@ -948,7 +948,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                     <button
                       type="button"
                       onClick={addMedication}
-                      className="w-full py-2.5 rounded-2xl bg-tertiary-container text-on-tertiary-container hover:brightness-110 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                      className="w-full py-2.5 rounded-2xl bg-tertiary-container text-on-tertiary-container hover:brightness-110 transition-colors text-sm font-medium flex items-center justify-center gap-2 motion-safe:active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[18px]">add</span> Add Medication
                     </button>
@@ -1067,7 +1067,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 py-2.5 rounded-2xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
+                  className="flex-1 py-2.5 rounded-2xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
                 >
                   Cancel
                 </button>
@@ -1075,7 +1075,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                   type="button"
                   onClick={handleSave}
                   disabled={!isDirty}
-                  className="flex-1 py-2.5 rounded-2xl bg-primary-container text-on-primary-container disabled:opacity-40 disabled:cursor-not-allowed font-medium transition-colors hover:brightness-110 flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-2xl bg-primary-container text-on-primary-container disabled:opacity-40 disabled:cursor-not-allowed font-medium transition-colors hover:brightness-110 motion-safe:active:scale-[0.97] flex items-center justify-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[18px]">save</span>
                   Save Records

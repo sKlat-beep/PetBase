@@ -51,7 +51,7 @@ export function CollapsiblePanelWidget({ id, title, icon, badge, children, defau
             transition={{ duration: 0.18, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 min-w-0">
               {children}
             </div>
           </motion.div>

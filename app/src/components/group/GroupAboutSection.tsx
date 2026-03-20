@@ -31,7 +31,7 @@ export function GroupAboutSection({ group, userRole, userId, groupId }: GroupAbo
   };
 
   return (
-    <div className="bg-surface-container-low rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
+    <div className="glass-card rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
       <div className="relative h-32 w-full group/banner">
         {group.image ? (
           <img src={group.image} alt={group.name} className="w-full h-full object-cover" />

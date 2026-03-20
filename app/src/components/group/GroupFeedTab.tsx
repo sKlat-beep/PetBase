@@ -253,11 +253,11 @@ export function GroupFeedTab({
       <div className="flex gap-2 mb-3">
         <button
           onClick={() => setFeedTab('recent')}
-          className={`px-3 py-1 rounded-full text-sm ${feedTab === 'recent' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'}`}
+          className={`px-3 py-1 rounded-full text-sm motion-safe:active:scale-[0.97] transition-colors ${feedTab === 'recent' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'}`}
         >Recent</button>
         <button
           onClick={() => setFeedTab('trending')}
-          className={`px-3 py-1 rounded-full text-sm ${feedTab === 'trending' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'}`}
+          className={`px-3 py-1 rounded-full text-sm motion-safe:active:scale-[0.97] transition-colors ${feedTab === 'trending' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'}`}
         >Trending</button>
       </div>
 
@@ -324,7 +324,7 @@ export function GroupFeedTab({
         {hasMorePosts[group.id] && (
           <button
             onClick={() => loadMorePosts(group.id)}
-            className="w-full py-2 text-sm text-on-surface-variant hover:text-on-surface border border-outline-variant rounded-xl transition-colors"
+            className="w-full py-2 text-sm text-on-surface-variant hover:text-on-surface border border-outline-variant rounded-xl transition-colors motion-safe:active:scale-[0.97]"
           >
             Load more posts
           </button>
@@ -353,10 +353,10 @@ function PostCard({ post, groupId, canPin, canDelete, pinPost, deletePost, isAut
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   return (
-    <div className={`bg-surface-container-low rounded-2xl p-5 shadow-sm border ${post.isPinned ? 'border-amber-200 outline outline-2 outline-amber-100' : 'border-outline-variant'}`}>
+    <div className={`glass-card rounded-2xl p-5 shadow-sm border ${post.isPinned ? 'border-amber-200 outline outline-2 outline-amber-100' : 'border-outline-variant'}`}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3 mb-3">
-          <img src={post.authorImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`} alt={post.authorName} className="w-10 h-10 rounded-full bg-surface-container" />
+          <img src={post.authorImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`} alt={post.authorName} className="w-10 h-10 rounded-full bg-surface-container story-ring" />
           <div>
             <h4 className="font-semibold text-on-surface flex items-center gap-2">
               {post.authorName} {isAuthor && <span className="text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant font-normal">You</span>}

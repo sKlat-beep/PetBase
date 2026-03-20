@@ -92,12 +92,12 @@ export function GroupHub() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8 max-w-5xl mx-auto"
         >
-            <header className="flex items-center gap-4">
-                <button onClick={() => navigate('/community')} aria-label="Back to Community" className="p-2 bg-surface-container-low rounded-xl border border-outline-variant hover:bg-surface-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+            <header className="flex items-center gap-4 glass-card rounded-2xl p-4">
+                <button onClick={() => navigate('/community')} aria-label="Back to Community" className="p-2 bg-surface-container-low rounded-xl border border-outline-variant hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
                     <span className="material-symbols-outlined text-[20px] text-on-surface-variant">arrow_back</span>
                 </button>
                 <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-on-surface tracking-tight">
+                    <h1 className="text-3xl font-bold text-on-surface text-glow tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>
                         {group.name}
                     </h1>
                     <p className="text-on-surface-variant mt-1 flex items-center gap-2">
@@ -109,7 +109,7 @@ export function GroupHub() {
                     <button
                         onClick={() => setShowRetentionModal(true)}
                         aria-label="Group settings"
-                        className="p-2 bg-surface-container-low rounded-xl border border-outline-variant hover:bg-surface-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                        className="p-2 bg-surface-container-low rounded-xl border border-outline-variant hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
                         <span className="material-symbols-outlined text-[20px] text-on-surface-variant">tune</span>
                     </button>
@@ -120,17 +120,17 @@ export function GroupHub() {
 
             {/* Tab Bar -- Moderation tab only visible to Owner/Moderator */}
             {(userRole === 'Owner' || userRole === 'Moderator') && (
-                <div className="flex gap-1 bg-surface-container rounded-xl p-1 w-fit">
+                <div className="flex gap-1 glass-card rounded-xl p-1 w-fit">
                     <button
                         onClick={() => setActiveTab('feed')}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'feed' ? 'bg-surface-container-low text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'feed' ? 'bg-surface-container-low text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
                     >
                         <span className="material-symbols-outlined text-[16px]">chat</span>
                         Feed
                     </button>
                     <button
                         onClick={() => setActiveTab('moderation')}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'moderation' ? 'bg-surface-container-low text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${activeTab === 'moderation' ? 'bg-surface-container-low text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
                     >
                         <span className="material-symbols-outlined text-[16px]">shield</span>
                         Moderation

@@ -124,15 +124,15 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
     <>
       {/* 1. Quick Actions — 2x2 grid */}
       <CollapsiblePanelWidget id="dash-quick-actions" title="Quick Actions" icon={<MIcon name="bolt" className="text-[14px]" />}>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 min-w-0">
           {QUICK_ACTIONS.map(qa => (
             <Link
               key={qa.label}
               to={qa.to}
-              className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl ${qa.colorClass} hover:brightness-110 motion-safe:transition-all min-h-[72px] text-center`}
+              className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl ${qa.colorClass} hover:brightness-110 motion-safe:transition-all motion-safe:active:scale-[0.97] min-h-[72px] text-center min-w-0`}
             >
               <MIcon name={qa.icon} className="text-[24px]" />
-              <span className="text-xs font-medium">{qa.label}</span>
+              <span className="text-xs font-medium truncate">{qa.label}</span>
             </Link>
           ))}
         </div>
@@ -202,11 +202,11 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
       <CollapsiblePanelWidget id="dash-calendar" title="Calendar" icon={<MIcon name="calendar_month" className="text-[14px]" />}>
         {/* Month navigation */}
         <div className="flex items-center justify-between mb-3">
-          <button onClick={prevMonth} className="w-8 h-8 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors focus-visible:ring-2 focus-visible:ring-primary" aria-label="Previous month">
+          <button onClick={prevMonth} className="w-8 h-8 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors motion-safe:active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-primary" aria-label="Previous month">
             <MIcon name="chevron_left" className="text-[18px] text-on-surface-variant" />
           </button>
-          <span className="text-xs font-semibold text-on-surface">{monthLabel}</span>
-          <button onClick={nextMonth} className="w-8 h-8 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors focus-visible:ring-2 focus-visible:ring-primary" aria-label="Next month">
+          <span className="text-xs font-semibold text-on-surface truncate">{monthLabel}</span>
+          <button onClick={nextMonth} className="w-8 h-8 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center hover:bg-surface-container-high motion-safe:transition-colors motion-safe:active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-primary" aria-label="Next month">
             <MIcon name="chevron_right" className="text-[18px] text-on-surface-variant" />
           </button>
         </div>
@@ -237,7 +237,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
                     ? 'bg-primary text-on-primary'
                     : isSelected
                     ? 'bg-secondary-container text-on-secondary-container ring-1 ring-secondary'
-                    : 'text-on-surface-variant hover:bg-surface-container-high'
+                    : 'text-on-surface-variant hover:bg-surface-container-high motion-safe:active:scale-[0.97]'
                 }`}
               >
                 {day}
@@ -292,7 +292,7 @@ export function DashboardRightPanel({ onCalendar }: DashboardRightPanelProps) {
         {/* Calendar launcher */}
         <button
           onClick={onCalendar}
-          className="mt-3 w-full text-xs text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded min-h-[44px] inline-flex items-center justify-center gap-1"
+          className="mt-3 w-full text-xs text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded min-h-[44px] inline-flex items-center justify-center gap-1 motion-safe:active:scale-[0.97]"
         >
           <MIcon name="open_in_new" className="text-[14px]" />
           View Full Calendar

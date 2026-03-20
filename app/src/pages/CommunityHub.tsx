@@ -89,7 +89,7 @@ export default function CommunityHub() {
       transition={{ duration: 0.3 }}
     >
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br from-primary-container to-emerald-50 border border-primary/20 p-6">
+      <div className="relative overflow-hidden rounded-2xl mb-6 glass-card bg-gradient-to-br from-primary-container to-emerald-50 border border-primary/20 p-6">
         {/* Paw-pattern background */}
         <div
           className="absolute inset-0 opacity-5"
@@ -101,7 +101,7 @@ export default function CommunityHub() {
         />
         <div className="relative flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-on-surface flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-on-surface text-glow flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
               <span className="material-symbols-outlined text-[24px] text-primary" aria-hidden="true">groups</span>
               Community Hub
             </h1>
@@ -111,7 +111,7 @@ export default function CommunityHub() {
           </div>
           <button
             onClick={() => setIsReordering(r => !r)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px] ${
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px] ${
               isReordering
                 ? 'bg-primary text-on-primary border-primary hover:bg-primary/90'
                 : 'bg-surface-container-low border-outline-variant text-on-surface-variant hover:bg-surface-container'
@@ -147,7 +147,7 @@ export default function CommunityHub() {
               <button
                 key={id}
                 onClick={() => scrollToSection(meta.anchor)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant text-xs font-medium text-on-surface-variant hover:bg-primary-container hover:border-primary/20 hover:text-on-primary-container transition-all whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-card border border-outline-variant text-xs font-medium text-on-surface-variant hover:bg-primary-container hover:border-primary/20 hover:text-on-primary-container transition-all motion-safe:active:scale-[0.97] whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 min-h-[36px]"
               >
                 <span className="material-symbols-outlined text-[14px]" aria-hidden="true">{meta.icon}</span>
                 {meta.label}

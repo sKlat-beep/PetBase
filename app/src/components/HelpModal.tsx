@@ -104,7 +104,7 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
               Help & FAQ
             </h2>
           </div>
-          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors">
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors motion-safe:active:scale-[0.97]">
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
@@ -129,7 +129,7 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
             <div key={section.title} className="border border-outline-variant rounded-xl overflow-hidden">
               <button
                 onClick={() => setOpenSection(openSection === section.title ? null : section.title)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-surface-container/50 transition-colors"
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-surface-container/50 transition-colors motion-safe:active:scale-[0.97]"
               >
                 <span className="font-semibold text-on-surface text-sm">{section.title}</span>
                 <span className="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">
@@ -150,7 +150,7 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
                         <div key={item.q}>
                           <button
                             onClick={() => setOpenQuestion(openQuestion === item.q ? null : item.q)}
-                            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface-container/30 transition-colors gap-3"
+                            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface-container/30 transition-colors motion-safe:active:scale-[0.97] gap-3"
                           >
                             <span className="text-sm text-on-surface-variant">{item.q}</span>
                             <span className="material-symbols-outlined text-[16px] text-on-surface-variant shrink-0">
@@ -190,7 +190,7 @@ export function HelpModal({ onClose, onFeedback }: HelpModalProps) {
           <p className="text-xs text-on-surface-variant mb-2">Still need help?</p>
           <button
             onClick={() => { onClose(); onFeedback(); }}
-            className="inline-flex items-center gap-2 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+            className="inline-flex items-center gap-2 text-xs text-primary hover:text-primary/80 font-medium transition-colors motion-safe:active:scale-[0.97]"
           >
             <span className="material-symbols-outlined text-[14px]">mail</span>
             Contact Support

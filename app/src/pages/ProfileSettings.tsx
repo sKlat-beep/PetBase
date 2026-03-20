@@ -509,7 +509,7 @@ export function ProfileSettings() {
         </div>
         <button
           onClick={() => setShowFeedback(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-sm font-medium transition-colors self-start shrink-0"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-sm font-medium transition-colors motion-safe:active:scale-[0.97] self-start shrink-0"
         >
           <span className="material-symbols-outlined text-lg">chat_bubble</span>
           Feedback / Report Issue
@@ -587,7 +587,7 @@ export function ProfileSettings() {
                     <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-md">
                       @{profile.username.split('#')[0]}<span className="opacity-60">#{profile.username.split('#')[1]}</span>
                     </span>
-                    <button type="button" onClick={() => navigator.clipboard.writeText(profile.username!)} className="text-on-surface-variant hover:text-primary-container transition-colors" title="Copy username">
+                    <button type="button" onClick={() => navigator.clipboard.writeText(profile.username!)} className="text-on-surface-variant hover:text-primary-container transition-colors motion-safe:active:scale-[0.97]" title="Copy username">
                       <span className="material-symbols-outlined text-sm">content_copy</span>
                     </button>
                   </div>
@@ -601,7 +601,7 @@ export function ProfileSettings() {
                     key={shape}
                     type="button"
                     onClick={() => { setAvatarShape(shape); setIsDirty(true); }}
-                    className={`px-3 py-1.5 rounded-lg capitalize transition-colors font-medium ${avatarShape === shape ? 'bg-primary-container text-on-primary-container shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                    className={`px-3 py-1.5 rounded-lg capitalize transition-colors font-medium motion-safe:active:scale-[0.97] ${avatarShape === shape ? 'bg-primary-container text-on-primary-container shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
                   >
                     {shape}
                   </button>
@@ -789,7 +789,7 @@ export function ProfileSettings() {
             <button
               type="button"
               onClick={() => playNotificationChime()}
-              className="text-xs text-on-surface-variant hover:text-primary-container underline transition-colors"
+              className="text-xs text-on-surface-variant hover:text-primary-container underline transition-colors motion-safe:active:scale-[0.97]"
             >
               Preview
             </button>
@@ -802,7 +802,7 @@ export function ProfileSettings() {
             type="button"
             onClick={handleSaveNotifications}
             disabled={notifSaving}
-            className="px-5 py-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container rounded-xl font-semibold text-sm transition-all"
+            className="px-5 py-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container rounded-xl font-semibold text-sm transition-all motion-safe:active:scale-[0.97]"
           >
             {notifSaving ? 'Saving...' : 'Save Notifications'}
           </button>
@@ -883,7 +883,7 @@ export function ProfileSettings() {
               type="button"
               onClick={handleSavePrivacy}
               disabled={privacySaving}
-              className="px-5 py-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container rounded-xl font-semibold text-sm transition-all"
+              className="px-5 py-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container rounded-xl font-semibold text-sm transition-all motion-safe:active:scale-[0.97]"
             >
               {privacySaving ? 'Saving...' : 'Save Privacy'}
             </button>
@@ -1051,7 +1051,7 @@ export function ProfileSettings() {
           <button
             onClick={handleEnableSync}
             disabled={syncSaving}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container hover:opacity-90 disabled:opacity-50 font-medium transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container hover:opacity-90 disabled:opacity-50 font-medium transition-all motion-safe:active:scale-[0.97]"
           >
             {syncSaving && <span className="material-symbols-outlined text-lg animate-spin">sync</span>}
             {syncSaving ? 'Enabling...' : 'Enable Cross-Device Sync'}
@@ -1077,14 +1077,14 @@ export function ProfileSettings() {
             <button
               type="button"
               onClick={() => { setBackupMode('export'); setShowBackupModal(true); setBackupError(''); setBackupSuccess(''); }}
-              className="flex items-center gap-2 bg-primary-container hover:opacity-90 text-on-primary-container px-4 py-2 rounded-xl font-medium transition-all"
+              className="flex items-center gap-2 bg-primary-container hover:opacity-90 text-on-primary-container px-4 py-2 rounded-xl font-medium transition-all motion-safe:active:scale-[0.97]"
             >
               <span className="material-symbols-outlined text-lg">download</span> Export Backup
             </button>
             <button
               type="button"
               onClick={() => { setBackupMode('import'); setShowBackupModal(true); setBackupError(''); setBackupSuccess(''); }}
-              className="flex items-center gap-2 border border-outline-variant hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl font-medium transition-colors"
+              className="flex items-center gap-2 border border-outline-variant hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl font-medium transition-colors motion-safe:active:scale-[0.97]"
             >
               <span className="material-symbols-outlined text-lg">upload</span> Import Backup
             </button>
@@ -1103,7 +1103,7 @@ export function ProfileSettings() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="px-4 py-2 text-sm bg-surface-container text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm bg-surface-container text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-50 flex items-center gap-2 motion-safe:active:scale-[0.97]"
           >
             {exporting
               ? <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
@@ -1136,7 +1136,7 @@ export function ProfileSettings() {
               setShowPersonalLogs(v => !v);
               if (!showPersonalLogs && user) getActivityLog(user.uid).then(setActivityLog).catch(() => {});
             }}
-            className="flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors motion-safe:active:scale-[0.97]"
           >
             <span className="material-symbols-outlined text-lg">schedule</span>
             My Activity
@@ -1168,7 +1168,7 @@ export function ProfileSettings() {
             <>
               <button
                 onClick={() => setShowAuditLog(v => !v)}
-                className="flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors"
+                className="flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors motion-safe:active:scale-[0.97]"
               >
                 <span className="material-symbols-outlined text-lg">history</span>
                 Family Audit Log
@@ -1265,7 +1265,7 @@ export function ProfileSettings() {
                           setTimeout(() => setCodeCopied(false), 2000);
                         }}
                         title="Copy invite code"
-                        className="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors"
+                        className="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors motion-safe:active:scale-[0.97]"
                       >
                         <span className={`material-symbols-outlined text-lg ${codeCopied ? 'text-primary-container' : ''}`}>content_copy</span>
                       </button>
@@ -1282,7 +1282,7 @@ export function ProfileSettings() {
                           }
                         }}
                         title="Share invite code"
-                        className="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors"
+                        className="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors motion-safe:active:scale-[0.97]"
                       >
                         <span className="material-symbols-outlined text-lg">share</span>
                       </button>
@@ -1291,7 +1291,7 @@ export function ProfileSettings() {
                         onClick={() => setConfirmAction({ type: 'regenerate', label: 'Regenerate invite code? The current code will stop working.', onConfirm: () => { regenerateCode(); setConfirmAction(null); } })}
                         disabled={hhLoading}
                         title="Regenerate invite code (invalidates current code)"
-                        className="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors"
+                        className="p-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors motion-safe:active:scale-[0.97]"
                       >
                         <span className="material-symbols-outlined text-lg">refresh</span>
                       </button>
@@ -1333,7 +1333,7 @@ export function ProfileSettings() {
                               <button
                                 type="button"
                                 onClick={() => setExpandedMember(isExpanded ? null : m.uid)}
-                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-tertiary-container/30 transition-colors"
+                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-tertiary hover:bg-tertiary-container/30 transition-colors motion-safe:active:scale-[0.97]"
                                 title="Manage member"
                               >
                                 <span className={`material-symbols-outlined text-lg transition-transform ${isExpanded ? 'rotate-180' : ''}`}>expand_more</span>
@@ -1345,7 +1345,7 @@ export function ProfileSettings() {
                                 onClick={() => setConfirmAction({ type: 'kick', label: `Remove ${m.displayName} from household?`, onConfirm: () => { kickMember(m.uid); setConfirmAction(null); } })}
                                 disabled={hhLoading}
                                 title="Remove member"
-                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors"
+                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-colors motion-safe:active:scale-[0.97]"
                               >
                                 <span className="material-symbols-outlined text-lg">person_remove</span>
                               </button>
@@ -1372,7 +1372,7 @@ export function ProfileSettings() {
                                       }}
                                       disabled={hhLoading}
                                       title={ROLE_DESCRIPTIONS[role]}
-                                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${m.role === role ? ROLE_COLORS[role] + ' ring-2 ring-tertiary' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'}`}
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors motion-safe:active:scale-[0.97] ${m.role === role ? ROLE_COLORS[role] + ' ring-2 ring-tertiary' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'}`}
                                     >
                                       {role}
                                     </button>
@@ -1450,7 +1450,7 @@ export function ProfileSettings() {
                   });
                 }}
                 disabled={hhLoading}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-error-container text-error hover:bg-error-container/30 transition-colors text-sm font-medium"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-error-container text-error hover:bg-error-container/30 transition-colors text-sm font-medium motion-safe:active:scale-[0.97]"
               >
                 <span className="material-symbols-outlined text-lg">logout</span>
                 {household.ownerId === user?.uid && members.length === 1 ? 'Disband Household' : 'Leave Household'}
@@ -1463,7 +1463,7 @@ export function ProfileSettings() {
                   <button
                     type="button"
                     onClick={() => setHhView('create')}
-                    className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-tertiary/40 hover:border-tertiary hover:bg-tertiary-container/20 transition-colors text-sm font-medium text-tertiary"
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-tertiary/40 hover:border-tertiary hover:bg-tertiary-container/20 transition-colors text-sm font-medium text-tertiary motion-safe:active:scale-[0.97]"
                   >
                     <span className="material-symbols-outlined text-2xl">group_add</span>
                     Create Household
@@ -1471,7 +1471,7 @@ export function ProfileSettings() {
                   <button
                     type="button"
                     onClick={() => setHhView('join')}
-                    className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-outline-variant hover:border-outline hover:bg-surface-container transition-colors text-sm font-medium text-on-surface-variant"
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-outline-variant hover:border-outline hover:bg-surface-container transition-colors text-sm font-medium text-on-surface-variant motion-safe:active:scale-[0.97]"
                   >
                     <span className="material-symbols-outlined text-2xl">chevron_right</span>
                     Join with Code
@@ -1489,14 +1489,14 @@ export function ProfileSettings() {
                     className={inputClass}
                   />
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setHhView('idle')} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors">
+                    <button type="button" onClick={() => setHhView('idle')} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]">
                       Cancel
                     </button>
                     <button
                       type="button"
                       onClick={() => { if (hhName.trim()) createHousehold(hhName.trim()).then(() => setHhView('idle')); }}
                       disabled={!hhName.trim() || hhLoading}
-                      className="flex-1 py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container text-sm font-semibold transition-colors disabled:opacity-50 hover:opacity-90"
+                      className="flex-1 py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container text-sm font-semibold transition-colors disabled:opacity-50 hover:opacity-90 motion-safe:active:scale-[0.97]"
                     >
                       {hhLoading ? 'Creating...' : 'Create'}
                     </button>
@@ -1515,14 +1515,14 @@ export function ProfileSettings() {
                     className={`${inputClassMono} tracking-widest uppercase`}
                   />
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setHhView('idle')} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors">
+                    <button type="button" onClick={() => setHhView('idle')} className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]">
                       Cancel
                     </button>
                     <button
                       type="button"
                       onClick={() => { if (joinCode.length === 6) joinHousehold(joinCode).then(() => setHhView('idle')); }}
                       disabled={joinCode.length < 6 || hhLoading}
-                      className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-sm font-semibold transition-colors disabled:opacity-50 hover:opacity-90"
+                      className="flex-1 py-2.5 rounded-xl bg-primary-container text-on-primary-container text-sm font-semibold transition-colors disabled:opacity-50 hover:opacity-90 motion-safe:active:scale-[0.97]"
                     >
                       {hhLoading ? 'Joining...' : 'Join'}
                     </button>
@@ -1596,7 +1596,7 @@ export function ProfileSettings() {
             <button
               type="button"
               onClick={() => setShowEmergencyPII(!showEmergencyPII)}
-              className="flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors motion-safe:active:scale-[0.97]"
             >
               <span className="material-symbols-outlined text-sm">{showEmergencyPII ? 'visibility_off' : 'visibility'}</span>
               {showEmergencyPII ? "Mask PII" : "Show PII"}
@@ -1659,7 +1659,7 @@ export function ProfileSettings() {
           <button
             type="button"
             onClick={handleSaveEmergencyContacts}
-            className="px-5 py-2 bg-primary-container hover:opacity-90 text-on-primary-container rounded-xl font-semibold text-sm transition-all"
+            className="px-5 py-2 bg-primary-container hover:opacity-90 text-on-primary-container rounded-xl font-semibold text-sm transition-all motion-safe:active:scale-[0.97]"
           >
             Save Emergency Contacts
           </button>
@@ -1686,7 +1686,7 @@ export function ProfileSettings() {
         <button
           type="button"
           onClick={() => setShowDeleteModal(true)}
-          className="bg-error-container/30 text-error border border-error-container hover:bg-error-container/50 px-5 py-2.5 rounded-xl font-medium transition-colors flex items-center gap-2"
+          className="bg-error-container/30 text-error border border-error-container hover:bg-error-container/50 px-5 py-2.5 rounded-xl font-medium transition-colors flex items-center gap-2 motion-safe:active:scale-[0.97]"
         >
           <span className="material-symbols-outlined text-lg">delete_forever</span>
           Delete Account
@@ -1703,14 +1703,14 @@ export function ProfileSettings() {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="px-4 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors"
+            className="px-4 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveProfile}
             disabled={saving || !isDirty}
-            className="px-5 py-2 rounded-xl bg-primary-container text-on-primary-container text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-2"
+            className="px-5 py-2 rounded-xl bg-primary-container text-on-primary-container text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-all motion-safe:active:scale-[0.97] flex items-center gap-2"
           >
             {saving && <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>}
             {saving ? 'Saving...' : 'Save Changes'}
@@ -1733,10 +1733,10 @@ export function ProfileSettings() {
             >
               <p className="text-sm text-on-surface-variant font-medium">{confirmAction.label}</p>
               <div className="flex gap-3">
-                <button onClick={() => setConfirmAction(null)} className="flex-1 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors">
+                <button onClick={() => setConfirmAction(null)} className="flex-1 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]">
                   Cancel
                 </button>
-                <button onClick={confirmAction.onConfirm} className="flex-1 py-2 rounded-xl bg-error text-on-error text-sm font-semibold transition-colors hover:opacity-90">
+                <button onClick={confirmAction.onConfirm} className="flex-1 py-2 rounded-xl bg-error text-on-error text-sm font-semibold transition-colors hover:opacity-90 motion-safe:active:scale-[0.97]">
                   Confirm
                 </button>
               </div>
@@ -1826,7 +1826,7 @@ export function ProfileSettings() {
               <button
                 type="button"
                 onClick={() => { setShowBackupModal(false); setBackupPassword(''); setBackupConfirm(''); setBackupFile(null); setBackupError(''); setBackupSuccess(''); }}
-                className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
+                className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
               >
                 {backupSuccess ? 'Close' : 'Cancel'}
               </button>
@@ -1835,7 +1835,7 @@ export function ProfileSettings() {
                   type="button"
                   disabled={backupWorking || !backupPassword || (backupMode === 'export' ? !backupConfirm : !backupFile)}
                   onClick={backupMode === 'export' ? handleExportBackup : handleImportBackup}
-                  className="flex-1 py-2.5 rounded-xl bg-primary-container hover:opacity-90 text-on-primary-container font-semibold transition-all disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-primary-container hover:opacity-90 text-on-primary-container font-semibold transition-all disabled:opacity-50 motion-safe:active:scale-[0.97]"
                 >
                   {backupWorking ? 'Working...' : backupMode === 'export' ? 'Download Backup' : 'Restore Backup'}
                 </button>
@@ -1895,7 +1895,7 @@ export function ProfileSettings() {
               <button
                 type="button"
                 onClick={closeDeleteModal}
-                className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors"
+                className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
               >
                 Cancel
               </button>
@@ -1903,7 +1903,7 @@ export function ProfileSettings() {
                 type="button"
                 onClick={handleDeleteAccount}
                 disabled={deleteEmailInput !== user?.email || deleting}
-                className="flex-1 py-2.5 rounded-xl bg-error hover:opacity-90 text-on-error font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 py-2.5 rounded-xl bg-error hover:opacity-90 text-on-error font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed motion-safe:active:scale-[0.97]"
               >
                 {deleting ? 'Deleting...' : 'Delete Account'}
               </button>
@@ -1942,7 +1942,7 @@ export function ProfileSettings() {
             <button
               onClick={handleSaveProfile}
               disabled={saving}
-              className="flex items-center gap-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container px-5 py-3 rounded-2xl font-semibold shadow-xl transition-all"
+              className="flex items-center gap-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container px-5 py-3 rounded-2xl font-semibold shadow-xl transition-all motion-safe:active:scale-95"
             >
               {saving ? (
                 <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>

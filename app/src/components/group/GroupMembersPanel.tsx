@@ -30,7 +30,7 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
   );
 
   return (
-    <div className="bg-surface-container-low rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
+    <div className="glass-card rounded-2xl overflow-hidden shadow-sm border border-outline-variant">
       <div className="p-5">
         <h4 className="font-semibold text-on-surface mb-3 flex items-center gap-2">
           <span className="material-symbols-outlined text-[16px] text-on-surface-variant">tune</span> Leadership Team
@@ -45,9 +45,9 @@ export function GroupMembersPanel({ group, userRole, directory, onUpdateRole, on
               <div key={m.userId} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   {avatarUrl ? (
-                    <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover" referrerPolicy="no-referrer" />
+                    <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover story-ring" referrerPolicy="no-referrer" />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface-variant">
+                    <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface-variant story-ring">
                       {initial}
                     </div>
                   )}

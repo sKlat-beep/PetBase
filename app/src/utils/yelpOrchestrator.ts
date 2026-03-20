@@ -10,6 +10,7 @@
 
 import type { Pet } from '../types/pet';
 import { deriveSearchAugments, derivePetSize, deriveLifeStage } from '../data/breedIntelligence';
+import { trackSearchTerm } from '../lib/searchAnalytics';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -24,16 +25,20 @@ export interface QueryLayers {
 export interface PreviewTag {
   text: string;
   layer: 'service' | 'species' | 'breed' | 'trait' | 'enhancer';
-  isDefault: boolean;    // true = from 4 core filters (non-removable)
-  isRemovable: boolean;  // false for default tags
+  isDefault: boolean;    // true = from core filters
+  isRemovable: boolean;  // true = toggleable (defaults ON but can be disabled)
+  sourceId?: string;     // pet origin ID
+  isPinned?: boolean;    // custom pinned tag
 }
 
 export interface OrchestratorInput {
-  pet: Pet;
+  pets: Pet[];
   serviceType: string;
   manualQuery?: string;
   zip: string;
   activeTags: string[];        // User-editable preview tags
+  disabledDefaultTags: string[];
+  customTags: string[];
   medications?: Array<{ name: string }>;
 }
 
@@ -46,12 +51,17 @@ export interface OrchestratorOutput {
 export interface SearchHistoryEntry {
   id: string;
   timestamp: number;
-  petName: string;
+  petNames: string[];
   petType: string;
   serviceType: string;
   queryPreview: string;
   zip: string;
   url: string;
+}
+
+export interface CustomTag {
+  text: string;
+  pinnedAt: number;
 }
 
 // ─── Service × Species Expansions ──────────────────────────────────────────────
@@ -123,58 +133,99 @@ const SERVICE_GENERIC: Record<string, string> = {
 const MAX_QUERY_LENGTH = 120;
 
 export function buildYelpURL(input: OrchestratorInput): OrchestratorOutput {
-  const { pet, serviceType, manualQuery, zip, activeTags, medications } = input;
-  const type = (pet.type ?? 'dog').toLowerCase();
-  const breed = pet.breed ?? '';
-  const augments = deriveSearchAugments(pet, medications);
+  const { pets, serviceType, manualQuery, zip, activeTags, disabledDefaultTags, customTags, medications } = input;
+  const isEverything = serviceType === 'Everything';
 
-  // Layer 1: Service term
-  const speciesExpansions = SERVICE_SPECIES_EXPANSIONS[serviceType]?.[type];
-  const serviceTerm = speciesExpansions?.[0] ?? SERVICE_GENERIC[serviceType] ?? 'pet services';
+  // Merge augments across all selected pets
+  const allDefaultTags: PreviewTag[] = [];
+  const allOptionalTags: string[] = [];
+  const seenDefaults = new Set<string>();
+  const seenOptionals = new Set<string>();
 
-  // Layer 2: Species
-  const speciesTerm = type;
+  for (const pet of pets) {
+    const type = (pet.type ?? 'dog').toLowerCase();
+    const breed = pet.breed ?? '';
+    const augments = deriveSearchAugments(pet, medications);
 
-  // Layer 3: Breed or group
-  const size = derivePetSize(pet.weight);
+    for (const tag of augments.defaultTags) {
+      if (!seenDefaults.has(tag)) {
+        seenDefaults.add(tag);
+        allDefaultTags.push({
+          text: tag,
+          layer: tag === type ? 'species' : tag === breed ? 'breed' : 'trait',
+          isDefault: true,
+          isRemovable: true,
+          sourceId: pet.id,
+        });
+      }
+    }
+
+    for (const tag of augments.optionalTags) {
+      if (!seenOptionals.has(tag)) {
+        seenOptionals.add(tag);
+        allOptionalTags.push(tag);
+      }
+    }
+  }
+
+  // Service term — use first pet's species for expansion lookup
+  const primaryType = pets.length > 0 ? (pets[0].type ?? 'dog').toLowerCase() : 'dog';
+  const speciesExpansions = SERVICE_SPECIES_EXPANSIONS[serviceType]?.[primaryType];
+  const serviceTerm = isEverything ? '' : (speciesExpansions?.[0] ?? SERVICE_GENERIC[serviceType] ?? 'pet services');
+
+  // Build layers from first pet (for display purposes)
+  const firstPet = pets[0];
+  const firstType = firstPet ? (firstPet.type ?? 'dog').toLowerCase() : '';
+  const firstBreed = firstPet?.breed ?? '';
+  const size = firstPet ? derivePetSize(firstPet.weight) : '';
   const sizePrefix = (size === 'Large' || size === 'Extra Large') ? 'large breed' : '';
-  const breedOrGroup = breed
-    ? (sizePrefix ? `${sizePrefix} ${breed}` : breed)
+  const breedOrGroup = firstBreed
+    ? (sizePrefix ? `${sizePrefix} ${firstBreed}` : firstBreed)
     : (sizePrefix || '');
 
-  // Layer 4: Traits (life stage + default augments beyond type/breed/size)
   const traits: string[] = [];
-  const stage = deriveLifeStage(pet);
-  if (stage === 'Senior') traits.push('senior');
-  else if (stage === 'Puppy') traits.push('puppy');
+  if (firstPet) {
+    const stage = deriveLifeStage(firstPet);
+    if (stage === 'Senior') traits.push('senior');
+    else if (stage === 'Puppy') traits.push('puppy');
+  }
 
-  // Layer 5: Enhancers (optional tags that user has active)
+  // Enhancers from active optional tags
   const enhancers = activeTags.filter(t =>
-    augments.optionalTags.includes(t) || !augments.defaultTags.includes(t)
+    allOptionalTags.includes(t) || !seenDefaults.has(t)
   );
 
   const layers: QueryLayers = {
-    service: serviceTerm,
-    species: speciesTerm,
+    service: serviceTerm || 'pet services',
+    species: firstType,
     breedOrGroup,
     traits,
     enhancers,
   };
 
-  // Build query string, prioritizing layers 1→5
-  let queryParts: string[];
+  // Active default tag texts (not disabled)
+  const activeDefaults = allDefaultTags
+    .filter(t => !disabledDefaultTags.includes(t.text))
+    .map(t => t.text);
+
+  // Build query string — priority: service term → active defaults → enhancers → custom tags
+  const queryParts: string[] = [];
+
   if (manualQuery) {
-    // Manual query replaces layers 1-2
-    queryParts = [manualQuery, breedOrGroup, ...traits, ...enhancers];
+    queryParts.push(manualQuery);
   } else {
-    queryParts = [serviceTerm, breedOrGroup, ...traits, ...enhancers];
+    if (!isEverything && serviceTerm) {
+      queryParts.push(serviceTerm);
+    }
+    queryParts.push(...activeDefaults);
+    queryParts.push(...enhancers);
+    queryParts.push(...customTags);
   }
 
   // Filter empties and cap length
   const filtered = queryParts.filter(Boolean);
   let query = filtered.join(' ');
   if (query.length > MAX_QUERY_LENGTH) {
-    // Truncate from the end (drop enhancers first)
     query = query.slice(0, MAX_QUERY_LENGTH).trim();
   }
 
@@ -183,23 +234,20 @@ export function buildYelpURL(input: OrchestratorInput): OrchestratorOutput {
   // Build preview tags
   const previewTags: PreviewTag[] = [];
 
-  // Default tags (non-removable)
-  for (const tag of augments.defaultTags) {
+  // Service tag (if not Everything)
+  if (!isEverything && serviceTerm) {
     previewTags.push({
-      text: tag,
-      layer: tag === type ? 'species' : tag === breed ? 'breed' : 'trait',
+      text: serviceTerm,
+      layer: 'service',
       isDefault: true,
-      isRemovable: false,
+      isRemovable: true,
     });
   }
 
-  // Service tag
-  previewTags.unshift({
-    text: serviceTerm,
-    layer: 'service',
-    isDefault: true,
-    isRemovable: false,
-  });
+  // Default tags (toggleable)
+  for (const tag of allDefaultTags) {
+    previewTags.push(tag);
+  }
 
   // Optional active tags (removable)
   for (const tag of enhancers) {
@@ -208,6 +256,17 @@ export function buildYelpURL(input: OrchestratorInput): OrchestratorOutput {
       layer: 'enhancer',
       isDefault: false,
       isRemovable: true,
+    });
+  }
+
+  // Custom pinned tags
+  for (const tag of customTags) {
+    previewTags.push({
+      text: tag,
+      layer: 'enhancer',
+      isDefault: false,
+      isRemovable: true,
+      isPinned: true,
     });
   }
 
@@ -226,12 +285,9 @@ export function detectPlatform(): 'android' | 'ios' | 'desktop' {
 export function buildDeepLink(webUrl: string): string {
   const platform = detectPlatform();
   if (platform === 'android') {
-    // Android intent URL — opens Yelp app if installed, falls back to browser
     const encoded = webUrl.replace('https://', '');
     return `intent://${encoded}#Intent;package=com.yelp.android;scheme=https;end`;
   }
-  // iOS uses Universal Links — the https URL auto-intercepts if Yelp is installed
-  // Desktop uses the web URL directly
   return webUrl;
 }
 
@@ -261,18 +317,25 @@ export function saveSearchHistory(entry: SearchHistoryEntry): void {
 export function openYelpSearch(input: OrchestratorInput): SearchHistoryEntry {
   const result = buildYelpURL(input);
 
+  const petNames = input.pets.map(p => p.name);
+
   // Save to history
   const entry: SearchHistoryEntry = {
     id: crypto.randomUUID(),
     timestamp: Date.now(),
-    petName: input.pet.name,
-    petType: input.pet.type ?? 'dog',
+    petNames,
+    petType: input.pets[0]?.type ?? 'dog',
     serviceType: input.serviceType,
     queryPreview: result.layers.service + ' ' + result.layers.breedOrGroup,
     zip: input.zip,
     url: result.url,
   };
   saveSearchHistory(entry);
+
+  // Track manual search terms
+  if (input.manualQuery) {
+    trackSearchTerm(input.manualQuery);
+  }
 
   // Store redirect timestamp for verification modal
   sessionStorage.setItem('petbase_last_redirect', String(Date.now()));

@@ -217,6 +217,14 @@ service cloud.firestore {
       );
     }
 
+    // ─── Search Analytics ──────────────────────────────────────────────────
+    // Manual search term tracking — auth'd users write; reads are admin-SDK only.
+
+    match /searchTerms/{termId} {
+      allow create, update: if isSignedIn();
+      allow read: if false;
+    }
+
     // ─── Service Search Cache ────────────────────────────────────────────────
     // Readable by any authenticated user; only Cloud Functions write.
 

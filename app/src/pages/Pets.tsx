@@ -21,9 +21,6 @@ const HouseholdPetsPanel = lazy(() =>
   import('../components/HouseholdPetsPanel').then(m => ({ default: m.HouseholdPetsPanel }))
 );
 
-const PetDetailModal = lazy(() =>
-  import('../components/pets/PetDetailModal').then(m => ({ default: m.PetDetailModal }))
-);
 
 /* ─── Helper: Material Symbol ─────────────────────────────────────────────── */
 function MIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -275,9 +272,7 @@ export function Pets() {
   const [petToDelete, setPetToDelete] = useState<Pet | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Detail modal and lost confirm modal
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [viewingDetailPet, setViewingDetailPet] = useState<Pet | null>(null);
+  // Lost confirm modal
   const [isLostConfirmOpen, setIsLostConfirmOpen] = useState(false);
   const [lostConfirmPet, setLostConfirmPet] = useState<Pet | null>(null);
   const [lostConfirmMode, setLostConfirmMode] = useState<'markLost' | 'markFound'>('markLost');
@@ -630,7 +625,7 @@ export function Pets() {
               <PetHeroCard
                 key={pet.id}
                 pet={pet}
-                onViewDetail={(p) => { setViewingDetailPet(p); setIsDetailModalOpen(true); }}
+                onViewDetail={openEditModal}
                 onEdit={canEditPetInfo ? openEditModal : undefined}
                 onMedical={canAddMedicalInfo ? openMedicalModal : undefined}
                 onSetStatus={(p, status) => {
@@ -693,21 +688,6 @@ export function Pets() {
         <MIcon name="add" className="text-2xl" />
       </motion.button>
 
-      {/* ── Detail Modal (lazy) ──────────────────────────────────────────── */}
-      <Suspense fallback={null}>
-        <PetDetailModal
-          pet={viewingDetailPet}
-          pets={pets}
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          onEdit={canEditPetInfo ? (p) => { setIsDetailModalOpen(false); openEditModal(p); } : undefined}
-          onMedical={canAddMedicalInfo ? (p) => { setIsDetailModalOpen(false); openMedicalModal(p); } : undefined}
-          onToggleLost={toggleLostStatus}
-          onDelete={(p) => { setIsDetailModalOpen(false); setPetToDelete(p); }}
-          uid={user?.uid}
-        />
-      </Suspense>
-
       {/* ── Lost confirm modal ───────────────────────────────────────────── */}
       <PetLostConfirmModal
         isOpen={isLostConfirmOpen}
@@ -722,6 +702,9 @@ export function Pets() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         pet={editingPet}
+        onDelete={(p) => { setIsModalOpen(false); setPetToDelete(p); }}
+        onToggleLost={toggleLostStatus}
+        onSwitchPet={(p) => setEditingPet(p)}
       />
 
       <MedicalRecordsModal

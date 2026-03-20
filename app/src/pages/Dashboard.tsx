@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Calendar } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useNavigate } from 'react-router';
 import GridLayout, { type Layout, type LayoutItem, type ResizeHandleAxis } from 'react-grid-layout';
@@ -435,7 +434,7 @@ export function Dashboard() {
         title: e.title,
         pet: e.groupName,
         date: new Date(e.date).toLocaleDateString(),
-        icon: Calendar,
+        icon: 'calendar_month',
         color: 'text-tertiary',
         bg: 'bg-tertiary-container',
       }))

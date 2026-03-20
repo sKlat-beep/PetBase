@@ -14,3 +14,6 @@
 > When a task is COMPLETE, also update its status in TODO.md and move it to the archive.
 
 ---
+
+## [2026-03-20] Phase 30 — Cinematic UI Page Rebuilds — COMPLETE
+Verified all 19 Phase 30 tasks (TASK-168 through TASK-186). Theme infrastructure (Phase 0) was already complete: 4-theme M3 token system, ThemeContext, CSS variables, Tailwind @theme extension. All Phase 1 pages (Auth, Dashboard, Onboarding) and Phase 2 pages/modals already rebuilt with cinematic design. Completed remaining work: forgot password flow (sendPasswordResetEmail), last dark: prefix removal (MedicalRecordsModal), Lucide→Material Symbols migration (Dashboard Calendar icon). Zero lucide-react imports remain. Vite build passes.

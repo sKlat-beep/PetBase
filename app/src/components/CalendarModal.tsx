@@ -6,7 +6,7 @@ interface EventProps {
     title: string;
     pet: string;
     date: string;
-    icon: React.ElementType;
+    icon: string;
     color: string;
     bg: string;
 }
@@ -73,7 +73,7 @@ export function CalendarModal({ isOpen, onClose, events }: CalendarModalProps) {
                                             <div className="glass-card bg-surface-container-low border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex gap-4 items-start">
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${event.bg} ${event.color}`}>
-                                                        <event.icon className="w-5 h-5" />
+                                                        <span className="material-symbols-outlined text-xl">{event.icon}</span>
                                                     </div>
                                                     <div>
                                                         <span className="text-xs font-bold text-primary uppercase tracking-wider mb-1 block">

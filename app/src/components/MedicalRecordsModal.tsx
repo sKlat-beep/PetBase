@@ -453,7 +453,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
   // Status icon helper for vaccine cards
   const vaccineStatusIcon = (status: VaccineStatus) => {
     if (status === 'up-to-date') return { icon: 'shield', color: 'text-secondary bg-secondary-container' };
-    if (status === 'due-soon') return { icon: 'warning', color: 'text-amber-600 bg-amber-100 dark:text-amber-400 dark:bg-amber-900/40' };
+    if (status === 'due-soon') return { icon: 'warning', color: 'text-primary-container bg-primary-container/10' };
     if (status === 'overdue') return { icon: 'history', color: 'text-error bg-error-container' };
     return { icon: 'help_outline', color: 'text-on-surface-variant bg-surface-container-highest' };
   };

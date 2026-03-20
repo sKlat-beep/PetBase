@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  sendPasswordResetEmail,
   updateProfile,
 } from 'firebase/auth';
 import { auth, googleProvider, appleProvider, isConfigMissing } from '../lib/firebase';
@@ -17,6 +18,9 @@ export function Auth() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSent, setResetSent] = useState(false);
 
   const reason = new URLSearchParams(window.location.search).get('reason');
 
@@ -83,6 +87,26 @@ export function Auth() {
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'An error occurred during Apple authentication.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (isConfigMissing) {
+      setError('Firebase configuration is missing.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetSent(true);
+    } catch (err: any) {
+      setError(err.message || 'Could not send reset email. Check your email address.');
     } finally {
       setLoading(false);
     }
@@ -219,7 +243,7 @@ export function Auth() {
                   <button
                     type="button"
                     className="text-xs font-semibold text-primary-container hover:text-primary-fixed-dim transition-colors"
-                    onClick={() => {/* TODO: forgot password flow */}}
+                    onClick={() => { setForgotMode(true); setResetEmail(email); setResetSent(false); setError(''); }}
                   >
                     FORGOT?
                   </button>
@@ -315,6 +339,100 @@ export function Auth() {
           </p>
         </div>
       </motion.div>
+
+      {/* Forgot Password Overlay */}
+      {forgotMode && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-xl px-4"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card p-8 w-full max-w-md"
+          >
+            <div className="text-center mb-6">
+              <span className="material-symbols-outlined text-primary-container mb-3 block" style={{ fontSize: 40 }}>
+                lock_reset
+              </span>
+              <h2 className="text-xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+                Reset Password
+              </h2>
+              <p className="text-sm text-on-surface-variant mt-1">
+                {resetSent
+                  ? 'Check your inbox for a reset link.'
+                  : "Enter your email and we'll send a reset link."}
+              </p>
+            </div>
+
+            {error && (
+              <div className="mb-4 flex items-start gap-2 rounded-xl bg-error-container/20 border-l-4 border-error p-3">
+                <span className="material-symbols-outlined text-error text-lg mt-0.5">error</span>
+                <p className="text-sm text-on-surface-variant">{error}</p>
+              </div>
+            )}
+
+            {resetSent ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 rounded-xl bg-secondary-container/20 border border-secondary/30 p-3">
+                  <span className="material-symbols-outlined text-secondary text-lg">check_circle</span>
+                  <p className="text-sm text-on-surface-variant">
+                    Reset email sent to <strong className="text-on-surface">{resetEmail}</strong>
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setForgotMode(false); setResetSent(false); setError(''); }}
+                  className="w-full py-3 rounded-xl bg-primary-container text-on-primary-container font-semibold text-sm tracking-wide hover:opacity-90 transition-all"
+                >
+                  Back to Login
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div>
+                  <label htmlFor="reset-email" className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider mb-1.5">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">
+                      mail
+                    </span>
+                    <input
+                      id="reset-email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      autoFocus
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary-container text-sm transition-all"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary-container text-on-primary-container font-semibold text-sm tracking-wide hover:opacity-90 focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-background transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {loading && (
+                    <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                  )}
+                  {loading ? 'Sending...' : 'Send Reset Link'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setForgotMode(false); setError(''); }}
+                  className="w-full py-2.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                >
+                  Back to Login
+                </button>
+              </form>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Decorative pet preview cards (purely visual) */}
       <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-4 opacity-[0.08]">

@@ -24,28 +24,6 @@ Use `/intake` skill to add new tasks (place under the appropriate phase header).
 
 ---
 
-## Phase 30 — Cinematic UI Page Rebuilds (Stitch)
-
-- TASK-168: `intake` — Dashboard page rebuild from Stitch Bento Grid template (quiet-chasing-marble)
-- TASK-169: `intake` — Login/Signup page rebuild from Stitch Auth layout (quiet-chasing-marble)
-- TASK-170: `intake` — Onboarding Tour rebuild with SVG mask spotlight (quiet-chasing-marble)
-- TASK-171: `intake` — Shared Pet Card page rebuild (quiet-chasing-marble)
-- TASK-172: `intake` — Getting Started Guide rebuild from Stitch design (quiet-chasing-marble)
-- TASK-173: `intake` — Profile Settings page rebuild with accordion sections (quiet-chasing-marble)
-- TASK-174: `intake` — Modal gallery rebuild: Image Cropper, Feedback, Help/FAQ, Keyboard Shortcuts (quiet-chasing-marble)
-- TASK-175: `intake` — Pet Management page rebuild (quiet-chasing-marble)
-- TASK-176: `intake` — QR Code Sharing overlay rebuild (quiet-chasing-marble)
-- TASK-177: `intake` — Emergency & Notifications Hub rebuild (quiet-chasing-marble)
-- TASK-178: `intake` — Family Invite Modal rebuild (quiet-chasing-marble)
-- TASK-179: `intake` — Medical Records Modal + Medical Dashboard rebuild (quiet-chasing-marble)
-- TASK-180: `intake` — Create Pet Card Wizard: split-pane with live preview (quiet-chasing-marble)
-- TASK-181: `intake` — Contextual Right Panel (Sidebar) rebuild (quiet-chasing-marble)
-- TASK-182: `intake` — Pet Form Modal 4-tab stepper rebuild (quiet-chasing-marble)
-- TASK-183: `intake` — Messaging Center 3-pane layout rebuild (quiet-chasing-marble)
-- TASK-184: `intake` — People Hub rebuild (quiet-chasing-marble)
-- TASK-185: `intake` — Pet Identity Cards Hub rebuild (quiet-chasing-marble)
-- TASK-186: `intake` — Layout Shell (sidebar + top nav + bottom nav) rebuild (quiet-chasing-marble)
-
 ---
 
 ## Phase 35 — Monetization (Future)

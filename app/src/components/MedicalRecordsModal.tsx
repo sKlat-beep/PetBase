@@ -197,7 +197,7 @@ type VetVisit = {
 };
 
 const inputClass =
-  'w-full px-3 py-2 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition-colors';
+  'w-full px-3 py-2 rounded-xl border border-outline bg-surface-container-highest text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm transition-colors';
 
 const TAB_CONFIG: { key: Tab; icon: string; label: string }[] = [
   { key: 'vaccines', icon: 'vaccines', label: 'Vaccines' },
@@ -792,7 +792,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                                         updateVaccine(vaccine.originalIndex, 'intervalDays', val || undefined);
                                       }
                                     }}
-                                    className="flex-1 px-2 py-1.5 rounded-lg border border-outline-variant bg-surface-container text-on-surface-variant text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="flex-1 px-2 py-1.5 rounded-lg border border-outline bg-surface-container-highest text-on-surface-variant text-xs focus:outline-none focus:ring-1 focus:ring-primary"
                                   >
                                     {INTERVAL_OPTIONS.map(opt => (
                                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -813,7 +813,7 @@ export function MedicalRecordsModal({ isOpen, onClose, pet, targetVaccineName, i
                                           }
                                         }
                                       }}
-                                      className="w-32 px-2 py-1.5 rounded-lg border border-outline-variant bg-surface-container text-on-surface-variant text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                      className="w-32 px-2 py-1.5 rounded-lg border border-outline bg-surface-container-highest text-on-surface-variant text-xs focus:outline-none focus:ring-1 focus:ring-primary"
                                     />
                                   )}
                                 </>

@@ -35,6 +35,17 @@ interface PetFormModalProps {
   onClose: () => void;
   onSave: (data: Omit<Pet, 'id'>) => void;
   pet?: Pet;
+  onDelete?: (pet: Pet) => void;
+  onToggleLost?: (pet: Pet) => void;
+  onSwitchPet?: (pet: Pet) => void;
+}
+
+function petAvatarShapeClass(shape: Pet['avatarShape']): string {
+  switch (shape) {
+    case 'square':   return 'rounded-2xl';
+    case 'squircle': return 'rounded-[2.5rem]';
+    default:         return 'rounded-full';
+  }
 }
 
 function getNotesCounterColor(count: number): string {
@@ -183,12 +194,19 @@ function calcAgeFromBirthday(birthday: string): string {
 const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors';
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps) {
+export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleLost, onSwitchPet }: PetFormModalProps) {
   const isEditMode = !!pet;
   const [activeTab, setActiveTab] = useState<Tab>('basic');
   const [isDirty, setIsDirty] = useState(false);
+  const [pendingSwitchPet, setPendingSwitchPet] = useState<Pet | null>(null);
   const { pets: allPets } = usePets();
   const { user } = useAuth() as { user: { uid: string } | null };
+
+  const handleSwitchPet = (target: Pet) => {
+    if (target.id === pet?.id) return;
+    if (isDirty) { setPendingSwitchPet(target); return; }
+    onSwitchPet?.(target);
+  };
 
   // Basic Info
   const [name, setName] = useState('');
@@ -446,25 +464,123 @@ export function PetFormModal({ isOpen, onClose, onSave, pet }: PetFormModalProps
             className="relative glass-card w-full max-w-4xl z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-outline-variant shrink-0">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[22px] text-primary">pets</span>
-                <div>
-                  <h2 id="pet-form-modal-title" className="text-xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
-                    {isEditMode ? 'Edit Pet Profile' : 'Add a Pet'}
-                  </h2>
+            <div className="border-b border-outline-variant shrink-0">
+              {/* Pet switcher strip — edit mode with 2+ pets */}
+              {isEditMode && pet && allPets.length >= 2 && (
+                <div
+                  role="group"
+                  aria-label="Switch pet"
+                  className="flex items-center gap-2 px-4 pt-3 pb-1 overflow-x-auto scrollbar-none"
+                >
+                  {allPets.map((p) => {
+                    const isActive = p.id === pet.id;
+                    const sc = petAvatarShapeClass(p.avatarShape);
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleSwitchPet(p)}
+                        aria-label={`Switch to ${p.name}`}
+                        aria-pressed={isActive}
+                        className={`flex-shrink-0 w-9 h-9 overflow-hidden transition-all ${sc} ${
+                          isActive ? 'ring-2 ring-on-surface ring-offset-1' : 'opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        {p.image ? (
+                          <img src={p.image} alt={p.name} referrerPolicy="no-referrer" className={`w-full h-full object-cover ${sc}`} />
+                        ) : (
+                          <div className={`w-full h-full bg-surface-container flex items-center justify-center text-base ${sc}`}>🐾</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Unsaved-changes banner when attempting to switch pets */}
+              {pendingSwitchPet && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-tertiary-container text-on-tertiary-container text-sm">
+                  <span className="material-symbols-outlined text-base">warning</span>
+                  <span className="flex-1">Unsaved changes — switch to {pendingSwitchPet.name}?</span>
+                  <button type="button" onClick={() => setPendingSwitchPet(null)} className="text-xs font-medium underline">Keep editing</button>
+                  <button
+                    type="button"
+                    onClick={() => { setIsDirty(false); onSwitchPet?.(pendingSwitchPet); setPendingSwitchPet(null); }}
+                    className="text-xs font-semibold underline ml-2"
+                  >Switch anyway</button>
+                </div>
+              )}
+              {/* Hero row: avatar + identity + action buttons */}
+              <div className="flex items-center gap-4 px-6 py-4">
+                {isEditMode && pet && (
+                  <div className="flex-shrink-0">
+                    {pet.image ? (
+                      <img
+                        src={pet.image}
+                        alt={pet.name}
+                        referrerPolicy="no-referrer"
+                        className={`w-12 h-12 object-cover ${petAvatarShapeClass(pet.avatarShape)}`}
+                      />
+                    ) : (
+                      <div className={`w-12 h-12 bg-surface-container flex items-center justify-center text-2xl ${petAvatarShapeClass(pet.avatarShape)}`}>
+                        🐾
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {!isEditMode && <span className="material-symbols-outlined text-[22px] text-primary">pets</span>}
+                    <h2
+                      id="pet-form-modal-title"
+                      className="text-xl font-bold text-on-surface"
+                      style={{ fontFamily: 'var(--font-headline)' }}
+                    >
+                      {isEditMode && pet ? pet.name : 'Add a Pet'}
+                    </h2>
+                    {isEditMode && pet?.lostStatus?.isLost && (
+                      <span className="text-xs font-semibold bg-error-container text-on-error-container px-2 py-0.5 rounded-full">Lost</span>
+                    )}
+                  </div>
                   {isEditMode && pet && (
-                    <p className="text-sm text-secondary">{pet.name}</p>
+                    <p className="text-sm text-on-surface-variant truncate mt-0.5">
+                      {[pet.type, pet.breed, pet.age].filter(Boolean).join(' · ')}
+                    </p>
                   )}
                 </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {isEditMode && pet && onToggleLost && (
+                    <button
+                      type="button"
+                      onClick={() => onToggleLost(pet)}
+                      className={`p-2 rounded-xl transition-colors ${
+                        pet.lostStatus?.isLost
+                          ? 'text-error hover:bg-error-container'
+                          : 'text-on-surface-variant hover:text-amber-600 hover:bg-amber-50'
+                      }`}
+                      aria-label={pet.lostStatus?.isLost ? `Mark ${pet.name} as found` : `Report ${pet.name} as lost`}
+                    >
+                      <span className="material-symbols-outlined text-base">warning</span>
+                    </button>
+                  )}
+                  {isEditMode && pet && onDelete && (
+                    <button
+                      type="button"
+                      onClick={() => onDelete(pet)}
+                      className="p-2 rounded-xl text-on-surface-variant hover:text-error hover:bg-error-container transition-colors"
+                      aria-label={`Delete ${pet.name}`}
+                    >
+                      <span className="material-symbols-outlined text-base">delete</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container motion-safe:active:scale-[0.97]"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">close</span>
+                  </button>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-on-surface-variant hover:text-on-surface transition-colors p-1.5 rounded-xl hover:bg-surface-container motion-safe:active:scale-[0.97]"
-              >
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
             </div>
 
             {/* Tabs — Desktop (numbered steps) */}

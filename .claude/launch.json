@@ -16,7 +16,7 @@
     {
       "name": "Firebase Emulators",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "firebase", "emulators:start"],
+      "runtimeArgs": ["/c", "C:\\Admin\\Projects\\PetBase\\start-emulators.cmd"],
       "port": 4000
     }
   ]

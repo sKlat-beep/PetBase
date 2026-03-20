@@ -1,13 +1,14 @@
 /**
  * useOrchestrator — Primary search hook for the Pet-Aware Yelp Orchestrator.
  *
- * Manages pet selection, auto-derived tags, optional tag toggling,
- * live URL preview, search history, and post-redirect verification.
+ * Manages multi-pet selection, auto-derived tags, default tag toggling,
+ * custom tag pinning, live URL preview, search history, and post-redirect verification.
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { usePets } from '../contexts/PetContext';
 import { deriveSearchAugments } from '../data/breedIntelligence';
+import { trackSearchTerm } from '../lib/searchAnalytics';
 import {
   buildYelpURL,
   openYelpSearch,
@@ -20,46 +21,105 @@ import {
 export function useOrchestrator(zip: string) {
   const { pets } = usePets();
 
-  // Pet selection — default to first pet
-  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
-  const selectedPet = useMemo(
-    () => pets.find(p => p.id === selectedPetId) ?? pets[0] ?? null,
-    [pets, selectedPetId],
+  // Multi-pet selection
+  const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+
+  const selectedPets = useMemo(
+    () => pets.filter(p => selectedPetIds.includes(p.id)),
+    [pets, selectedPetIds],
   );
 
   // Auto-select first pet on mount
   useEffect(() => {
-    if (!selectedPetId && pets.length > 0) {
-      setSelectedPetId(pets[0].id);
+    if (selectedPetIds.length === 0 && pets.length > 0) {
+      setSelectedPetIds([pets[0].id]);
     }
-  }, [pets, selectedPetId]);
+  }, [pets, selectedPetIds.length]);
 
-  // Derive tags from selected pet
-  const augments = useMemo(() => {
-    if (!selectedPet) return { defaultTags: [], optionalTags: [] };
-    return deriveSearchAugments(selectedPet);
-  }, [selectedPet]);
+  const togglePetSelection = useCallback((id: string) => {
+    setSelectedPetIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  }, []);
+
+  // Derive combined tags from all selected pets
+  const combinedAugments = useMemo(() => {
+    const defaultSet = new Set<string>();
+    const optionalSet = new Set<string>();
+    const defaults: string[] = [];
+    const optionals: string[] = [];
+
+    for (const pet of selectedPets) {
+      const augments = deriveSearchAugments(pet);
+      for (const tag of augments.defaultTags) {
+        if (!defaultSet.has(tag)) {
+          defaultSet.add(tag);
+          defaults.push(tag);
+        }
+      }
+      for (const tag of augments.optionalTags) {
+        if (!optionalSet.has(tag)) {
+          optionalSet.add(tag);
+          optionals.push(tag);
+        }
+      }
+    }
+
+    return { defaultTags: defaults, optionalTags: optionals };
+  }, [selectedPets]);
+
+  // Disabled default tags (toggled OFF by user)
+  const [disabledDefaultTags, setDisabledDefaultTags] = useState<string[]>([]);
+
+  // Reset stale disabled defaults when pet selection changes
+  useEffect(() => {
+    setDisabledDefaultTags(prev =>
+      prev.filter(tag => combinedAugments.defaultTags.includes(tag))
+    );
+  }, [combinedAugments.defaultTags]);
+
+  const toggleDefaultTag = useCallback((tag: string) => {
+    setDisabledDefaultTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  }, []);
+
+  // Custom pinned tags
+  const [customTags, setCustomTags] = useState<string[]>([]);
+
+  const pinCustomTag = useCallback((term: string) => {
+    const trimmed = term.trim();
+    if (!trimmed) return;
+    setCustomTags(prev => prev.includes(trimmed) ? prev : [...prev, trimmed]);
+    trackSearchTerm(trimmed);
+  }, []);
+
+  const removeCustomTag = useCallback((tag: string) => {
+    setCustomTags(prev => prev.filter(t => t !== tag));
+  }, []);
 
   // User-controlled optional tag state (starts with all optional tags active)
   const [activeOptionalTags, setActiveOptionalTags] = useState<string[]>([]);
 
-  // Sync optional tags when pet changes
+  // Sync optional tags when pets change
   useEffect(() => {
-    setActiveOptionalTags(augments.optionalTags);
-  }, [augments.optionalTags]);
+    setActiveOptionalTags(combinedAugments.optionalTags);
+  }, [combinedAugments.optionalTags]);
 
-  // Combined preview tags
-  const [serviceType, setServiceType] = useState('Vets');
+  // Service type — default to "Everything"
+  const [serviceType, setServiceType] = useState('Everything');
 
   const currentOutput = useMemo(() => {
-    if (!selectedPet) return null;
+    if (selectedPets.length === 0 && customTags.length === 0) return null;
     return buildYelpURL({
-      pet: selectedPet,
+      pets: selectedPets,
       serviceType,
       zip,
       activeTags: activeOptionalTags,
+      disabledDefaultTags,
+      customTags,
     });
-  }, [selectedPet, serviceType, zip, activeOptionalTags]);
+  }, [selectedPets, serviceType, zip, activeOptionalTags, disabledDefaultTags, customTags]);
 
   const previewTags: PreviewTag[] = currentOutput?.previewTags ?? [];
   const currentUrl: string = currentOutput?.url ?? '';
@@ -94,18 +154,20 @@ export function useOrchestrator(zip: string) {
 
   // Actions
   const executeSearch = useCallback((svcType?: string) => {
-    if (!selectedPet) return;
+    if (selectedPets.length === 0 && customTags.length === 0) return;
     const type = svcType ?? serviceType;
     const entry = openYelpSearch({
-      pet: selectedPet,
+      pets: selectedPets,
       serviceType: type,
       manualQuery: manualQuery || undefined,
       zip,
       activeTags: activeOptionalTags,
+      disabledDefaultTags,
+      customTags,
     });
     setLastSearchEntry(entry);
     setHistory(loadSearchHistory());
-  }, [selectedPet, serviceType, manualQuery, zip, activeOptionalTags]);
+  }, [selectedPets, serviceType, manualQuery, zip, activeOptionalTags, disabledDefaultTags, customTags]);
 
   const removeOptionalTag = useCallback((tag: string) => {
     setActiveOptionalTags(prev => prev.filter(t => t !== tag));
@@ -118,15 +180,22 @@ export function useOrchestrator(zip: string) {
   return {
     // Pet selection
     pets,
-    selectedPetId,
-    setSelectedPetId,
-    selectedPet,
+    selectedPetIds,
+    togglePetSelection,
+    selectedPets,
 
     // Tags
-    defaultTags: augments.defaultTags,
-    optionalTags: augments.optionalTags,
+    defaultTags: combinedAugments.defaultTags,
+    optionalTags: combinedAugments.optionalTags,
     activeOptionalTags,
     previewTags,
+    disabledDefaultTags,
+    toggleDefaultTag,
+
+    // Custom tags
+    customTags,
+    pinCustomTag,
+    removeCustomTag,
 
     // URL output
     currentUrl,

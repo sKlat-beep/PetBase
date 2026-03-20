@@ -8,14 +8,12 @@ import { VerificationModal } from '../components/search/VerificationModal';
 import { SideRail } from '../components/search/SideRail';
 import { useCommunityTips } from '../hooks/useCommunityTips';
 
-const SERVICE_TABS = ['Vets', 'Groomers', 'Sitters', 'Walkers', 'Trainers', 'Stores', 'Boarding', 'Shelters'] as const;
-
 export function Search() {
   const { profile, updateProfile } = useAuth();
   const tips = useCommunityTips();
 
   const [searchParams] = useSearchParams();
-  const initTab = searchParams.get('tab') ?? 'Vets';
+  const initTab = searchParams.get('tab');
 
   // ZIP location — synced from profile
   const [location, setLocation] = useState('');
@@ -25,9 +23,9 @@ export function Search() {
 
   const orchestrator = useOrchestrator(location);
 
-  // Sync tab from URL params
+  // Route URL tab param directly to service type
   useEffect(() => {
-    if (initTab && SERVICE_TABS.includes(initTab as typeof SERVICE_TABS[number])) {
+    if (initTab) {
       orchestrator.setServiceType(initTab);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,23 +69,6 @@ export function Search() {
             </button>
           )}
         </div>
-
-        {/* Service tab pills */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {SERVICE_TABS.map(tab => (
-            <button
-              key={tab}
-              onClick={() => orchestrator.setServiceType(tab)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                orchestrator.serviceType === tab
-                  ? 'bg-primary-container text-on-primary-container shadow-sm'
-                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
       </header>
 
       {/* Main content: Orchestrator + SideRail */}
@@ -95,17 +76,22 @@ export function Search() {
         <div className="xl:col-span-2">
           <OrchestratorPanel
             pets={orchestrator.pets}
-            selectedPet={orchestrator.selectedPet}
-            selectedPetId={orchestrator.selectedPetId}
-            onSelectPet={orchestrator.setSelectedPetId}
+            selectedPets={orchestrator.selectedPets}
+            selectedPetIds={orchestrator.selectedPetIds}
+            onTogglePet={orchestrator.togglePetSelection}
             serviceType={orchestrator.serviceType}
             onSelectService={orchestrator.setServiceType}
             previewTags={orchestrator.previewTags}
             currentUrl={orchestrator.currentUrl}
             optionalTags={orchestrator.optionalTags}
             activeOptionalTags={orchestrator.activeOptionalTags}
+            disabledDefaultTags={orchestrator.disabledDefaultTags}
+            onToggleDefaultTag={orchestrator.toggleDefaultTag}
             onRemoveTag={orchestrator.removeOptionalTag}
             onAddTag={orchestrator.addOptionalTag}
+            customTags={orchestrator.customTags}
+            onPinCustomTag={orchestrator.pinCustomTag}
+            onRemoveCustomTag={orchestrator.removeCustomTag}
             manualQuery={orchestrator.manualQuery}
             onManualQueryChange={orchestrator.setManualQuery}
             onSearch={orchestrator.executeSearch}
@@ -124,7 +110,7 @@ export function Search() {
       <AnimatePresence>
         {orchestrator.showVerification && orchestrator.lastSearchEntry && (
           <VerificationModal
-            petName={orchestrator.lastSearchEntry.petName}
+            petName={orchestrator.lastSearchEntry.petNames.join(', ')}
             serviceType={orchestrator.lastSearchEntry.serviceType}
             onClose={() => orchestrator.setShowVerification(false)}
           />

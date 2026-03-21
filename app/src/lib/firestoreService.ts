@@ -526,6 +526,7 @@ export interface PublicCardDoc {
   petSnapshot?: PublicCardPetSnapshot; // Optional because multi-pets use multiPetConfig
   multiPetConfig?: Array<{ petId: string; sharing: Record<string, boolean>; petSnapshot: PublicCardPetSnapshot }>;
   includeGeneralInfo?: boolean;
+  generalInfoText?: string; // household info text, stored at creation for snapshot rebuilds
   fieldOrder?: string[];
   ownerDisplayName?: string; // sourced from user.displayName at card creation time
 }

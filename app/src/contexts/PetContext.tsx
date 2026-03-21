@@ -73,7 +73,7 @@ export function PetProvider({ children }: { children: ReactNode }) {
           updated,
           card.sharing as unknown as SharingToggles,
           card.includeGeneralInfo ?? false,
-          '',
+          card.generalInfoText ?? '',
           user.uid,
         ),
       ).catch(err => console.warn('Snapshot rebuild failed:', err));

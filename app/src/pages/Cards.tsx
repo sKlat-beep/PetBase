@@ -120,8 +120,9 @@ export function Cards() {
         id: card.id, ownerId: user.uid, petId: card.petId, template: card.template,
         sharing: card.sharing as unknown as Record<string, boolean>,
         expiresAt: card.expiresAt, status: 'active', createdAt: card.createdAt,
-        includeGeneralInfo: card.includeGeneralInfo, petSnapshot: snapshot,
-        fieldOrder: card.fieldOrder, ownerDisplayName: user.displayName ?? undefined,
+        includeGeneralInfo: card.includeGeneralInfo, generalInfoText: generalInfo,
+        petSnapshot: snapshot, fieldOrder: card.fieldOrder,
+        ownerDisplayName: user.displayName ?? undefined,
       } as any).catch(() => {});
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -267,6 +268,7 @@ export function Cards() {
           status: 'active',
           createdAt: localCard.createdAt,
           includeGeneralInfo: localCard.includeGeneralInfo,
+          generalInfoText: generalInfo,
           fieldOrder: localCard.fieldOrder,
           ownerDisplayName: user.displayName ?? undefined,
           multiPetConfig: petConfigList?.map(cfg => {
@@ -296,6 +298,7 @@ export function Cards() {
             status: 'active',
             createdAt: localCard.createdAt,
             includeGeneralInfo: localCard.includeGeneralInfo,
+            generalInfoText: generalInfo,
             petSnapshot: localCard.petSnapshot,
             fieldOrder: localCard.fieldOrder,
             ownerDisplayName: user.displayName ?? undefined,
@@ -345,8 +348,8 @@ export function Cards() {
         id: updated.id, ownerId: user.uid, petId: updated.petId, template: updated.template,
         sharing: updated.sharing as unknown as Record<string, boolean>,
         expiresAt: updated.expiresAt, status: 'active', createdAt: updated.createdAt,
-        includeGeneralInfo: updated.includeGeneralInfo, fieldOrder: updated.fieldOrder,
-        ownerDisplayName: user.displayName ?? undefined,
+        includeGeneralInfo: updated.includeGeneralInfo, generalInfoText: generalInfo,
+        fieldOrder: updated.fieldOrder, ownerDisplayName: user.displayName ?? undefined,
         multiPetConfig: updatedConfig.map(cfg => ({
           petId: cfg.petId,
           sharing: cfg.sharing as unknown as Record<string, boolean>,
@@ -366,7 +369,7 @@ export function Cards() {
       sharing: updated.sharing as unknown as Record<string, boolean>,
       expiresAt: updated.expiresAt, status: updated.status as 'active',
       createdAt: updated.createdAt, includeGeneralInfo: updated.includeGeneralInfo,
-      petSnapshot: snapshot, fieldOrder: updated.fieldOrder,
+      generalInfoText: generalInfo, petSnapshot: snapshot, fieldOrder: updated.fieldOrder,
       ownerDisplayName: user.displayName ?? undefined,
     } as any).catch(err => console.warn('Failed to update card snapshot:', err));
   }, [cards, pets, user, generalInfo]);

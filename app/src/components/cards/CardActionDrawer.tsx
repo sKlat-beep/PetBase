@@ -22,8 +22,7 @@ export function CardActionDrawer({
   const prefersReduced = useReducedMotion();
   const status = getCardStatus(card);
   const isActive = status === 'active';
-  const isRevoked = status === 'revoked';
-  const canUndo = isRevoked && card.revokedAt && Date.now() < card.revokedAt + UNDO_WINDOW_MS;
+  const canUndo = status === 'revoked' && card.revokedAt && Date.now() < card.revokedAt + UNDO_WINDOW_MS;
 
   // iOS scroll lock
   useEffect(() => {

@@ -15,10 +15,6 @@ function makeTelLink(phone: string | undefined): string | null {
   return `tel:${phone.replace(/[^\d+]/g, '')}`;
 }
 
-function getMapsUrl(address: string): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-}
-
 export function SharedCardPage() {
   const { cardId } = useParams<{ cardId: string }>();
   const [card, setCard] = useState<CardState>('loading');
@@ -127,9 +123,6 @@ export function SharedCardPage() {
   const contactPhone = ec?.ownerPhone ?? ec?.additionalContacts?.[0]?.phone;
   const telHref = makeTelLink(contactPhone);
   const smsHref = telHref?.replace('tel:', 'sms:') ?? null;
-
-  // Vet info
-  const vetInfo = card.petSnapshot?.emergencyContacts?.vetInfo;
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-start print:bg-surface print:py-0 relative">
@@ -312,33 +305,6 @@ export function SharedCardPage() {
             )
           )}
 
-          {/* Vet info with directions */}
-          {(card.sharing as unknown as SharingToggles).vetInfo && vetInfo && (
-            <div className="px-4 py-4 border-t border-outline-variant">
-              <h3 className="font-semibold text-on-surface text-sm flex items-center gap-2 mb-2">
-                <span className="material-symbols-outlined text-[16px] text-primary">monitor_heart</span>
-                Primary Vet
-              </h3>
-              <div className="bg-surface-container-low rounded-2xl p-4 border border-outline-variant">
-                {vetInfo.name && <p className="font-medium text-on-surface text-sm">{vetInfo.name}</p>}
-                {vetInfo.clinic && <p className="text-xs text-on-surface-variant">{vetInfo.clinic}</p>}
-                {vetInfo.phone && (
-                  <p className="text-xs text-on-surface-variant">{vetInfo.phone}</p>
-                )}
-                {vetInfo.address && (
-                  <a
-                    href={getMapsUrl(vetInfo.address)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-primary hover:underline"
-                  >
-                    <span className="material-symbols-outlined text-sm">directions</span>
-                    View Directions
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import type { PetCard, CardStatus } from '../../types/cardExtensions';
-import { getCardStatus, TEMPLATE_LABELS, timeUntilExpiry, formatExpiry } from '../../types/cardExtensions';
+import { getCardStatus, TEMPLATE_LABELS, formatExpiry } from '../../types/cardExtensions';
 import type { Pet } from '../../types/pet';
 import type { PublicCardPetSnapshot } from '../../lib/firestoreService';
 
@@ -65,6 +65,7 @@ export function CardGalleryTile({ card, pet, index, isStale, onTap, onQr }: Card
                 loading={index === 0 && i === 0 ? 'eager' : 'lazy'}
                 decoding="async"
                 className="w-20 h-20 rounded-full object-cover border-2 border-surface-container"
+                referrerPolicy="no-referrer"
               />
             ))}
           </div>

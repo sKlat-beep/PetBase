@@ -377,15 +377,25 @@ export function CardSectionRenderer({
   ) : null;
 
   // ── Section: vetInfo ──
+  const vet = data.emergencyContacts?.vetInfo;
   const vetInfoContent: React.ReactNode =
-    sharing.vetInfo && data.emergencyContacts?.vetInfo ? (
+    sharing.vetInfo && vet ? (
       <div className="bg-surface-container-low rounded-2xl p-4 border border-outline-variant">
-        <p className="font-medium text-on-surface text-sm">
-          {data.emergencyContacts!.vetInfo!.name}
-        </p>
-        <p className="text-xs text-on-surface-variant">{data.emergencyContacts!.vetInfo!.phone}</p>
-        {data.emergencyContacts!.vetInfo!.address && (
-          <p className="text-xs text-on-surface-variant">{data.emergencyContacts!.vetInfo!.address}</p>
+        {vet.name && <p className="font-medium text-on-surface text-sm">{vet.name}</p>}
+        {vet.phone && <p className="text-xs text-on-surface-variant">{vet.phone}</p>}
+        {vet.address && (
+          <>
+            <p className="text-xs text-on-surface-variant">{vet.address}</p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vet.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-primary hover:underline"
+            >
+              <span className="material-symbols-outlined text-sm">directions</span>
+              View Directions
+            </a>
+          </>
         )}
       </div>
     ) : null;

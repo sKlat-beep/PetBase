@@ -406,6 +406,25 @@ body {
   }
 }
 
+/* ─── XP Ring animations ─────────────────────────────────────────────────── */
+@keyframes xp-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+@keyframes xp-shimmer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+.xp-ring-pulse  { animation: xp-pulse  3s ease-in-out infinite; }
+.xp-ring-shimmer { animation: xp-shimmer 1.4s ease-in-out infinite; }
+
+/* ─── TierCrest glow animation ───────────────────────────────────────────── */
+@keyframes crest-glow {
+  0%, 100% { box-shadow: 0 0 6px 1px var(--crest-color, #F28B82); }
+  50%       { box-shadow: 0 0 14px 4px var(--crest-color, #F28B82); }
+}
+.crest-glow { animation: crest-glow 2.2s ease-in-out infinite; }
+
 /* ─── Seamless UI: Hide Scrollbars ───────────────────────────────────────── */
 * {
   scrollbar-width: none;

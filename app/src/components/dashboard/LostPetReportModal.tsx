@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import type { Pet } from '../../types/pet';
 import { savePet } from '../../lib/firestoreService';
@@ -59,7 +60,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
     }
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
@@ -222,6 +223,7 @@ export default function LostPetReportModal({ pets, onClose, onSaved }: Props) {
           )}
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -24,7 +24,8 @@ export interface UseOnboardingReturn {
   loading: boolean;
 
   // Computed
-  completedCount: number;
+  completedCount: number;  // completed steps only — drives progress bar
+  doneCount: number;       // completed + skipped — drives guide dismissal
   totalSteps: number;
   guideCompleted: boolean;
   discoveryCount: number;
@@ -150,7 +151,14 @@ export function useOnboarding(uid: string | null): UseOnboardingReturn {
     };
   }, []);
 
+  // Only truly completed steps (drives progress bar)
   const completedCount = useMemo(() => {
+    const completedStepIds = new Set(Object.keys(state.completedSteps));
+    return STEPS.filter((s) => completedStepIds.has(s.id)).length;
+  }, [state.completedSteps]);
+
+  // Completed + skipped (drives guide dismissal when all are handled)
+  const doneCount = useMemo(() => {
     const completedStepIds = new Set(Object.keys(state.completedSteps));
     const skippedSet = new Set(state.skippedSteps);
     return STEPS.filter((s) => completedStepIds.has(s.id) || skippedSet.has(s.id)).length;
@@ -199,6 +207,7 @@ export function useOnboarding(uid: string | null): UseOnboardingReturn {
     state,
     loading,
     completedCount,
+    doneCount,
     totalSteps: STEPS.length,
     guideCompleted: state.guideCompleted,
     discoveryCount: state.discoveryCount,

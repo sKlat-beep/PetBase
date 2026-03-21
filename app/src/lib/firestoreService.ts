@@ -207,6 +207,9 @@ export interface PublicProfileInfo {
   visibility: 'Public' | 'Friends Only' | 'Private';
   publicStatus: PublicStatus;
   friends?: string[]; // UIDs of this user's friends — used for mutual-friends PYMK scoring
+  publicCrestEnabled?: boolean;
+  publicSpiritIcon?: string;
+  publicTierColor?: string;
 }
 
 // --- User Profile -----------------------------------------------------------
@@ -282,6 +285,9 @@ export async function searchPublicProfiles(searchQuery: string): Promise<PublicP
         visibility: data.visibility || 'Public',
         publicStatus: data.publicStatus || 'None',
         friends: Array.isArray(data.friends) ? data.friends : [],
+        publicCrestEnabled: data.publicCrestEnabled ?? false,
+        publicSpiritIcon: data.publicSpiritIcon,
+        publicTierColor: data.publicTierColor,
       });
     }
   });
@@ -301,6 +307,7 @@ export interface PublicProfileDetails extends PublicProfileInfo {
   lastSeen?: number;
   lastActive?: number;
   badges?: Array<{ id: string; unlockedAt: number }>;
+  // publicCrestEnabled, publicSpiritIcon, publicTierColor inherited from PublicProfileInfo
 }
 
 export async function fetchPublicProfileById(uid: string): Promise<PublicProfileDetails | null> {
@@ -320,7 +327,49 @@ export async function fetchPublicProfileById(uid: string): Promise<PublicProfile
     lastSeen: typeof data.lastSeen === 'number' ? data.lastSeen : undefined,
     lastActive: typeof data.lastActive === 'number' ? data.lastActive : undefined,
     badges: Array.isArray(data.badges) ? data.badges : undefined,
+    publicCrestEnabled: data.publicCrestEnabled ?? false,
+    publicSpiritIcon: data.publicSpiritIcon,
+    publicTierColor: data.publicTierColor,
   };
+}
+
+// --- Gamification Prefs -----------------------------------------------------
+
+const SPIRIT_ICON_ALLOWLIST = [
+  'pets', 'explore', 'favorite', 'shield',
+  'military_tech', 'workspace_premium', 'auto_awesome',
+] as const;
+
+const TIER_COLORS_FS: Record<number, string> = {
+  1: '#F28B82', 2: '#FFA726', 3: '#EC407A',
+  4: '#26C6DA', 5: '#FFD700', 6: '#CE93D8', 7: '#FF4081',
+};
+
+/**
+ * Persist gamification display preferences for the authenticated user.
+ * Also writes denormalized public crest fields for O(1) reads on other users' avatars.
+ * - spiritIcon is validated against the allowlist before write.
+ * - tierColor is derived from level internally; caller cannot inject arbitrary values.
+ */
+export async function updateGamificationPrefs(
+  uid: string,
+  prefs: import('../types/user').GamificationPrefs,
+  level: number,
+): Promise<void> {
+  if (auth.currentUser?.uid !== uid) throw new Error('updateGamificationPrefs: UID mismatch');
+
+  const safeIcon = SPIRIT_ICON_ALLOWLIST.includes(prefs.spiritIcon as typeof SPIRIT_ICON_ALLOWLIST[number])
+    ? prefs.spiritIcon
+    : 'pets';
+  const tierColor = TIER_COLORS_FS[level] ?? '#F28B82';
+
+  const payload: Record<string, unknown> = {
+    gamificationPrefs: prefs,
+    publicCrestEnabled: prefs.publicCrestEnabled,
+    publicSpiritIcon: safeIcon,
+    publicTierColor: tierColor,
+  };
+  await setDoc(doc(db, 'users', uid, 'profile', 'data'), payload, { merge: true });
 }
 
 // --- Public Profile Pets ----------------------------------------------------

@@ -14,8 +14,10 @@ import { RightPanel } from './layout/RightPanel';
 import { OfflineBanner } from './ui/OfflineBanner';
 import { KeyboardShortcutsProvider } from './ui/KeyboardShortcuts';
 import PointToast from './gamification/PointToast';
-import PointsBadge from './gamification/PointsBadge';
+import { XpRing } from './gamification/XpRing';
+import { TierCrest } from './gamification/TierCrest';
 import { useGamification } from '../hooks/useGamification';
+import { DEFAULT_GAMIFICATION_PREFS } from '../types/user';
 import { GlobalSearchModal } from './GlobalSearchModal';
 
 /** Material Symbols helper */
@@ -296,8 +298,10 @@ export function Layout() {
               onClick={() => { setSettingsOpen(true); setIsMobileMenuOpen(false); }}
               className="flex items-center gap-3 min-w-0 hover:opacity-80 motion-safe:transition-opacity motion-safe:active:scale-[0.97] text-left"
             >
-              <div className="w-10 h-10 rounded-full bg-surface-container overflow-hidden shrink-0">
-                {profile?.avatarUrl || user?.photoURL ? (
+              {(() => {
+                const gamPrefs = profile?.gamificationPrefs ?? DEFAULT_GAMIFICATION_PREFS;
+                const gmState = gamification.state;
+                const avatarContent = profile?.avatarUrl || user?.photoURL ? (
                   <img
                     src={profile?.avatarUrl || user?.photoURL || ''}
                     alt="User profile"
@@ -308,26 +312,35 @@ export function Layout() {
                   <div className="w-full h-full flex items-center justify-center bg-primary-container/20 text-primary font-bold">
                     {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0].toUpperCase() || 'U'}
                   </div>
-                )}
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-on-surface truncate">
-                    {user?.displayName || 'Pet Parent'}
-                  </p>
-                  {gamification.state && (
-                    <PointsBadge
-                      level={gamification.state.level}
-                      totalPoints={gamification.state.totalPoints}
-                      levelLabel={gamification.state.levelLabel}
-                      compact
-                    />
-                  )}
-                </div>
-                <p className="text-xs text-on-surface-variant truncate">
-                  {user?.email}
-                </p>
-              </div>
+                );
+                return (
+                  <>
+                    <XpRing
+                      totalPoints={gmState?.totalPoints ?? 0}
+                      level={gmState?.level ?? 1}
+                      prefs={gamPrefs}
+                      size={40}
+                    >
+                      {avatarContent}
+                    </XpRing>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-on-surface truncate">
+                        {user?.displayName || 'Pet Parent'}
+                      </p>
+                      {gmState && (
+                        <TierCrest
+                          level={gmState.level}
+                          totalPoints={gmState.totalPoints}
+                          prefs={gamPrefs}
+                        />
+                      )}
+                      <p className="text-xs text-on-surface-variant truncate mt-0.5">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </>
+                );
+              })()}
             </button>
           </div>
 

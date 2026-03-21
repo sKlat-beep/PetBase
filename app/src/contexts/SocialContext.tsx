@@ -24,6 +24,9 @@ export interface PublicProfile {
     pets: { type: string; count: number }[];
     blockedUsers?: string[]; // best-effort — only present if we have their full profile
     friends?: string[]; // UIDs of this user's friends — used for mutual-friends PYMK scoring
+    publicCrestEnabled?: boolean;
+    publicSpiritIcon?: string;
+    publicTierColor?: string;
 }
 
 // FriendRequest is the canonical type used throughout the app.
@@ -86,6 +89,9 @@ export function SocialProvider({ children }: { children: ReactNode }) {
                     publicStatus: p.publicStatus as PublicProfile['publicStatus'],
                     pets: [],
                     friends: p.friends ?? [],
+                    publicCrestEnabled: p.publicCrestEnabled,
+                    publicSpiritIcon: p.publicSpiritIcon,
+                    publicTierColor: p.publicTierColor,
                 }));
             setDirectory(mapped);
         }).catch(() => { /* silent fail — directory stays empty */ });
@@ -144,6 +150,9 @@ export function SocialProvider({ children }: { children: ReactNode }) {
                 publicStatus: p.publicStatus as any,
                 pets: [],
                 friends: p.friends ?? [],
+                publicCrestEnabled: p.publicCrestEnabled,
+                publicSpiritIcon: p.publicSpiritIcon,
+                publicTierColor: p.publicTierColor,
             })));
         } catch (err) {
             console.error('Failed to search users', err);

@@ -169,6 +169,9 @@ export function buildPetSnapshot(
     emergencyContacts,
     microchipId: sharing.microchip ? (pet as any).microchipId : undefined,
     householdInfo: includeGeneralInfo && generalInfoText ? generalInfoText : undefined,
+    dietaryRestrictions: sharing.diet
+      ? pet.dietSchedule?.map(ds => ds.dietaryRestrictions).filter(Boolean).join('; ') || undefined
+      : undefined,
   };
 }
 

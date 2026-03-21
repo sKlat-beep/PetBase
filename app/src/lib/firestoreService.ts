@@ -510,6 +510,7 @@ export interface PublicCardPetSnapshot {
   microchipId?: string;
   householdInfo?: string;
   dietSchedule?: import('../types/pet').DietSchedule[];
+  dietaryRestrictions?: string;
 }
 
 export interface PublicCardDoc {
@@ -526,6 +527,7 @@ export interface PublicCardDoc {
   multiPetConfig?: Array<{ petId: string; sharing: Record<string, boolean>; petSnapshot: PublicCardPetSnapshot }>;
   includeGeneralInfo?: boolean;
   fieldOrder?: string[];
+  ownerDisplayName?: string; // sourced from user.displayName at card creation time
 }
 
 export async function savePublicCard(card: PublicCardDoc): Promise<void> {

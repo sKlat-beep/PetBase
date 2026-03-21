@@ -12,11 +12,11 @@ export interface GamificationPrefs {
   badgeStyle: 'minimal' | 'crest' | 'glow';
   spiritIcon: string;              // material-symbols name
   showPointCount: boolean;
-  publicCrest: boolean;            // show spirit icon on public avatar for other users
+  publicCrestEnabled: boolean;     // show spirit icon on public avatar for other users
 
   // XP Ring
   showXpRing: boolean;
-  ringColor: 'theme' | 'tier' | string;  // 'theme', 'tier', or hex
+  ringColor: 'theme' | 'tier' | (string & {});  // 'theme', 'tier', or hex color string
   ringAnimation: 'static' | 'pulse' | 'shimmer';
   showLevelNumber: boolean;
 
@@ -29,7 +29,7 @@ export const DEFAULT_GAMIFICATION_PREFS: GamificationPrefs = {
   badgeStyle: 'crest',
   spiritIcon: 'pets',
   showPointCount: true,
-  publicCrest: false,
+  publicCrestEnabled: false,
   showXpRing: true,
   ringColor: 'tier',
   ringAnimation: 'pulse',

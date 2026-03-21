@@ -10,7 +10,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { loadUserProfile, getSignInLog, type SignInLogEntry, updateGamificationPrefs } from '../lib/firestoreService';
 import { useGamification } from '../hooks/useGamification';
 import { DEFAULT_GAMIFICATION_PREFS, type GamificationPrefs } from '../types/user';
-import { TIER_COLORS } from '../components/gamification/XpRing';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { ImageCropperModal, getCroppedImg } from '../components/ImageCropperModal';
 import { hasLocalKey, createEncryptedBackup, restoreEncryptedBackup, wrapKeyForVault, getOrCreateUserKey, type EncryptedBackup } from '../lib/crypto';
@@ -331,8 +330,7 @@ export function ProfileSettings() {
     if (!user) return;
     setGamPrefsSaving(true);
     try {
-      const tierColor = TIER_COLORS[gamification.state?.level ?? 1] ?? '#F28B82';
-      await updateGamificationPrefs(user.uid, prefs, tierColor);
+      await updateGamificationPrefs(user.uid, prefs, gamification.state?.level ?? 1);
       setGamPrefs(prefs);
       setGamPrefsSaved(true);
       setTimeout(() => setGamPrefsSaved(false), 2500);
@@ -819,7 +817,7 @@ export function ProfileSettings() {
                       <p className={labelClass}>Show on public profile</p>
                       <p className={subClass}>Your spirit icon appears on your avatar for other users</p>
                     </div>
-                    <ToggleSwitch checked={gamPrefs.publicCrest} onChange={() => pref('publicCrest', !gamPrefs.publicCrest)} disabled={gamPrefsSaving} />
+                    <ToggleSwitch checked={gamPrefs.publicCrestEnabled} onChange={() => pref('publicCrestEnabled', !gamPrefs.publicCrestEnabled)} disabled={gamPrefsSaving} />
                   </div>
                 </>
               )}

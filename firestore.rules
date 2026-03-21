@@ -75,7 +75,14 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == userId &&
         (parentalControlAllows('forcePrivateProfile') ||
-         request.resource.data.get('isPrivate', true) == true);
+         request.resource.data.get('isPrivate', true) == true) &&
+        // Validate publicSpiritIcon against the known Material Symbols allowlist.
+        request.resource.data.get('publicSpiritIcon', 'pets') in [
+          'pets', 'explore', 'favorite', 'shield',
+          'military_tech', 'workspace_premium', 'auto_awesome'
+        ] &&
+        // Validate publicTierColor is a safe 6-digit hex color.
+        request.resource.data.get('publicTierColor', '#F28B82').matches('^#[0-9A-Fa-f]{6}$');
     }
 
     // CollectionGroup rule required for collectionGroup('profile') queries in searchPublicProfiles.

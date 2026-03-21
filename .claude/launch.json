@@ -2,13 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Frontend (Vite)",
+      "name": "Frontend (Vite) — production Firebase",
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "npm", "--prefix", "app", "run", "dev"],
       "port": 3000
     },
     {
-      "name": "Frontend + Emulators (Vite)",
+      "name": "Frontend (Vite) — emulator mode",
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "npm", "--prefix", "app", "run", "dev:emulated"],
       "port": 3000

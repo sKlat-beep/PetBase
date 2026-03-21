@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { GamificationPrefs } from '../../types/user';
 import { pointsForNextLevel } from '../../lib/gamificationService';
 
@@ -18,7 +19,7 @@ interface XpRingProps {
   prefs: GamificationPrefs;
   /** Avatar diameter in px. Ring is drawn outside this. Default 40. */
   size?: number;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**

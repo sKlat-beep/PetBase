@@ -100,6 +100,12 @@ When you ask me to create and execute a multi-phase plan, here's exactly what ha
 - Clarifying questions on items missed during planning.
 - Genuinely ambiguous situations that weren't anticipated.
 
+**Worktree setup is the first action in every execution session** — before any file is read or changed:
+1. Derive branch name from the plan filename (strip date prefix + `-plan.md`, convert type prefix to `feat/`/`fix/`/`refactor/`)
+2. Create worktree: `git worktree add ../PetBase-<branch-slug> -b <branch-name>`
+3. All work happens inside the worktree. `node_modules` symlinked automatically.
+4. At session end: `/commit-push-pr` from inside the worktree.
+
 Execution tools:
 1. **Executing Plans** (`superpowers:executing-plans`) — implements with review checkpoints.
 2. **Subagent-Driven Development** (`superpowers:subagent-driven-development`) — for plans with independent tasks, dispatches parallel agents.

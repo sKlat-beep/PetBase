@@ -42,6 +42,41 @@ Primary implementation agent. Executes approved plans with minimal token usage.
 
 When executing via `/ce:work`, PetBase-specific gates override ce:work's defaults.
 
+### Phase 0 (Auto): Worktree Setup — MANDATORY, runs before anything else
+
+Every `/ce:work` invocation MUST start in an isolated git worktree. Do not skip this step.
+
+**Branch + worktree derivation from plan filename:**
+
+```
+Plan file:  docs/plans/2026-03-21-004-feat-mobile-nav-overhaul-plan.md
+Strip:      date prefix (YYYY-MM-DD-NNN-) and trailing -plan.md
+Branch:     feat/mobile-nav-overhaul
+Worktree:   C:\Admin\Projects\PetBase-feat-mobile-nav-overhaul\
+```
+
+Rules:
+- Strip the `YYYY-MM-DD-NNN-` date+sequence prefix
+- Strip the `-plan` suffix and `.md` extension
+- The type prefix (`feat-`, `fix-`, `refactor-`) becomes the branch namespace: `feat/`, `fix/`, `refactor/`
+- Worktree directory is a sibling of the repo root: `C:\Admin\Projects\PetBase-<branch-slug>\`
+
+**Commands to run (in order):**
+
+```bash
+# 1. Create the branch + worktree
+git -C /c/Admin/Projects/PetBase worktree add ../PetBase-<branch-slug> -b <branch-name>
+
+# 2. Confirm worktree is clean and on the right branch
+git -C /c/Admin/Projects/PetBase-<branch-slug> status
+git -C /c/Admin/Projects/PetBase-<branch-slug> branch --show-current
+```
+
+All subsequent implementation work happens inside the worktree directory.
+`node_modules` are symlinked automatically (via `worktree.symlinkDirectories` in `.claude/settings.json`) — no reinstall needed.
+
+At the end of the session, `/commit-push-pr` runs from inside the worktree directory.
+
 ### Before Phase 2 — Explore (Before Touching Files)
 - **Any large context file** (SocialContext, firestoreService, AuthContext, Layout, PetFormModal) →
   Launch a `feature-dev:code-explorer` agent first to understand the data flow.

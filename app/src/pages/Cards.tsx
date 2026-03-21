@@ -11,7 +11,7 @@ import type { Pet } from '../types/pet';
 import {
   type PetCard, type CardTemplate, type CardStatus, type SharingToggles,
   GENERAL_INFO_KEY, UNDO_WINDOW_MS, MAX_INACTIVE_CARDS,
-  getCardStatus, buildPetSnapshot, isPetDataStale, timeUntilExpiry
+  getCardStatus, buildPetSnapshot, isPetDataStale, timeUntilExpiry, formatExpiry
 } from '../types/cardExtensions';
 import {
   savePublicCard, updatePublicCardStatus, deletePublicCard,
@@ -26,7 +26,10 @@ import { CardPreview } from '../components/cards/CardPreview';
 import { MultiPetCardPreview } from '../components/cards/MultiPetCardPreview';
 import { AllPetsCardPreview } from '../components/cards/AllPetsCardPreview';
 import { CardTile } from '../components/cards/CardTile';
+import { CardGalleryTile } from '../components/cards/CardGalleryTile';
+import { CardActionDrawer } from '../components/cards/CardActionDrawer';
 import { CardLogEntry } from '../components/cards/CardLogEntry';
+import { QrOverlay } from '../components/cards/QrOverlay';
 
 const CreateCardModal = React.lazy(() => import('../components/cards/CreateCardModal'));
 const MultiPetCardModal = React.lazy(() => import('../components/cards/MultiPetCardModal'));
@@ -48,6 +51,8 @@ export function Cards() {
   const [copyToast, setCopyToast] = useState(false);
   const [cardToEdit, setCardToEdit] = useState<PetCard | null>(null);
   const [revokedSectionOpen, setRevokedSectionOpen] = useState(false);
+  const [drawerCardId, setDrawerCardId] = useState<string | null>(null);
+  const [qrCardId, setQrCardId] = useState<string | null>(null);
   const [generalInfo, setGeneralInfo] = useState(() => localStorage.getItem(GENERAL_INFO_KEY) ?? '');
   const [editingGeneralInfo, setEditingGeneralInfo] = useState(false);
   const { confettiActive, celebrate } = useCelebration();
@@ -166,6 +171,26 @@ export function Cards() {
     });
     return ids;
   }, [cards, pets]);
+
+  /** Resolve a Pet object for a given card (handles multi-pet / all-pets placeholders). */
+  const getPetForCard = useCallback((card: PetCard): Pet => {
+    if (card.petId === 'all-pets')
+      return { id: 'all-pets', name: 'All Pets', breed: `${pets.filter(p => !p.isPrivate).length} pets`, image: '', age: '', weight: '', notes: '' } as Pet;
+    if (card.petId === 'multi-pet')
+      return { id: 'multi-pet', name: 'Multi-pet Card', breed: `${card.multiPetConfig?.length ?? 0} pets selected`, image: '', age: '', weight: '', notes: '' } as Pet;
+    return pets.find(p => p.id === card.petId) ?? { id: card.petId, name: 'Unknown', breed: '', image: '', age: '', weight: '', notes: '' } as Pet;
+  }, [pets]);
+
+  const handleDownloadCard = useCallback(async (cardId: string) => {
+    const el = document.getElementById(`card-preview-${cardId}`) ?? document.querySelector('[data-card-preview]');
+    if (!el) return;
+    const card = cards.find(c => c.id === cardId);
+    const petName = card ? getPetForCard(card).name : 'card';
+    try {
+      const { downloadElementAsImage } = await import('../utils/exportImage');
+      await downloadElementAsImage(el as HTMLElement, `${petName}-card.png`);
+    } catch { /* silent */ }
+  }, [cards, getPetForCard]);
 
   const handleCopied = useCallback(() => {
     setCopyToast(true);
@@ -495,148 +520,93 @@ export function Cards() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Management panel — first on mobile, second on desktop */}
-          <div className="order-1 lg:order-2 space-y-5">
-                  {/* Active cards panel */}
-                  <div className="glass-card p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-on-surface">Active Cards</h3>
-                      <div className="flex items-center gap-2">
-                        {staleCardIds.size > 0 && (
-                          <button
-                            onClick={handleUpdateAllCards}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:opacity-90 transition-colors text-xs font-medium"
-                          >
-                            <span className="material-symbols-outlined text-sm">refresh</span> Update All
-                          </button>
-                        )}
-                        <span className="text-xs text-on-surface-variant">{activeCards.length} card{activeCards.length !== 1 ? 's' : ''}</span>
-                      </div>
-                    </div>
-                    <div
-                      className="space-y-1"
-                      role="listbox"
-                      aria-label="Card list"
-                      onKeyDown={(e) => {
-                        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-                        e.preventDefault();
-                        const allCards = [...activeCards, ...inactiveCards];
-                        const idx = allCards.findIndex(c => c.id === selectedCardId);
-                        const next = e.key === 'ArrowDown'
-                          ? Math.min(idx + 1, allCards.length - 1)
-                          : Math.max(idx - 1, 0);
-                        setSelectedCardId(allCards[next].id);
-                      }}
-                    >
-                      {activeCards.length === 0 && (
-                        <p className="text-xs text-on-surface-variant text-center py-3">No active cards</p>
-                      )}
-                      {activeCards.map(c => {
-                        const pet = c.petId === 'all-pets'
-                          ? { id: 'all-pets', name: 'All Pets', breed: `${pets.filter(p => !p.isPrivate).length} pets`, image: '', age: '', weight: '', notes: '' } as Pet
-                          : c.petId === 'multi-pet'
-                            ? { id: 'multi-pet', name: 'Multi-pet Card', breed: `${c.multiPetConfig?.length ?? 0} pets selected`, image: '', age: '', weight: '', notes: '' } as Pet
-                            : pets.find(p => p.id === c.petId);
-                        if (!pet) return null;
-                        return (
-                          <CardTile
-                            key={c.id}
-                            card={c}
-                            pet={pet}
-                            selected={selectedCardId === c.id}
-                            onSelect={() => setSelectedCardId(c.id)}
-                            isStale={staleCardIds.has(c.id)}
-                            onUpdate={() => handleUpdateCard(c.id)}
-                            onRevoke={() => handleRevoke(c.id)}
-                            onUndoRevoke={() => handleUndoRevoke(c.id)}
-                            onCopied={handleCopied}
-                            onEdit={() => {
-                              setCardToEdit(c);
-                              if (c.petId === 'multi-pet') setShowMultiPetModal(true);
-                              else setShowCreateModal(true);
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                    <button
-                      onClick={() => setShowCreateModal(true)}
-                      className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-outline-variant text-on-surface-variant hover:text-primary-container hover:border-primary-container/40 transition-colors text-sm font-medium"
-                    >
-                      <span className="material-symbols-outlined text-lg">add</span> Add Another Card
-                    </button>
-                  </div>
-
-                  {/* Revoked & Expired section — collapsed by default */}
-                  {inactiveCards.length > 0 && (
-                    <div className="glass-card overflow-hidden" style={{ opacity: 0.8 }}>
-                      <button
-                        onClick={() => setRevokedSectionOpen(o => !o)}
-                        className="w-full flex items-center justify-between p-4 hover:bg-surface-container-high/50 transition-colors"
-                      >
-                        <span className="text-sm font-semibold text-on-surface-variant">
-                          Revoked &amp; Expired ({inactiveCards.length})
-                        </span>
-                        <span className="material-symbols-outlined text-lg text-on-surface-variant">
-                          {revokedSectionOpen ? 'expand_less' : 'expand_more'}
-                        </span>
-                      </button>
-                      {revokedSectionOpen && (
-                        <div className="px-4 pb-4 space-y-1">
-                          {inactiveCards.map(c => {
-                            const pet = c.petId === 'all-pets'
-                              ? { id: 'all-pets', name: 'All Pets', breed: `${pets.filter(p => !p.isPrivate).length} pets`, image: '', age: '', weight: '', notes: '' } as Pet
-                              : c.petId === 'multi-pet'
-                                ? { id: 'multi-pet', name: 'Multi-pet Card', breed: `${c.multiPetConfig?.length ?? 0} pets selected`, image: '', age: '', weight: '', notes: '' } as Pet
-                                : pets.find(p => p.id === c.petId);
-                            if (!pet) return null;
-                            return (
-                              <CardTile
-                                key={c.id}
-                                card={c}
-                                pet={pet}
-                                selected={selectedCardId === c.id}
-                                onSelect={() => setSelectedCardId(c.id)}
-                                onUndoRevoke={() => handleUndoRevoke(c.id)}
-                              />
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-          </div>
-
-          {/* Card Preview — second on mobile, first on desktop */}
-          <div className="order-2 lg:order-1 flex justify-center" data-card-preview>
-            {selectedCard ? (
-              selectedCard.petId === 'multi-pet' ? (
-                <div className="w-full max-w-md">
-                  <MultiPetCardPreview pets={pets} card={selectedCard} />
-                </div>
-              ) : selectedCard.petId === 'all-pets' ? (
-                <div className="w-full max-w-md">
-                  <AllPetsCardPreview pets={pets} card={selectedCard} />
-                </div>
-              ) : selectedPet ? (
-                (selectedCard.status === 'revoked' && selectedCard.revokedAt && Date.now() >= selectedCard.revokedAt + UNDO_WINDOW_MS) ? (
-                  <div className="w-full max-w-md">
-                    <CardLogEntry card={selectedCard} pet={selectedPet} />
-                  </div>
-                ) : (
-                  <div className="w-full max-w-md" id={`card-preview-${selectedCard.id}`}>
-                    <CardPreview card={selectedCard} pet={selectedPet} />
-                  </div>
-                )
-              ) : null
-            ) : (
-              <div className="flex w-full max-w-md items-center justify-center h-64 border-2 border-dashed border-outline-variant rounded-2xl">
-                <p className="text-on-surface-variant text-sm">Select a card to preview</p>
-              </div>
-            )}
-          </div>
+        <>
+        <div>
+          {staleCardIds.size > 0 && (
+            <div className="flex justify-end mb-3">
+              <button
+                onClick={handleUpdateAllCards}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:opacity-90 transition-colors text-xs font-medium"
+              >
+                <span className="material-symbols-outlined text-sm">refresh</span> Update All
+              </button>
+            </div>
+          )}
+          <motion.div
+            layout
+            layoutDependency={[...activeCards, ...inactiveCards].map(c => c.id).join(',')}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
+            {[...activeCards, ...inactiveCards].map((c, i) => (
+              <CardGalleryTile
+                key={c.id}
+                card={c}
+                pet={getPetForCard(c)}
+                index={i}
+                isStale={staleCardIds.has(c.id)}
+                onTap={() => { setSelectedCardId(c.id); setDrawerCardId(c.id); }}
+                onQr={() => { setSelectedCardId(c.id); setQrCardId(c.id); }}
+              />
+            ))}
+          </motion.div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-outline-variant text-on-surface-variant hover:text-primary-container hover:border-primary-container/40 transition-colors text-sm font-medium"
+          >
+            <span className="material-symbols-outlined text-lg">add</span> Add Another Card
+          </button>
         </div>
+
+        {/* Hidden card preview for download */}
+        <div className="sr-only" aria-hidden="true" data-card-preview>
+          {selectedCard && selectedPet && (
+            <div id={`card-preview-${selectedCard.id}`}>
+              <CardPreview card={selectedCard} pet={selectedPet} />
+            </div>
+          )}
+        </div>
+
+        {/* Card Action Drawer (bottom sheet) */}
+        {(() => {
+          const drawerCard = cards.find(c => c.id === drawerCardId);
+          if (!drawerCard) return null;
+          const drawerPet = getPetForCard(drawerCard);
+          return (
+            <CardActionDrawer
+              card={drawerCard}
+              pet={drawerPet}
+              open={!!drawerCardId}
+              onClose={() => setDrawerCardId(null)}
+              onQr={() => setQrCardId(drawerCard.id)}
+              onDownload={() => handleDownloadCard(drawerCard.id)}
+              onEdit={() => {
+                setCardToEdit(drawerCard);
+                if (drawerCard.petId === 'multi-pet') setShowMultiPetModal(true);
+                else setShowCreateModal(true);
+              }}
+              onRevoke={() => handleRevoke(drawerCard.id)}
+              onUndoRevoke={() => handleUndoRevoke(drawerCard.id)}
+            />
+          );
+        })()}
+
+        {/* QR Overlay */}
+        <AnimatePresence>
+          {qrCardId && (() => {
+            const qrCard = cards.find(c => c.id === qrCardId);
+            if (!qrCard) return null;
+            const qrPet = getPetForCard(qrCard);
+            return (
+              <QrOverlay
+                cardId={qrCard.id}
+                pet={qrPet}
+                expiresLabel={formatExpiry(qrCard.expiresAt)}
+                onClose={() => setQrCardId(null)}
+              />
+            );
+          })()}
+        </AnimatePresence>
+        </>
       )}
 
       {/* Modals — lazy-loaded to keep initial bundle small */}

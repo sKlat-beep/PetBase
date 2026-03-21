@@ -5,13 +5,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { useOrchestrator } from '../hooks/useOrchestrator';
 import { OrchestratorPanel } from '../components/search/OrchestratorPanel';
 import { VerificationModal } from '../components/search/VerificationModal';
-import { SideRail } from '../components/search/SideRail';
-import { useCommunityTips } from '../hooks/useCommunityTips';
+import { SearchRightPanel } from '../components/search/SearchRightPanel';
+import { useRightPanel } from '../contexts/RightPanelContext';
 
 export function Search() {
   const { profile, updateProfile } = useAuth();
-  const tips = useCommunityTips();
-
+  const { setContent } = useRightPanel();
   const [searchParams] = useSearchParams();
   const initTab = searchParams.get('tab');
 
@@ -30,6 +29,17 @@ export function Search() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initTab]);
+
+  // Wire right context panel — Favorites + Recent Searches
+  useEffect(() => {
+    setContent(
+      <SearchRightPanel
+        history={orchestrator.history}
+        onSelect={entry => window.open(entry.url, '_blank', 'noopener,noreferrer')}
+      />
+    );
+    return () => setContent(null);
+  }, [setContent, orchestrator.history]);
 
   const showMakePermanent = !!(location && profile && location !== profile.zipCode);
 
@@ -71,9 +81,9 @@ export function Search() {
         </div>
       </header>
 
-      {/* Main content: Orchestrator + SideRail */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="xl:col-span-2">
+      {/* Main content */}
+      <div className="grid grid-cols-1 gap-8">
+        <div>
           <OrchestratorPanel
             pets={orchestrator.pets}
             selectedPets={orchestrator.selectedPets}
@@ -96,12 +106,6 @@ export function Search() {
             onManualQueryChange={orchestrator.setManualQuery}
             onSearch={orchestrator.executeSearch}
             history={orchestrator.history}
-          />
-        </div>
-        <div className="hidden xl:block space-y-10">
-          <SideRail
-            recentTips={tips.recentTips}
-            websiteResults={[]}
           />
         </div>
       </div>

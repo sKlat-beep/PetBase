@@ -520,13 +520,6 @@ export function Pets() {
             >
               <MIcon name="notifications" className="text-xl" />
             </button>
-            {/* Account icon */}
-            <button
-              className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface motion-safe:transition-colors"
-              aria-label="Account"
-            >
-              <MIcon name="account_circle" className="text-xl" />
-            </button>
           </div>
         </header>
 

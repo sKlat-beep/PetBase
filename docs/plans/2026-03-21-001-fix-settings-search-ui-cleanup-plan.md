@@ -1,7 +1,7 @@
 ---
 title: "fix: Settings cleanup, Pets page icon removal, Search right panel with favorites"
 type: fix
-status: active
+status: completed
 date: 2026-03-21
 ---
 

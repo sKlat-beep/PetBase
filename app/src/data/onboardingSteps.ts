@@ -16,14 +16,14 @@ export const STEPS: OnboardingStep[] = [
   },
   {
     id: 'add-pet-photo',
-    label: 'Upload a pet photo',
-    description: 'Give your pet a face — upload an avatar or photo.',
+    label: 'Give your pet a face',
+    description: 'Upload a photo so your pet stands out.',
     auto: true,
     skippable: true,
     path: '/pets',
   },
   {
-    id: 'add-medical-record',
+    id: 'log-health-record',
     label: 'Log a vaccine or vet visit',
     description: 'Track your pet\'s health history in one place.',
     auto: true,
@@ -31,20 +31,12 @@ export const STEPS: OnboardingStep[] = [
     path: '/pets',
   },
   {
-    id: 'create-card',
-    label: 'Create a pet card',
-    description: 'Generate an emergency or sitter card for your pet.',
+    id: 'create-qr-card',
+    label: 'Create a QR pet card',
+    description: 'Generate a shareable emergency or sitter card with a scannable QR code.',
     auto: false,
     skippable: true,
     path: '/pets?openCards=true',
-  },
-  {
-    id: 'find-services',
-    label: 'Find nearby services',
-    description: 'Search for top-rated vets, groomers, and sitters near you.',
-    auto: false,
-    skippable: true,
-    path: '/search',
   },
   {
     id: 'join-community',
@@ -55,40 +47,44 @@ export const STEPS: OnboardingStep[] = [
     path: '/community',
   },
   {
-    id: 'complete-profile',
-    label: 'Complete your profile',
-    description: 'Add your address and avatar to unlock local service matching.',
+    id: 'discover-services',
+    label: 'Find nearby pet services',
+    description: 'Search for top-rated vets, groomers, and sitters near you.',
+    auto: false,
+    skippable: true,
+    path: '/search',
+  },
+  {
+    id: 'send-message',
+    label: 'Send your first message',
+    description: 'Chat privately with other pet parents you\'ve connected with.',
+    auto: false,
+    skippable: true,
+    path: '/messages',
+  },
+  {
+    id: 'setup-profile',
+    label: 'Set up your profile',
+    description: 'Add your display name and avatar to unlock local service matching.',
     auto: true,
     skippable: true,
-    path: '/settings',
-  },
-  {
-    id: 'create-family',
-    label: 'Create or join a family',
-    description: 'Invite family members to co-manage your pets.',
-    auto: false,
-    skippable: true,
-    path: '/settings',
-    state: { scrollTo: 'section-family' },
-  },
-  {
-    id: 'enable-notifications',
-    label: 'Stay in the loop',
-    description: 'Enable email or push notifications in Settings → Notifications.',
-    auto: false,
-    skippable: true,
-    path: '/settings',
-    state: { scrollTo: 'section-notifications' },
-  },
-  {
-    id: 'privacy-settings',
-    label: 'Control your privacy',
-    description: 'Control who can message you or invite you to groups in Settings → Privacy.',
-    auto: false,
-    skippable: true,
-    path: '/settings',
-    state: { scrollTo: 'section-privacy' },
+    action: 'open-settings',
+    section: 'section-profile',
   },
 ];
 
 export const TOTAL_STEPS = STEPS.length;
+
+// ── Step ID migration map ──────────────────────────────────────────────────
+// Maps old step IDs (v1) → new step IDs (v2). Used by onboardingService to
+// migrate existing user progress without losing completion state.
+// If a value is null the old step is considered "done" (removed from the list).
+export const STEP_ID_MIGRATION: Record<string, string | null> = {
+  'add-medical-record': 'log-health-record',
+  'create-card':        'create-qr-card',
+  'find-services':      'discover-services',
+  'complete-profile':   'setup-profile',
+  'create-family':      null, // removed — mark as completed so progress is preserved
+  'enable-notifications': null,
+  'privacy-settings':   null,
+};

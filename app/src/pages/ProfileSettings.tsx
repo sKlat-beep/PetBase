@@ -82,7 +82,7 @@ function Section({ icon, title, defaultOpen, danger, children, id }: {
 const inputClass = 'w-full px-4 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary-container text-sm transition-all';
 const inputClassMono = `${inputClass} font-mono`;
 
-export function ProfileSettings() {
+export function ProfileSettings({ initialSection }: { initialSection?: string } = {}) {
   const { user, profile, updateProfile: updateContextProfile } = useAuth();
   const { theme, setTheme } = useTheme();
   const themeOptions = [
@@ -276,6 +276,15 @@ export function ProfileSettings() {
     // Check vault sync status
     loadVaultKey(user.uid).then(doc => setVaultEnabled(!!doc)).catch(() => { });
   }, [user]);
+
+  // Auto-open and scroll to a section when opened from the onboarding checklist
+  useEffect(() => {
+    if (!initialSection) return;
+    const el = document.getElementById(initialSection) as HTMLDetailsElement | null;
+    if (!el) return;
+    el.open = true;
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }, [initialSection]);
 
   const handleSaveProfile = async (e?: React.FormEvent) => {
     e?.preventDefault();

@@ -5,10 +5,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { useOnboarding } from '../hooks/useOnboarding';
 import { LEVEL_LABELS } from '../lib/onboardingService';
 import { TOTAL_FEATURES } from '../data/featureHints';
+import { useUI } from '../contexts/UIContext';
 
 export function RecommendationBanner() {
   const { user } = useAuth();
   const ob = useOnboarding(user?.uid ?? null);
+  const { openSettingsModal } = useUI();
   const [showShimmer, setShowShimmer] = useState(false);
   const prevHintIdRef = useRef<string | null>(null);
 
@@ -73,13 +75,24 @@ export function RecommendationBanner() {
             </p>
           </div>
 
-          <Link
-            to={current.to}
-            className="shrink-0 flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
-          >
-            {current.cta}
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </Link>
+          {current.to === '/settings' ? (
+            <button
+              type="button"
+              onClick={() => openSettingsModal()}
+              className="shrink-0 flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
+            >
+              {current.cta}
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
+          ) : (
+            <Link
+              to={current.to}
+              className="shrink-0 flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
+            >
+              {current.cta}
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
+          )}
 
           {/* Surprise me button */}
           <button

@@ -11,6 +11,7 @@ import { MessagingProvider } from '../contexts/MessagingContext';
 import { NotificationsProvider } from '../contexts/NotificationsContext';
 import { RightPanelProvider } from '../contexts/RightPanelContext';
 import { AvatarCacheProvider } from '../contexts/AvatarCacheContext';
+import { UIProvider } from '../contexts/UIContext';
 
 interface AppProvidersProps {
     children: React.ReactNode;
@@ -18,6 +19,7 @@ interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
     return (
+        <UIProvider>
         <AvatarCacheProvider>
         <RightPanelProvider>
             <AuthProvider>
@@ -43,5 +45,6 @@ export function AppProviders({ children }: AppProvidersProps) {
             </AuthProvider>
         </RightPanelProvider>
         </AvatarCacheProvider>
+        </UIProvider>
     );
 }

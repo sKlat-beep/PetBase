@@ -7,6 +7,7 @@ import { useCommunity } from '../contexts/CommunityContext';
 import { STEPS, TOTAL_STEPS } from '../data/onboardingSteps';
 import { useOnboarding } from '../hooks/useOnboarding';
 import { LEVEL_LABELS } from '../lib/onboardingService';
+import { useUI } from '../contexts/UIContext';
 
 // Re-export mark*() functions from onboardingService so existing callers don't break
 export {
@@ -19,6 +20,7 @@ export {
   markPetPhotoAdded,
   markMedicalRecordAdded,
   markProfileCompleted,
+  markMessageSent,
 } from '../lib/onboardingService';
 
 interface GettingStartedGuideProps {
@@ -32,6 +34,7 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
   const { groups } = useCommunity();
   const navigate = useNavigate();
   const ob = useOnboarding(user?.uid ?? null);
+  const { openSettingsModal } = useUI();
 
   const [isExpanded, setIsExpanded] = useState(() => {
     return localStorage.getItem('petbase-guide-expanded') !== 'false';
@@ -51,24 +54,24 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
       ob.markStepCompleted('add-pet-photo');
     }
 
-    // add-medical-record: any pet has medical records
-    if (pets.some((p) => p.medicalVisits && p.medicalVisits.length > 0) && !ob.isStepCompleted('add-medical-record')) {
-      ob.markStepCompleted('add-medical-record');
+    // log-health-record: any pet has medical records
+    if (pets.some((p) => p.medicalVisits && p.medicalVisits.length > 0) && !ob.isStepCompleted('log-health-record')) {
+      ob.markStepCompleted('log-health-record');
     }
 
-    // complete-profile: user has address + avatar
-    if (profile && profile.address && profile.avatarUrl && !ob.isStepCompleted('complete-profile')) {
-      ob.markStepCompleted('complete-profile');
+    // setup-profile: user has display name + avatar
+    if (profile && profile.displayName && profile.avatarUrl && !ob.isStepCompleted('setup-profile')) {
+      ob.markStepCompleted('setup-profile');
     }
 
-    // create-card: user has any cards in localStorage
-    if (!ob.isStepCompleted('create-card')) {
+    // create-qr-card: user has any cards in localStorage
+    if (!ob.isStepCompleted('create-qr-card')) {
       try {
         const raw = localStorage.getItem('petbase-cards');
         if (raw) {
           const cards = JSON.parse(raw);
           if (Array.isArray(cards) && cards.length > 0) {
-            ob.markStepCompleted('create-card');
+            ob.markStepCompleted('create-qr-card');
           }
         }
       } catch { /* ignore parse errors */ }
@@ -99,7 +102,9 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
   const progressPercent = (completedCount / TOTAL_STEPS) * 100;
 
   const handleStepClick = (step: typeof STEPS[number]) => {
-    if (step.path) {
+    if (step.action === 'open-settings') {
+      openSettingsModal(step.section);
+    } else if (step.path) {
       navigate(step.path, { state: step.state });
     }
   };
@@ -115,6 +120,12 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
       localStorage.setItem('petbase-guide-expanded', String(next));
       return next;
     });
+  };
+
+  // Collapse guide (not dismiss) — user can re-expand later
+  const collapseGuide = () => {
+    setIsExpanded(false);
+    localStorage.setItem('petbase-guide-expanded', 'false');
   };
 
   // Once all steps done/skipped, briefly show completion then permanently remove the guide
@@ -134,7 +145,7 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
       exit={{ opacity: 0, y: -8 }}
       className="glass-card w-full overflow-hidden rounded-2xl"
     >
-      {/* Header */}
+      {/* Header — always visible */}
       <div className="flex items-center justify-between p-5">
         <button
           type="button"
@@ -161,14 +172,14 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
             <p className="text-sm text-on-surface-variant mt-0.5">
               {ob.milestoneCopy}
             </p>
-            {/* Progress bar */}
+            {/* Progress bar — initial={false} prevents re-animating from 0 on expand/collapse */}
             <div className="mt-2 h-2 w-full rounded-full bg-surface-container overflow-hidden">
               <motion.div
                 className="h-full rounded-full"
                 style={{
                   background: 'linear-gradient(90deg, var(--md-sys-color-primary-container) 0%, var(--md-sys-color-tertiary) 100%)',
                 }}
-                initial={{ width: 0 }}
+                initial={false}
                 animate={{ width: `${progressPercent}%` }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               />
@@ -186,11 +197,12 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
               {isExpanded ? 'expand_less' : 'expand_more'}
             </span>
           </button>
+          {/* × collapses to minimized header, does NOT permanently dismiss */}
           <button
             type="button"
-            onClick={onComplete}
+            onClick={collapseGuide}
             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container motion-safe:transition-colors"
-            title="Dismiss guide"
+            title="Minimize guide"
           >
             <span className="material-symbols-outlined text-xl">
               close
@@ -263,7 +275,7 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
                               <p className="text-xs text-on-surface-variant mt-0.5">
                                 {step.description}
                               </p>
-                              {step.path && (
+                              {(step.path || step.action) && (
                                 <span className="text-xs font-medium text-primary mt-1 inline-block">
                                   Get started &rarr;
                                 </span>
@@ -300,10 +312,10 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
               </p>
               <button
                 type="button"
-                onClick={onComplete}
+                onClick={collapseGuide}
                 className="text-xs font-medium text-on-surface-variant hover:text-on-surface motion-safe:transition-colors px-3 py-1.5 rounded-lg hover:bg-surface-container"
               >
-                Skip for now
+                Maybe later
               </button>
             </div>
           </motion.div>

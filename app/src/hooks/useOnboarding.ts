@@ -10,6 +10,7 @@ import {
   awardMilestoneBadge,
   computeLevel,
   migrateOldLocalStorageKeys,
+  migrateStepIds,
   LEVEL_LABELS,
   MILESTONES,
 } from '../lib/onboardingService';
@@ -120,6 +121,7 @@ function getAvailableHints(
 export function useOnboarding(uid: string | null): UseOnboardingReturn {
   const [state, setState] = useState<OnboardingState>(() => {
     migrateOldLocalStorageKeys();
+    migrateStepIds();
     return readLocalOnboardingState();
   });
   const [loading, setLoading] = useState(true);

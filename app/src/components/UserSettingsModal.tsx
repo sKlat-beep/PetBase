@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { ProfileSettings } from '../pages/ProfileSettings';
 import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 
 interface UserSettingsModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface UserSettingsModalProps {
 
 export function UserSettingsModal({ isOpen, onClose }: UserSettingsModalProps) {
   const { signOut } = useAuth();
+  const { settingsSection } = useUI();
 
   return (
     <AnimatePresence>
@@ -49,7 +51,7 @@ export function UserSettingsModal({ isOpen, onClose }: UserSettingsModalProps) {
             </div>
             {/* Body */}
             <div className="flex-1 overflow-y-auto">
-              <ProfileSettings />
+              <ProfileSettings initialSection={settingsSection} />
             </div>
           </motion.div>
         </div>

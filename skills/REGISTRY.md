@@ -10,3 +10,4 @@ See `skills/external.md`.
 - `skills/local/privacy-check/SKILL.md` — Pre-flight privacy compliance audit
 - `/ui-review` — Global skill (`~/.claude/commands/ui-review.md`). Stitch-powered visual review + a11y audit.
 - `skills/local/handoff/SKILL.md` — Generate agent handoff prompts
+- `.claude/commands/gotcha-registry.md` — Gotcha Registry: store, retrieve, rank, and update confidence for known failure patterns. Called by gotcha-monitor agent and claude-code.md orchestration. Data: `.claude/gotcha/registry.json`.

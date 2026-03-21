@@ -79,6 +79,7 @@ interface CardSectionRendererProps {
   fieldOrder?: string[];
   includeGeneralInfo?: boolean;
   compact?: boolean; // true = flat sections (no accordions), tighter density
+  mode?: 'owner' | 'recipient'; // recipient: flat sequential sections, no accordions
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -100,7 +101,9 @@ export function CardSectionRenderer({
   fieldOrder,
   includeGeneralInfo = false,
   compact = false,
+  mode,
 }: CardSectionRendererProps) {
+  const isRecipient = mode === 'recipient';
   const order = fieldOrder ?? DEFAULT_ORDER;
 
   // ── Section: basicInfo ──
@@ -187,13 +190,19 @@ export function CardSectionRenderer({
 
   // ── Section: diet ──
   const dietContent: React.ReactNode =
-    sharing.diet && (data.food || dietScheduleText || data.notes) ? (
+    sharing.diet && (data.food || dietScheduleText || data.notes || data.dietaryRestrictions) ? (
       <div>
         {dietScheduleText ? (
           <p className="text-on-surface-variant mb-1 text-sm">{dietScheduleText}</p>
         ) : data.food ? (
           <p className="text-on-surface-variant mb-1 text-sm">{data.food}</p>
         ) : null}
+        {data.dietaryRestrictions && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 mb-2">
+            <span className="material-symbols-outlined text-amber-600 text-sm">warning</span>
+            <span className="text-xs font-semibold text-amber-700">{data.dietaryRestrictions}</span>
+          </div>
+        )}
         {data.notes && (
           <div className={`bg-secondary-container ${compact ? 'rounded-xl' : 'rounded-2xl'} p-2.5 border border-secondary/30 mt-1`}>
             {data.notes.startsWith('eyJ') ? (
@@ -368,15 +377,25 @@ export function CardSectionRenderer({
   ) : null;
 
   // ── Section: vetInfo ──
+  const vet = data.emergencyContacts?.vetInfo;
   const vetInfoContent: React.ReactNode =
-    sharing.vetInfo && data.emergencyContacts?.vetInfo ? (
+    sharing.vetInfo && vet ? (
       <div className="bg-surface-container-low rounded-2xl p-4 border border-outline-variant">
-        <p className="font-medium text-on-surface text-sm">
-          {data.emergencyContacts!.vetInfo!.name}
-        </p>
-        <p className="text-xs text-on-surface-variant">{data.emergencyContacts!.vetInfo!.phone}</p>
-        {data.emergencyContacts!.vetInfo!.address && (
-          <p className="text-xs text-on-surface-variant">{data.emergencyContacts!.vetInfo!.address}</p>
+        {vet.name && <p className="font-medium text-on-surface text-sm">{vet.name}</p>}
+        {vet.phone && <p className="text-xs text-on-surface-variant">{vet.phone}</p>}
+        {vet.address && (
+          <>
+            <p className="text-xs text-on-surface-variant">{vet.address}</p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vet.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-primary hover:underline"
+            >
+              <span className="material-symbols-outlined text-sm">directions</span>
+              View Directions
+            </a>
+          </>
         )}
       </div>
     ) : null;
@@ -407,6 +426,18 @@ export function CardSectionRenderer({
     const config = SECTION_CONFIGS[key];
     if (!config) {
       return <div key={key}>{content}</div>;
+    }
+    // Recipient mode: flat sections with header label, no accordion
+    if (isRecipient) {
+      return (
+        <div key={key} className="px-4 py-4">
+          <h3 className="font-semibold text-on-surface text-sm flex items-center gap-2 mb-2">
+            {config.icon}
+            {config.title}
+          </h3>
+          {content}
+        </div>
+      );
     }
     return (
       <CardDetailSection

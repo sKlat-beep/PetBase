@@ -17,3 +17,5 @@ mappings:
     skills: [ui-review]  # global skill via ~/.claude/commands/
   - tag: handoff
     skills: [handoff]
+  - tag: gotcha
+    skills: [gotcha-registry]  # canonical skill at .claude/commands/gotcha-registry.md

@@ -510,6 +510,7 @@ export interface PublicCardPetSnapshot {
   microchipId?: string;
   householdInfo?: string;
   dietSchedule?: import('../types/pet').DietSchedule[];
+  dietaryRestrictions?: string;
 }
 
 export interface PublicCardDoc {
@@ -525,7 +526,9 @@ export interface PublicCardDoc {
   petSnapshot?: PublicCardPetSnapshot; // Optional because multi-pets use multiPetConfig
   multiPetConfig?: Array<{ petId: string; sharing: Record<string, boolean>; petSnapshot: PublicCardPetSnapshot }>;
   includeGeneralInfo?: boolean;
+  generalInfoText?: string; // household info text, stored at creation for snapshot rebuilds
   fieldOrder?: string[];
+  ownerDisplayName?: string; // sourced from user.displayName at card creation time
 }
 
 export async function savePublicCard(card: PublicCardDoc): Promise<void> {
@@ -564,6 +567,34 @@ export async function updatePublicCardStatusWithTimestamp(
   else if (status === 'active') payload.revokedAt = null; // clear on undo
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await updateDoc(doc(db, 'publicCards', cardId), payload as any);
+}
+
+/** Fetch active public cards for a specific pet (compound query). */
+export async function getPublicCardsForPet(uid: string, petId: string): Promise<PublicCardDoc[]> {
+  const q = query(
+    collection(db, 'publicCards'),
+    where('ownerId', '==', uid),
+    where('petId', '==', petId),
+    where('status', '==', 'active'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ ...d.data(), id: d.id } as PublicCardDoc));
+}
+
+/** Rebuild petSnapshot on all active cards for a given pet. Uses writeBatch (single RPC). */
+export async function rebuildActiveCardSnapshots(
+  uid: string,
+  petId: string,
+  buildSnapshot: (card: PublicCardDoc) => PublicCardPetSnapshot,
+): Promise<void> {
+  const cards = await getPublicCardsForPet(uid, petId);
+  if (cards.length === 0) return;
+  const batch = writeBatch(db);
+  for (const card of cards) {
+    const ref = doc(db, 'publicCards', card.id);
+    batch.update(ref, { petSnapshot: buildSnapshot(card) });
+  }
+  await batch.commit();
 }
 
 // --- Vault (E2EE Cross-Device Sync) -----------------------------------------

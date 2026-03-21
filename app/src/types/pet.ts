@@ -12,6 +12,7 @@ export interface FeedingEntry {
 export interface DietSchedule {
   foodType: string;           // "Purina Pro Plan"
   entries: FeedingEntry[];    // multiple time slots
+  dietaryRestrictions?: string; // e.g. "NO CHICKEN PRODUCTS"
 }
 
 export interface EmergencyContacts {

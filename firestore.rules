@@ -96,7 +96,9 @@ service cloud.firestore {
     // (including unauthenticated visitors following a shared link).
     // Revoked cards are blocked at the rule level — revokedAt must be absent or null.
     match /publicCards/{cardId} {
-      allow read: if resource.data.get('revokedAt', null) == null;
+      allow read: if resource.data.get('revokedAt', null) == null
+                  && (resource.data.get('expiresAt', 0) == 0
+                      || resource.data.expiresAt > request.time.toMillis());
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;

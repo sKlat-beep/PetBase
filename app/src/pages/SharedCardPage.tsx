@@ -4,35 +4,53 @@ import { getPublicCard, type PublicCardDoc } from '../lib/firestoreService';
 import { CardSectionRenderer } from '../components/cards/CardSectionRenderer';
 import { SkeletonSharedCard } from '../components/cards/SkeletonSharedCard';
 import type { SharingToggles } from '../types/cardExtensions';
-import { TEMPLATE_COLORS, TEMPLATE_LABELS } from '../types/cardExtensions';
+import { TEMPLATE_LABELS } from '../types/cardExtensions';
 
-type CardState = PublicCardDoc | 'loading' | 'not-found' | 'revoked';
+type CardState = PublicCardDoc | 'loading' | 'not-found' | 'revoked' | 'error';
+
+const PHONE_REGEX = /^\+?[\d\s\-().]{7,20}$/;
+
+function makeTelLink(phone: string | undefined): string | null {
+  if (!phone || !PHONE_REGEX.test(phone)) return null;
+  return `tel:${phone.replace(/[^\d+]/g, '')}`;
+}
 
 export function SharedCardPage() {
   const { cardId } = useParams<{ cardId: string }>();
   const [card, setCard] = useState<CardState>('loading');
+  const [retryKey, setRetryKey] = useState(0);
+  const retry = () => setRetryKey(k => k + 1);
 
+  // Canceled flag + clearTimeout pattern (replaces Promise.race)
   useEffect(() => {
     if (!cardId) { setCard('not-found'); return; }
+    let canceled = false;
+
+    const timeoutId = setTimeout(() => {
+      if (!canceled) setCard('error');
+    }, 5_000);
+
     getPublicCard(cardId)
       .then(data => {
+        if (canceled) return;
+        clearTimeout(timeoutId);
         if (!data) { setCard('not-found'); return; }
         if (data.status === 'revoked') { setCard('revoked'); return; }
-        if (data.status !== 'active' || Date.now() > data.expiresAt) {
-          // Store doc for expired state so we can show the expiry date
-          setCard(data);
-          return;
-        }
         setCard(data);
       })
-      .catch(() => setCard('not-found'));
-  }, [cardId]);
+      .catch(() => {
+        if (canceled) return;
+        clearTimeout(timeoutId);
+        setCard('error');
+      });
+
+    return () => { canceled = true; clearTimeout(timeoutId); };
+  }, [cardId, retryKey]);
 
   // Loading state with skeleton
   if (card === 'loading') {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-start py-10 px-4">
-        {/* Header branding */}
         <div className="mb-6 flex items-center gap-2 text-on-surface-variant text-sm">
           <span className="material-symbols-outlined text-primary" style={{ fontSize: '16px' }}>pets</span>
           <span>
@@ -41,6 +59,22 @@ export function SharedCardPage() {
           </span>
         </div>
         <SkeletonSharedCard />
+      </div>
+    );
+  }
+
+  // Error state
+  if (card === 'error') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '48px' }}>wifi_off</span>
+        <h1 className="text-xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+          Something went wrong
+        </h1>
+        <p className="text-on-surface-variant max-w-xs">Couldn't load this card.</p>
+        <button onClick={retry} className="bg-primary text-on-primary px-6 py-2 rounded-full font-medium text-sm">
+          Try Again
+        </button>
       </div>
     );
   }
@@ -67,13 +101,28 @@ export function SharedCardPage() {
     );
   }
 
+  // Missing petSnapshot guard
+  if (!card.petSnapshot && !(card.multiPetConfig && card.multiPetConfig.length > 0)) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '48px' }}>error_outline</span>
+        <h1 className="text-xl font-bold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>Card Data Unavailable</h1>
+        <p className="text-on-surface-variant max-w-xs">This card's data could not be loaded. The owner may need to update it.</p>
+      </div>
+    );
+  }
+
   const isExpired = card.status !== 'active' || Date.now() > card.expiresAt;
-  const _headerColor = TEMPLATE_COLORS[card.template] ?? 'bg-emerald-500';
-  void _headerColor; // preserved for reference; hero uses M3 primary tokens
   const isMulti = card.petId === 'multi-pet' || card.petId === 'all-pets' || (card.multiPetConfig && card.multiPetConfig.length > 0);
   const petName = isMulti ? `${card.multiPetConfig?.length || 0} Pets` : card.petSnapshot?.name;
   const petImage = !isMulti ? card.petSnapshot?.image : undefined;
   const petBreed = !isMulti ? card.petSnapshot?.breed : undefined;
+
+  // Emergency contact phone
+  const ec = card.petSnapshot?.emergencyContacts;
+  const contactPhone = ec?.ownerPhone ?? ec?.additionalContacts?.[0]?.phone;
+  const telHref = makeTelLink(contactPhone);
+  const smsHref = telHref?.replace('tel:', 'sms:') ?? null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-start print:bg-surface print:py-0 relative">
@@ -95,7 +144,6 @@ export function SharedCardPage() {
       {/* ── Hero: Full-bleed cinematic pet photo ────────────────────────── */}
       <section className="w-full max-w-lg mx-auto px-4 mt-2">
         <div className="relative rounded-[2rem] overflow-hidden">
-          {/* Photo / fallback gradient */}
           {petImage ? (
             <img
               src={petImage}
@@ -107,7 +155,7 @@ export function SharedCardPage() {
             <div className="w-full h-72 bg-gradient-to-br from-primary/30 to-tertiary/30" />
           )}
 
-          {/* Dark scrim for text legibility */}
+          {/* Dark scrim */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
           {/* Glass overlay badge: ACTIVE / EXPIRED */}
@@ -148,6 +196,15 @@ export function SharedCardPage() {
               <p className="text-white/50 text-xs mt-0.5">{card.petSnapshot.age}</p>
             )}
           </div>
+
+          {/* "Managed by" badge — bottom right */}
+          {card.ownerDisplayName && (
+            <div className="absolute bottom-4 right-4">
+              <span className="glass inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-on-surface/80">
+                Managed by {card.ownerDisplayName}
+              </span>
+            </div>
+          )}
         </div>
       </section>
 
@@ -161,7 +218,42 @@ export function SharedCardPage() {
         </div>
       )}
 
-      {/* ── Bento Grid Info Cards ───────────────────────────────────────── */}
+      {/* ── Emergency Contact CTA (recipient mode) ────────────────────── */}
+      {!isExpired && (card.sharing as unknown as SharingToggles).emergencyContact && telHref && (
+        <section className="w-full max-w-lg mx-auto px-4 mt-4">
+          <div className="glass-card p-4">
+            <h3 className="font-semibold text-on-surface text-sm flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-[16px] text-secondary">phone</span>
+              Emergency Contact
+            </h3>
+            {ec?.ownerPhone && (
+              <p className="text-sm text-on-surface mb-1">
+                {ec.additionalContacts?.[0]?.name ? ec.additionalContacts[0].name : 'Owner'}: {contactPhone}
+              </p>
+            )}
+            <div className="flex items-center gap-2 mt-2">
+              <a
+                href={telHref}
+                className="flex items-center gap-2 bg-primary text-on-primary px-4 py-2.5 min-h-[44px] rounded-xl font-medium text-sm"
+              >
+                <span className="material-symbols-outlined text-lg">call</span>
+                Call Now
+              </a>
+              {smsHref && (
+                <a
+                  href={smsHref}
+                  className="flex items-center gap-2 bg-surface-container-high text-on-surface px-4 py-2.5 min-h-[44px] rounded-xl font-medium text-sm"
+                >
+                  <span className="material-symbols-outlined text-lg">sms</span>
+                  Message
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Bento Grid Info Cards (recipient mode) ────────────────────── */}
       <section className="w-full max-w-lg mx-auto px-4 mt-4">
         <div className="glass-card p-4 space-y-4">
 
@@ -196,6 +288,7 @@ export function SharedCardPage() {
                     sharing={cfg.sharing as unknown as SharingToggles}
                     fieldOrder={card.fieldOrder}
                     includeGeneralInfo={false}
+                    mode="recipient"
                   />
                 </div>
               ))}
@@ -207,13 +300,15 @@ export function SharedCardPage() {
                 sharing={card.sharing as unknown as SharingToggles}
                 fieldOrder={card.fieldOrder}
                 includeGeneralInfo={card.includeGeneralInfo}
+                mode="recipient"
               />
             )
           )}
+
         </div>
       </section>
 
-      {/* ── Footer: Expiry notice + branding ────────────────────────────── */}
+      {/* ── Footer: Expiry notice ─────────────────────────────────────── */}
       <footer className="w-full max-w-lg mx-auto px-4 mt-4 mb-24 print:mb-4">
         <div className="glass-card px-5 py-4 flex items-center gap-2 text-xs text-on-surface-variant">
           <span className="material-symbols-outlined shrink-0" style={{ fontSize: '14px' }}>schedule</span>
@@ -227,27 +322,29 @@ export function SharedCardPage() {
             : <span>Secure share link expires {new Date(card.expiresAt).toLocaleDateString()}</span>
           }
         </div>
-        <p className="mt-4 text-xs text-on-surface-variant/50 text-center print:hidden">
-          Powered by <span className="font-semibold" style={{ fontFamily: 'var(--font-headline)' }}>PetID</span> · This card was shared by its owner.
-        </p>
+        {/* Branded footer */}
+        <div className="mt-4 text-center print:hidden">
+          <a href="/" className="text-on-surface-variant text-xs hover:text-on-surface transition-colors">
+            Made with{' '}
+            <span className="font-semibold text-on-surface" style={{ fontFamily: 'var(--font-headline)' }}>
+              PetBase
+            </span>
+            {' — '}Create a card for your pet →
+          </a>
+        </div>
       </footer>
 
       {/* ── Mobile FAB: CONTACT OWNER ───────────────────────────────────── */}
-      {!isExpired && card.petSnapshot?.emergencyContacts && (
+      {!isExpired && telHref && (
         <div className="fixed bottom-6 left-0 right-0 flex justify-center z-50 print:hidden">
-          <button
-            type="button"
-            onClick={() => {
-              const ec = card.petSnapshot?.emergencyContacts;
-              const phone = ec?.ownerPhone ?? ec?.additionalContacts?.[0]?.phone;
-              if (phone) window.location.href = `tel:${phone}`;
-            }}
+          <a
+            href={telHref}
             className="flex items-center gap-2 bg-primary text-on-primary px-6 py-3.5 rounded-full shadow-lg font-bold text-sm tracking-wide hover:opacity-90 active:scale-[0.97] transition-all"
             style={{ fontFamily: 'var(--font-headline)' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>call</span>
             CONTACT OWNER
-          </button>
+          </a>
         </div>
       )}
     </div>

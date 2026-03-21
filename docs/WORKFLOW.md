@@ -12,6 +12,7 @@ Every conversation begins with:
 3. **Read only the active phase section of `planning/TODO.md`** — never the full file (token discipline).
 4. **Check MEMORY.md** — load relevant memories (user prefs, feedback, project context).
 5. **jcodemunch `get_repo_outline`** — establish symbol-level awareness of the codebase without reading raw files.
+6. **Check `.claude/gotcha/pending.json`** — if any entries have `status: "awaiting_approval"`, surface them to the user before task work. See the Gotcha System section in `agents/claude-code.md` for the approval flow.
 
 ---
 
@@ -37,6 +38,9 @@ These fire automatically as I work:
 - **Security-guidance** (PreToolUse hook) — checks for XSS, eval, command injection before edits are applied.
 - **TypeScript LSP** — real-time type diagnostics for `app/` and `functions/`.
 - **code-simplifier** — runs after implementation tasks complete to simplify/refine code.
+- **gotcha-preflight** (PreToolUse hook, Bash) — checks commands against gotcha registry before execution. Advisory by default; only blocks in strict mode with very_high confidence.
+- **gotcha-event-capture** (PostToolUse hook, Bash) — captures each Bash result as a structured event. Classifies `monitor_trigger` for the agent layer to consume. Always exits 0.
+- **gotcha-monitor** (conditional agent) — invoked when `monitor_trigger` is set in the captured event, or on user failure language / phase transitions. Returns `known-gotcha`, `new-gotcha-candidate`, `no-issue`, or `analysis-error`. Silent on `no-issue`.
 
 ### Delivery
 1. **`/ui-review`** on all modified `.tsx` files (if any).
@@ -215,6 +219,8 @@ When I make a mistake (rule skipped, tokens wasted, wrong approach):
 
 ### Hooks (Automated)
 - **PreToolUse** (security-guidance): Checks for XSS, eval, command injection before any Edit/Write.
+- **PreToolUse** (gotcha-preflight): Checks Bash commands against gotcha registry. Fast deterministic path (≤75ms). Advisory by default.
+- **PostToolUse** (gotcha-event-capture): Captures every Bash result as a structured event in `.claude/gotcha/events/latest.json`. Sets `monitor_trigger` field. Always exits 0.
 
 ---
 

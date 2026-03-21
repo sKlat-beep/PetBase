@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-import { loadPets, savePet, deletePetDoc, deletePublicCardsForPet, createPetAlbum } from '../lib/firestoreService';
+import { loadPets, savePet, deletePetDoc, deletePublicCardsForPet, createPetAlbum, rebuildActiveCardSnapshots, type PublicCardDoc, type PublicCardPetSnapshot } from '../lib/firestoreService';
 import type { Pet } from '../types/pet';
+import { buildPetSnapshot, type SharingToggles } from '../types/cardExtensions';
 import { logActivity } from '../utils/activityLog';
 import { get, set } from 'idb-keyval';
 import { awardPoints } from '../lib/gamificationService';
@@ -62,7 +63,21 @@ export function PetProvider({ children }: { children: ReactNode }) {
 
   const updatePet = useCallback((updated: Pet) => {
     setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-    if (user) savePet(user.uid, updated).catch(console.error);
+    if (user) {
+      savePet(user.uid, updated).catch(console.error);
+      // Fire-and-forget: rebuild snapshots on all active cards for this pet
+      rebuildActiveCardSnapshots(
+        user.uid,
+        updated.id,
+        (card: PublicCardDoc) => buildPetSnapshot(
+          updated,
+          card.sharing as unknown as SharingToggles,
+          card.includeGeneralInfo ?? false,
+          card.generalInfoText ?? '',
+          user.uid,
+        ),
+      ).catch(err => console.warn('Snapshot rebuild failed:', err));
+    }
   }, [user]);
 
   const deletePet = useCallback((id: string) => {

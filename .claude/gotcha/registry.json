@@ -1,0 +1,368 @@
+{
+  "version": "1.0",
+  "gotchas": [
+    {
+      "gotcha_id": "gotcha-deploy-before-build-validated",
+      "name": "Firebase deploy before build validated",
+      "description": "Running `firebase deploy` before both app/ and functions/ builds pass causes runtime errors requiring rollback. The delivery gate in WORKFLOW.md §2 mandates test-validator passage first.",
+      "root_cause": "Skipped delivery gate — test-validator (npm run build in app/ and functions/) must exit 0 before any deploy.",
+      "recommended_fix": "Run `npm --prefix app run build && npm --prefix functions run build` first. Both must exit 0. Then confirm task status is `review` in TODO.md before deploying.",
+      "signature": {
+        "patterns": ["firebase deploy"],
+        "regex_patterns": []
+      },
+      "semantic_representation": {
+        "action": "deploy",
+        "target": "firebase",
+        "risk": "skipping build validation"
+      },
+      "preventative_rule": {
+        "rule_type": "advisory",
+        "condition": "firebase deploy",
+        "action": "warn",
+        "severity": "high",
+        "applies_to_command_families": ["firebase"],
+        "applies_to_environments": ["development", "production"],
+        "suggested_command": "npm --prefix app run build && npm --prefix functions run build",
+        "requires_confirmation": false,
+        "override_allowed": true,
+        "last_validated_at": "2026-03-21T00:00:00Z"
+      },
+      "examples": [
+        "firebase deploy --only hosting",
+        "firebase deploy --only functions",
+        "firebase deploy"
+      ],
+      "context_tags": ["firebase", "deploy", "build"],
+      "confidence_profile": {
+        "confidence": 0.80,
+        "confidence_band": "high",
+        "deterministic_match_strength": 0.90,
+        "semantic_similarity_score": 0.0,
+        "context_match_score": 0.70,
+        "acceptance_count": 0,
+        "rejection_count": 0,
+        "fix_success_count": 0,
+        "fix_failure_count": 0,
+        "warning_accepted_count": 0,
+        "warning_ignored_count": 0,
+        "override_count": 0,
+        "false_positive_count": 0,
+        "recurrence_count": 0,
+        "last_seen_at": null,
+        "last_success_at": null
+      },
+      "effectiveness_metrics": {},
+      "ranking_features": {
+        "historical_weight": 0.80,
+        "recurrence_rate": 0.0
+      },
+      "created_at": "2026-03-21T00:00:00Z",
+      "updated_at": "2026-03-21T00:00:00Z",
+      "version": 1
+    },
+    {
+      "gotcha_id": "gotcha-npm-command-missing-prefix",
+      "name": "npm run without --prefix in multi-workspace repo",
+      "description": "Running bare `npm run <script>` from repo root fails — the root has no package.json scripts. Must use `npm --prefix app` or `npm --prefix functions` to target the correct workspace.",
+      "root_cause": "PetBase is a monorepo. The repo root has no scripts section. `npm run build` at root exits non-zero with 'missing script' or runs the wrong package.",
+      "recommended_fix": "Use `npm --prefix app run build` or `npm --prefix functions run build`. Never bare `npm run *` from repo root.",
+      "signature": {
+        "patterns": ["npm run "],
+        "regex_patterns": ["^npm run \\w"]
+      },
+      "semantic_representation": {
+        "action": "npm_run",
+        "risk": "wrong workspace, missing prefix"
+      },
+      "preventative_rule": {
+        "rule_type": "advisory",
+        "condition": "npm run without --prefix",
+        "action": "suggest_modified_command",
+        "severity": "medium",
+        "applies_to_command_families": [],
+        "applies_to_environments": ["development"],
+        "suggested_command": "npm --prefix app run build",
+        "requires_confirmation": false,
+        "override_allowed": true,
+        "last_validated_at": "2026-03-21T00:00:00Z"
+      },
+      "examples": [
+        "npm run build",
+        "npm run dev",
+        "npm run lint",
+        "npm run test"
+      ],
+      "context_tags": ["npm", "build", "monorepo"],
+      "confidence_profile": {
+        "confidence": 0.70,
+        "confidence_band": "medium",
+        "deterministic_match_strength": 0.75,
+        "semantic_similarity_score": 0.0,
+        "context_match_score": 0.60,
+        "acceptance_count": 0,
+        "rejection_count": 0,
+        "fix_success_count": 0,
+        "fix_failure_count": 0,
+        "warning_accepted_count": 0,
+        "warning_ignored_count": 0,
+        "override_count": 0,
+        "false_positive_count": 0,
+        "recurrence_count": 0,
+        "last_seen_at": null,
+        "last_success_at": null
+      },
+      "effectiveness_metrics": {},
+      "ranking_features": {
+        "historical_weight": 0.70,
+        "recurrence_rate": 0.0
+      },
+      "created_at": "2026-03-21T00:00:00Z",
+      "updated_at": "2026-03-21T00:00:00Z",
+      "version": 1
+    },
+    {
+      "gotcha_id": "gotcha-cd-and-git-chain",
+      "name": "cd + git chained with && or ;",
+      "description": "Chaining `cd <path> && git <cmd>` fails because shell state (current directory) does not persist between Bash tool calls. The git command may run in the wrong directory or fail silently.",
+      "root_cause": "Bash tool calls are independent subshells. `cd` changes only the subprocess's directory, not the next call. See feedback_git_commands.md.",
+      "recommended_fix": "Use `git -C /absolute/path <cmd>` instead of `cd /path && git <cmd>`.",
+      "signature": {
+        "patterns": [],
+        "regex_patterns": [
+          "cd .+&&.+git",
+          "cd .+;.+git"
+        ]
+      },
+      "semantic_representation": {
+        "action": "cd_then_git",
+        "risk": "wrong working directory for git"
+      },
+      "preventative_rule": {
+        "rule_type": "advisory",
+        "condition": "cd combined with git via && or ;",
+        "action": "suggest_modified_command",
+        "severity": "medium",
+        "applies_to_command_families": [],
+        "applies_to_environments": ["development"],
+        "suggested_command": "git -C /absolute/path <subcommand>",
+        "requires_confirmation": false,
+        "override_allowed": true,
+        "last_validated_at": "2026-03-21T00:00:00Z"
+      },
+      "examples": [
+        "cd app && git status",
+        "cd C:/Admin/Projects/PetBase; git log"
+      ],
+      "context_tags": ["git", "shell", "compound-command"],
+      "confidence_profile": {
+        "confidence": 0.75,
+        "confidence_band": "high",
+        "deterministic_match_strength": 0.80,
+        "semantic_similarity_score": 0.0,
+        "context_match_score": 0.65,
+        "acceptance_count": 0,
+        "rejection_count": 0,
+        "fix_success_count": 0,
+        "fix_failure_count": 0,
+        "warning_accepted_count": 0,
+        "warning_ignored_count": 0,
+        "override_count": 0,
+        "false_positive_count": 0,
+        "recurrence_count": 0,
+        "last_seen_at": null,
+        "last_success_at": null
+      },
+      "effectiveness_metrics": {},
+      "ranking_features": {
+        "historical_weight": 0.75,
+        "recurrence_rate": 0.0
+      },
+      "created_at": "2026-03-21T00:00:00Z",
+      "updated_at": "2026-03-21T00:00:00Z",
+      "version": 1
+    },
+    {
+      "gotcha_id": "gotcha-cd-and-npm-chain",
+      "name": "cd + npm/node/npx chained with && or ;",
+      "description": "Chaining `cd <path> && npm <cmd>` has the same shell-state problem as cd+git. The directory change does not persist. Use `npm --prefix <path>` or absolute paths instead.",
+      "root_cause": "Bash tool calls are independent subshells. See feedback_bash_commands.md — no compound cd && command patterns.",
+      "recommended_fix": "Use `npm --prefix /absolute/path run <script>` instead of `cd /path && npm run <script>`.",
+      "signature": {
+        "patterns": [],
+        "regex_patterns": [
+          "cd .+&&.+(npm|npx|node)\\b",
+          "cd .+;.+(npm|npx|node)\\b"
+        ]
+      },
+      "semantic_representation": {
+        "action": "cd_then_npm",
+        "risk": "wrong working directory for npm"
+      },
+      "preventative_rule": {
+        "rule_type": "advisory",
+        "condition": "cd combined with npm/npx/node via && or ;",
+        "action": "suggest_modified_command",
+        "severity": "medium",
+        "applies_to_command_families": [],
+        "applies_to_environments": ["development"],
+        "suggested_command": "npm --prefix app run build",
+        "requires_confirmation": false,
+        "override_allowed": true,
+        "last_validated_at": "2026-03-21T00:00:00Z"
+      },
+      "examples": [
+        "cd app && npm run build",
+        "cd functions; npm run build"
+      ],
+      "context_tags": ["npm", "shell", "compound-command"],
+      "confidence_profile": {
+        "confidence": 0.75,
+        "confidence_band": "high",
+        "deterministic_match_strength": 0.80,
+        "semantic_similarity_score": 0.0,
+        "context_match_score": 0.65,
+        "acceptance_count": 0,
+        "rejection_count": 0,
+        "fix_success_count": 0,
+        "fix_failure_count": 0,
+        "warning_accepted_count": 0,
+        "warning_ignored_count": 0,
+        "override_count": 0,
+        "false_positive_count": 0,
+        "recurrence_count": 0,
+        "last_seen_at": null,
+        "last_success_at": null
+      },
+      "effectiveness_metrics": {},
+      "ranking_features": {
+        "historical_weight": 0.75,
+        "recurrence_rate": 0.0
+      },
+      "created_at": "2026-03-21T00:00:00Z",
+      "updated_at": "2026-03-21T00:00:00Z",
+      "version": 1
+    },
+    {
+      "gotcha_id": "gotcha-git-push-without-approval",
+      "name": "git push without explicit user approval",
+      "description": "Running `git push` without first asking for user approval violates SYSTEM_RULES §6 and agents/claude-code.md. Pushing unreviewed commits or to the wrong remote can cause unrecoverable state.",
+      "root_cause": "SYSTEM_RULES §6: 'No git push without asking for approval.' Source control rule — explicit system constraint.",
+      "recommended_fix": "Ask the user: 'Ready to push to origin/main. Shall I run git push? [yes/no]' — wait for explicit confirmation before executing.",
+      "signature": {
+        "patterns": ["git push"],
+        "regex_patterns": ["^git push( |$)"]
+      },
+      "semantic_representation": {
+        "action": "git_push",
+        "risk": "publishing unreviewed commits to remote"
+      },
+      "preventative_rule": {
+        "rule_type": "advisory",
+        "condition": "git push to any remote",
+        "action": "warn",
+        "severity": "high",
+        "applies_to_command_families": [],
+        "applies_to_environments": ["development", "production"],
+        "suggested_command": null,
+        "requires_confirmation": true,
+        "override_allowed": true,
+        "last_validated_at": "2026-03-21T00:00:00Z"
+      },
+      "examples": [
+        "git push",
+        "git push origin main",
+        "git push -u origin feature/x"
+      ],
+      "context_tags": ["git", "push", "remote"],
+      "confidence_profile": {
+        "confidence": 0.85,
+        "confidence_band": "high",
+        "deterministic_match_strength": 0.95,
+        "semantic_similarity_score": 0.0,
+        "context_match_score": 0.80,
+        "acceptance_count": 0,
+        "rejection_count": 0,
+        "fix_success_count": 0,
+        "fix_failure_count": 0,
+        "warning_accepted_count": 0,
+        "warning_ignored_count": 0,
+        "override_count": 0,
+        "false_positive_count": 0,
+        "recurrence_count": 0,
+        "last_seen_at": null,
+        "last_success_at": null
+      },
+      "effectiveness_metrics": {},
+      "ranking_features": {
+        "historical_weight": 0.85,
+        "recurrence_rate": 0.0
+      },
+      "created_at": "2026-03-21T00:00:00Z",
+      "updated_at": "2026-03-21T00:00:00Z",
+      "version": 1
+    },
+    {
+      "gotcha_id": "gotcha-git-force-push",
+      "name": "git force push — destructive remote history rewrite",
+      "description": "`git push --force` or `git push -f` rewrites remote history and can permanently destroy commits on the upstream branch. Especially catastrophic on main. SYSTEM_RULES prohibits destructive git ops without explicit confirmation.",
+      "root_cause": "Destructive operation — no recovery path if remote had commits not in local history. SYSTEM_RULES §6 prohibits without confirmation.",
+      "recommended_fix": "Use `git push --force-with-lease` (safer — fails if remote has new commits) and always confirm with user first. On main/master: do not force push.",
+      "signature": {
+        "patterns": ["git push --force", "git push -f "],
+        "regex_patterns": ["git push.*(--force|-f)\\b"]
+      },
+      "semantic_representation": {
+        "action": "git_force_push",
+        "risk": "destructive remote history rewrite"
+      },
+      "preventative_rule": {
+        "rule_type": "advisory",
+        "condition": "git push with --force or -f flag",
+        "action": "warn",
+        "severity": "critical",
+        "applies_to_command_families": [],
+        "applies_to_environments": ["development", "production"],
+        "suggested_command": "git push --force-with-lease",
+        "requires_confirmation": true,
+        "override_allowed": true,
+        "last_validated_at": "2026-03-21T00:00:00Z"
+      },
+      "examples": [
+        "git push --force",
+        "git push -f",
+        "git push origin main --force",
+        "git push -f origin main"
+      ],
+      "context_tags": ["git", "push", "destructive", "force"],
+      "confidence_profile": {
+        "confidence": 0.90,
+        "confidence_band": "high",
+        "deterministic_match_strength": 0.95,
+        "semantic_similarity_score": 0.0,
+        "context_match_score": 0.80,
+        "acceptance_count": 0,
+        "rejection_count": 0,
+        "fix_success_count": 0,
+        "fix_failure_count": 0,
+        "warning_accepted_count": 0,
+        "warning_ignored_count": 0,
+        "override_count": 0,
+        "false_positive_count": 0,
+        "recurrence_count": 0,
+        "last_seen_at": null,
+        "last_success_at": null
+      },
+      "effectiveness_metrics": {},
+      "ranking_features": {
+        "historical_weight": 0.90,
+        "recurrence_rate": 0.0
+      },
+      "created_at": "2026-03-21T00:00:00Z",
+      "updated_at": "2026-03-21T00:00:00Z",
+      "version": 1
+    }
+  ],
+  "preventative_rules": [],
+  "last_updated": "2026-03-21T00:00:00Z"
+}

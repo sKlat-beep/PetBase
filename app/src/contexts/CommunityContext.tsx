@@ -200,7 +200,9 @@ async function fetchGroupFull(
 
 export function CommunityProvider({ children }: { children: ReactNode }) {
   const { user, profile } = useAuth();
-  const { isBlocked } = useSocial();
+  // Guard against null during Vite HMR module identity splits in dev mode
+  const social = useSocial();
+  const isBlocked: (uid: string) => boolean = social?.isBlocked ?? (() => false);
   const [groups, setGroups] = useState<CommunityGroup[]>([]);
   const [userPreferences, setUserPreferences] = useState<Record<string, UserGroupPreferences>>({});
   const [loading, setLoading] = useState(true);

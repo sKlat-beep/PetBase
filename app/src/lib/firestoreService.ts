@@ -231,6 +231,14 @@ export async function saveUserProfile(
     publicStatus: profile.publicStatus ?? 'None',
     avatarUrl: profile.avatarUrl ?? '',
     avatarShape: profile.avatarShape ?? 'circle',
+    // Notification preferences
+    emailNotifications: profile.emailNotifications ?? false,
+    emailDigestFrequency: profile.emailDigestFrequency ?? 'off',
+    pushNotifications: profile.pushNotifications ?? false,
+    // Privacy preferences
+    disableDMs: profile.disableDMs ?? false,
+    disableGroupInvites: profile.disableGroupInvites ?? false,
+    showLastActive: profile.showLastActive !== false,
     updatedAt: new Date().toISOString(),
   };
   if (profile.householdId !== undefined) payload.householdId = profile.householdId;
@@ -255,6 +263,14 @@ export async function loadUserProfile(uid: string): Promise<UserProfile | null> 
     avatarUrl: data.avatarUrl ?? '',
     avatarShape: data.avatarShape ?? 'circle',
     householdId: data.householdId ?? null,
+    // Notification preferences
+    emailNotifications: data.emailNotifications ?? false,
+    emailDigestFrequency: data.emailDigestFrequency ?? 'off',
+    pushNotifications: data.pushNotifications ?? false,
+    // Privacy preferences
+    disableDMs: data.disableDMs ?? false,
+    disableGroupInvites: data.disableGroupInvites ?? false,
+    showLastActive: data.showLastActive !== false,
   } as UserProfile & { householdId: string | null };
 }
 

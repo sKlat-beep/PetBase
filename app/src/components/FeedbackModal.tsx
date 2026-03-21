@@ -65,10 +65,6 @@ export function FeedbackModal({ userEmail, onClose }: FeedbackModalProps) {
             >
               Feedback
             </h2>
-            {/* Live Beta badge */}
-            <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full bg-gradient-to-r from-tertiary to-primary text-on-primary">
-              Live Beta
-            </span>
           </div>
           <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors motion-safe:active:scale-[0.97]">
             <span className="material-symbols-outlined text-[20px]">close</span>

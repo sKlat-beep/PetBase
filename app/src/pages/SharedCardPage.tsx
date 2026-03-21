@@ -4,7 +4,7 @@ import { getPublicCard, type PublicCardDoc } from '../lib/firestoreService';
 import { CardSectionRenderer } from '../components/cards/CardSectionRenderer';
 import { SkeletonSharedCard } from '../components/cards/SkeletonSharedCard';
 import type { SharingToggles } from '../types/cardExtensions';
-import { TEMPLATE_COLORS, TEMPLATE_LABELS } from '../types/cardExtensions';
+import { TEMPLATE_LABELS } from '../types/cardExtensions';
 
 type CardState = PublicCardDoc | 'loading' | 'not-found' | 'revoked' | 'error';
 

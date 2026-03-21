@@ -11,7 +11,7 @@ import type { Pet } from '../types/pet';
 import {
   type PetCard, type CardTemplate, type CardStatus, type SharingToggles,
   GENERAL_INFO_KEY, UNDO_WINDOW_MS, MAX_INACTIVE_CARDS,
-  getCardStatus, buildPetSnapshot, isPetDataStale, timeUntilExpiry, formatExpiry
+  getCardStatus, buildPetSnapshot, isPetDataStale, formatExpiry
 } from '../types/cardExtensions';
 import {
   savePublicCard, updatePublicCardStatus, deletePublicCard,
@@ -23,12 +23,8 @@ import { markCardCreated } from '../lib/onboardingService';
 import { useHouseholdPermissions } from '../hooks/useHouseholdPermissions';
 import { Confetti, useCelebration } from '../components/ui/Confetti';
 import { CardPreview } from '../components/cards/CardPreview';
-import { MultiPetCardPreview } from '../components/cards/MultiPetCardPreview';
-import { AllPetsCardPreview } from '../components/cards/AllPetsCardPreview';
-import { CardTile } from '../components/cards/CardTile';
 import { CardGalleryTile } from '../components/cards/CardGalleryTile';
 import { CardActionDrawer } from '../components/cards/CardActionDrawer';
-import { CardLogEntry } from '../components/cards/CardLogEntry';
 import { QrOverlay } from '../components/cards/QrOverlay';
 
 const CreateCardModal = React.lazy(() => import('../components/cards/CreateCardModal'));

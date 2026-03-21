@@ -9,7 +9,6 @@ This repo is organized for low-token navigation and predictable agent workflows.
 - `planning/` - task board (TODO.md) + today's dev log; archive/ for completed work
 - `docs/` - canonical rules and workflows
 - `agents/` - agent instructions
-- `contracts/` - task contracts
 - `skills/` - skill registry and external refs
 - `scripts/` - automation and board tooling
 

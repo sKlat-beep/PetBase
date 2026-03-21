@@ -31,13 +31,13 @@ From: [current agent]
 To: [target agent]
 
 ### What Was Just Completed
-[1-3 sentences from dev-log. No code snippets. No file contents.]
+[1-30 sentences from dev-log. No code snippets. No file contents.]
 
 ### Current Task
 [Task title, ID, and status]
 
 ### Next Step
-[The single next action to take. One sentence. Action-first.]
+[The single next action to take. 1-3 sentences. Action-first.]
 
 ### Files to Read First (max 3)
 - [file path] — [why it's needed]
@@ -64,7 +64,6 @@ To: [target agent]
 
 ## Rules
 - No code snippets, file contents, or implementation history in the handoff prompt.
-- No PII field values — field names only if relevant.
 - Total prompt must be readable in under 60 seconds. If it exceeds ~300 words, trim.
 - Do not include more than 3 "Files to Read First" — force prioritization.
 - If there is no in-progress task, output: "No active task found. Check planning/TODO.md."

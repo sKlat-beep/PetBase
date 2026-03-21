@@ -3,7 +3,7 @@
  * Dynamically imports html2canvas to avoid bundle bloat.
  */
 
-import { canShare, canDownloadFile } from './platform';
+import { canShare } from './platform';
 
 export async function downloadElementAsImage(
   element: HTMLElement,

@@ -41,7 +41,7 @@ export function GlobalSearchModal({ onClose }: GlobalSearchModalProps) {
           id: p.uid,
           type: 'person',
           title: p.displayName,
-          subtitle: p.bio ?? '',
+          subtitle: p.username ? `@${p.username}` : '',
           avatarUrl: p.avatarUrl,
           route: `/messages?uid=${p.uid}`,
         });

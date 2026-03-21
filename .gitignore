@@ -3,7 +3,12 @@
 
 # Firebase
 firebase-debug.log
+firestore-debug.log
 .firebase/
+
+# Claude Code runtime (ephemeral, not source)
+.claude/gotcha/events/
+**/__pycache__/
 
 # Claude Code (contains API keys)
 .claude/settings.local.json

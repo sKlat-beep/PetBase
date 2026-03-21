@@ -16,7 +16,7 @@ import {
 import {
   savePublicCard, updatePublicCardStatus, deletePublicCard,
   getPublicCardsForOwner, updatePublicCardStatusWithTimestamp,
-  type PublicCardPetSnapshot
+  type PublicCardPetSnapshot, type PublicCardDoc
 } from '../lib/firestoreService';
 import { logActivity } from '../utils/activityLog';
 import { markCardCreated } from '../lib/onboardingService';
@@ -102,6 +102,29 @@ export function Cards() {
 
   const selectedCard = useMemo(() => cards.find(c => c.id === selectedCardId), [cards, selectedCardId]);
   const selectedPet = useMemo(() => selectedCard ? pets.find(p => p.id === selectedCard.petId) : undefined, [selectedCard, pets]);
+
+  // Legacy fix: rebuild snapshots for active cards missing petSnapshot
+  useEffect(() => {
+    if (!user || cardsLoading || pets.length === 0) return;
+    const staleCards = cards.filter(
+      c => getCardStatus(c) === 'active' && c.petId !== 'multi-pet' && c.petId !== 'all-pets' && !c.petSnapshot
+    );
+    if (staleCards.length === 0) return;
+    staleCards.forEach(card => {
+      const pet = pets.find(p => p.id === card.petId);
+      if (!pet) return;
+      const snapshot = buildPetSnapshot(pet, card.sharing, card.includeGeneralInfo ?? false, generalInfo, user.uid);
+      setCards(prev => prev.map(c => c.id === card.id ? { ...c, petSnapshot: snapshot } : c));
+      savePublicCard({
+        id: card.id, ownerId: user.uid, petId: card.petId, template: card.template,
+        sharing: card.sharing as unknown as Record<string, boolean>,
+        expiresAt: card.expiresAt, status: 'active', createdAt: card.createdAt,
+        includeGeneralInfo: card.includeGeneralInfo, petSnapshot: snapshot,
+        fieldOrder: card.fieldOrder, ownerDisplayName: user.displayName ?? undefined,
+      } as any).catch(() => {});
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardsLoading, pets.length]);
 
   // Auto-select first active card if none selected
   useEffect(() => {
@@ -224,6 +247,7 @@ export function Cards() {
           createdAt: localCard.createdAt,
           includeGeneralInfo: localCard.includeGeneralInfo,
           fieldOrder: localCard.fieldOrder,
+          ownerDisplayName: user.displayName ?? undefined,
           multiPetConfig: petConfigList?.map(cfg => {
             const p = pets.find(x => x.id === cfg.petId);
             return {
@@ -253,6 +277,7 @@ export function Cards() {
             includeGeneralInfo: localCard.includeGeneralInfo,
             petSnapshot: localCard.petSnapshot,
             fieldOrder: localCard.fieldOrder,
+            ownerDisplayName: user.displayName ?? undefined,
           } as any).catch(err => console.warn('Failed to sync card to Firestore:', err));
         }
       }
@@ -300,6 +325,7 @@ export function Cards() {
         sharing: updated.sharing as unknown as Record<string, boolean>,
         expiresAt: updated.expiresAt, status: 'active', createdAt: updated.createdAt,
         includeGeneralInfo: updated.includeGeneralInfo, fieldOrder: updated.fieldOrder,
+        ownerDisplayName: user.displayName ?? undefined,
         multiPetConfig: updatedConfig.map(cfg => ({
           petId: cfg.petId,
           sharing: cfg.sharing as unknown as Record<string, boolean>,
@@ -320,6 +346,7 @@ export function Cards() {
       expiresAt: updated.expiresAt, status: updated.status as 'active',
       createdAt: updated.createdAt, includeGeneralInfo: updated.includeGeneralInfo,
       petSnapshot: snapshot, fieldOrder: updated.fieldOrder,
+      ownerDisplayName: user.displayName ?? undefined,
     } as any).catch(err => console.warn('Failed to update card snapshot:', err));
   }, [cards, pets, user, generalInfo]);
 

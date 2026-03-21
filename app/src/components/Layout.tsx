@@ -19,6 +19,7 @@ import { TierCrest } from './gamification/TierCrest';
 import { useGamification } from '../hooks/useGamification';
 import { DEFAULT_GAMIFICATION_PREFS } from '../types/user';
 import { GlobalSearchModal } from './GlobalSearchModal';
+import { useUI } from '../contexts/UIContext';
 
 /** Material Symbols helper */
 function MIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -29,7 +30,7 @@ export function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { openSettingsModal, settingsOpen, closeSettingsModal } = useUI();
   const { user, profile } = useAuth();
   const { communityAccessDisabled } = useHouseholdPermissions();
   const { toast: hhToast, clearToast: clearHhToast } = useHousehold();
@@ -295,7 +296,7 @@ export function Layout() {
         <div className="p-4 border-t border-outline-variant">
           <div className="flex items-center px-2 py-2">
             <button
-              onClick={() => { setSettingsOpen(true); setIsMobileMenuOpen(false); }}
+              onClick={() => { openSettingsModal(); setIsMobileMenuOpen(false); }}
               className="flex items-center gap-3 min-w-0 hover:opacity-80 motion-safe:transition-opacity motion-safe:active:scale-[0.97] text-left"
             >
               {(() => {
@@ -359,7 +360,7 @@ export function Layout() {
         {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} onFeedback={() => setFeedbackOpen(true)} />}
         {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} userEmail={user?.email ?? undefined} />}
       </AnimatePresence>
-      <UserSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <UserSettingsModal isOpen={settingsOpen} onClose={closeSettingsModal} />
       {globalSearchOpen && <GlobalSearchModal onClose={() => setGlobalSearchOpen(false)} />}
 
       {/* ═══ Mobile Bottom Nav (fixed, h-20) ═══ */}

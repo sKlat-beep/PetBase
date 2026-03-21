@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import type { HouseholdRole, MemberPermissions, ParentalControls } from '../types/household';
 import { DEFAULT_PERMISSIONS, DEFAULT_PARENTAL_CONTROLS, EXTENDED_FAMILY_PERMISSIONS, ROLE_DESCRIPTIONS } from '../types/household';
@@ -82,7 +82,7 @@ function Section({ icon, title, defaultOpen, danger, children, id }: {
 const inputClass = 'w-full px-4 py-2.5 rounded-xl bg-surface-container border-0 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary-container text-sm transition-all';
 const inputClassMono = `${inputClass} font-mono`;
 
-export function ProfileSettings() {
+export function ProfileSettings({ initialSection }: { initialSection?: string } = {}) {
   const { user, profile, updateProfile: updateContextProfile } = useAuth();
   const { theme, setTheme } = useTheme();
   const themeOptions = [
@@ -153,7 +153,6 @@ export function ProfileSettings() {
 
   // Avatar State
   const [avatarUrl, setAvatarUrl] = useState('');
-  const [avatarShape, setAvatarShape] = useState<'circle' | 'square' | 'squircle'>('circle');
   const [showCropper, setShowCropper] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -199,8 +198,6 @@ export function ProfileSettings() {
   const [emailDigestFrequency, setEmailDigestFrequency] = useState<'daily' | 'weekly' | 'off'>('off');
   const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
   const [pushStatus, setPushStatus] = useState<'granted' | 'denied' | 'default' | 'unsupported'>('default');
-  const [notifSaving, setNotifSaving] = useState(false);
-  const [notifSaved, setNotifSaved] = useState(false);
   const [notificationSound, setNotificationSound] = useState(() =>
     localStorage.getItem('petbase-sound') === '1'
   );
@@ -219,8 +216,13 @@ export function ProfileSettings() {
   const [disableDMs, setDisableDMs] = useState(false);
   const [disableGroupInvites, setDisableGroupInvites] = useState(false);
   const [showLastActive, setShowLastActive] = useState(true); // default: show active status
-  const [privacySaving, setPrivacySaving] = useState(false);
-  const [privacySaved, setPrivacySaved] = useState(false);
+
+  // Live-save infrastructure for notification + privacy toggles
+  const [liveSaveError, setLiveSaveError] = useState('');
+  const notifTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const privacyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevNotifRef = useRef({ emailNotifications: false, emailDigestFrequency: 'off' as 'daily' | 'weekly' | 'off', pushNotifications: false });
+  const prevPrivacyRef = useRef({ isPrivate: true, disableDMs: false, disableGroupInvites: false, showLastActive: true });
 
   // Data export (GDPR)
   const [exporting, setExporting] = useState(false);
@@ -239,15 +241,23 @@ export function ProfileSettings() {
           setAddress(profile.address || '');
           setIsPrivate(profile.visibility === 'Private');
           if (profile.avatarUrl) setAvatarUrl(profile.avatarUrl);
-          if (profile.avatarShape && (profile.avatarShape as string) !== 'hexagon') setAvatarShape(profile.avatarShape);
           // Notification prefs
-          setEmailNotifications(profile.emailNotifications ?? false);
-          setEmailDigestFrequency(profile.emailDigestFrequency ?? 'off');
-          setPushNotificationsEnabled(profile.pushNotifications ?? false);
+          const loadedEmailNotif = profile.emailNotifications ?? false;
+          const loadedEmailFreq = profile.emailDigestFrequency ?? 'off';
+          const loadedPushNotif = profile.pushNotifications ?? false;
+          setEmailNotifications(loadedEmailNotif);
+          setEmailDigestFrequency(loadedEmailFreq);
+          setPushNotificationsEnabled(loadedPushNotif);
+          prevNotifRef.current = { emailNotifications: loadedEmailNotif, emailDigestFrequency: loadedEmailFreq, pushNotifications: loadedPushNotif };
           // Privacy prefs
-          setDisableDMs(profile.disableDMs ?? false);
-          setDisableGroupInvites(profile.disableGroupInvites ?? false);
-          setShowLastActive(profile.showLastActive !== false); // default true
+          const loadedDisableDMs = profile.disableDMs ?? false;
+          const loadedDisableGroupInvites = profile.disableGroupInvites ?? false;
+          const loadedShowLastActive = profile.showLastActive !== false;
+          const loadedIsPrivate = profile.visibility === 'Private';
+          setDisableDMs(loadedDisableDMs);
+          setDisableGroupInvites(loadedDisableGroupInvites);
+          setShowLastActive(loadedShowLastActive);
+          prevPrivacyRef.current = { isPrivate: loadedIsPrivate, disableDMs: loadedDisableDMs, disableGroupInvites: loadedDisableGroupInvites, showLastActive: loadedShowLastActive };
         }
         // Gamification prefs from private config subcollection (TASK-223)
         setGamPrefs(gamPrefsLoaded);
@@ -267,6 +277,15 @@ export function ProfileSettings() {
     loadVaultKey(user.uid).then(doc => setVaultEnabled(!!doc)).catch(() => { });
   }, [user]);
 
+  // Auto-open and scroll to a section when opened from the onboarding checklist
+  useEffect(() => {
+    if (!initialSection) return;
+    const el = document.getElementById(initialSection) as HTMLDetailsElement | null;
+    if (!el) return;
+    el.open = true;
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }, [initialSection]);
+
   const handleSaveProfile = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!user) return;
@@ -281,7 +300,6 @@ export function ProfileSettings() {
         displayName,
         address,
         avatarUrl,
-        avatarShape,
         visibility: isPrivate ? 'Private' : 'Public',
       });
       setSaveSuccess(true);
@@ -360,60 +378,73 @@ export function ProfileSettings() {
   };
 
 
-  // ── Notifications save ───────────────────────────────────────────────────
-  const handleSaveNotifications = async () => {
+  // ── Notifications live-save (400 ms debounce) ────────────────────────────
+  const liveNotifSave = (values: { emailNotifications: boolean; emailDigestFrequency: 'daily' | 'weekly' | 'off'; pushNotifications: boolean }) => {
     if (!user) return;
-    setNotifSaving(true);
-    try {
-      await updateContextProfile({
-        emailNotifications,
-        emailDigestFrequency: emailNotifications ? emailDigestFrequency : 'off',
-        pushNotifications: pushNotificationsEnabled,
-      });
-      setNotifSaved(true);
-      setTimeout(() => setNotifSaved(false), 2500);
-    } catch (err: any) {
-      console.error('Failed to save notification settings:', err);
-    } finally {
-      setNotifSaving(false);
-    }
+    if (notifTimerRef.current) clearTimeout(notifTimerRef.current);
+    notifTimerRef.current = setTimeout(async () => {
+      try {
+        await updateContextProfile({
+          emailNotifications: values.emailNotifications,
+          emailDigestFrequency: values.emailNotifications ? values.emailDigestFrequency : 'off',
+          pushNotifications: values.pushNotifications,
+        });
+        prevNotifRef.current = values;
+      } catch {
+        // Rollback toggles to last successfully saved values
+        setEmailNotifications(prevNotifRef.current.emailNotifications);
+        setEmailDigestFrequency(prevNotifRef.current.emailDigestFrequency);
+        setPushNotificationsEnabled(prevNotifRef.current.pushNotifications);
+        setLiveSaveError('Settings could not be saved. Please try again.');
+        setTimeout(() => setLiveSaveError(''), 3000);
+      }
+    }, 400);
   };
 
   // ── Push toggle handler ──────────────────────────────────────────────────
   const handlePushToggle = async () => {
     if (!isPushSupported()) return;
+    let newPush = pushNotificationsEnabled;
     if (!pushNotificationsEnabled) {
-      // Turning ON — request permission + get FCM token
+      // Turning ON — request permission + get FCM token (async — must resolve before saving)
       const token = await requestPushPermission(user!.uid);
       const newStatus = getPushPermissionStatus();
       setPushStatus(newStatus);
       if (token && newStatus === 'granted') {
         setPushNotificationsEnabled(true);
+        newPush = true;
       }
     } else {
       // Turning OFF — just update profile preference; can't programmatically revoke permission
       setPushNotificationsEnabled(false);
+      newPush = false;
     }
+    liveNotifSave({ emailNotifications, emailDigestFrequency, pushNotifications: newPush });
   };
 
-  // ── Privacy save ─────────────────────────────────────────────────────────
-  const handleSavePrivacy = async () => {
+  // ── Privacy live-save (400 ms debounce) ──────────────────────────────────
+  const livePrivacySave = (values: { isPrivate: boolean; disableDMs: boolean; disableGroupInvites: boolean; showLastActive: boolean }) => {
     if (!user) return;
-    setPrivacySaving(true);
-    try {
-      await updateContextProfile({
-        visibility: isPrivate ? 'Private' : 'Public',
-        disableDMs,
-        disableGroupInvites,
-        showLastActive,
-      });
-      setPrivacySaved(true);
-      setTimeout(() => setPrivacySaved(false), 2500);
-    } catch (err: any) {
-      console.error('Failed to save privacy settings:', err);
-    } finally {
-      setPrivacySaving(false);
-    }
+    if (privacyTimerRef.current) clearTimeout(privacyTimerRef.current);
+    privacyTimerRef.current = setTimeout(async () => {
+      try {
+        await updateContextProfile({
+          visibility: values.isPrivate ? 'Private' : 'Public',
+          disableDMs: values.disableDMs,
+          disableGroupInvites: values.disableGroupInvites,
+          showLastActive: values.showLastActive,
+        });
+        prevPrivacyRef.current = values;
+      } catch {
+        // Rollback
+        setIsPrivate(prevPrivacyRef.current.isPrivate);
+        setDisableDMs(prevPrivacyRef.current.disableDMs);
+        setDisableGroupInvites(prevPrivacyRef.current.disableGroupInvites);
+        setShowLastActive(prevPrivacyRef.current.showLastActive);
+        setLiveSaveError('Settings could not be saved. Please try again.');
+        setTimeout(() => setLiveSaveError(''), 3000);
+      }
+    }, 400);
   };
 
   const handleExport = async () => {
@@ -574,7 +605,7 @@ export function ProfileSettings() {
         <form onSubmit={handleSaveProfile} className="space-y-6">
           <div className="flex items-center gap-6">
             <div className="relative group">
-              <div className={`w-20 h-20 bg-surface-container overflow-hidden shrink-0 ${avatarShape === 'circle' ? 'rounded-full' : avatarShape === 'square' ? 'rounded-xl' : avatarShape === 'squircle' ? 'rounded-[1.5rem]' : 'rounded-full'} shadow-md transition-all duration-300`}>
+              <div className="w-20 h-20 bg-surface-container overflow-hidden shrink-0 rounded-full shadow-md">
                 {avatarUrl || user?.photoURL ? (
                   <img
                     src={avatarUrl || user?.photoURL || ''}
@@ -591,10 +622,7 @@ export function ProfileSettings() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 bg-black/40 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                style={{
-                  borderRadius: avatarShape === 'circle' ? '9999px' : avatarShape === 'square' ? '0.75rem' : avatarShape === 'squircle' ? '1.5rem' : '0',
-                }}
+                className="absolute inset-0 rounded-full bg-black/40 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
               >
                 <span className="material-symbols-outlined text-2xl">photo_camera</span>
               </button>
@@ -619,18 +647,6 @@ export function ProfileSettings() {
                 <p className="text-sm text-on-surface-variant">{user?.email}</p>
               </div>
 
-              <div className="flex gap-2 text-sm bg-surface-container p-1.5 rounded-xl w-fit">
-                {(['circle', 'square', 'squircle'] as const).map(shape => (
-                  <button
-                    key={shape}
-                    type="button"
-                    onClick={() => { setAvatarShape(shape); setIsDirty(true); }}
-                    className={`px-3 py-1.5 rounded-lg capitalize transition-colors font-medium motion-safe:active:scale-[0.97] ${avatarShape === shape ? 'bg-primary-container text-on-primary-container shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
-                  >
-                    {shape}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -915,7 +931,11 @@ export function ProfileSettings() {
               Receive email alerts for important activity.
             </p>
           </div>
-          <ToggleSwitch checked={emailNotifications} onChange={() => setEmailNotifications(v => !v)} />
+          <ToggleSwitch checked={emailNotifications} onChange={() => {
+            const next = !emailNotifications;
+            setEmailNotifications(next);
+            liveNotifSave({ emailNotifications: next, emailDigestFrequency, pushNotifications: pushNotificationsEnabled });
+          }} />
         </div>
 
         {emailNotifications && (
@@ -925,7 +945,11 @@ export function ProfileSettings() {
             </label>
             <select
               value={emailDigestFrequency}
-              onChange={e => setEmailDigestFrequency(e.target.value as 'daily' | 'weekly' | 'off')}
+              onChange={e => {
+                const next = e.target.value as 'daily' | 'weekly' | 'off';
+                setEmailDigestFrequency(next);
+                liveNotifSave({ emailNotifications, emailDigestFrequency: next, pushNotifications: pushNotificationsEnabled });
+              }}
               className={inputClass}
             >
               <option value="off">Off (manual only)</option>
@@ -974,21 +998,11 @@ export function ProfileSettings() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 pt-1">
-          <button
-            type="button"
-            onClick={handleSaveNotifications}
-            disabled={notifSaving}
-            className="px-5 py-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container rounded-xl font-semibold text-sm transition-all motion-safe:active:scale-[0.97]"
-          >
-            {notifSaving ? 'Saving...' : 'Save Notifications'}
-          </button>
-          {notifSaved && (
-            <span className="text-sm text-primary-container font-medium flex items-center gap-1">
-              <span className="material-symbols-outlined text-lg">check_circle</span> Saved
-            </span>
-          )}
-        </div>
+        {liveSaveError && (
+          <p className="text-sm text-error bg-error-container/30 px-3 py-2 rounded-lg">
+            {liveSaveError}
+          </p>
+        )}
       </Section>
 
       {/* ════════════════════════════════════════════════════════════════════
@@ -1004,7 +1018,11 @@ export function ProfileSettings() {
                 : 'Visible to the PetBase community.'}
             </p>
           </div>
-          <ToggleSwitch checked={isPrivate} onChange={() => { setIsPrivate((v) => !v); setIsDirty(true); }} />
+          <ToggleSwitch checked={isPrivate} onChange={() => {
+            const next = !isPrivate;
+            setIsPrivate(next);
+            livePrivacySave({ isPrivate: next, disableDMs, disableGroupInvites, showLastActive });
+          }} />
         </div>
         <div className="flex items-center justify-between px-1">
           <span className="text-sm text-on-surface-variant">Current status</span>
@@ -1032,7 +1050,11 @@ export function ProfileSettings() {
                 Prevent other users from sending you DMs.
               </p>
             </div>
-            <ToggleSwitch checked={disableDMs} onChange={() => setDisableDMs(v => !v)} />
+            <ToggleSwitch checked={disableDMs} onChange={() => {
+              const next = !disableDMs;
+              setDisableDMs(next);
+              livePrivacySave({ isPrivate, disableDMs: next, disableGroupInvites, showLastActive });
+            }} />
           </div>
 
           <div className="flex items-center justify-between p-4 bg-surface-container rounded-xl">
@@ -1042,7 +1064,11 @@ export function ProfileSettings() {
                 Prevent group admins from inviting you to groups.
               </p>
             </div>
-            <ToggleSwitch checked={disableGroupInvites} onChange={() => setDisableGroupInvites(v => !v)} />
+            <ToggleSwitch checked={disableGroupInvites} onChange={() => {
+              const next = !disableGroupInvites;
+              setDisableGroupInvites(next);
+              livePrivacySave({ isPrivate, disableDMs, disableGroupInvites: next, showLastActive });
+            }} />
           </div>
 
           <div className="flex items-center justify-between p-4 bg-surface-container rounded-xl">
@@ -1052,24 +1078,13 @@ export function ProfileSettings() {
                 Let others see when you were last active in DMs.
               </p>
             </div>
-            <ToggleSwitch checked={showLastActive} onChange={() => setShowLastActive(v => !v)} />
+            <ToggleSwitch checked={showLastActive} onChange={() => {
+              const next = !showLastActive;
+              setShowLastActive(next);
+              livePrivacySave({ isPrivate, disableDMs, disableGroupInvites, showLastActive: next });
+            }} />
           </div>
 
-          <div className="flex items-center gap-3 pt-1">
-            <button
-              type="button"
-              onClick={handleSavePrivacy}
-              disabled={privacySaving}
-              className="px-5 py-2 bg-primary-container hover:opacity-90 disabled:opacity-50 text-on-primary-container rounded-xl font-semibold text-sm transition-all motion-safe:active:scale-[0.97]"
-            >
-              {privacySaving ? 'Saving...' : 'Save Privacy'}
-            </button>
-            {privacySaved && (
-              <span className="text-sm text-primary-container font-medium flex items-center gap-1">
-                <span className="material-symbols-outlined text-lg">check_circle</span> Saved
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Blocked users */}
@@ -2095,7 +2110,7 @@ export function ProfileSettings() {
         onClose={() => setShowCropper(false)}
         imageSrc={selectedImage}
         onCropComplete={handleCropComplete}
-        shape={avatarShape}
+        shape="circle"
       />
 
       <AnimatePresence>

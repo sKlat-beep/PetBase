@@ -35,8 +35,13 @@ export interface OnboardingStep {
   description: string;
   auto: boolean;
   skippable: boolean;
-  path: string;
+  /** Navigate to this path when the step is clicked (mutually exclusive with action). */
+  path?: string;
   state?: Record<string, unknown>;
+  /** Programmatic action to perform instead of page navigation. */
+  action?: 'open-settings';
+  /** Target section ID to scroll to when action is 'open-settings'. */
+  section?: string;
 }
 
 export interface FeatureHint {

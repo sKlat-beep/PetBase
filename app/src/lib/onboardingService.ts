@@ -8,6 +8,7 @@
 import { saveOnboardingState as firestoreSave, loadOnboardingState as firestoreLoad } from './firestoreService';
 import type { OnboardingState, PetParentLevel } from '../types/onboarding';
 import { TOTAL_FEATURES } from '../data/featureHints';
+import { STEP_ID_MIGRATION } from '../data/onboardingSteps';
 
 // ─── Module-level UID (set from AuthContext on login) ────────────────────────
 
@@ -328,15 +329,61 @@ export function migrateOldLocalStorageKeys(): void {
   }
 }
 
+// ─── Step ID schema migration (v1 → v2) ─────────────────────────────────────
+// Runs once when the new step schema is encountered. Maps old step IDs to new
+// ones so returning users don't lose their completion progress.
+
+export function migrateStepIds(): void {
+  const current = readLocalOnboardingState();
+  const oldIds = Object.keys(current.completedSteps);
+  const oldSkipped = current.skippedSteps;
+
+  let changed = false;
+  const newCompleted = { ...current.completedSteps };
+  const newSkipped = [...oldSkipped];
+
+  for (const [oldId, newId] of Object.entries(STEP_ID_MIGRATION)) {
+    if (oldIds.includes(oldId)) {
+      if (newId && !newCompleted[newId]) {
+        // Rename: copy timestamp to new ID, remove old
+        newCompleted[newId] = newCompleted[oldId];
+      }
+      // Always remove the old ID (whether renamed or removed)
+      delete newCompleted[oldId];
+      changed = true;
+    }
+    // For skipped steps, apply same mapping
+    if (oldSkipped.includes(oldId)) {
+      const idx = newSkipped.indexOf(oldId);
+      if (idx !== -1) newSkipped.splice(idx, 1);
+      if (newId && !newSkipped.includes(newId)) newSkipped.push(newId);
+      changed = true;
+    }
+    // Null mapping: mark as completed with current timestamp so it counts as done
+    if (newId === null && !newCompleted[oldId] && !oldSkipped.includes(oldId)) {
+      // Step was removed entirely — mark completed so it doesn't block the guide
+      newCompleted[oldId + '__removed'] = Date.now(); // benign sentinel; not in STEPS
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    const discoveryCount = Object.keys(newCompleted).length + current.completedHints.length;
+    const petParentLevel = computeLevel(discoveryCount);
+    saveOnboardingPatch({ completedSteps: newCompleted, skippedSteps: newSkipped, discoveryCount, petParentLevel });
+  }
+}
+
 // ─── Compatibility shims for existing mark*() callers ───────────────────────
 // These replace the old exports from GettingStartedGuide.tsx
 
-export function markCardCreated() { markStepCompleted('create-card'); }
-export function markServicesFound() { markStepCompleted('find-services'); }
-export function markFamilyCreated() { markStepCompleted('create-family'); }
-export function markNotificationsEnabled() { markStepCompleted('enable-notifications'); }
-export function markPrivacyConfigured() { markStepCompleted('privacy-settings'); }
+export function markCardCreated() { markStepCompleted('create-qr-card'); }
+export function markServicesFound() { markStepCompleted('discover-services'); }
+export function markFamilyCreated() { /* removed step — no-op */ }
+export function markNotificationsEnabled() { /* removed step — no-op */ }
+export function markPrivacyConfigured() { /* removed step — no-op */ }
 export function markCommunityJoined() { markStepCompleted('join-community'); }
 export function markPetPhotoAdded() { markStepCompleted('add-pet-photo'); }
-export function markMedicalRecordAdded() { markStepCompleted('add-medical-record'); }
-export function markProfileCompleted() { markStepCompleted('complete-profile'); }
+export function markMedicalRecordAdded() { markStepCompleted('log-health-record'); }
+export function markProfileCompleted() { markStepCompleted('setup-profile'); }
+export function markMessageSent() { markStepCompleted('send-message'); }

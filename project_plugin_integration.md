@@ -15,7 +15,7 @@ PetBase-specific gates (defined in `agents/claude-code.md`) override ce:work's d
 /ce:plan (interactive planning)
     → /ce:work (execution)
         → feature-dev:code-explorer (before complex files)
-        → implement (semgrep + security-guidance auto-hooks)
+        → implement (security-guidance PreToolUse hook)
         → kieran-typescript-reviewer (after TS implementation)
         → /ui-review (modified .tsx files)
         → /privacy-check (Firestore changes)
@@ -30,7 +30,6 @@ PetBase-specific gates (defined in `agents/claude-code.md`) override ce:work's d
 
 | Hook | Trigger | What it does |
 |------|---------|-------------|
-| `semgrep` | PostToolUse on `.ts/.tsx/.js/.jsx` | Scans for p/typescript rule violations |
 | `security-guidance` | PreToolUse on Edit/Write | Checks for XSS, eval, command injection |
 | `typescript-lsp` | Real-time | Type diagnostics for `app/` and `functions/` |
 

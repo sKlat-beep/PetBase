@@ -215,8 +215,6 @@ When I make a mistake (rule skipped, tokens wasted, wrong approach):
 
 ### Hooks (Automated)
 - **PreToolUse** (security-guidance): Checks for XSS, eval, command injection before any Edit/Write.
-- **PostToolUse** (semgrep): Scans .ts/.tsx/.js/.jsx after every Edit/Write.
-- **SessionStart**: Verifies semgrep compatibility.
 
 ---
 

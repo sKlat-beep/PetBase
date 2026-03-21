@@ -158,7 +158,7 @@ When executing via ce:work, these PetBase rules apply within each phase:
   Query `context7` for live documentation.
 
 ### During Phase 3 (Implement)
-- semgrep + security-guidance hooks fire automatically (PreToolUse/PostToolUse).
+- security-guidance hook fires automatically (PreToolUse on Edit/Write).
 - After each TypeScript file group is complete → invoke `kieran-typescript-reviewer`.
 - After each Firestore-touching file → invoke `security-sentinel` (not just at the end).
 
@@ -272,7 +272,6 @@ Invoked as blocking gates at Phase 4 (Quality):
 - code-simplifier (all new code — runs last)
 
 ## Auto-hooks (fires on every Edit/Write)
-- semgrep: PostToolUse — scans .ts/.tsx/.js/.jsx
 - security-guidance: PreToolUse — XSS/eval/injection check
 
 ## Design: Stitch-Kit

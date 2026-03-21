@@ -7,7 +7,10 @@ import { httpsCallable } from 'firebase/functions';
 import { functions } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { loadUserProfile, getSignInLog, type SignInLogEntry } from '../lib/firestoreService';
+import { loadUserProfile, getSignInLog, type SignInLogEntry, updateGamificationPrefs } from '../lib/firestoreService';
+import { useGamification } from '../hooks/useGamification';
+import { DEFAULT_GAMIFICATION_PREFS, type GamificationPrefs } from '../types/user';
+import { TIER_COLORS } from '../components/gamification/XpRing';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { ImageCropperModal, getCroppedImg } from '../components/ImageCropperModal';
 import { hasLocalKey, createEncryptedBackup, restoreEncryptedBackup, wrapKeyForVault, getOrCreateUserKey, type EncryptedBackup } from '../lib/crypto';
@@ -131,6 +134,11 @@ export function ProfileSettings() {
   const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
 
+  const gamification = useGamification(user?.uid ?? null);
+  const [gamPrefs, setGamPrefs] = useState<GamificationPrefs>(DEFAULT_GAMIFICATION_PREFS);
+  const [gamPrefsSaving, setGamPrefsSaving] = useState(false);
+  const [gamPrefsSaved, setGamPrefsSaved] = useState(false);
+
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [displayName, setDisplayName] = useState('');
   // Address is PII — loaded decrypted from Firestore, encrypted before each save
@@ -241,6 +249,8 @@ export function ProfileSettings() {
           setDisableDMs(profile.disableDMs ?? false);
           setDisableGroupInvites(profile.disableGroupInvites ?? false);
           setShowLastActive(profile.showLastActive !== false); // default true
+          // Gamification prefs
+          if (profile.gamificationPrefs) setGamPrefs(profile.gamificationPrefs);
         }
       })
       .catch(console.error)
@@ -315,6 +325,22 @@ export function ProfileSettings() {
     setShowDeleteModal(false);
     setDeleteEmailInput('');
     setDeleteError('');
+  };
+
+  const handleSaveGamificationPrefs = async (prefs: GamificationPrefs) => {
+    if (!user) return;
+    setGamPrefsSaving(true);
+    try {
+      const tierColor = TIER_COLORS[gamification.state?.level ?? 1] ?? '#F28B82';
+      await updateGamificationPrefs(user.uid, prefs, tierColor);
+      setGamPrefs(prefs);
+      setGamPrefsSaved(true);
+      setTimeout(() => setGamPrefsSaved(false), 2500);
+    } catch (err) {
+      console.error('Failed to save gamification prefs', err);
+    } finally {
+      setGamPrefsSaving(false);
+    }
   };
 
   const handleEnableSync = async () => {
@@ -711,6 +737,159 @@ export function ProfileSettings() {
             ))}
           </div>
         </div>
+      </Section>
+
+      {/* ════════════════════════════════════════════════════════════════════
+          SECTION 2b — Badge & XP Appearance
+          ════════════════════════════════════════════════════════════════════ */}
+      <Section icon="military_tech" title="Badge & XP Appearance" id="section-badge-xp">
+        {(() => {
+          const SPIRIT_ICONS = [
+            { symbol: 'pets',                    label: 'Paw' },
+            { symbol: 'star',                    label: 'Star' },
+            { symbol: 'bolt',                    label: 'Bolt' },
+            { symbol: 'shield',                  label: 'Shield' },
+            { symbol: 'emoji_events',            label: 'Trophy' },
+            { symbol: 'local_florist',           label: 'Flower' },
+            { symbol: 'local_fire_department',   label: 'Flame' },
+            { symbol: 'favorite',               label: 'Heart' },
+            { symbol: 'diamond',                label: 'Diamond' },
+            { symbol: 'gps_fixed',              label: 'Target' },
+          ];
+          const CUSTOM_RING_COLORS = [
+            { label: 'Coral',  hex: '#F28B82' },
+            { label: 'Amber',  hex: '#FFA726' },
+            { label: 'Teal',   hex: '#26C6DA' },
+            { label: 'Violet', hex: '#7C5CFC' },
+            { label: 'Sky',    hex: '#38BDF8' },
+            { label: 'Rose',   hex: '#EC407A' },
+            { label: 'Lime',   hex: '#A3E635' },
+            { label: 'White',  hex: '#F1F5F9' },
+          ];
+          const pref = <K extends keyof GamificationPrefs>(key: K, val: GamificationPrefs[K]) =>
+            handleSaveGamificationPrefs({ ...gamPrefs, [key]: val });
+          const rowClass = 'flex items-center justify-between py-3 border-b border-outline-variant/20 last:border-0';
+          const labelClass = 'text-sm font-medium text-on-surface';
+          const subClass = 'text-xs text-on-surface-variant mt-0.5';
+          const segClass = (active: boolean) =>
+            `px-3 py-1.5 rounded-lg text-xs font-medium transition-colors motion-safe:active:scale-[0.97] ${active ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:bg-surface-container'}`;
+
+          return (
+            <div className="space-y-1">
+              {/* ── Tier Crest ── */}
+              <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Tier Crest</p>
+              <div className={rowClass}>
+                <div><p className={labelClass}>Show tier crest</p><p className={subClass}>Display your rank badge below your name</p></div>
+                <ToggleSwitch checked={gamPrefs.showCrest} onChange={() => pref('showCrest', !gamPrefs.showCrest)} disabled={gamPrefsSaving} />
+              </div>
+              {gamPrefs.showCrest && (
+                <>
+                  <div className={rowClass}>
+                    <p className={labelClass}>Badge style</p>
+                    <div className="flex gap-1 bg-surface-container rounded-xl p-1">
+                      {(['minimal', 'crest', 'glow'] as const).map(s => (
+                        <button key={s} className={segClass(gamPrefs.badgeStyle === s)} onClick={() => pref('badgeStyle', s)}>
+                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={rowClass}>
+                    <div><p className={labelClass}>Spirit icon</p><p className={subClass}>Your personal crest symbol</p></div>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2 pb-3">
+                    {SPIRIT_ICONS.map(({ symbol, label }) => (
+                      <button
+                        key={symbol}
+                        title={label}
+                        onClick={() => pref('spiritIcon', symbol)}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors motion-safe:active:scale-[0.97] ${gamPrefs.spiritIcon === symbol ? 'bg-primary-container ring-2 ring-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
+                      >
+                        <span className="material-symbols-outlined text-xl">{symbol}</span>
+                        <span className="text-[10px]">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className={rowClass}>
+                    <div><p className={labelClass}>Show point count</p><p className={subClass}>Display your XP total in the badge</p></div>
+                    <ToggleSwitch checked={gamPrefs.showPointCount} onChange={() => pref('showPointCount', !gamPrefs.showPointCount)} disabled={gamPrefsSaving} />
+                  </div>
+                  <div className={rowClass}>
+                    <div>
+                      <p className={labelClass}>Show on public profile</p>
+                      <p className={subClass}>Your spirit icon appears on your avatar for other users</p>
+                    </div>
+                    <ToggleSwitch checked={gamPrefs.publicCrest} onChange={() => pref('publicCrest', !gamPrefs.publicCrest)} disabled={gamPrefsSaving} />
+                  </div>
+                </>
+              )}
+
+              {/* ── XP Ring ── */}
+              <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mt-5 mb-3">XP Ring</p>
+              <div className={rowClass}>
+                <div><p className={labelClass}>Show XP ring</p><p className={subClass}>Progress arc around your avatar</p></div>
+                <ToggleSwitch checked={gamPrefs.showXpRing} onChange={() => pref('showXpRing', !gamPrefs.showXpRing)} disabled={gamPrefsSaving} />
+              </div>
+              {gamPrefs.showXpRing && (
+                <>
+                  <div className={rowClass}>
+                    <p className={labelClass}>Ring color</p>
+                    <div className="flex gap-1 bg-surface-container rounded-xl p-1">
+                      {(['theme', 'tier', 'custom'] as const).map(c => (
+                        <button key={c} className={segClass(gamPrefs.ringColor === c || (c === 'custom' && gamPrefs.ringColor !== 'theme' && gamPrefs.ringColor !== 'tier'))}
+                          onClick={() => pref('ringColor', c === 'custom' ? CUSTOM_RING_COLORS[0].hex : c)}>
+                          {c.charAt(0).toUpperCase() + c.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {gamPrefs.ringColor !== 'theme' && gamPrefs.ringColor !== 'tier' && (
+                    <div className="flex gap-2 flex-wrap pb-3">
+                      {CUSTOM_RING_COLORS.map(({ label, hex }) => (
+                        <button
+                          key={hex}
+                          title={label}
+                          onClick={() => pref('ringColor', hex)}
+                          className={`w-8 h-8 rounded-full transition-transform motion-safe:active:scale-[0.9] ${gamPrefs.ringColor === hex ? 'ring-2 ring-offset-2 ring-primary-container scale-110' : ''}`}
+                          style={{ backgroundColor: hex }}
+                          aria-label={label}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  <div className={rowClass}>
+                    <p className={labelClass}>Ring animation</p>
+                    <div className="flex gap-1 bg-surface-container rounded-xl p-1">
+                      {(['static', 'pulse', 'shimmer'] as const).map(a => (
+                        <button key={a} className={segClass(gamPrefs.ringAnimation === a)} onClick={() => pref('ringAnimation', a)}>
+                          {a.charAt(0).toUpperCase() + a.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={rowClass}>
+                    <div><p className={labelClass}>Show level number</p><p className={subClass}>Small number at the corner of your avatar</p></div>
+                    <ToggleSwitch checked={gamPrefs.showLevelNumber} onChange={() => pref('showLevelNumber', !gamPrefs.showLevelNumber)} disabled={gamPrefsSaving} />
+                  </div>
+                </>
+              )}
+
+              {/* ── Celebrations ── */}
+              <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mt-5 mb-3">Celebrations</p>
+              <div className={rowClass}>
+                <div><p className={labelClass}>Celebrate level-ups</p><p className={subClass}>Confetti and animation when you reach a new tier</p></div>
+                <ToggleSwitch checked={gamPrefs.celebrateMilestones} onChange={() => pref('celebrateMilestones', !gamPrefs.celebrateMilestones)} disabled={gamPrefsSaving} />
+              </div>
+
+              {/* Save feedback */}
+              {gamPrefsSaved && (
+                <p className="flex items-center gap-2 text-sm text-primary-container pt-2">
+                  <span className="material-symbols-outlined text-lg">check_circle</span> Appearance saved
+                </p>
+              )}
+            </div>
+          );
+        })()}
       </Section>
 
       {/* ════════════════════════════════════════════════════════════════════

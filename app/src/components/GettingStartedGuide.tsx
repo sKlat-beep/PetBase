@@ -95,7 +95,7 @@ export function GettingStartedGuide({ onComplete, onStepComplete }: GettingStart
   }, [ob.completedCount, prevCount, onStepComplete]);
 
   const completedCount = ob.completedCount;
-  const allComplete = completedCount === TOTAL_STEPS;
+  const allComplete = ob.doneCount === TOTAL_STEPS;
   const progressPercent = (completedCount / TOTAL_STEPS) * 100;
 
   const handleStepClick = (step: typeof STEPS[number]) => {

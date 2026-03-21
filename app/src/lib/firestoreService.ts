@@ -207,6 +207,9 @@ export interface PublicProfileInfo {
   visibility: 'Public' | 'Friends Only' | 'Private';
   publicStatus: PublicStatus;
   friends?: string[]; // UIDs of this user's friends — used for mutual-friends PYMK scoring
+  publicCrestEnabled?: boolean;
+  publicSpiritIcon?: string;
+  publicTierColor?: string;
 }
 
 // --- User Profile -----------------------------------------------------------
@@ -282,6 +285,9 @@ export async function searchPublicProfiles(searchQuery: string): Promise<PublicP
         visibility: data.visibility || 'Public',
         publicStatus: data.publicStatus || 'None',
         friends: Array.isArray(data.friends) ? data.friends : [],
+        publicCrestEnabled: data.publicCrestEnabled ?? false,
+        publicSpiritIcon: data.publicSpiritIcon,
+        publicTierColor: data.publicTierColor,
       });
     }
   });
@@ -301,6 +307,9 @@ export interface PublicProfileDetails extends PublicProfileInfo {
   lastSeen?: number;
   lastActive?: number;
   badges?: Array<{ id: string; unlockedAt: number }>;
+  publicCrestEnabled?: boolean;
+  publicSpiritIcon?: string;
+  publicTierColor?: string;
 }
 
 export async function fetchPublicProfileById(uid: string): Promise<PublicProfileDetails | null> {
@@ -320,7 +329,30 @@ export async function fetchPublicProfileById(uid: string): Promise<PublicProfile
     lastSeen: typeof data.lastSeen === 'number' ? data.lastSeen : undefined,
     lastActive: typeof data.lastActive === 'number' ? data.lastActive : undefined,
     badges: Array.isArray(data.badges) ? data.badges : undefined,
+    publicCrestEnabled: data.publicCrestEnabled ?? false,
+    publicSpiritIcon: data.publicSpiritIcon,
+    publicTierColor: data.publicTierColor,
   };
+}
+
+// --- Gamification Prefs -----------------------------------------------------
+
+/**
+ * Persist gamification display preferences for the authenticated user.
+ * Also writes denormalized public crest fields for O(1) reads on other users' avatars.
+ */
+export async function updateGamificationPrefs(
+  uid: string,
+  prefs: import('../types/user').GamificationPrefs,
+  tierColor: string,
+): Promise<void> {
+  const payload: Record<string, unknown> = {
+    gamificationPrefs: prefs,
+    publicCrestEnabled: prefs.publicCrest,
+    publicSpiritIcon: prefs.spiritIcon,
+    publicTierColor: tierColor,
+  };
+  await setDoc(doc(db, 'users', uid, 'profile', 'data'), payload, { merge: true });
 }
 
 // --- Public Profile Pets ----------------------------------------------------

@@ -1295,7 +1295,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                       onClick={onClose}
                       className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
                     >
-                      Cancel
+                      Cancel & Close
                     </button>
                   ) : (
                     <button
@@ -1312,7 +1312,7 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                       onClick={() => handleSubmit('finish')}
                       className="flex-1 py-2.5 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:brightness-110 motion-safe:active:scale-[0.97]"
                     >
-                      <span className="material-symbols-outlined text-[18px]">check_circle</span> Finish Profile
+                      <span className="material-symbols-outlined text-[18px]">check_circle</span> Save
                     </button>
                   ) : (
                     <button
@@ -1325,22 +1325,6 @@ export function PetFormModal({ isOpen, onClose, onSave, pet, onDelete, onToggleL
                   )}
                 </div>
 
-                {/* Row 2: Full-width Save Changes (edit mode: any tab; add mode: last tab only) */}
-                <AnimatePresence>
-                  {isDirty && isEditMode && (
-                    <motion.button
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      type="button"
-                      onClick={() => handleSubmit('save')}
-                      className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-semibold transition-colors flex items-center justify-center gap-2 overflow-hidden hover:brightness-110 motion-safe:active:scale-[0.97]"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">save</span>
-                      {isEditMode ? 'Save Changes' : 'Add Pet'}
-                    </motion.button>
-                  )}
-                </AnimatePresence>
               </div>
             </form>
           </motion.div>

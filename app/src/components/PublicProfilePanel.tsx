@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { getAvatarUrl } from '../lib/tokenService';
 import { getPublicPetsForUser, type PublicPetSummary } from '../lib/firestoreService';
 import type { PublicProfile } from '../contexts/SocialContext';
+import { SpiritIconBadge } from './gamification/TierCrest';
 
 const STATUS_LABELS: Record<string, string> = {
   'None': '',
@@ -101,20 +102,29 @@ export function PublicProfilePanel({ profile, onClose }: PublicProfilePanelProps
         <div className="p-5 space-y-5">
           {/* Avatar + identity */}
           <div className="flex items-center gap-4">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={profile.displayName}
-                width={64}
-                height={64}
-                className="w-16 h-16 rounded-2xl object-cover bg-surface-container shrink-0"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[28px] text-on-surface-variant">person</span>
-              </div>
-            )}
+            <div className="relative shrink-0">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={profile.displayName}
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-2xl object-cover bg-surface-container"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[28px] text-on-surface-variant">person</span>
+                </div>
+              )}
+              {profile.publicCrestEnabled && profile.publicSpiritIcon && profile.publicTierColor && (
+                <SpiritIconBadge
+                  spiritIcon={profile.publicSpiritIcon}
+                  tierColor={profile.publicTierColor}
+                  size={20}
+                />
+              )}
+            </div>
             <div className="min-w-0">
               <p className="font-bold text-on-surface truncate text-base">
                 {profile.displayName}

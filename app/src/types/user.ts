@@ -5,6 +5,37 @@
  */
 
 export type ProfileVisibility = 'Public' | 'Friends Only' | 'Private';
+
+export interface GamificationPrefs {
+  // Tier Crest
+  showCrest: boolean;
+  badgeStyle: 'minimal' | 'crest' | 'glow';
+  spiritIcon: string;              // material-symbols name
+  showPointCount: boolean;
+  publicCrest: boolean;            // show spirit icon on public avatar for other users
+
+  // XP Ring
+  showXpRing: boolean;
+  ringColor: 'theme' | 'tier' | string;  // 'theme', 'tier', or hex
+  ringAnimation: 'static' | 'pulse' | 'shimmer';
+  showLevelNumber: boolean;
+
+  // Celebrations
+  celebrateMilestones: boolean;
+}
+
+export const DEFAULT_GAMIFICATION_PREFS: GamificationPrefs = {
+  showCrest: true,
+  badgeStyle: 'crest',
+  spiritIcon: 'pets',
+  showPointCount: true,
+  publicCrest: false,
+  showXpRing: true,
+  ringColor: 'tier',
+  ringAnimation: 'pulse',
+  showLevelNumber: true,
+  celebrateMilestones: true,
+};
 export type AvatarShape = 'circle' | 'square' | 'squircle';
 export type PublicStatus = 'None' | 'Open to Playdates' | 'Looking for Walking Buddies';
 
@@ -34,6 +65,12 @@ export interface UserProfile {
   savedServices?: string[];
   badges?: Array<{ id: string; unlockedAt: number }>; // Achievement badges earned
   petFollows?: string[];                 // petIds being followed
+  gamificationPrefs?: GamificationPrefs;
+
+  // Denormalized public crest fields — written alongside gamificationPrefs for O(1) reads
+  publicCrestEnabled?: boolean;
+  publicSpiritIcon?: string;
+  publicTierColor?: string;
 }
 
 export interface AppNotification {

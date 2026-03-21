@@ -3,8 +3,6 @@ import { motion } from 'motion/react';
 import type { HouseholdRole, MemberPermissions, ParentalControls } from '../types/household';
 import { DEFAULT_PERMISSIONS, DEFAULT_PARENTAL_CONTROLS, EXTENDED_FAMILY_PERMISSIONS, ROLE_DESCRIPTIONS } from '../types/household';
 import { updateProfile, deleteUser } from 'firebase/auth';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { loadUserProfile, loadGamificationPrefs, getSignInLog, type SignInLogEntry, updateGamificationPrefs } from '../lib/firestoreService';
@@ -12,9 +10,7 @@ import { useGamification } from '../hooks/useGamification';
 import { DEFAULT_GAMIFICATION_PREFS, type GamificationPrefs } from '../types/user';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { ImageCropperModal, getCroppedImg } from '../components/ImageCropperModal';
-import { hasLocalKey, createEncryptedBackup, restoreEncryptedBackup, wrapKeyForVault, getOrCreateUserKey, type EncryptedBackup } from '../lib/crypto';
-import { saveVaultKey, loadVaultKey } from '../lib/firestoreService';
-import { getActivityLog, formatRelativeTime, type ActivityEntry } from '../utils/activityLog';
+import { formatRelativeTime } from '../utils/activityLog';
 import { uploadAvatar } from '../lib/storageService';
 import { FeedbackModal } from '../components/FeedbackModal';
 import type { EmergencyContacts } from '../types/pet';
@@ -129,8 +125,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
   const [confirmAction, setConfirmAction] = useState<{ type: 'kick' | 'leave' | 'regenerate' | 'roleToChild'; label: string; onConfirm: () => void } | null>(null);
   const [editingHhName, setEditingHhName] = useState(false);
   const [newHhName, setNewHhName] = useState('');
-  const [showPersonalLogs, setShowPersonalLogs] = useState(false);
-  const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
 
   const gamification = useGamification(user?.uid ?? null);
@@ -156,26 +150,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
   const [showCropper, setShowCropper] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  // New-device encryption warning
-  const [showEncryptionWarning] = useState(() => user ? !hasLocalKey(user.uid) : false);
-
-  // Encrypted backup export/import
-  const [showBackupModal, setShowBackupModal] = useState(false);
-  const [backupMode, setBackupMode] = useState<'export' | 'import'>('export');
-  const [backupPassword, setBackupPassword] = useState('');
-  const [backupConfirm, setBackupConfirm] = useState('');
-  const [backupFile, setBackupFile] = useState<File | null>(null);
-  const [backupWorking, setBackupWorking] = useState(false);
-  const [backupError, setBackupError] = useState('');
-  const [backupSuccess, setBackupSuccess] = useState('');
-  const backupFileRef = React.useRef<HTMLInputElement>(null);
-
-  // Cross-Device Sync (E2EE Vault — automatic via UID)
-  const [vaultEnabled, setVaultEnabled] = useState(false);
-  const [syncSaving, setSyncSaving] = useState(false);
-  const [syncError, setSyncError] = useState('');
-  const [syncSuccess, setSyncSuccess] = useState('');
 
   // Profile-level emergency contacts (stored in localStorage, not Firestore — contains PII phone numbers)
   const [profileEmergency, setProfileEmergency] = useState<EmergencyContacts>({});
@@ -224,10 +198,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
   const prevNotifRef = useRef({ emailNotifications: false, emailDigestFrequency: 'off' as 'daily' | 'weekly' | 'off', pushNotifications: false });
   const prevPrivacyRef = useRef({ isPrivate: true, disableDMs: false, disableGroupInvites: false, showLastActive: true });
 
-  // Data export (GDPR)
-  const [exporting, setExporting] = useState(false);
-  const [exportUrl, setExportUrl] = useState<string | null>(null);
-
   // Load profile from Firestore on mount — address arrives already decrypted
   useEffect(() => {
     if (!user) return;
@@ -269,12 +239,9 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
   }, [user]);
 
   useEffect(() => {
-    if (!user) { setActivityLog([]); return; }
-    getActivityLog(user.uid).then(setActivityLog).catch(() => setActivityLog([]));
+    if (!user) return;
     const stored = localStorage.getItem(`petbase-profile-emergency-${user.uid}`);
     if (stored) { try { setProfileEmergency(JSON.parse(stored)); } catch { /* ignore corrupt */ } }
-    // Check vault sync status
-    loadVaultKey(user.uid).then(doc => setVaultEnabled(!!doc)).catch(() => { });
   }, [user]);
 
   // Auto-open and scroll to a section when opened from the onboarding checklist
@@ -359,25 +326,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
     }
   };
 
-  const handleEnableSync = async () => {
-    if (!user) return;
-    setSyncSaving(true);
-    setSyncError('');
-    setSyncSuccess('');
-    try {
-      const key = await getOrCreateUserKey(user.uid);
-      const vaultDoc = await wrapKeyForVault(key, user.uid);
-      await saveVaultKey(user.uid, vaultDoc);
-      setVaultEnabled(true);
-      setSyncSuccess('Cross-device sync enabled! Sign in on any device to automatically access your encrypted data.');
-    } catch (err: any) {
-      setSyncError(err.message || 'Failed to enable sync.');
-    } finally {
-      setSyncSaving(false);
-    }
-  };
-
-
   // ── Notifications live-save (400 ms debounce) ────────────────────────────
   const liveNotifSave = (values: { emailNotifications: boolean; emailDigestFrequency: 'daily' | 'weekly' | 'off'; pushNotifications: boolean }) => {
     if (!user) return;
@@ -447,65 +395,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
     }, 400);
   };
 
-  const handleExport = async () => {
-    setExporting(true);
-    setExportUrl(null);
-    try {
-      const exportFn = httpsCallable(functions, 'exportUserData');
-      const result = await exportFn({});
-      setExportUrl((result.data as any).downloadUrl);
-    } catch (e) {
-      console.error('Export failed:', e);
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleExportBackup = async () => {
-    if (!user || !backupPassword) return;
-    if (backupPassword !== backupConfirm) { setBackupError('Passwords do not match.'); return; }
-    if (backupPassword.length < 8) { setBackupError('Backup password must be at least 8 characters.'); return; }
-    setBackupWorking(true);
-    setBackupError('');
-    try {
-      const backup = await createEncryptedBackup(user.uid, backupPassword);
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `petbase-backup-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      setBackupSuccess('Backup downloaded. Keep this file and your backup password safe.');
-      setBackupPassword('');
-      setBackupConfirm('');
-    } catch (err: any) {
-      setBackupError(err.message || 'Failed to create backup.');
-    } finally {
-      setBackupWorking(false);
-    }
-  };
-
-  const handleImportBackup = async () => {
-    if (!backupFile || !backupPassword) return;
-    setBackupWorking(true);
-    setBackupError('');
-    try {
-      const text = await backupFile.text();
-      const backup: EncryptedBackup = JSON.parse(text);
-      await restoreEncryptedBackup(backup, backupPassword);
-      setBackupSuccess('Backup restored successfully. Your encrypted data is now accessible on this device.');
-      setBackupPassword('');
-      setBackupFile(null);
-    } catch (err: any) {
-      setBackupError(err.message || 'Failed to restore backup. Check your password and file.');
-    } finally {
-      setBackupWorking(false);
-    }
-  };
-
   if (loadingProfile) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -570,33 +459,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
           Feedback / Report Issue
         </button>
       </header>
-
-      {/* New-device encryption warning */}
-      {showEncryptionWarning && (
-        <div className="flex items-start gap-4 p-4 bg-error-container/40 border border-error-container rounded-2xl">
-          <span className="material-symbols-outlined text-error shrink-0 mt-0.5">vpn_key</span>
-          <div className="flex-1">
-            <p className="font-semibold text-on-surface">New device detected</p>
-            <p className="text-sm text-on-surface-variant mt-1">
-              Your encrypted data (medical records, expenses, pet notes) is not yet accessible on this device.
-              Enable Cross-Device Sync to automatically access your data on any device you sign in to.
-              Otherwise, restore from a backup file.
-            </p>
-            <div className="flex flex-wrap gap-3 mt-3">
-              <a href="#section-sync" className="text-sm font-medium text-primary-container underline hover:no-underline">
-                Set up sync
-              </a>
-              <button
-                type="button"
-                onClick={() => { setBackupMode('import'); setShowBackupModal(true); }}
-                className="text-sm font-medium text-primary-container underline hover:no-underline"
-              >
-                Import backup
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ════════════════════════════════════════════════════════════════════
           SECTION 1 — Profile Info
@@ -1203,159 +1065,10 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
       </Section>
 
       {/* ════════════════════════════════════════════════════════════════════
-          SECTION 5 — Encryption & Sync
+          SECTION 5 — Family Sharing
           ════════════════════════════════════════════════════════════════════ */}
-      <Section icon="sync_lock" title="Encryption & Sync" id="section-sync">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-on-surface-variant">Cross-Device Sync</p>
-          <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${vaultEnabled ? 'bg-primary-container/20 text-primary-container' : 'bg-surface-container text-on-surface-variant'}`}>
-            {vaultEnabled ? 'Enabled' : 'Not enabled'}
-          </span>
-        </div>
-
-        <p className="text-sm text-on-surface-variant leading-relaxed">
-          Enable automatic cross-device sync to securely store your encryption key in the cloud.
-          Your encrypted data (medical records, expenses, notes) will be accessible on any device
-          you sign in to — no extra passwords needed. The server only ever stores encrypted ciphertext.
-        </p>
-
-        {vaultEnabled && (
-          <div className="flex items-center gap-3 p-3 bg-primary-container/10 border border-primary-container/30 rounded-xl">
-            <span className="material-symbols-outlined text-primary-container shrink-0">check_circle</span>
-            <p className="text-sm text-on-surface-variant">
-              Sync is active. Sign in on any device to automatically access your encrypted data.
-            </p>
-          </div>
-        )}
-
-        {syncError && (
-          <p className="text-sm text-error bg-error-container/40 px-3 py-2 rounded-lg">
-            {syncError}
-          </p>
-        )}
-        {syncSuccess && (
-          <p className="text-sm text-primary-container bg-primary-container/10 px-3 py-2 rounded-lg">
-            {syncSuccess}
-          </p>
-        )}
-
-        {!vaultEnabled && (
-          <button
-            onClick={handleEnableSync}
-            disabled={syncSaving}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container hover:opacity-90 disabled:opacity-50 font-medium transition-all motion-safe:active:scale-[0.97]"
-          >
-            {syncSaving && <span className="material-symbols-outlined text-lg animate-spin">sync</span>}
-            {syncSaving ? 'Enabling...' : 'Enable Cross-Device Sync'}
-          </button>
-        )}
-      </Section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          SECTION 6 — Data & Backup
-          ════════════════════════════════════════════════════════════════════ */}
-      <Section icon="cloud_download" title="Data & Backup" id="section-data">
-        {/* Encrypted Backup */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-on-surface-variant flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
-            <span className="material-symbols-outlined text-lg">vpn_key</span>
-            Encrypted Backup
-          </h3>
-          <p className="text-sm text-on-surface-variant">
-            Export an encrypted backup for offline recovery. The backup file is protected by a password you choose.
-            If you have Cross-Device Sync enabled, your data is also accessible automatically on any signed-in device.
-          </p>
-          <div className="flex gap-3 flex-wrap">
-            <button
-              type="button"
-              onClick={() => { setBackupMode('export'); setShowBackupModal(true); setBackupError(''); setBackupSuccess(''); }}
-              className="flex items-center gap-2 bg-primary-container hover:opacity-90 text-on-primary-container px-4 py-2 rounded-xl font-medium transition-all motion-safe:active:scale-[0.97]"
-            >
-              <span className="material-symbols-outlined text-lg">download</span> Export Backup
-            </button>
-            <button
-              type="button"
-              onClick={() => { setBackupMode('import'); setShowBackupModal(true); setBackupError(''); setBackupSuccess(''); }}
-              className="flex items-center gap-2 border border-outline-variant hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl font-medium transition-colors motion-safe:active:scale-[0.97]"
-            >
-              <span className="material-symbols-outlined text-lg">upload</span> Import Backup
-            </button>
-          </div>
-        </div>
-
-        {/* Export Your Data (GDPR) */}
-        <div className="pt-4 border-t border-outline-variant space-y-3">
-          <h3 className="text-sm font-semibold text-on-surface-variant flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
-            <span className="material-symbols-outlined text-lg">file_download</span>
-            Export Your Data
-          </h3>
-          <p className="text-xs text-on-surface-variant">
-            Download a copy of all your PetBase data as a JSON file. Link expires in 24 hours.
-          </p>
-          <button
-            onClick={handleExport}
-            disabled={exporting}
-            className="px-4 py-2 text-sm bg-surface-container text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-50 flex items-center gap-2 motion-safe:active:scale-[0.97]"
-          >
-            {exporting
-              ? <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
-              : <span className="material-symbols-outlined text-lg">download</span>}
-            {exporting ? 'Preparing export...' : 'Export My Data'}
-          </button>
-          {exportUrl && (
-            <a
-              href={exportUrl}
-              download
-              className="mt-2 block text-sm text-primary-container underline"
-            >
-              Download ready — click to save
-            </a>
-          )}
-        </div>
-
-        {/* Personal Activity Log */}
-        <div className="pt-4 border-t border-outline-variant space-y-3">
-          <h3 className="text-sm font-semibold text-on-surface-variant flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
-            <span className="material-symbols-outlined text-lg">monitoring</span>
-            Personal Activity Log
-          </h3>
-          <p className="text-sm text-on-surface-variant">
-            A rolling 60-day log of your key actions in PetBase. Stored locally on this device only.
-          </p>
-
-          <button
-            onClick={() => {
-              setShowPersonalLogs(v => !v);
-              if (!showPersonalLogs && user) getActivityLog(user.uid).then(setActivityLog).catch(() => {});
-            }}
-            className="flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors motion-safe:active:scale-[0.97]"
-          >
-            <span className="material-symbols-outlined text-lg">schedule</span>
-            My Activity
-            {activityLog.length > 0 && (
-              <span className="text-xs bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded-full">{activityLog.length}</span>
-            )}
-            <span className={`material-symbols-outlined text-lg ml-auto transition-transform ${showPersonalLogs ? 'rotate-180' : ''}`}>expand_more</span>
-          </button>
-
-          {showPersonalLogs && (
-            <div className="rounded-xl border border-outline-variant overflow-hidden">
-              {activityLog.length === 0 ? (
-                <p className="text-sm text-on-surface-variant p-4">No activity logged yet.</p>
-              ) : (
-                <div className="divide-y divide-outline-variant max-h-80 overflow-y-auto">
-                  {activityLog.map(entry => (
-                    <div key={entry.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                      <span className="text-on-surface-variant">{entry.action}</span>
-                      <span className="text-on-surface-variant/60 text-xs whitespace-nowrap ml-4">{formatRelativeTime(entry.timestamp)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Family Audit Log (visible to all household members) */}
+      <Section icon="group" title="Family Sharing" id="section-family">
+        {/* Family Audit Log (visible to all household members) */}
           {household && members.find(m => m.uid === user?.uid) && (
             <>
               <button
@@ -1388,17 +1101,10 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
               )}
             </>
           )}
-        </div>
 
-        {/* Family Sharing */}
-        <div className="pt-4 border-t border-outline-variant space-y-5" id="section-family">
-          <h3 className="text-sm font-semibold text-on-surface-variant flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
-            <span className="material-symbols-outlined text-lg text-tertiary">group</span>
-            Family Sharing
-          </h3>
-          <p className="text-sm text-on-surface-variant">
-            Create or join a household to share pet co-management access with family members.
-          </p>
+        <p className="text-sm text-on-surface-variant">
+          Create or join a household to share pet co-management access with family members.
+        </p>
 
           {hhError && (
             <div className="flex items-center gap-3 p-3 bg-error-container/40 border border-error-container rounded-xl text-sm text-error">
@@ -1723,11 +1429,10 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
               )}
             </>
           )}
-        </div>
       </Section>
 
       {/* ════════════════════════════════════════════════════════════════════
-          SECTION 7 — Emergency Contacts
+          SECTION 6 — Emergency Contacts
           ════════════════════════════════════════════════════════════════════ */}
       <Section icon="emergency" title="Emergency Contacts" id="section-emergency">
         <p className="text-xs text-on-surface-variant">Stored on this device only — used as fallback on pet cards</p>
@@ -1936,106 +1641,6 @@ export function ProfileSettings({ initialSection }: { initialSection?: string } 
           </div>
         )}
       </AnimatePresence>
-
-      {/* Encrypted Backup Modal */}
-      {showBackupModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="backup-modal-title">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="glass-card shadow-2xl w-full max-w-md"
-          >
-            <div className="p-6 border-b border-outline-variant">
-              <h3 className="text-xl font-bold text-on-surface flex items-center gap-2" style={{ fontFamily: 'var(--font-headline)' }}>
-                <span className="material-symbols-outlined text-primary-container">vpn_key</span>
-                {backupMode === 'export' ? 'Export Encrypted Backup' : 'Import Encrypted Backup'}
-              </h3>
-            </div>
-            <div className="p-6 space-y-4">
-              {backupMode === 'export' ? (
-                <>
-                  <p className="text-sm text-on-surface-variant">
-                    Set a backup password. You will need this password to restore the backup on another device.
-                    Store it somewhere safe — it cannot be recovered.
-                  </p>
-                  <div>
-                    <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Backup Password</label>
-                    <input
-                      type="password"
-                      value={backupPassword}
-                      onChange={e => setBackupPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Min 8 characters"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Confirm Password</label>
-                    <input
-                      type="password"
-                      value={backupConfirm}
-                      onChange={e => setBackupConfirm(e.target.value)}
-                      className={inputClass}
-                      placeholder="Repeat password"
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-sm text-on-surface-variant">
-                    Select your backup file and enter the backup password you set when exporting.
-                  </p>
-                  <div>
-                    <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Backup File</label>
-                    <input
-                      type="file"
-                      ref={backupFileRef}
-                      accept=".json"
-                      onChange={e => setBackupFile(e.target.files?.[0] ?? null)}
-                      className="w-full text-sm text-on-surface-variant file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary-container/20 file:text-primary-container hover:file:bg-primary-container/30"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Backup Password</label>
-                    <input
-                      type="password"
-                      value={backupPassword}
-                      onChange={e => setBackupPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Enter backup password"
-                    />
-                  </div>
-                </>
-              )}
-
-              {backupError && (
-                <p className="text-sm text-error bg-error-container/40 p-3 rounded-lg">{backupError}</p>
-              )}
-              {backupSuccess && (
-                <p className="text-sm text-primary-container bg-primary-container/10 p-3 rounded-lg">{backupSuccess}</p>
-              )}
-            </div>
-            <div className="p-5 border-t border-outline-variant flex gap-3">
-              <button
-                type="button"
-                onClick={() => { setShowBackupModal(false); setBackupPassword(''); setBackupConfirm(''); setBackupFile(null); setBackupError(''); setBackupSuccess(''); }}
-                className="flex-1 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-medium hover:bg-surface-container transition-colors motion-safe:active:scale-[0.97]"
-              >
-                {backupSuccess ? 'Close' : 'Cancel'}
-              </button>
-              {!backupSuccess && (
-                <button
-                  type="button"
-                  disabled={backupWorking || !backupPassword || (backupMode === 'export' ? !backupConfirm : !backupFile)}
-                  onClick={backupMode === 'export' ? handleExportBackup : handleImportBackup}
-                  className="flex-1 py-2.5 rounded-xl bg-primary-container hover:opacity-90 text-on-primary-container font-semibold transition-all disabled:opacity-50 motion-safe:active:scale-[0.97]"
-                >
-                  {backupWorking ? 'Working...' : backupMode === 'export' ? 'Download Backup' : 'Restore Backup'}
-                </button>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

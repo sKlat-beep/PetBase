@@ -42,8 +42,12 @@ These fire automatically as I work:
 1. **`/ui-review`** on all modified `.tsx` files (if any).
 2. **`/privacy-check`** on all Firestore-touching files (if any).
 3. **test-validator** — `npm run build` in both `app/` and `functions/`. Both must exit 0.
-4. Set task status to `review` in `TODO.md`.
-5. Write dev-log entry: `## [YYYY-MM-DD] TASK-XX: Title [COMPLETE]`
+4. **Preview verification** — for any `.tsx` visual change:
+   - `preview_start` (if not running) → reload → `preview_screenshot`.
+   - Check `preview_console_logs` — zero errors required.
+   - Attach screenshot to task completion note as proof.
+5. Set task status to `review` in `TODO.md`.
+6. Write dev-log entry: `## [YYYY-MM-DD] TASK-XX: Title [COMPLETE]`
 
 ### Completion (after PM approval)
 1. Remove task from `TODO.md`.
@@ -129,26 +133,37 @@ When I make a mistake (rule skipped, tokens wasted, wrong approach):
 | Server | Purpose |
 |--------|---------|
 | **jcodemunch** | Symbol-level codebase navigation (always first before raw reads) |
-| **context7** | Live documentation lookup (React 19, Firebase, Tailwind) |
+| **context7** | Live documentation lookup (React 19, Firebase, Tailwind, any library) |
 | **stitch-kit** | UI design review, accessibility auditing, and design system management |
+| **Claude Preview** | Dev server lifecycle, screenshots, console logs, DOM snapshots for UI verification |
 
 ### Skills (invoked via `/command`)
 | Skill | Trigger |
 |-------|---------|
 | `/intake` | Creating a new task in TODO.md |
-| `/ui-review` | Any `.tsx` file modified |
+| `/ui-review` | Any `.tsx` file modified (Stitch visual + WCAG a11y gate) |
 | `/privacy-check` | Any Firestore read/write changed |
 | `/handoff` | Handing off to another agent |
 | `/commit` | Creating git commits |
+| `/ce:plan` | Planning new features interactively with research agents |
+| `/ce:work` | Structured execution of a plan (use for all implementation tasks) |
+| `/ce:brainstorm` | Collaborative ideation before planning |
+| `/deepen-plan` | Enhance plan sections with parallel research agents |
+| `/systematic-debugging` | Structured debugging when root cause is unclear |
+| `/subagent-driven-development` | Dispatch parallel agents for independent task groups |
+| `/verification-before-completion` | Run verification commands before claiming done |
 
 ### Specialized Review Agents (CE)
 | Agent | When |
 |-------|------|
+| `feature-dev:code-explorer` | Before touching complex context or service files |
+| `feature-dev:code-architect` | Designing features with data flow implications |
 | `kieran-typescript-reviewer` | After TypeScript implementation |
-| `security-sentinel` | Security audit before deploy |
-| `performance-oracle` | Performance concerns |
+| `security-sentinel` | Security audit before deploy; also after any Firestore-touching change |
+| `performance-oracle` | Performance concerns; required for Firestore schema changes |
+| `data-integrity-guardian` | Any data model change, migration, or denormalization |
 | `pattern-recognition-specialist` | Codebase consistency checks |
-| `code-simplifier` | Auto-runs after implementation |
+| `code-simplifier` | After implementation — simplify/refine all new code |
 
 ### Gate Agents (Delivery)
 | Agent | Gate |
@@ -169,6 +184,9 @@ When I make a mistake (rule skipped, tokens wasted, wrong approach):
 - Unknown fields treated as RESTRICTED_PII.
 - User's real name / login email never publicly displayed — only `displayName` is viewable.
 - Semgrep + security-guidance hooks run on every code edit.
+- **Any new Firestore field, schema denormalization, or data model change MUST pass:**
+  - `performance-oracle` review (read/write cost, index implications).
+  - `data-integrity-guardian` review (migration safety, constraint gaps).
 
 ### Token Discipline
 - jcodemunch before raw file reads (always).

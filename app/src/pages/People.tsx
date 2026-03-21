@@ -333,9 +333,9 @@ export function People() {
         uid: p.uid,
         displayName: p.displayName,
         avatarUrl: p.avatarUrl,
-        mutualFriends: (p.friends ?? []).filter(id => myFriendSet.has(id)).length,
+        mutualFriends: 0, // mutual-friends signal removed (TASK-222: friends UID list is private)
         score: pymkScore(
-          { uid: p.uid, displayName: p.displayName, avatarUrl: p.avatarUrl, friendIds: p.friends ?? [] },
+          { uid: p.uid, displayName: p.displayName, avatarUrl: p.avatarUrl },
           myFriendSet,
           new Set<string>(),
         ),

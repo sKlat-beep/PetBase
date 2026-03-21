@@ -7,7 +7,7 @@ import { httpsCallable } from 'firebase/functions';
 import { functions } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { loadUserProfile, getSignInLog, type SignInLogEntry, updateGamificationPrefs } from '../lib/firestoreService';
+import { loadUserProfile, loadGamificationPrefs, getSignInLog, type SignInLogEntry, updateGamificationPrefs } from '../lib/firestoreService';
 import { useGamification } from '../hooks/useGamification';
 import { DEFAULT_GAMIFICATION_PREFS, type GamificationPrefs } from '../types/user';
 import { useHousehold } from '../contexts/HouseholdContext';
@@ -232,8 +232,8 @@ export function ProfileSettings() {
     setDisplayName(user.displayName || '');
     // Initialise push permission status from browser
     setPushStatus(getPushPermissionStatus());
-    loadUserProfile(user.uid)
-      .then((profile) => {
+    Promise.all([loadUserProfile(user.uid), loadGamificationPrefs(user.uid)])
+      .then(([profile, gamPrefsLoaded]) => {
         if (profile) {
           setDisplayName(profile.displayName || user.displayName || '');
           setAddress(profile.address || '');
@@ -248,9 +248,9 @@ export function ProfileSettings() {
           setDisableDMs(profile.disableDMs ?? false);
           setDisableGroupInvites(profile.disableGroupInvites ?? false);
           setShowLastActive(profile.showLastActive !== false); // default true
-          // Gamification prefs
-          if (profile.gamificationPrefs) setGamPrefs(profile.gamificationPrefs);
         }
+        // Gamification prefs from private config subcollection (TASK-223)
+        setGamPrefs(gamPrefsLoaded);
       })
       .catch(console.error)
       .finally(() => setLoadingProfile(false));

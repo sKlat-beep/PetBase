@@ -26,11 +26,6 @@ Use `/intake` skill to add new tasks (place under the appropriate phase header).
 
 ---
 
-## Phase 34.1 — Security Hardening (Follow-up from PR #3 review)
-
-- TASK-222: `intake` — Security: `friends` UID array exposed to all auth users via `searchPublicProfiles`. Should return `friendCount: number` only, or compute PYMK server-side in a Cloud Function. Pre-existing issue; do not return full UID list from public profile queries. (security-sentinel finding, 2026-03-20)
-- TASK-223: `intake` — Architecture: Move `gamificationPrefs` full object from world-readable `users/{uid}/profile/data` to private `users/{uid}/config/gamification`. Only the 3 denormalized public fields (`publicCrestEnabled`, `publicSpiritIcon`, `publicTierColor`) need to be in the public doc. Requires updating AuthContext, Layout, ProfileSettings read paths. (security-sentinel finding, 2026-03-20)
-
 ---
 
 ## Phase 35 — Monetization (Future)

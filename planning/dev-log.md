@@ -15,6 +15,11 @@
 
 ---
 
+## [2026-03-20] Phase 34.1 Security Hardening (TASK-222 + TASK-223) — COMPLETE
+TASK-222: Replaced `friends: string[]` with `friendCount: number` across `PublicProfileInfo`, `PublicProfile`, `searchPublicProfiles`, `fetchPublicProfileById`. Removed mutual-friends PYMK signal from `pymkScore`, `PymkCandidate`, `PeopleYouMayKnowWidget`, `PeopleSection`, `People`, `CommunityHubPanel`. Added `friendCount` increment/decrement to `acceptFriendRequest`/`removeFriend`.
+TASK-223: `updateGamificationPrefs` now uses `writeBatch` — full prefs → `config/gamification` (private), 3 denorm fields only → `profile/data` (public). Added `loadGamificationPrefs` with read-time migration fallback. `ProfileSettings` now loads from `config/gamification`.
+Also removed semgrep plugin from user-scope (settings.json, installed_plugins.json, settings.local.json hooks + env, agents/claude-code.md, memory).
+
 ## [2026-03-20] Pet-Aware Search Orchestrator (cosmic-percolating-lake) — COMPLETE
 Implemented full 10-step plan: breedIntelligence.ts (breed data, bitmask, medical maps), yelpOrchestrator.ts (5-layer URL builder, deep links, service expansions), useOrchestrator.ts hook, SearchPreview.tsx, OrchestratorPanel.tsx, VerificationModal.tsx. Rewrote Search.tsx to use orchestrator as primary with pet selector, service grid, editable tag preview, and Yelp redirect. SideRail preserved. Vite build passes.
 

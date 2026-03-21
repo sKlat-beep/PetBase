@@ -64,7 +64,6 @@ export function CommunityHubPanel() {
     if (!user || !profile) return [];
 
     const friendSet = new Set(profile.friends ?? []);
-    const myFriends = Array.from(friendSet);
     const blockedSet = new Set(profile.blockedUsers ?? []);
 
     // Collect all candidate UIDs from groups the current user belongs to
@@ -84,13 +83,7 @@ export function CommunityHubPanel() {
       const candidateProfile = directory.find(p => p.uid === candidateUid);
       let score = 0;
 
-      // Mutual friends: +2 per mutual friend
-      const candidateFriends: string[] = candidateProfile?.friends ?? [];
-      const currentFriendSet = new Set(myFriends);
-      const mutualCount = candidateFriends.filter(f => currentFriendSet.has(f)).length;
-      score += mutualCount * 2;
-
-      // Shared groups: +2 per shared group
+      // Shared groups: +2 per shared group (mutual-friends signal removed — TASK-222)
       for (const g of userGroups) {
         if (g.members[candidateUid]) score += 2;
       }

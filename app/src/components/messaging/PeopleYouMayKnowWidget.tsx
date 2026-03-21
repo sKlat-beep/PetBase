@@ -5,14 +5,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { usePets } from '../../contexts/PetContext';
 import type { UserProfile } from '../../types/user';
 
-function countMutualFriends(
-  candidateFriends: string[],
-  currentUserFriends: string[],
-): number {
-  const currentSet = new Set(currentUserFriends);
-  return candidateFriends.filter(f => currentSet.has(f)).length;
-}
-
 /** Build the subtitle shown under a PYMK suggestion name. */
 function buildSubtitle(mutualFriends: number, sharedGroups: number, petLabel: string): string {
   const parts: string[] = [];
@@ -38,7 +30,7 @@ export function PeopleYouMayKnowWidget() {
   const { pets } = usePets() as any;
   const [pendingSent, setPendingSent] = useState<Set<string>>(new Set());
 
-  const friends = new Set(profile?.friends ?? []);
+  const myFriendSet = new Set(profile?.friends ?? []);
   const dismissed = new Set(profile?.dismissedSuggestions ?? []);
   const blocked = new Set((profile as any)?.blockedUsers ?? []);
   const uid = user?.uid ?? '';
@@ -46,21 +38,15 @@ export function PeopleYouMayKnowWidget() {
   // Build joined groups: CommunityGroup[] filtered by membership
   const joinedGroups = groups.filter(g => g.members?.[uid]);
 
-  const myFriends = Array.from(friends);
-
-  // Score candidates
+  // Score candidates — groups signal only (TASK-222: mutual-friends signal removed)
   const candidates = directory
     .filter(u => {
       const id = u.uid;
-      return id && id !== uid && !friends.has(id) && !dismissed.has(id) && !blocked.has(id);
+      return id && id !== uid && !myFriendSet.has(id) && !dismissed.has(id) && !blocked.has(id);
     })
     .map(u => {
       const id = u.uid;
       let score = 0;
-
-      // Mutual friends: +3 per mutual friend (weighted higher than groups)
-      const mutualFriends = countMutualFriends(u.friends ?? [], myFriends);
-      score += mutualFriends * 3;
 
       // Shared groups: +2 per group
       let sharedGroups = 0;
@@ -79,9 +65,9 @@ export function PeopleYouMayKnowWidget() {
         if (t && myPetTypes.has(t)) { score += 1; petLabel = `Both have ${t}s`; break; }
       }
 
-      const contextLabel = buildSubtitle(mutualFriends, sharedGroups, petLabel);
+      const contextLabel = buildSubtitle(0, sharedGroups, petLabel);
 
-      return { uid: id, displayName: u.displayName ?? 'Someone', avatarUrl: u.avatarUrl, score, mutualFriends, sharedGroups, contextLabel };
+      return { uid: id, displayName: u.displayName ?? 'Someone', avatarUrl: u.avatarUrl, score, mutualFriends: 0, sharedGroups, contextLabel };
     })
     .filter(c => c.score > 0)
     .sort((a, b) => b.score - a.score)

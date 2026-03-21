@@ -26,7 +26,6 @@ Primary implementation agent. Executes approved plans with minimal token usage.
 **Auto-triggers:**
 - **code-simplifier** — runs after implementation tasks
 - **feature-dev** — triggers for feature requests
-- **semgrep** — local scan (p/typescript rules) after every Edit/Write on .ts/.tsx/.js/.jsx files
 - **security-guidance** — PreToolUse hook checks for XSS, eval, command injection before edits
 - **typescript-lsp** — real-time type diagnostics for app/ and functions/
 - **context7** — live documentation lookup (React 19, Firebase, Tailwind) via CE plugin MCP
@@ -52,7 +51,7 @@ When executing via `/ce:work`, PetBase-specific gates override ce:work's default
   Query `context7` for live documentation before implementing.
 
 ### During Phase 3 — Implement
-- semgrep (PostToolUse) and security-guidance (PreToolUse) hooks fire automatically on every Edit/Write.
+- security-guidance (PreToolUse) hook fires automatically on every Edit/Write.
 - After each TypeScript file group is complete → invoke `kieran-typescript-reviewer`.
 - After each Firestore-touching file change → invoke `security-sentinel` (not just at delivery).
 

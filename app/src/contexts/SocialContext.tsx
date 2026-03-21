@@ -23,7 +23,7 @@ export interface PublicProfile {
     publicStatus: 'None' | 'Open to Playdates' | 'Looking for Walking Buddies';
     pets: { type: string; count: number }[];
     blockedUsers?: string[]; // best-effort — only present if we have their full profile
-    friends?: string[]; // UIDs of this user's friends — used for mutual-friends PYMK scoring
+    friendCount?: number; // Count only — UID list is private (TASK-222)
     publicCrestEnabled?: boolean;
     publicSpiritIcon?: string;
     publicTierColor?: string;
@@ -88,7 +88,7 @@ export function SocialProvider({ children }: { children: ReactNode }) {
                     visibility: p.visibility as PublicProfile['visibility'],
                     publicStatus: p.publicStatus as PublicProfile['publicStatus'],
                     pets: [],
-                    friends: p.friends ?? [],
+                    friendCount: p.friendCount ?? 0,
                     publicCrestEnabled: p.publicCrestEnabled,
                     publicSpiritIcon: p.publicSpiritIcon,
                     publicTierColor: p.publicTierColor,
@@ -149,7 +149,7 @@ export function SocialProvider({ children }: { children: ReactNode }) {
                 visibility: p.visibility as any,
                 publicStatus: p.publicStatus as any,
                 pets: [],
-                friends: p.friends ?? [],
+                friendCount: p.friendCount ?? 0,
                 publicCrestEnabled: p.publicCrestEnabled,
                 publicSpiritIcon: p.publicSpiritIcon,
                 publicTierColor: p.publicTierColor,
@@ -307,7 +307,6 @@ export interface PymkCandidate {
     uid: string;
     displayName: string;
     avatarUrl: string;
-    friendIds?: string[];   // UIDs of this candidate's friends (from PublicProfile.friends)
     groupIds?: string[];    // group IDs this candidate belongs to
 }
 
@@ -322,14 +321,13 @@ export interface PymkSuggestion {
 
 /**
  * Score a PYMK candidate relative to the current user.
- * Mutual friends are weighted higher (×3) than shared groups (×2).
+ * Scored by shared groups (×2). Mutual-friends signal removed (TASK-222: friends UID list is private).
  */
 export function pymkScore(
     candidate: PymkCandidate,
-    myFriends: Set<string>,
+    _myFriends: Set<string>,
     myGroups: Set<string>,
 ): number {
-    const mutualFriends = candidate.friendIds?.filter(id => myFriends.has(id)).length ?? 0;
     const sharedGroups = candidate.groupIds?.filter(id => myGroups.has(id)).length ?? 0;
-    return (mutualFriends * 3) + (sharedGroups * 2); // weight mutual friends higher
+    return sharedGroups * 2;
 }

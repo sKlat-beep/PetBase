@@ -10,8 +10,8 @@
     {
       "name": "Frontend (Vite) — emulator mode",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "npm", "--prefix", "app", "run", "dev:emulated"],
-      "port": 3000
+      "runtimeArgs": ["/c", "C:\\Admin\\Projects\\PetBase\\start-vite-emulated.cmd"],
+      "port": 3001
     },
     {
       "name": "Firebase Emulators",

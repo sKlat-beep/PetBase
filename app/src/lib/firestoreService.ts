@@ -179,7 +179,7 @@
  *   - Firestore TTL policy must be set via Firebase Console on the expiresAt field
  */
 
-import { doc, setDoc, getDoc, collection, getDocs, deleteDoc, collectionGroup, updateDoc, query, where, limit, addDoc, onSnapshot, orderBy, startAfter, type DocumentSnapshot, type Unsubscribe, writeBatch, arrayUnion, arrayRemove, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, getDocs, deleteDoc, collectionGroup, updateDoc, query, where, limit, addDoc, onSnapshot, orderBy, startAfter, type DocumentSnapshot, type Unsubscribe, writeBatch, arrayUnion, arrayRemove, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
 import { db, auth, functions } from './firebase';
 import { httpsCallable } from 'firebase/functions';
 
@@ -195,7 +195,8 @@ function coerceTimestamps<T>(data: Record<string, unknown>): T {
 }
 import { getOrCreateUserKey, encryptField, decryptField, type VaultKeyDoc } from './crypto';
 import type { Pet, EmergencyContacts } from '../types/pet';
-import type { UserProfile, PublicStatus, AppNotification } from '../types/user';
+import type { UserProfile, PublicStatus, AppNotification, GamificationPrefs } from '../types/user';
+import { DEFAULT_GAMIFICATION_PREFS } from '../types/user';
 import type { Household, HouseholdMember, HouseholdRole, MemberPermissions, ParentalControls, AuditEntry } from '../types/household';
 import { DEFAULT_PERMISSIONS, DEFAULT_PARENTAL_CONTROLS } from '../types/household';
 
@@ -206,7 +207,7 @@ export interface PublicProfileInfo {
   avatarUrl: string; // Exposed for secure resolution via tokenService
   visibility: 'Public' | 'Friends Only' | 'Private';
   publicStatus: PublicStatus;
-  friends?: string[]; // UIDs of this user's friends — used for mutual-friends PYMK scoring
+  friendCount?: number; // Count only — UID list is private (TASK-222)
   publicCrestEnabled?: boolean;
   publicSpiritIcon?: string;
   publicTierColor?: string;
@@ -284,7 +285,7 @@ export async function searchPublicProfiles(searchQuery: string): Promise<PublicP
         avatarUrl: data.avatarUrl || '',
         visibility: data.visibility || 'Public',
         publicStatus: data.publicStatus || 'None',
-        friends: Array.isArray(data.friends) ? data.friends : [],
+        friendCount: typeof data.friendCount === 'number' ? data.friendCount : (Array.isArray(data.friends) ? data.friends.length : 0),
         publicCrestEnabled: data.publicCrestEnabled ?? false,
         publicSpiritIcon: data.publicSpiritIcon,
         publicTierColor: data.publicTierColor,
@@ -327,6 +328,7 @@ export async function fetchPublicProfileById(uid: string): Promise<PublicProfile
     lastSeen: typeof data.lastSeen === 'number' ? data.lastSeen : undefined,
     lastActive: typeof data.lastActive === 'number' ? data.lastActive : undefined,
     badges: Array.isArray(data.badges) ? data.badges : undefined,
+    friendCount: typeof data.friendCount === 'number' ? data.friendCount : (Array.isArray(data.friends) ? data.friends.length : 0),
     publicCrestEnabled: data.publicCrestEnabled ?? false,
     publicSpiritIcon: data.publicSpiritIcon,
     publicTierColor: data.publicTierColor,
@@ -346,14 +348,38 @@ const TIER_COLORS_FS: Record<number, string> = {
 };
 
 /**
+ * Load gamification preferences from the private config subcollection.
+ * Falls back to legacy gamificationPrefs in profile/data for existing users (read-time migration).
+ * Writes migrated data forward to config/gamification on first load.
+ */
+export async function loadGamificationPrefs(uid: string): Promise<GamificationPrefs> {
+  const configRef = doc(db, 'users', uid, 'config', 'gamification');
+  const configSnap = await getDoc(configRef);
+  if (configSnap.exists()) {
+    return { ...DEFAULT_GAMIFICATION_PREFS, ...configSnap.data() } as GamificationPrefs;
+  }
+  // Read-time migration: fall back to legacy location in profile/data
+  const profileSnap = await getDoc(doc(db, 'users', uid, 'profile', 'data'));
+  if (profileSnap.exists() && profileSnap.data().gamificationPrefs) {
+    const legacy = profileSnap.data().gamificationPrefs as GamificationPrefs;
+    // Write-through: migrate to config/gamification (best-effort, non-blocking)
+    setDoc(configRef, legacy).catch(() => {});
+    return { ...DEFAULT_GAMIFICATION_PREFS, ...legacy };
+  }
+  return { ...DEFAULT_GAMIFICATION_PREFS };
+}
+
+/**
  * Persist gamification display preferences for the authenticated user.
- * Also writes denormalized public crest fields for O(1) reads on other users' avatars.
+ * Uses writeBatch for atomic dual-path write:
+ *   - Full GamificationPrefs → users/{uid}/config/gamification (private)
+ *   - 3 denormalized public fields only → users/{uid}/profile/data (world-readable)
  * - spiritIcon is validated against the allowlist before write.
  * - tierColor is derived from level internally; caller cannot inject arbitrary values.
  */
 export async function updateGamificationPrefs(
   uid: string,
-  prefs: import('../types/user').GamificationPrefs,
+  prefs: GamificationPrefs,
   level: number,
 ): Promise<void> {
   if (auth.currentUser?.uid !== uid) throw new Error('updateGamificationPrefs: UID mismatch');
@@ -363,13 +389,17 @@ export async function updateGamificationPrefs(
     : 'pets';
   const tierColor = TIER_COLORS_FS[level] ?? '#F28B82';
 
-  const payload: Record<string, unknown> = {
-    gamificationPrefs: prefs,
+  const batch = writeBatch(db);
+  // Private: full prefs
+  batch.set(doc(db, 'users', uid, 'config', 'gamification'), prefs);
+  // Public: 3 denormalized fields only — remove legacy gamificationPrefs blob
+  batch.update(doc(db, 'users', uid, 'profile', 'data'), {
     publicCrestEnabled: prefs.publicCrestEnabled,
     publicSpiritIcon: safeIcon,
     publicTierColor: tierColor,
-  };
-  await setDoc(doc(db, 'users', uid, 'profile', 'data'), payload, { merge: true });
+    gamificationPrefs: null, // clear legacy field (TASK-223)
+  });
+  await batch.commit();
 }
 
 // --- Public Profile Pets ----------------------------------------------------
@@ -1227,8 +1257,8 @@ export async function sendFriendRequest(fromUid: string, toUid: string): Promise
 export async function acceptFriendRequest(requestId: string, fromUid: string, toUid: string): Promise<void> {
   const batch = writeBatch(db);
   batch.update(doc(db, 'friendRequests', requestId), { status: 'accepted', updatedAt: Date.now() });
-  batch.update(doc(db, 'users', fromUid, 'profile', 'data'), { friends: arrayUnion(toUid) });
-  batch.update(doc(db, 'users', toUid, 'profile', 'data'), { friends: arrayUnion(fromUid) });
+  batch.update(doc(db, 'users', fromUid, 'profile', 'data'), { friends: arrayUnion(toUid), friendCount: increment(1) });
+  batch.update(doc(db, 'users', toUid, 'profile', 'data'), { friends: arrayUnion(fromUid), friendCount: increment(1) });
   await batch.commit();
 }
 
@@ -1244,8 +1274,8 @@ export async function removeFriend(fromUid: string, toUid: string): Promise<void
   const batch = writeBatch(db);
   const fromRef = doc(db, 'users', fromUid, 'profile', 'data');
   const toRef = doc(db, 'users', toUid, 'profile', 'data');
-  batch.update(fromRef, { friends: arrayRemove(toUid) });
-  batch.update(toRef, { friends: arrayRemove(fromUid) });
+  batch.update(fromRef, { friends: arrayRemove(toUid), friendCount: increment(-1) });
+  batch.update(toRef, { friends: arrayRemove(fromUid), friendCount: increment(-1) });
   await batch.commit();
 }
 
